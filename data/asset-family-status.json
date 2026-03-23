@@ -1,0 +1,60 @@
+{
+  "date": "2026-03-23",
+  "families": [
+    {
+      "family": "textures_and_visual_assets",
+      "status": "strong local surface, partial public inventory",
+      "evidence": [
+        "many texture/visual scripts",
+        "many png outputs under lol2_out",
+        "visual output directories already present"
+      ],
+      "public_repo_state": "inventory foundation now added; deeper per-asset index still needed"
+    },
+    {
+      "family": "maps_and_geometry",
+      "status": "strong local surface, partial public inventory",
+      "evidence": [
+        "cave/geometry/map scripts",
+        "geometry json outputs",
+        "wall map images"
+      ],
+      "public_repo_state": "inventory foundation now added; curated map/geometry index still needed"
+    },
+    {
+      "family": "runtime_traces_and_witnesses",
+      "status": "strong and central",
+      "evidence": [
+        "many dosbox_guest_trace directories",
+        "witness map and evidence index already in repo"
+      ],
+      "public_repo_state": "well represented"
+    },
+    {
+      "family": "audio_music",
+      "status": "no clean public inventory yet",
+      "evidence": [
+        "no obvious lol2 audio/music inventory files in current local surface"
+      ],
+      "public_repo_state": "gap"
+    },
+    {
+      "family": "scripts_dialogue_text",
+      "status": "no clean public inventory yet",
+      "evidence": [
+        "no obvious lol2 dialogue/script inventory files in current local surface"
+      ],
+      "public_repo_state": "gap"
+    },
+    {
+      "family": "analysis_tools_and_helpers",
+      "status": "very large local surface, needs curation",
+      "evidence": [
+        "334 python scripts",
+        "shell wrappers",
+        "native fd trace helper"
+      ],
+      "public_repo_state": "catalog added; cleaned public subset still needed"
+    }
+  ]
+}

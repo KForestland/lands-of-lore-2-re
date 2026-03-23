@@ -25,7 +25,9 @@ If you are new to this repo, read these in order:
    The clean breakdown of the external object state word at `[+80] + 0xB4` and what each byte is currently believed to do.
 5. `docs/lol2-runtime-to-renderer-bridge.md`
    Explains why this runtime work matters for the old texture/renderer question and how the two lanes connect.
-6. `evidence/lol2-witness-map.md`
+6. `docs/inventory-overview.md`
+   Explains what LoL2 currently has inventory for, and what is still missing compared to LoL1.
+7. `evidence/lol2-witness-map.md`
    Short map of the main witnesses and trace variants, so the docs above are easier to follow.
 
 ## Status
@@ -43,6 +45,8 @@ If you are new to this repo, read these in order:
   - promoted writeups and closure notes for humans to read first
 - `evidence/`
   - trace references, witness maps, and evidence indexes that back the docs
+- `data/`
+  - machine-readable inventory summaries
 - `tools/`
   - tool notes, workflow summaries, and later cleaned helpers
 - `future-patches/`
@@ -64,10 +68,20 @@ If you are new to this repo, read these in order:
   - what this repo includes and excludes
 - `docs/tooling-catalog.md`
   - what tools/workflows were used in practice
+- `docs/inventory-overview.md`
+  - what LoL2 currently has and does not yet have inventory for
 - `evidence/lol2-evidence-index.md`
   - where the supporting local artifacts live
 - `evidence/lol2-witness-map.md`
   - which witness proved which result
+- `data/workspace-inventory-summary.json`
+  - top-level counts for the current LoL2 workspace
+- `data/asset-family-status.json`
+  - current status of textures, maps, traces, audio, scripts, and tools
+- `data/script-catalog.json`
+  - grouped catalog of the current LoL2 scripts
+- `data/output-catalog.json`
+  - grouped catalog of the current `lol2_out/` output surface
 
 ## Asset Policy
 
