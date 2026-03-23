@@ -5,6 +5,7 @@ This folder is for evidence indexes and artifact references.
 Current contents:
 
 - `lol2-evidence-index.md`
+- `lol2-witness-map.md`
 
 Intended contents:
 
