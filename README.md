@@ -41,5 +41,6 @@ This repo will absorb the clean promoted LoL2 closure material from that working
 - `docs/lol2-current-status.md`
 - `docs/lol2-compact-path-branch-steering.md`
 - `docs/lol2-object-state-word.md`
+- `docs/lol2-runtime-to-renderer-bridge.md`
 - `evidence/lol2-evidence-index.md`
 - `evidence/lol2-witness-map.md`

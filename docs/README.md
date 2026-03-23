@@ -7,6 +7,7 @@ Current contents:
 - `lol2-current-status.md`
 - `lol2-compact-path-branch-steering.md`
 - `lol2-object-state-word.md`
+- `lol2-runtime-to-renderer-bridge.md`
 
 Working rule:
 
