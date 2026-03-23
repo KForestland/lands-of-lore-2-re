@@ -16,6 +16,8 @@ Read order:
   - Explains how the runtime-object results change the renderer/texture problem.
 - `inventory-overview.md`
   - Explains what the LoL2 repo does and does not yet inventory cleanly.
+- `texture-map-inventory.md`
+  - The first deeper public inventory for texture/map outputs.
 - `repo-scope.md`
   - Explains what this repo includes and excludes.
 - `tooling-catalog.md`

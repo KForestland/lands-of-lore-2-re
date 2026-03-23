@@ -29,6 +29,8 @@ If you are new to this repo, read these in order:
    Explains what LoL2 currently has inventory for, and what is still missing compared to LoL1.
 7. `evidence/lol2-witness-map.md`
    Short map of the main witnesses and trace variants, so the docs above are easier to follow.
+8. `docs/texture-map-inventory.md`
+   The first deeper public catalog for LoL2 texture and map outputs.
 
 ## Status
 
@@ -70,6 +72,8 @@ If you are new to this repo, read these in order:
   - what tools/workflows were used in practice
 - `docs/inventory-overview.md`
   - what LoL2 currently has and does not yet have inventory for
+- `docs/texture-map-inventory.md`
+  - deeper texture/map inventory surface
 - `evidence/lol2-evidence-index.md`
   - where the supporting local artifacts live
 - `evidence/lol2-witness-map.md`
@@ -82,6 +86,8 @@ If you are new to this repo, read these in order:
   - grouped catalog of the current LoL2 scripts
 - `data/output-catalog.json`
   - grouped catalog of the current `lol2_out/` output surface
+- `data/texture-map-catalog.json`
+  - curated texture/map output catalog
 
 ## Asset Policy
 
