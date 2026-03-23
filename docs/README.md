@@ -6,6 +6,8 @@ Read order:
 
 - `closure-summary.md`
   - Plain-English summary of the current closure state.
+- `final-closure-memo.md`
+  - Short final handoff memo for the current public repo state.
 - `lol2-current-status.md`
   - Start here. Short state of the lane, strongest proven results, and remaining open items.
 - `lol2-compact-path-branch-steering.md`
@@ -20,6 +22,8 @@ Read order:
   - The first deeper public inventory for texture/map outputs.
 - `repo-scope.md`
   - Explains what this repo includes and excludes.
+- `provenance.md`
+  - Explains where the current repo claims came from.
 - `tooling-catalog.md`
   - Explains what tools and workflows were actually used.
 
