@@ -1,0 +1,46 @@
+{
+  "date": "2026-03-23",
+  "repo_focus": "LoL2 public inventory foundation",
+  "script_counts": {
+    "total_python_scripts": 334,
+    "descriptor_record_analysis": 38,
+    "texture_render_decode": 131,
+    "geometry_map_analysis": 33,
+    "trace_runtime_analysis": 20,
+    "other": 112
+  },
+  "wrapper_counts": {
+    "shell_wrappers": 2,
+    "native_helpers": 2,
+    "seed_json_files": 1
+  },
+  "lol2_out_counts": {
+    "total_directories": 153,
+    "trace_runs": 57,
+    "visual_outputs": 37,
+    "analysis_experiments": 36,
+    "cross_lane_or_other": 23
+  },
+  "top_file_extensions_in_lol2_out": {
+    "png": 24675,
+    "bin": 1010,
+    "<other_suffix>": 880,
+    "md": 78,
+    "pcx": 78,
+    "log": 70,
+    "conf": 57,
+    "jsonl": 53,
+    "pgm": 51,
+    "vqa": 36,
+    "json": 35,
+    "raw": 19,
+    "ppm": 14,
+    "txt": 11,
+    "lmf": 8,
+    "obj": 7,
+    "bmp": 1,
+    "pkl": 1,
+    "py": 1,
+    "tex": 1
+  }
+}

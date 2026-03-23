@@ -14,6 +14,8 @@ Read order:
   - Focused explanation of the object-side state word at `[+80] + 0xB4`.
 - `lol2-runtime-to-renderer-bridge.md`
   - Explains how the runtime-object results change the renderer/texture problem.
+- `inventory-overview.md`
+  - Explains what the LoL2 repo does and does not yet inventory cleanly.
 - `repo-scope.md`
   - Explains what this repo includes and excludes.
 - `tooling-catalog.md`
