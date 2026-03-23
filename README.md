@@ -1,20 +1,31 @@
 # Lands of Lore II RE
 
-Focused reverse-engineering workspace for `Lands of Lore II`.
+Reverse-engineering and closure documentation for the DOS version of *Lands of Lore II*.
+
+This repository is the clean public-facing LoL2 lane of the broader project. It focuses on:
+
+- promoted reverse-engineering notes
+- compact runtime-path closure
+- evidence indexing and witness mapping
+- future patch planning kept separate from canon
+
+It does not aim to redistribute raw game data.
 
 ## Start Here
 
 If you are new to this repo, read these in order:
 
-1. `docs/lol2-current-status.md`
+1. `docs/closure-summary.md`
+   Plain-English summary of what is actually closed and what is still open.
+2. `docs/lol2-current-status.md`
    What is currently proven, what is still open, and where the LoL2 lane stands now.
-2. `docs/lol2-compact-path-branch-steering.md`
+3. `docs/lol2-compact-path-branch-steering.md`
    The main near-final LoL2 result: the compact `L1` control path and the loading-phase fast-vs-alternate branch split.
-3. `docs/lol2-object-state-word.md`
+4. `docs/lol2-object-state-word.md`
    The clean breakdown of the external object state word at `[+80] + 0xB4` and what each byte is currently believed to do.
-4. `docs/lol2-runtime-to-renderer-bridge.md`
+5. `docs/lol2-runtime-to-renderer-bridge.md`
    Explains why this runtime work matters for the old texture/renderer question and how the two lanes connect.
-5. `evidence/lol2-witness-map.md`
+6. `evidence/lol2-witness-map.md`
    Short map of the main witnesses and trace variants, so the docs above are easier to follow.
 
 ## Status
@@ -33,9 +44,46 @@ If you are new to this repo, read these in order:
 - `evidence/`
   - trace references, witness maps, and evidence indexes that back the docs
 - `tools/`
-  - reusable local analysis helpers and setup notes
+  - tool notes, workflow summaries, and later cleaned helpers
 - `future-patches/`
   - future patch planning only, kept separate from RE canon
+
+## Repository Layout In Practice
+
+- `docs/closure-summary.md`
+  - plain-English entry point
+- `docs/lol2-current-status.md`
+  - current state of the LoL2 lane
+- `docs/lol2-compact-path-branch-steering.md`
+  - main compact-path closure note
+- `docs/lol2-object-state-word.md`
+  - focused note on `[+80] + 0xB4`
+- `docs/lol2-runtime-to-renderer-bridge.md`
+  - bridge back to the renderer/texture lane
+- `docs/repo-scope.md`
+  - what this repo includes and excludes
+- `docs/tooling-catalog.md`
+  - what tools/workflows were used in practice
+- `evidence/lol2-evidence-index.md`
+  - where the supporting local artifacts live
+- `evidence/lol2-witness-map.md`
+  - which witness proved which result
+
+## Asset Policy
+
+This repo intentionally avoids shipping full copyrighted asset dumps.
+
+Included:
+
+- documentation
+- evidence maps
+- workflow/tooling notes
+
+Not included in the initial repo:
+
+- raw retail game files
+- full extracted media dumps
+- raw private working ledgers
 
 ## Scope Rules
 
@@ -53,6 +101,8 @@ This repo will absorb the clean promoted LoL2 closure material from that working
 
 ## Promoted Docs
 
+- `docs/closure-summary.md`
+  - plain-English closure note
 - `docs/lol2-current-status.md`
   - current status and strongest safe conclusions
 - `docs/lol2-compact-path-branch-steering.md`
@@ -61,6 +111,10 @@ This repo will absorb the clean promoted LoL2 closure material from that working
   - focused note on `[+80] + 0xB4`
 - `docs/lol2-runtime-to-renderer-bridge.md`
   - bridge from runtime object/control semantics back to renderer/texture work
+- `docs/repo-scope.md`
+  - what the repo is for and what it intentionally excludes
+- `docs/tooling-catalog.md`
+  - what tools and scripts were used during this closure pass
 - `evidence/lol2-evidence-index.md`
   - where the supporting local artifacts live
 - `evidence/lol2-witness-map.md`
