@@ -2,12 +2,16 @@
 
 This folder is for promoted LoL2 reverse-engineering writeups only.
 
-Current contents:
+Read order:
 
 - `lol2-current-status.md`
+  - Start here. Short state of the lane, strongest proven results, and remaining open items.
 - `lol2-compact-path-branch-steering.md`
+  - Main closure note for the compact `L1` control path and the fast-vs-alternate loading-phase branch split.
 - `lol2-object-state-word.md`
+  - Focused explanation of the object-side state word at `[+80] + 0xB4`.
 - `lol2-runtime-to-renderer-bridge.md`
+  - Explains how the runtime-object results change the renderer/texture problem.
 
 Working rule:
 
