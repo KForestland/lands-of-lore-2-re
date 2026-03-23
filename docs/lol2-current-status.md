@@ -5,7 +5,7 @@ Date: 2026-03-23
 ## Status
 
 - RE closure: near-final
-- Confidence: `98-99%`
+- Confidence: estimated `98-99%` (based on compact-path closure and known remaining gaps)
 - Main remaining work:
   - final naming/closure quality on the compact loading-phase branch semantics
   - reconnecting the stronger compact runtime model back into the remaining texture/renderer questions
@@ -13,7 +13,7 @@ Date: 2026-03-23
 ## Strongest Current Results
 
 - `DAT\\L1_DC.MIX` and `DAT\\L9_DR.MIX` records are proven live runtime inputs.
-- `0070:0E6C` stages a parsed/staged record prefix.
+- `0070:0E6C` is the first observed parser/consumer site for the staged record prefix.
 - `02E0:0D53` is the first proven downstream consumer and reads field `23` first.
 - Rich families and compact control families are structurally distinct at runtime.
 - Stable compact `L1` `B_HUMAN 0001` controls are proven.
@@ -30,7 +30,7 @@ Date: 2026-03-23
 
 ## Loading-Phase Branch Result
 
-- The external object word at `[+80] + 0xB4` is prebuilt before `A00F`:
+- The bit-field register at `[+80] + 0xB4` is prebuilt before `A00F`:
   - pre-`A00F`: `00018000`
   - post-`A00F`: `04018000`
 - Observed ownership on that word:
@@ -51,19 +51,49 @@ Date: 2026-03-23
 
 ## Safe Current Interpretation
 
-- `+0xB4` is a multi-byte state word, not a one-byte magic activation gate.
+- `+0xB4` is a bit-field register with independently controlled bits (2, 6, 7), not a one-byte magic activation gate.
 - `A0C3` is reached under all tested `+0xB4` suppression states.
-- The branch boundary is now tightened to inside `A0C3` or immediately after it, not at `A2D5` / `A6BA`.
+- `A0C3` is **not** a branch-steering site. Disassembly proves it is a cleanup epilogue: `ANDB $0xBF, 0xB4(%eax)` clears bit 6 at `[+80]+0xB4` and returns. The read-monitoring captured a read-modify-write, not a branch decision.
 - Baseline and alternate families share some early setup but do not fully converge within the observed loading-phase window.
 - Safest current model:
   - partial convergence
   - different completion depth
   - not full convergence
 
+## Post-A00F Consumer Map (Proven)
+
+Direct read-monitoring on the `[+80]` object captured 36 distinct consumer CS:IP sites reading 25 offsets. Two main consumer families:
+
+- **0x6xxx range** (`6A50`, `6AB5`, `6AC9`, `6B68`, `6CDA`): reads `+0xA8` (entity class), `+0x88` (dimension), `+0xB0` (sprite/animation ref), `+0x28` (object-chain pointer). This is the renderer/display subsystem (confirmed by disassembly of 6A50: type check, render-skip flag, vtable dispatch).
+- **0xAxxx range** (`A0C3`, `A044`, `A156`, `A2F4`, `A32F`, `A365`, `A396`, `A3BA`, etc.): the loading-phase cascade itself.
+- **0x18xx–0x21xx range** (`1848`, `1883`, `18BB`, `20BE`, `2165`, `21C2`): early object-field readers.
+
+Key structural result:
+
+- `+0x28` is the hottest field (5 readers) — a vtable pointer (confirmed by disassembly: `call *0x8c(%eax)`) used by both the loading cascade and the 6xxx renderer subsystem.
+- `+0x6C` (the deferred scalar, value 0x1E = 30) was **not read** in 256 consumer events — it is consumed in the gameplay phase, not the loading phase.
+- `+0xA8` (value 0x06) is read by both the 6xxx and Axxx families as an entity class/type indicator.
+
+## Disassembly Results (Update 3)
+
+Native disassembly from live DOSBox memory fully decoded the entity pipeline:
+
+- **A00F**: bit-field stamp (sets bit 2 at +0xB4) + global timer snapshot to +0x6C + sprite frame setup call
+- **0x100B0F08**: sprite frame interpolation — pure arithmetic, NOT a branch point
+- **A044**: stores frame result, computes delta, tests +0xA3 flag → jumps to A0C3 if zero
+- **A0C3**: cleanup epilogue — clears bit 6 at +0xB4 and returns (NOT a branch-steering site)
+- **A396**: animation/rendering update loop — vtable dispatch through +0x28, calls renderer 6A50
+- **A40A**: animation speed calculator — computes +0x65 from frame data
+- **6A50**: entity render function — type check, render-skip via +0xB5 bit 0, vtable dispatch
+
+Key architectural finding: **+0x28 is a C++ vtable pointer**, enabling polymorphic entity dispatch.
+
+The fast/alternate branch split is **distributed across multiple bit tests** in the rendering and animation pipeline, not localized to a single branch instruction.
+
+See `lol2-entity-object-map.md` for the complete proven field layout.
+
 ## Remaining Open Items
 
-- Exact safe naming of:
-  - byte `0` at `[+80] + 0xB4`
-  - the external `+0x6C` target
-  - the final lifecycle difference between the fast and alternate loading-phase families
-- Reconnection of the stronger compact runtime model to the remaining renderer/texture questions
+- Wall texture pixel format: **PROVEN 8bpp palette-indexed** by renderer disassembly (REP MOVSD direct blit). The 130+ exotic-format attempts were all wrong. Remaining gap: the blob-to-surface decode step during level loading (the blob has a second encoding layer that produces 8bpp surface buffers).
+- Audio/music inventory
+- Script/dialogue inventory

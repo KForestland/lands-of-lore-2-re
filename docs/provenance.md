@@ -29,7 +29,20 @@ Used for:
 
 This is the strongest source type for the current inventory and record-family claims.
 
-### 3. Bounded Advisory AI Review
+### 3. Live Memory Disassembly
+
+Used for:
+
+- native code analysis at runtime EIP addresses via DOSBox code dumps
+- A0C3 correction (cleanup epilogue, not branch-steering)
+- bit-field register layout at `+0xB4`
+- `+0x6C` global timer resolution
+- entity render function (6A50) decode
+- wall texture renderer format confirmation
+
+This is the strongest source type for the entity pipeline, bit-field layout, and renderer format claims.
+
+### 4. Bounded Advisory AI Review
 
 Used for:
 
