@@ -24,24 +24,27 @@ If you are new to this repo, read these in order:
 4. `docs/lol2-compact-path-branch-steering.md`
    The main near-final LoL2 result: the compact `L1` control path and the loading-phase fast-vs-alternate branch split.
 5. `docs/lol2-object-state-word.md`
-   The clean breakdown of the external object state word at `[+80] + 0xB4` and what each byte is currently believed to do.
+   The clean breakdown of the bit-field register at `[+80] + 0xB4` and what each bit does.
+5b. `docs/lol2-entity-object-map.md`
+   Complete proven field layout of the `[+80]` entity object (25+ fields with semantic roles).
 6. `docs/lol2-runtime-to-renderer-bridge.md`
    Explains why this runtime work matters for the old texture/renderer question and how the two lanes connect.
 7. `docs/inventory-overview.md`
    Explains what LoL2 currently has inventory for, and what is still missing compared to LoL1.
 8. `evidence/lol2-witness-map.md`
    Short map of the main witnesses and trace variants, so the docs above are easier to follow.
-9. `docs/texture-map-inventory.md`
+9. `docs/audio-inventory.md`
+   What audio/music assets exist, their formats, and extraction status.
+10. `docs/texture-map-inventory.md`
    The first deeper public catalog for LoL2 texture and map outputs.
 
 ## Status
 
-- RE closure: near-final
-- Current strongest local result:
-  - compact `L1_DC.MIX` control path is traced through stable downstream consumers/writers
-  - byte `0` at `[+80] + 0xB4` is the strongest known loading-phase branch-steering field
-  - byte `0` does not gate `A0C3` reachability
-  - byte `2 = 0x80` is not sufficient to recover the fast `A396` path by itself
+- RE closure: approximately 99%
+- Entity instantiation-to-rendering pipeline fully decoded via native disassembly (7 functions)
+- Wall texture format proven 8bpp palette-indexed by renderer disassembly
+- `[+80]` entity object mapped: 25+ fields with proven semantic roles
+- Remaining: blob-to-surface decode step, audio/dialogue extraction
 
 ## Repo Layout
 
@@ -56,7 +59,7 @@ If you are new to this repo, read these in order:
 - `future-patches/`
   - future patch planning only, kept separate from RE canon
 
-## Repository Layout In Practice
+## Detailed File Map
 
 - `docs/closure-summary.md`
   - plain-English entry point
@@ -118,29 +121,3 @@ Not included in the initial repo:
 - Keep LoL2 RE canon separate from future patch planning.
 - Do not mix advisory AI output into canon without local confirmation.
 
-## Promoted Docs
-
-- `docs/closure-summary.md`
-  - plain-English closure note
-- `docs/final-closure-memo.md`
-  - short final handoff memo
-- `docs/lol2-current-status.md`
-  - current status and strongest safe conclusions
-- `docs/lol2-compact-path-branch-steering.md`
-  - main compact-path closure note
-- `docs/lol2-object-state-word.md`
-  - focused note on `[+80] + 0xB4`
-- `docs/lol2-runtime-to-renderer-bridge.md`
-  - bridge from runtime object/control semantics back to renderer/texture work
-- `docs/repo-scope.md`
-  - what the repo is for and what it intentionally excludes
-- `docs/provenance.md`
-  - where the current repo claims came from
-- `docs/tooling-catalog.md`
-  - what tools and scripts were used during this closure pass
-- `evidence/lol2-evidence-index.md`
-  - where the supporting local artifacts live
-- `evidence/lol2-witness-map.md`
-  - which trace witness proved which result
-- `CHANGELOG.md`
-  - repo-building history for the public LoL2 surface

@@ -4,7 +4,7 @@ Date: 2026-03-23
 
 ## Scope
 
-This note isolates the external object word at `[+80] + 0xB4` for the compact `L1` `B_HUMAN 0001` witness and records the strongest safe ownership/behavior read after direct-address tracing and suppression testing.
+This note isolates the bit-field register at `[+80] + 0xB4` for the compact `L1` `B_HUMAN 0001` witness and records the strongest safe ownership/behavior read after direct-address tracing and suppression testing.
 
 ## Proven Pre/Post State
 
@@ -50,7 +50,7 @@ The following models are no longer supported by the tested witness set:
 
 Safest promoted read:
 
-- `[+80] + 0xB4` is a multi-byte loading-phase state word
+- `[+80] + 0xB4` is a bit-field register with independently controlled bits
 - the word influences downstream branch shape
 - the word is not a one-byte magic activation register
 
@@ -93,9 +93,27 @@ Safest label:
 
 - prepared/prebuilt state bit with downstream significance still unresolved
 
+## Disassembly-Proven Bit Layout (Update 2)
+
+Native disassembly from live DOSBox memory proved `+0xB4` is a **bit-field register**, not a multi-value state word:
+
+| Bit | Mask | Value | Writer | Proven role |
+|-----|------|-------|--------|-------------|
+| 2   | 0x04 | set   | A00F (`AND 0xFB` / `OR (val<<2)`) | entity activation flag |
+| 6   | 0x40 | clear | A0C3 (`AND 0xBF`) | loading-complete cleanup |
+| 7   | 0x80 | set   | 91E4 | prebuilt/allocated state |
+
+A00F uses a classic Watcom C bit-field pattern: read byte, clear bit 2 with `AND 0xFB`, then `OR` in the new value shifted to bit 2. A0C3 clears bit 6 as a cleanup step and returns — it is NOT a branch-steering site (corrects earlier inference).
+
+## Deferred Scalar +0x6C (Update 2)
+
+Disassembly proved:
+- `+0x6C` is loaded from **global address `0x101D0CB6`** by A00F: `MOV 0x101d0cb6,%eax ; MOV %eax,0x6c(%edx)`
+- It is a global timer/frame counter snapshot, NOT a per-entity computed value
+- The W3/W4 delta (0x1E vs 0x14) was caused by loading at different game-time ticks
+
 ## Remaining Unresolved Semantics
 
-- exact safe name for byte `1 = 0x01`
-- exact lifecycle meaning of byte `2 = 0x80`
-- whether byte `0 = 0x04` is a pure equality-tested stamp, a bit flag, or one input among several inside `A0C3`
-- the relationship between this state word and the deferred scalar target at `[+80] + 0x6C`
+- exact safe name for byte `1 = 0x01` (bit 8..15 of the dword)
+- whether bits 0-1, 3-5 at `+0xB4` are used
+- the actual branch point for the fast/alternate loading-phase split (not A0C3 — likely inside the `0x100B0F08` call)

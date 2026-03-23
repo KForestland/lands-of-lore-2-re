@@ -19,14 +19,14 @@ Core stable path:
 
 - live object/base lane:
   - `+80`
-- external object state word:
+- bit-field register:
   - `[+80] + 0xB4`
 - deferred scalar target:
   - `[+80] + 0x6C`
 
 Direct-address W3 target used in the main proof:
 
-- `[+80] + 0xB4 = 287872820`
+- `[+80] + 0xB4 = 287872820` (`0x112B0B34`, guest-linear address of the watched dword in the tested W3 run)
 
 ## Core Trace Set
 
@@ -96,3 +96,16 @@ Direct-address W3 target used in the main proof:
   - universal semantics for byte `0`
   - universal semantics for byte `2`
   - final gameplay-phase meaning of the alternate branch family
+
+## Post-A00F Consumer Trace
+
+- `disarm_rearm`
+  - triggered when A00F writes first 4-byte dword to `[+80]+0xB4`
+  - immediately re-armed for read monitoring on `[+80]` (len `0xB8`)
+  - captured 256 read events from 36 consumer CS:IP sites across 25 offsets
+  - proved:
+    - `A0C3` reads byte `+0xB4` (size 1, value `0x04`) — later proven to be a read-modify-write (cleanup epilogue), not branch-steering
+    - `+0x6C` not read in 256 events — deferred to gameplay phase
+    - 6xxx consumer family (`6A50`–`6CDA`) identified as renderer/display subsystem
+    - `+0x28` is the hottest field (5 readers, vtable pointer — confirmed by disassembly)
+    - `+0xA8` (value 0x06) is entity class/type read by both loading and renderer families

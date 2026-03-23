@@ -18,7 +18,7 @@ Practical read:
 - `9BFC` fills the variable/linkage tail.
 - `9C76` is the first proven downstream consumer.
 - `+80` is the live object/base lane.
-- `A00F` is the final compact-path commit step into external object state.
+- `A00F` is the last traced compact-path commit step into external object state.
 
 ## Prebuilt External State At `[+80] + 0xB4`
 
@@ -116,13 +116,15 @@ What is still unsafe:
 
 Safest current boundary read:
 
-- branch steering happens inside `A0C3` or immediately after it
+- `A0C3` is **not** a branch-steering site. Disassembly proves it is a cleanup epilogue: `ANDB $0xBF, 0xB4(%eax)` — a read-modify-write that clears bit 6 at `[+80]+0xB4`, then returns
+- the earlier trace-based inference was caused by the `ANDB` read-modify-write being captured as a "read" event
+- the actual branch point for the fast/alternate split remains unresolved — likely inside the `0x100B0F08` call or between A00F and A044
 - not at `A2D5`
 - not at `A6BA`
 
 Downstream safe role read:
 
-- `A0C3`: unconditional loading-phase reader with branch-steering behavior under the tested compact-path states
+- `A0C3`: cleanup epilogue — clears bit 6 (`AND 0xBF`) at `[+80] + 0xB4` and returns
 - `A2D5`: downstream accessor whose `BX` differs across the two families
 - `A6BA`: downstream pivot accessor/modifier whose behavior changes with the chosen family
 - `A396`: fast-path loop body
@@ -131,7 +133,7 @@ Downstream safe role read:
 
 ## Convergence Status
 
-Full convergence is falsified.
+Full convergence is not observed within the tested loading-phase window.
 
 Local pivot-frame comparison showed:
 
@@ -147,4 +149,4 @@ Safest current model:
 
 ## Current Safe Statement
 
-The compact `L1` control frame is a live runtime structure with a class-stable consumer path, an instance-varying `+80` object/base lane, and a loading-phase branch-steering state word at `[+80] + 0xB4`. Within the tested witness, byte `0` is the strongest known steering field for fast `A396` versus alternate `E854 / E861 -> A40A / A44B` handling, while not serving as the sole reachability gate for `A0C3`.
+The compact `L1` control frame is a live runtime structure with a class-stable consumer path, an instance-varying `+80` object/base lane, and a bit-field register at `[+80] + 0xB4`. Disassembly proved A0C3 is a cleanup epilogue (clears bit 6 and returns), not a branch-steering site. The fast/alternate branch split (A396 vs E854/A40A families) is distributed across multiple bit tests in the rendering and animation pipeline, not localized to a single branch instruction. A00F sets bit 2 (activation), and the downstream behavior changes when this bit is suppressed because later code (6A50, A396) tests the bit-field state.

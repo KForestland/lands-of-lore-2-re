@@ -30,7 +30,7 @@ Most useful files:
 
 ### 1. Texture And Visual Output Surface
 
-This is the strongest non-trace inventory after the compact runtime docs.
+This is the strongest non-trace *local* inventory surface after the compact runtime docs.
 
 Current evidence:
 

@@ -28,7 +28,12 @@ This index points to the local workspace artifacts backing the first promoted Lo
 - suppress `A00F` with pivot watch:
   - `/home/bob/lol2_out/dosbox_guest_trace_l1_offset_7418566_suppress_a00f_pivot/guest_trace.jsonl`
 
+- post-A00F consumer read-monitoring (disarm-rearm v2):
+  - `/home/bob/lol2_out/dosbox_guest_trace_l1_offset_7418566_disarm_rearm/guest_trace.jsonl`
+  - `/home/bob/lol2_out/dosbox_guest_trace_l1_offset_7418566_disarm_rearm/consumer_summary.json`
+
 ## Promoted Repo Docs Backed By These Artifacts
 
 - `docs/lol2-current-status.md`
 - `docs/lol2-compact-path-branch-steering.md`
+- `docs/lol2-runtime-to-renderer-bridge.md`
