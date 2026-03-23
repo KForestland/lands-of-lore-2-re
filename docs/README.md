@@ -2,12 +2,10 @@
 
 This folder is for promoted LoL2 reverse-engineering writeups only.
 
-Planned contents:
+Current contents:
 
-- compact-path closure note
-- branch-family summary
-- final object/state-word note
-- later texture/renderer reconnect note
+- `lol2-current-status.md`
+- `lol2-compact-path-branch-steering.md`
 
 Working rule:
 
