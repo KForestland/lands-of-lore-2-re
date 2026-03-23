@@ -4,6 +4,8 @@ This folder is for promoted LoL2 reverse-engineering writeups only.
 
 Read order:
 
+- `closure-summary.md`
+  - Plain-English summary of the current closure state.
 - `lol2-current-status.md`
   - Start here. Short state of the lane, strongest proven results, and remaining open items.
 - `lol2-compact-path-branch-steering.md`
@@ -12,6 +14,10 @@ Read order:
   - Focused explanation of the object-side state word at `[+80] + 0xB4`.
 - `lol2-runtime-to-renderer-bridge.md`
   - Explains how the runtime-object results change the renderer/texture problem.
+- `repo-scope.md`
+  - Explains what this repo includes and excludes.
+- `tooling-catalog.md`
+  - Explains what tools and workflows were actually used.
 
 Working rule:
 
