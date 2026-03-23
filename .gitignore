@@ -1,0 +1,11 @@
+# Local editor / OS noise
+.DS_Store
+Thumbs.db
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Large local scratch outputs
+tmp/
+scratch/
