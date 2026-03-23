@@ -35,3 +35,9 @@ Primary current checkpoint source in the workspace:
 - `/home/bob/AI_COMMS/LOL2_TQ001_TRACE_CHECKPOINT_2026-03-17.md`
 
 This repo will absorb the clean promoted LoL2 closure material from that working ledger.
+
+## First Promoted Docs
+
+- `docs/lol2-current-status.md`
+- `docs/lol2-compact-path-branch-steering.md`
+- `evidence/lol2-evidence-index.md`
