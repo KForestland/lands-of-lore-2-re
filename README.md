@@ -17,19 +17,21 @@ If you are new to this repo, read these in order:
 
 1. `docs/closure-summary.md`
    Plain-English summary of what is actually closed and what is still open.
-2. `docs/lol2-current-status.md`
+2. `docs/final-closure-memo.md`
+   Short final handoff-style memo for the current public LoL2 state.
+3. `docs/lol2-current-status.md`
    What is currently proven, what is still open, and where the LoL2 lane stands now.
-3. `docs/lol2-compact-path-branch-steering.md`
+4. `docs/lol2-compact-path-branch-steering.md`
    The main near-final LoL2 result: the compact `L1` control path and the loading-phase fast-vs-alternate branch split.
-4. `docs/lol2-object-state-word.md`
+5. `docs/lol2-object-state-word.md`
    The clean breakdown of the external object state word at `[+80] + 0xB4` and what each byte is currently believed to do.
-5. `docs/lol2-runtime-to-renderer-bridge.md`
+6. `docs/lol2-runtime-to-renderer-bridge.md`
    Explains why this runtime work matters for the old texture/renderer question and how the two lanes connect.
-6. `docs/inventory-overview.md`
+7. `docs/inventory-overview.md`
    Explains what LoL2 currently has inventory for, and what is still missing compared to LoL1.
-7. `evidence/lol2-witness-map.md`
+8. `evidence/lol2-witness-map.md`
    Short map of the main witnesses and trace variants, so the docs above are easier to follow.
-8. `docs/texture-map-inventory.md`
+9. `docs/texture-map-inventory.md`
    The first deeper public catalog for LoL2 texture and map outputs.
 
 ## Status
@@ -58,6 +60,8 @@ If you are new to this repo, read these in order:
 
 - `docs/closure-summary.md`
   - plain-English entry point
+- `docs/final-closure-memo.md`
+  - final short handoff note for the current repo state
 - `docs/lol2-current-status.md`
   - current state of the LoL2 lane
 - `docs/lol2-compact-path-branch-steering.md`
@@ -68,6 +72,8 @@ If you are new to this repo, read these in order:
   - bridge back to the renderer/texture lane
 - `docs/repo-scope.md`
   - what this repo includes and excludes
+- `docs/provenance.md`
+  - where the current claims came from and how advisory output was handled
 - `docs/tooling-catalog.md`
   - what tools/workflows were used in practice
 - `docs/inventory-overview.md`
@@ -98,6 +104,7 @@ Included:
 - documentation
 - evidence maps
 - workflow/tooling notes
+- structured inventory summaries
 
 Not included in the initial repo:
 
@@ -111,18 +118,12 @@ Not included in the initial repo:
 - Keep LoL2 RE canon separate from future patch planning.
 - Do not mix advisory AI output into canon without local confirmation.
 
-## Current Canon Source
-
-Primary current checkpoint source in the workspace:
-
-- `/home/bob/AI_COMMS/LOL2_TQ001_TRACE_CHECKPOINT_2026-03-17.md`
-
-This repo will absorb the clean promoted LoL2 closure material from that working ledger.
-
 ## Promoted Docs
 
 - `docs/closure-summary.md`
   - plain-English closure note
+- `docs/final-closure-memo.md`
+  - short final handoff memo
 - `docs/lol2-current-status.md`
   - current status and strongest safe conclusions
 - `docs/lol2-compact-path-branch-steering.md`
@@ -133,9 +134,13 @@ This repo will absorb the clean promoted LoL2 closure material from that working
   - bridge from runtime object/control semantics back to renderer/texture work
 - `docs/repo-scope.md`
   - what the repo is for and what it intentionally excludes
+- `docs/provenance.md`
+  - where the current repo claims came from
 - `docs/tooling-catalog.md`
   - what tools and scripts were used during this closure pass
 - `evidence/lol2-evidence-index.md`
   - where the supporting local artifacts live
 - `evidence/lol2-witness-map.md`
   - which trace witness proved which result
+- `CHANGELOG.md`
+  - repo-building history for the public LoL2 surface
