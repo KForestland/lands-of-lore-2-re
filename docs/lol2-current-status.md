@@ -5,7 +5,7 @@ Date: 2026-03-23
 ## Status
 
 - RE closure: near-final
-- Confidence: estimated `98-99%` (based on compact-path closure and known remaining gaps)
+- Confidence: estimated `~99%` (based on compact-path closure and known remaining gaps)
 - Main remaining work:
   - final naming/closure quality on the compact loading-phase branch semantics
   - reconnecting the stronger compact runtime model back into the remaining texture/renderer questions
@@ -64,7 +64,7 @@ Date: 2026-03-23
 
 Direct read-monitoring on the `[+80]` object captured 36 distinct consumer CS:IP sites reading 25 offsets. Two main consumer families:
 
-- **0x6xxx range** (`6A50`, `6AB5`, `6AC9`, `6B68`, `6CDA`): reads `+0xA8` (entity class), `+0x88` (dimension), `+0xB0` (sprite/animation ref), `+0x28` (object-chain pointer). This is the renderer/display subsystem (confirmed by disassembly of 6A50: type check, render-skip flag, vtable dispatch).
+- **0x6xxx range** (`6A50`, `6AB5`, `6AC9`, `6B68`, `6CDA`): reads `+0xA8` (entity class), `+0x88` (dimension), `+0xB0` (sprite/animation ref), `+0x28` (vtable pointer). This is the renderer/display subsystem (confirmed by disassembly of 6A50: type check, render-skip flag, vtable dispatch).
 - **0xAxxx range** (`A0C3`, `A044`, `A156`, `A2F4`, `A32F`, `A365`, `A396`, `A3BA`, etc.): the loading-phase cascade itself.
 - **0x18xx–0x21xx range** (`1848`, `1883`, `18BB`, `20BE`, `2165`, `21C2`): early object-field readers.
 
@@ -94,6 +94,6 @@ See `lol2-entity-object-map.md` for the complete proven field layout.
 
 ## Remaining Open Items
 
-- Wall texture pixel format: **PROVEN 8bpp palette-indexed** by renderer disassembly (REP MOVSD direct blit). The 130+ exotic-format attempts were all wrong. Remaining gap: the blob-to-surface decode step during level loading (the blob has a second encoding layer that produces 8bpp surface buffers).
+- Wall texture pixel format: **PROVEN 8bpp palette-indexed** by renderer disassembly. Remaining: blob-to-surface decode step (see [`runtime-to-renderer bridge`](lol2-runtime-to-renderer-bridge.md#blob-to-surface-decode-open)).
 - Audio/music inventory
 - Script/dialogue inventory

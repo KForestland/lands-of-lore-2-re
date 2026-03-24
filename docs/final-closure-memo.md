@@ -61,7 +61,7 @@ That path is now stable enough to support safe public statements about:
 
 ## What Remains Open
 
-- **blob-to-surface decode**: the decompressed Entry 2 blob has a second encoding layer that produces 8bpp surface buffers during level loading — the decode function has not been traced yet
+- **blob-to-surface decode**: the last unsolved step in the texture pipeline — see [`lol2-runtime-to-renderer-bridge.md § Blob-to-Surface Decode`](lol2-runtime-to-renderer-bridge.md#blob-to-surface-decode-open) for details
 - LoL1-grade inventory coverage for LoL2 audio/music and script/dialogue/text
 
 ## Safe Bottom Line

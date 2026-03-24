@@ -94,7 +94,7 @@ The stronger safe statement is:
 Post-A00F read-monitoring captured a **separate consumer family in the 0x6xxx code range** (`6A50`, `6AB5`, `6AC9`, `6B68`, `6CDA`) reading directly from the same `[+80]` object. These readers access:
 
 - `+0xA8` (entity class/type, value 0x06)
-- `+0x28` (object-chain pointer)
+- `+0x28` (vtable pointer)
 - `+0x88` (dimension value, 100)
 - `+0xB0` (sprite/animation reference, value 5000)
 - `+0xB2` (sprite state/frame, value 0)
@@ -107,9 +107,20 @@ The compact-path work did not finish these renderer-side questions:
 
 - exact semantic role of `.tex` versus `.odf` in the shipped path
 - exact payload path from descriptor family into final decoded wall/scene texture content
-- exact meaning of the deferred scalar target at `[+80] + 0x6C` (confirmed deferred to gameplay phase — not read during loading)
 - exact field-by-field mapping for the remaining descriptor payload bytes
 - what the 6xxx consumers do with the fields they read (renderer initialization? sprite setup? draw-list building?)
+
+Note: +0x6C was resolved by disassembly as a global timer snapshot from `0x101D0CB6` (see `lol2-entity-object-map.md`).
+
+## Blob-to-Surface Decode (Open)
+
+The wall texture format is proven 8bpp palette-indexed — the renderer at `0x10172C08` uses `REP MOVSD` direct blit from pre-decoded surface buffers (`ESI=0x103081C8`) to VGA framebuffer (`EDI=0x000A8000`).
+
+However, the decode step that transforms decompressed `L*_DC.MIX` Entry 2 blobs into those 8bpp surface buffers during level loading has not been traced. The decode function is expected to reside in the `0x10170000` renderer segment (same segment as the blit code) but has not been isolated or disassembled.
+
+To solve this, a DOSBox memory write-watch on the surface buffer address (`0x103081C8`) during level loading would capture the decode function's CS:IP, which can then be disassembled using the same live-memory dump technique used for the entity pipeline.
+
+This is the single largest remaining gap in the LoL2 texture pipeline.
 
 ## Best Current Bridge Statement
 

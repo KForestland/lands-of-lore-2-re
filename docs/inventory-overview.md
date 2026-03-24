@@ -103,7 +103,7 @@ Current read:
 
 From the first inventory pass:
 
-- `334` local `lol2_*.py` scripts
+- `335` local `lol2_*.py` scripts
 - `2` `run_lol2_*.sh` wrappers
 - `2` native `fd_trace` helper files
 - `153` top-level directories under `lol2_out/`
