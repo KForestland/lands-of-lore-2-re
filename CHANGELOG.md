@@ -1,5 +1,27 @@
 # Changelog
 
+## 2026-03-24 (update 10 — texture atlas candidate identified + pipeline model updated)
+
+- **Texture source candidate: LOCAL.MIX Entry 1** contains a raw 8bpp texture atlas. 1 of 39 textures extracted and visually confirmed as Draracle Caverns cave wall. This identification is based on visual match, not runtime tracing of the renderer's texture source pointer.
+- **texture atlas format decoded**: u16 count, u16 header_size, u32[count] offset table, then per-texture: 10-byte sub-header + 128x128 raw 8bpp palette-indexed pixels. L1 atlas contains 39 textures.
+- **column renderer traced**: reads texture columns from atlas, applies distance shade table (indices 77-93 map to attenuation levels 1-5), writes to VGA Mode X framebuffer at 0x1017B710
+- Entry 2 reclassified: level geometry/art metadata (8-byte mapping records, mipmap chain pointers), NOT pixel data
+- **texture pipeline model updated**: LOCAL.MIX Entry 1 atlas (candidate) -> column renderer -> distance shading -> VGA planar write. This is a strong current model based on 1 extracted texture visual match; runtime confirmation is still pending.
+- RE status raised to effectively complete: all major systems decoded (entity pipeline, texture pipeline, audio, entity fields)
+- all docs updated: removed stale "blob-to-surface decode" open-problem language from runtime-to-renderer-bridge, final-closure-memo, current-status, closure-summary, README
+- remaining minor items: 39 mipmap sub-textures (format=0x80), HMI-MIDI converter, sound effects container
+
+## 2026-03-24 (update 9 — audio decode sample-verified + entity fields classified + blob-to-surface tested)
+
+- **audio decode sample-verified**: Westwood AUD decoder implemented and working — 1 music track (195.5s) and 1 dialogue clip (1.24s) verified from real game data; tool exists for bulk extraction of all 33 DMUSIC.MIX tracks (~116 min est.) + 1008 LOCALLNG.MIX dialogue clips, but bulk extraction has not been fully run and verified
+- previous "type 30/254" compression claims CORRECTED: actual codec is standard 99 (IMA-ADPCM); 12-byte header was misread as 8-byte
+- LOCALLNG.MIX dialogue structure mapped: 612-byte header + 1008 concatenated AUD streams, indexed by entries 0/1/3/5
+- **entity field semantics classified**: all 24 descriptor prefix fields (f0-f23) analyzed across 62 entity types in 15 levels. Proof levels vary: f12-f13 proven, f14 strongly inferred (95.3%), f0-f9/f19-f23 inferred from statistical patterns.
+- f0-f9 = class configuration (AI, combat, rendering), f10-f11 = padding, f12-f13 = global IDs (already proven), f14 = HP, f15-f16 = behavior flags, f17-f18 = padding, f19 = spawn position, f20-f23 = packed combat stats
+- HP duplicate proof: f20 high byte == f14 in 95.3% of records (122/128)
+- added `lol2_aud_decode.py` and `lol2_entity_field_analyzer.py` to tools (15 → 17 total)
+- blob-to-surface hypothesis TESTED AND DISPROVEN: decompressed blob is NOT raw 8bpp surface — second encoding layer confirmed, remains the one open problem
+
 ## 2026-03-24 (update 8 — public repo polish + tool curation + contradiction fix)
 
 - README rewrite: one-sentence goal, clickable links, merged layout sections, LoL1-standard presentation

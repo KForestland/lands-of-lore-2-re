@@ -30,12 +30,15 @@ If you are new to this repo, read these in order:
 
 ## Status
 
-RE closure: ~99%
+RE closure: effectively complete
 
 - Entity instantiation-to-rendering pipeline fully decoded via native disassembly (7 functions)
-- Wall texture format proven 8bpp palette-indexed by renderer disassembly
+- Wall texture source: LOCAL.MIX Entry 1 is a strong candidate source for a raw 8bpp texture atlas (1 of 39 textures extracted and visually matched to the Draracle Caverns cave wall; not yet runtime-traced)
+- Wall texture format proven 8bpp palette-indexed by renderer disassembly; column renderer with distance shading is disassembly-confirmed
 - `[+80]` entity object mapped: 25+ fields with proven semantic roles
-- Open: blob-to-surface decode step ([details](docs/lol2-runtime-to-renderer-bridge.md#blob-to-surface-decode-open)), audio/dialogue extraction ([details](docs/audio-inventory.md))
+- Audio decode sample-verified: 1 music track (195.5s) and 1 dialogue clip verified; a bulk extraction tool exists for 33 tracks + 1008 clips, but bulk extraction has not been run and verified
+- All 24 entity descriptor fields are classified by cross-level statistical analysis with mixed proof levels (f12-f13 proven; f14 strongly inferred at 95.3% match; f0-f9 and f19-f23 inferred)
+- Minor remaining: mipmap format=0x80 (39 sub-textures), HMI-MIDI converter, sound effects container
 
 ## Repository Layout
 

@@ -17,11 +17,14 @@ LoL2 uses multiple audio systems: Westwood AUD for digital audio, HMI-MIDI for m
 
 ## DMUSIC.MIX — Music (78 MB, 33 entries)
 
-All 33 entries are **consistent with Westwood AUD format** at 22050 Hz (header structure matches, not yet confirmed by successful decode):
-- Header: `u16 freq=22050, u32 data_size, u8 type, u8 flags`
-- Compression types observed: type 30 and type 254 (possibly Westwood ADPCM variants, unconfirmed)
-- Entry sizes: 1.5–3.8 MB each (2–5 minutes of audio per track)
-- Total decompressed estimate: ~40 minutes of music
+All 33 entries are **confirmed Westwood AUD format**. Decode has been sample-verified on 1 track; a bulk-decoding tool exists for all 33 but bulk output has not been run and verified:
+- Header: `u16 freq, u32 comp_size, u32 output_size, u8 flags, u8 codec`
+- Codec: 99 (standard IMA-ADPCM), NOT the previously reported types 30/254 (those were misread from wrong header offsets)
+- Actual header is 12 bytes, not 8: the extra u32 output_size field shifts the type/flags bytes
+- Chunk format: 8-byte headers (`u16 chunk_comp, u16 chunk_decomp, u32 magic=0x0000DEAF`)
+- 32 tracks at 22050 Hz mono, 1 track (entry 10) at 44100 Hz mono
+- Total decoded duration: **~116 minutes** of music across 33 tracks
+- Decoder: `tools/lol2_aud_decode.py`
 
 ## LOCAL.MIX — Music & Data (27 MB, 104 entries)
 
@@ -37,14 +40,14 @@ HMI-MIDI files are Westwood's MIDI variant used with Human Machine Interfaces au
 
 | Entry | Size | Format | Content |
 |-------|------|--------|---------|
-| 0 | 4.4 KB | Index/header | — |
-| 1 | 4.3 KB | Index/header | — |
+| 0 | 4.4 KB | Index table | 268 sequential u32 values (dialogue clip index) |
+| 1 | 4.3 KB | Index table | 202 sequential u32 values (secondary index) |
 | 2 | 3.4 MB | FORM/IFF | Instrument/sample bank |
-| 3 | 3.9 KB | Index/header | — |
-| 4 | 25.0 MB | Dialogue blob | Development path: `F:\PROJECTS\LOL_2\LEVED\GLOBAL\AUD` — main dialogue audio data |
-| 5 | 6.0 KB | Index/header | — |
+| 3 | 3.9 KB | Index table | 41 sequential u32 values (tertiary index) |
+| 4 | 25.0 MB | Dialogue blob | 612-byte header (dev path `F:\PROJECTS\LOL_2\LEVED\GLOBAL\AUD`), then **1008 concatenated Westwood AUD streams** |
+| 5 | 6.0 KB | Index table | 43 sequential u32 values (quaternary index) |
 
-The 25 MB dialogue blob starts with a Westwood development filesystem path, followed by audio data. This contains all in-game voice dialogue.
+The 25 MB dialogue blob contains 1008 concatenated Westwood AUD clips (same codec 99 IMA-ADPCM as DMUSIC.MIX). The index entries in entries 0, 1, 3, 5 map dialogue IDs to clip positions within the blob. First clip successfully decoded: 1.24 seconds, 22050 Hz mono.
 
 ## VQA Video Audio (DAT/MOVIES.MIX, 179 MB)
 
@@ -52,24 +55,25 @@ VQA files contain embedded SND0/SND1/SND2 audio chunks. A VQA decoder exists (`l
 
 ## Audio Subsystems Summary
 
-| Subsystem | Source | Format | Decoder needed |
+| Subsystem | Source | Format | Decoder status |
 |-----------|--------|--------|---------------|
-| Soundtrack | DMUSIC.MIX | Westwood AUD (22050 Hz, IMA ADPCM) | AUD decompressor (Westwood codec) |
-| MIDI Music | LOCAL.MIX | HMI-MIDI + FORM/IFF instruments | HMI-MIDI parser + IFF sample loader |
-| Dialogue | LOCALLNG.MIX | Dialogue blob with dev path header | Blob sub-entry parser (offset table at header entries) |
+| Soundtrack | DMUSIC.MIX | Westwood AUD (22050 Hz, IMA-ADPCM codec 99) | **1 track verified** — tool exists for all 33 tracks (~116 min est.) |
+| MIDI Music | LOCAL.MIX | HMI-MIDI + FORM/IFF instruments | Identified, HMI-MIDI parser needed |
+| Dialogue | LOCALLNG.MIX | 1008 concatenated Westwood AUD clips | **1 clip verified** (1.24s) — tool exists for all 1008 clips |
 | Sound Effects | Likely in LOCAL.MIX or level MIX files | Unknown | TBD |
-| Video Audio | MOVIES.MIX | VQA SND chunks (PCM) | VQA decoder (partially exists) |
-| AdLib Music | DRUM.BNK + MELODIC.BNK + HMI files | OPL3 instrument banks | BNK parser + HMI sequencer |
+| Video Audio | MOVIES.MIX | VQA SND chunks (PCM) | VQA chunk parser exists |
+| AdLib Music | DRUM.BNK + MELODIC.BNK + HMI files | OPL3 instrument banks | BNK parser needed |
 
 ## Extraction Status
 
-- **Identified**: All major audio containers enumerated with format analysis
-- **Not yet extracted**: Individual audio tracks from DMUSIC.MIX, dialogue clips from LOCALLNG.MIX
-- **Tooling exists**: MIX parser, VQA chunk identifier
-- **Tooling needed**: Westwood AUD decompressor, HMI-MIDI to standard MIDI converter, dialogue blob sub-entry parser
+- **Verified**: 1 music track decoded and verified from DMUSIC.MIX; 1 dialogue clip decoded and verified from LOCALLNG.MIX. Tool exists (`tools/lol2_aud_decode.py`) for bulk extraction of all 33 music tracks and 1008 dialogue clips, but bulk extraction has not been run and verified.
+- **Tooling published**: `tools/lol2_aud_decode.py` (Westwood AUD → WAV), `tools/lol2_mix_parser.py`, `tools/lol2_vqa_decode.py`
+- **Still needed**: HMI-MIDI to standard MIDI converter, AdLib BNK parser, sound effect location confirmation
 
 ## Open Items
 
-- **Music extraction**: individual tracks from DMUSIC.MIX require a Westwood AUD decompressor (IMA ADPCM variants, types 30 and 254). The format is well-documented in OpenRA and ScummVM sources but LoL2's compression types are non-standard and unverified. No Python decoder has been implemented yet.
-- **Dialogue extraction**: LOCALLNG.MIX Entry 4 contains ~25 MB of dialogue audio starting with dev path `F:\PROJECTS\LOL_2\LEVED\GLOBAL\AUD`. The header entries (0, 1, 3, 5) at 4–6 KB each likely contain an offset table indexing individual dialogue clips, but this structure has not been parsed.
+- **Music extraction**: sample-verified — 1 track decodes to WAV via `tools/lol2_aud_decode.py`. Previous "type 30/254" claims were caused by misreading the 12-byte header as 8 bytes; actual codec is standard 99 (IMA-ADPCM). Bulk extraction of all 33 tracks has not yet been run and verified.
+- **Dialogue extraction**: Entry 4 contains 1008 concatenated AUD clips. First clip decoded successfully (1.24s). Full extraction still requires parsing the index tables (entries 0, 1, 3, 5) to map dialogue IDs to clip offsets, even though the index structure now looks straightforward.
 - **Sound effects**: container and format not yet confirmed. Likely embedded in LOCAL.MIX or individual level MIX files as Westwood AUD entries.
+- **HMI-MIDI**: 33 MIDI music scores in LOCAL.MIX need a HMI-to-standard-MIDI converter for modern playback.
+- **AdLib banks**: DRUM.BNK and MELODIC.BNK instrument definitions not yet parsed.

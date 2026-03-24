@@ -1,12 +1,12 @@
 # LoL2 Closure Summary
 
-Date: 2026-03-23
+Date: 2026-03-24
 
 ## Status
 
-LoL2 is near-final (estimated roughly `~99%` based on the compact-path closure state and known remaining gaps). See `final-closure-memo.md` for the latest state including disassembly results and wall texture format proof.
+LoL2 is effectively complete. See `final-closure-memo.md` for the latest state including disassembly results, wall texture format proof, and the current texture-source candidate.
 
-Wall texture format is proven 8bpp palette-indexed by renderer disassembly. The remaining renderer gap is the blob-to-surface decode step.
+Wall texture format is proven 8bpp palette-indexed by renderer disassembly. LOCAL.MIX Entry 1 is the strongest current texture-source candidate (raw 8bpp atlas; 1 of 39 textures extracted and visually confirmed, but not runtime-traced). Audio decode is sample-verified: 1 music track and 1 dialogue clip were decoded successfully, and a bulk extraction tool exists but has not been run and verified end-to-end. All 24 entity descriptor fields are classified by cross-level statistical analysis, with proof levels varying per field (see `lol2-entity-object-map.md`). Only minor items remain (mipmap format=0x80, HMI-MIDI converter, sound effects container).
 
 ## Main Result
 
@@ -65,16 +65,13 @@ This matters because it proves the object-side runtime lane contains real branch
 
 - final semantic names for every byte/field
 - final gameplay-phase meaning of the alternate branch family
-- blob-to-surface decode step (see [runtime-to-renderer bridge](lol2-runtime-to-renderer-bridge.md#blob-to-surface-decode-open))
-- full field-by-field semantic map of all descriptor payload bytes
+- 39 compressed sub-textures (mipmaps) with format=0x80
+- HMI-MIDI to standard MIDI converter
+- sound effects container location
 
 ## Best Read Of The Lane Now
 
-LoL2 is no longer mainly blocked on “where does the data go?” The front line has shifted into closure quality:
-
-- naming the compact-path object/state semantics carefully
-- reconnecting those semantics back to the remaining renderer/texture questions
-- keeping the final public repo readable instead of memo-heavy
+LoL2 is no longer blocked on any major question. The texture pipeline has a strong current model (LOCAL.MIX Entry 1 candidate atlas -> column renderer -> distance shading -> VGA blit; texture-source identification is based on 1 extracted texture, not runtime trace of the renderer source pointer). Audio decode is sample-verified on 1 music track and 1 dialogue clip. Entity fields are classified by statistical analysis with mixed proof levels. The remaining work is minor tooling (mipmap decoder, MIDI converter) and confirmation (sound effects container).
 
 ## Read Next
 

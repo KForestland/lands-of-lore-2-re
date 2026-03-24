@@ -1,14 +1,12 @@
 # LoL2 Current Status
 
-Date: 2026-03-23
+Date: 2026-03-24
 
 ## Status
 
-- RE closure: near-final
-- Confidence: estimated `~99%` (based on compact-path closure and known remaining gaps)
-- Main remaining work:
-  - final naming/closure quality on the compact loading-phase branch semantics
-  - reconnecting the stronger compact runtime model back into the remaining texture/renderer questions
+- RE closure: effectively complete
+- Proof levels vary by subsystem: entity pipeline PROVEN by disassembly; wall texture format PROVEN by disassembly; texture atlas source identification based on 1 extracted texture (not runtime-traced); audio decoder verified on 1 track + 1 clip (tool exists for bulk); entity descriptor fields range from PROVEN (f12-f13) to INFERRED (f0-f9, f19-f23)
+- Remaining work is minor: mipmap sub-texture format=0x80, HMI-MIDI converter, sound effects container
 
 ## Strongest Current Results
 
@@ -92,8 +90,9 @@ The fast/alternate branch split is **distributed across multiple bit tests** in 
 
 See `lol2-entity-object-map.md` for the complete proven field layout.
 
-## Remaining Open Items
+## Remaining Open Items (Minor)
 
-- Wall texture pixel format: **PROVEN 8bpp palette-indexed** by renderer disassembly. Remaining: blob-to-surface decode step (see [`runtime-to-renderer bridge`](lol2-runtime-to-renderer-bridge.md#blob-to-surface-decode-open)).
-- Audio/music inventory
-- Script/dialogue inventory
+- Wall texture pixel format: **PROVEN 8bpp palette-indexed** by renderer disassembly. Texture source: **LOCAL.MIX Entry 1** (raw atlas, not in L*_DC.MIX Entry 2). See [`runtime-to-renderer bridge`](lol2-runtime-to-renderer-bridge.md#texture-atlas-pipeline-candidate--not-runtime-confirmed).
+- 39 compressed sub-textures (mipmaps) use format=0x80 — not yet decoded
+- HMI-MIDI to standard MIDI converter not written
+- Sound effects container location not confirmed

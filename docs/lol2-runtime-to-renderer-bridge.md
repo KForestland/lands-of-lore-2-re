@@ -1,6 +1,6 @@
 # LoL2 Runtime-To-Renderer Bridge
 
-Date: 2026-03-23
+Date: 2026-03-24
 
 ## Scope
 
@@ -103,25 +103,43 @@ This is the **runtime-to-renderer bridge**: the same live object that the loadin
 
 ## What Is Still Open
 
-The compact-path work did not finish these renderer-side questions:
+Minor remaining items (none blocking):
 
 - exact semantic role of `.tex` versus `.odf` in the shipped path
-- exact payload path from descriptor family into final decoded wall/scene texture content
-- exact field-by-field mapping for the remaining descriptor payload bytes
+- 39 compressed sub-textures (mipmaps) use format=0x80 — not yet decoded
 - what the 6xxx consumers do with the fields they read (renderer initialization? sprite setup? draw-list building?)
 
 Note: +0x6C was resolved by disassembly as a global timer snapshot from `0x101D0CB6` (see `lol2-entity-object-map.md`).
 
-## Blob-to-Surface Decode (Open)
+## Texture Atlas Pipeline (Candidate — Not Runtime-Confirmed)
 
-The wall texture format is proven 8bpp palette-indexed — the renderer at `0x10172C08` uses `REP MOVSD` direct blit from pre-decoded surface buffers (`ESI=0x103081C8`) to VGA framebuffer (`EDI=0x000A8000`).
+The "blob-to-surface decode" question has a strong candidate answer. Wall textures appear to be in `LOCAL.MIX` Entry 1, stored as a raw texture atlas, rather than encoded within `L*_DC.MIX` Entry 2. Entry 2 appears to contain level geometry and art metadata, not pixel data. This reclassification is based on static analysis and 1 extracted texture, not runtime tracing.
 
-However, the decode step that transforms decompressed `L*_DC.MIX` Entry 2 blobs into those 8bpp surface buffers during level loading has not been traced. The decode function is expected to reside in the `0x10170000` renderer segment (same segment as the blit code) but has not been isolated or disassembled.
+Based on the extraction of 1 texture that visually matches in-game appearance, the working hypothesis is that wall textures are stored as raw pixels in LOCAL.MIX rather than encoded within the L*_DC.MIX blob. This has not been confirmed by runtime tracing of the renderer's texture source pointer.
 
-To solve this, a DOSBox memory write-watch on the surface buffer address (`0x103081C8`) during level loading would capture the decode function's CS:IP, which can then be disassembled using the same live-memory dump technique used for the entity pipeline.
+### Texture Atlas Format (LOCAL.MIX Entry 1)
 
-This is the single largest remaining gap in the LoL2 texture pipeline.
+Note: LOCAL.MIX Entry 1 was identified as the texture source by extracting a 128x128 texture that visually matches the Draracle Caverns cave wall. This identification has not been confirmed by runtime tracing of the column renderer's texture source pointer.
+
+The atlas is a straightforward raw container:
+
+1. `u16 count` — number of textures in the atlas (39 for L1)
+2. `u16 header_size` — size of the header block
+3. `u32[count]` — offset table pointing to each texture
+4. Per texture: 10-byte sub-header + raw pixels (128x128 8bpp palette-indexed)
+
+Each texture is 128x128 raw 8bpp palette-indexed. The column renderer reads texture columns from the atlas and composites them into the back buffer; the `REP MOVSD` blit then copies the composed back buffer to VGA.
+
+### Column Renderer and Distance Shading
+
+The software renderer reads texture columns from these atlas surfaces and applies a distance shade table during wall rendering. Shade table indices 77-93 map to attenuation levels 1-5, creating the depth-fog effect visible in gameplay.
+
+The final blit to VGA Mode X framebuffer occurs at `0x1017B710` via planar writes.
+
+### Why This Was Misidentified
+
+Earlier work assumed textures were encoded within the `L*_DC.MIX` Entry 2 compressed blob because Entry 2 was the largest data block per level. In reality, Entry 2 is geometry/art metadata (8-byte mapping records, mipmap chain pointers), and the actual pixel data lives separately in the shared `LOCAL.MIX` atlas.
 
 ## Best Current Bridge Statement
 
-The LoL2 renderer/texture lane is no longer best treated as a pure asset-location problem. The current compact-path results show that descriptor parsing in `L*_DC.MIX` feeds a live object/control lane, and that object-side loading-phase branch semantics affect downstream runtime behavior before any final renderer claim is safe. Post-A00F consumer tracing has now identified the renderer subsystem (`02E0:6A50`–`6CDA`) as a direct reader of the same `[+80]` object, confirming that the runtime-to-renderer handoff is not a separate pipeline but a shared-object model. The remaining renderer work should therefore be grounded in the now-proven parser -> staged block -> compact/rich path -> live object/state -> renderer-read chain.
+The current best model of the LoL2 texture pipeline: `LOCAL.MIX` Entry 1 likely provides raw 8bpp texture atlases (1 texture extracted and visually confirmed, not runtime-traced), `L*_DC.MIX` Entry 2 provides geometry/art metadata, and the column renderer applies distance shading before writing to VGA Mode X framebuffer. The entity pipeline (`L*_DC.MIX` descriptor parsing → `[+80]` live object → 6xxx renderer consumers) handles sprite/entity rendering through a shared-object model with C++ polymorphic dispatch (proven by disassembly). The wall texture source identification remains a strong candidate pending runtime confirmation of the renderer's texture source pointer.

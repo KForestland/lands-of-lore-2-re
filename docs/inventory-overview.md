@@ -81,23 +81,23 @@ Safe read:
 
 Current read:
 
-- no clean public LoL2 audio/music inventory surfaced in the current local pass
-- this remains a real gap compared to LoL1
+- **RESOLVED**: audio inventory now published in `audio-inventory.md`
+- 1 music track decoded and verified from DMUSIC.MIX (195.5s); tool exists for all 33 tracks (~116 min est.)
+- 1008 dialogue clips identified in LOCALLNG.MIX (first clip decoded, bulk extraction straightforward)
+- Remaining gap: sound effects container location, HMI-MIDI converter
 
 ### 2. Script / Dialogue / Text Asset Inventory
 
 Current read:
 
-- no clean public LoL2 dialogue/script inventory surfaced in the current local pass
-- this also remains a gap compared to LoL1
+- dialogue audio is decoded (see above), but script/text asset inventory is still a gap compared to LoL1
 
 ### 3. Curated Public Tool Set
 
 Current read:
 
-- the local workspace contains many LoL2 scripts
-- but the public repo does not yet contain a cleaned subset of the actually reusable tools
-- the new script catalog makes that gap visible instead of hiding it
+- **RESOLVED**: 18 curated tools published in `tools/` covering MIX parsing, LZ77 decompression, LE analysis, entity tracing, audio decode, sprite/geometry/mesh extraction, and semantic analysis
+- the local workspace still contains ~335 scripts; the published 18 are the cleaned, verified subset
 
 ## Counts Worth Knowing
 
