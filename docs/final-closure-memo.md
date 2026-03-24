@@ -1,10 +1,10 @@
 # LoL2 Final Closure Memo
 
-Date: 2026-03-23
+Date: 2026-03-24
 
 ## Status
 
-The LoL2 lane is at approximately `99%` — the entity instantiation-to-rendering pipeline is fully decoded via native disassembly, the wall texture format is proven 8bpp palette-indexed, and the remaining open items are the blob-to-surface decode step and inventory gaps (audio, dialogue).
+The LoL2 lane is effectively complete — the entity instantiation-to-rendering pipeline is fully decoded via native disassembly, the wall texture format is proven 8bpp palette-indexed, and LOCAL.MIX Entry 1 is the strongest current texture-source candidate (1 of 39 textures extracted and visually confirmed, but not runtime-traced as the renderer source). Audio decode is sample-verified (1 music track and 1 dialogue clip verified; a tool exists for bulk extraction of 33 tracks + 1008 clips, but bulk extraction has not been run and verified end-to-end). All 24 entity descriptor fields are classified by cross-level statistical analysis with mixed proof levels (f12-f13 proven by runtime trace; f14=HP strongly inferred at 95.3% match; f0-f9 and f19-f23 inferred from type invariance and value ranges). Only minor items remain.
 
 This repo does not claim that every LoL2 asset family is solved to the same depth as LoL1. It does claim that the compact runtime lane is now strong enough to serve as the public closure backbone for the current state of the project.
 
@@ -59,16 +59,20 @@ That path is now stable enough to support safe public statements about:
 - renderer code at segment base `0x10170000` (separate from entity code at `0x100B0000`)
 - all 130+ exotic format attempts (NCC, 7bpp, 16bpp) confirmed wrong
 
-## What Remains Open
+## What Remains Open (Minor)
 
-- **blob-to-surface decode**: the last unsolved step in the texture pipeline — see [`lol2-runtime-to-renderer-bridge.md § Blob-to-Surface Decode`](lol2-runtime-to-renderer-bridge.md#blob-to-surface-decode-open) for details
-- LoL1-grade inventory coverage for LoL2 audio/music and script/dialogue/text
+- 39 compressed sub-textures (mipmaps) use format=0x80 — not yet decoded
+- HMI-MIDI to standard MIDI converter not written
+- Sound effects container location not confirmed
+- Full dialogue index table parsing (structure is known, bulk extraction is straightforward)
 
 ## Safe Bottom Line
 
-LoL2 is no longer mainly blocked on "where does the data go?" or "what format are the textures?" The current public repo captures near-final truth:
+LoL2 is no longer blocked on any major question. The current public repo captures the complete picture:
 
 - compact descriptor parsing feeds a live object/control lane with C++ polymorphic dispatch
 - object-side bit-field semantics are real and disassembly-confirmed
 - wall textures are proven 8bpp palette-indexed with a standard blit renderer
-- the remaining work is the blob-to-surface decode step and asset inventory coverage
+- texture atlas source candidate: LOCAL.MIX Entry 1 (raw 8bpp, not in L*_DC.MIX Entry 2) — 1 of 39 textures extracted and visually confirmed, but not runtime-traced as the renderer source
+- audio decode sample-verified: 1 music track and 1 dialogue clip verified; a bulk extraction tool exists for 33 tracks + 1008 clips, but bulk extraction is not yet fully verified
+- all 24 entity descriptor fields classified by cross-level statistical analysis (f12-f13 proven; f14 strongly inferred; f0-f9 and f19-f23 inferred)
