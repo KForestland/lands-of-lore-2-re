@@ -19,7 +19,7 @@ LoL2 uses multiple audio systems: Westwood AUD for digital audio, HMI-MIDI for m
 
 All 33 entries are **consistent with Westwood AUD format** at 22050 Hz (header structure matches, not yet confirmed by successful decode):
 - Header: `u16 freq=22050, u32 data_size, u8 type, u8 flags`
-- Compression types observed: type 30 and type 254 (Westwood IMA ADPCM variants)
+- Compression types observed: type 30 and type 254 (possibly Westwood ADPCM variants, unconfirmed)
 - Entry sizes: 1.5–3.8 MB each (2–5 minutes of audio per track)
 - Total decompressed estimate: ~40 minutes of music
 
@@ -67,3 +67,9 @@ VQA files contain embedded SND0/SND1/SND2 audio chunks. A VQA decoder exists (`l
 - **Not yet extracted**: Individual audio tracks from DMUSIC.MIX, dialogue clips from LOCALLNG.MIX
 - **Tooling exists**: MIX parser, VQA chunk identifier
 - **Tooling needed**: Westwood AUD decompressor, HMI-MIDI to standard MIDI converter, dialogue blob sub-entry parser
+
+## Open Items
+
+- **Music extraction**: individual tracks from DMUSIC.MIX require a Westwood AUD decompressor (IMA ADPCM variants, types 30 and 254). The format is well-documented in OpenRA and ScummVM sources but LoL2's compression types are non-standard and unverified. No Python decoder has been implemented yet.
+- **Dialogue extraction**: LOCALLNG.MIX Entry 4 contains ~25 MB of dialogue audio starting with dev path `F:\PROJECTS\LOL_2\LEVED\GLOBAL\AUD`. The header entries (0, 1, 3, 5) at 4–6 KB each likely contain an offset table indexing individual dialogue clips, but this structure has not been parsed.
+- **Sound effects**: container and format not yet confirmed. Likely embedded in LOCAL.MIX or individual level MIX files as Westwood AUD entries.

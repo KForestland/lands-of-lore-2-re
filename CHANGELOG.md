@@ -1,12 +1,23 @@
 # Changelog
 
+## 2026-03-24 (update 8 — public repo polish + tool curation + contradiction fix)
+
+- README rewrite: one-sentence goal, clickable links, merged layout sections, LoL1-standard presentation
+- tool curation: published 12 new tools (3 → 15 total) covering MIX parsing, LZ77 decompression, LE parsing, entity analysis, sprite/geometry/mesh extraction
+- contradiction hunt: fixed 6 critical contradictions across docs (stale closure-summary, +0x28 naming conflict, +0x6C resolved status, remaining-items alignment)
+- blob-to-surface decode documented as explicit open problem in runtime-to-renderer-bridge.md
+- entity-object-map: added unmapped fields section documenting 14 inferred fields
+- audio-inventory: added open items section, softened unverified compression type claims
+- markdown consistency: summary sentences, cross-references, percentage standardization to ~99%
+- all status docs aligned on remaining items list
+
 ## 2026-03-23 (update 7 — contradiction fix + audio inventory)
 
 - contradiction hunt: fixed 5 contradictions (2 critical, 2 moderate, 1 cosmetic)
 - all "state word" references updated to "bit-field register" across docs
 - all stale A0C3 "branch-steering" claims corrected or annotated
 - wall texture status aligned across all docs
-- added `audio-inventory.md`: DMUSIC.MIX (78MB music), LOCAL.MIX/LOCALLNG.MIX (55MB dialogue), VQA audio, AdLib banks
+- added `audio-inventory.md`: DMUSIC.MIX (78MB music), LOCAL.MIX (27MB music/data), LOCALLNG.MIX (28MB dialogue), VQA audio, AdLib banks
 - full 32-bit renderer registers captured: ESI=0x103081C8 (surface buffer), EDI=0x000A8000 (VGA framebuffer)
 
 ## 2026-03-23 (update 6 — wall texture format proven)

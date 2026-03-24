@@ -1,5 +1,7 @@
 # Docs
 
+Promoted writeups documenting the LoL2 runtime entity pipeline, wall texture format, and closure state.
+
 This folder is for promoted LoL2 reverse-engineering writeups only.
 
 Read order:
@@ -26,6 +28,10 @@ Read order:
   - Explains where the current repo claims came from.
 - `tooling-catalog.md`
   - Explains what tools and workflows were actually used.
+- `lol2-entity-object-map.md`
+  - Complete proven field layout of the `[+80]` entity object (25+ fields with semantic roles).
+- `audio-inventory.md`
+  - What audio/music assets exist, their formats, and extraction status.
 
 Working rule:
 

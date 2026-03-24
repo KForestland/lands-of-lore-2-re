@@ -1,13 +1,14 @@
 # Lands of Lore II RE
 
-Reverse-engineering and closure documentation for the DOS version of *Lands of Lore II*.
+Reverse-engineering and documentation for the DOS version of *Lands of Lore: Guardians of Destiny*.
 
-This repository is the clean public-facing LoL2 lane of the broader project. It focuses on:
+This repository contains:
 
-- promoted reverse-engineering notes
-- compact runtime-path closure
-- evidence indexing and witness mapping
-- future patch planning kept separate from canon
+- promoted reverse-engineering writeups
+- runtime entity pipeline documentation
+- evidence indexes and witness maps
+- structured inventory summaries
+- curated analysis and extraction tools
 
 It does not aim to redistribute raw game data.
 
@@ -15,88 +16,34 @@ It does not aim to redistribute raw game data.
 
 If you are new to this repo, read these in order:
 
-1. `docs/closure-summary.md`
-   Plain-English summary of what is actually closed and what is still open.
-2. `docs/final-closure-memo.md`
-   Short final handoff-style memo for the current public LoL2 state.
-3. `docs/lol2-current-status.md`
-   What is currently proven, what is still open, and where the LoL2 lane stands now.
-4. `docs/lol2-compact-path-branch-steering.md`
-   The main near-final LoL2 result: the compact `L1` control path and the loading-phase fast-vs-alternate branch split.
-5. `docs/lol2-object-state-word.md`
-   The clean breakdown of the bit-field register at `[+80] + 0xB4` and what each bit does.
-5b. `docs/lol2-entity-object-map.md`
-   Complete proven field layout of the `[+80]` entity object (25+ fields with semantic roles).
-6. `docs/lol2-runtime-to-renderer-bridge.md`
-   Explains why this runtime work matters for the old texture/renderer question and how the two lanes connect.
-7. `docs/inventory-overview.md`
-   Explains what LoL2 currently has inventory for, and what is still missing compared to LoL1.
-8. `evidence/lol2-witness-map.md`
-   Short map of the main witnesses and trace variants, so the docs above are easier to follow.
-9. `docs/audio-inventory.md`
-   What audio/music assets exist, their formats, and extraction status.
-10. `docs/texture-map-inventory.md`
-   The first deeper public catalog for LoL2 texture and map outputs.
+1. [`closure-summary.md`](docs/closure-summary.md) — plain-English summary of what is closed and what is open
+2. [`final-closure-memo.md`](docs/final-closure-memo.md) — short final handoff-style memo for the current public LoL2 state
+3. [`lol2-current-status.md`](docs/lol2-current-status.md) — what is currently proven, what is still open, and where the LoL2 lane stands now
+4. [`lol2-compact-path-branch-steering.md`](docs/lol2-compact-path-branch-steering.md) — the main near-final LoL2 result: the compact `L1` control path and the loading-phase fast-vs-alternate branch split
+5. [`lol2-object-state-word.md`](docs/lol2-object-state-word.md) — the clean breakdown of the bit-field register at `[+80] + 0xB4` and what each bit does
+6. [`lol2-entity-object-map.md`](docs/lol2-entity-object-map.md) — complete proven field layout of the `[+80]` entity object (25+ fields with semantic roles)
+7. [`lol2-runtime-to-renderer-bridge.md`](docs/lol2-runtime-to-renderer-bridge.md) — explains why this runtime work matters for the old texture/renderer question and how the two lanes connect
+8. [`inventory-overview.md`](docs/inventory-overview.md) — explains what LoL2 currently has inventory for, and what is still missing compared to LoL1
+9. [`lol2-witness-map.md`](evidence/lol2-witness-map.md) — short map of the main witnesses and trace variants, so the docs above are easier to follow
+10. [`audio-inventory.md`](docs/audio-inventory.md) — what audio/music assets exist, their formats, and extraction status
+11. [`texture-map-inventory.md`](docs/texture-map-inventory.md) — the first deeper public catalog for LoL2 texture and map outputs
 
 ## Status
 
-- RE closure: approximately 99%
+RE closure: ~99%
+
 - Entity instantiation-to-rendering pipeline fully decoded via native disassembly (7 functions)
 - Wall texture format proven 8bpp palette-indexed by renderer disassembly
 - `[+80]` entity object mapped: 25+ fields with proven semantic roles
-- Remaining: blob-to-surface decode step, audio/dialogue extraction
+- Open: blob-to-surface decode step ([details](docs/lol2-runtime-to-renderer-bridge.md#blob-to-surface-decode-open)), audio/dialogue extraction ([details](docs/audio-inventory.md))
 
-## Repo Layout
+## Repository Layout
 
-- `docs/`
-  - promoted writeups and closure notes for humans to read first
-- `evidence/`
-  - trace references, witness maps, and evidence indexes that back the docs
-- `data/`
-  - machine-readable inventory summaries
-- `tools/`
-  - tool notes, workflow summaries, and later cleaned helpers
-- `future-patches/`
-  - future patch planning only, kept separate from RE canon
-
-## Detailed File Map
-
-- `docs/closure-summary.md`
-  - plain-English entry point
-- `docs/final-closure-memo.md`
-  - final short handoff note for the current repo state
-- `docs/lol2-current-status.md`
-  - current state of the LoL2 lane
-- `docs/lol2-compact-path-branch-steering.md`
-  - main compact-path closure note
-- `docs/lol2-object-state-word.md`
-  - focused note on `[+80] + 0xB4`
-- `docs/lol2-runtime-to-renderer-bridge.md`
-  - bridge back to the renderer/texture lane
-- `docs/repo-scope.md`
-  - what this repo includes and excludes
-- `docs/provenance.md`
-  - where the current claims came from and how advisory output was handled
-- `docs/tooling-catalog.md`
-  - what tools/workflows were used in practice
-- `docs/inventory-overview.md`
-  - what LoL2 currently has and does not yet have inventory for
-- `docs/texture-map-inventory.md`
-  - deeper texture/map inventory surface
-- `evidence/lol2-evidence-index.md`
-  - where the supporting local artifacts live
-- `evidence/lol2-witness-map.md`
-  - which witness proved which result
-- `data/workspace-inventory-summary.json`
-  - top-level counts for the current LoL2 workspace
-- `data/asset-family-status.json`
-  - current status of textures, maps, traces, audio, scripts, and tools
-- `data/script-catalog.json`
-  - grouped catalog of the current LoL2 scripts
-- `data/output-catalog.json`
-  - grouped catalog of the current `lol2_out/` output surface
-- `data/texture-map-catalog.json`
-  - curated texture/map output catalog
+- [`docs/`](docs) — promoted writeups and closure notes
+- [`evidence/`](evidence) — trace references, witness maps, and evidence indexes
+- [`data/`](data) — machine-readable inventory summaries
+- [`tools/`](tools) — curated analysis and extraction tools
+- [`future-patches/`](future-patches) — future patch planning (separate from RE canon)
 
 ## Asset Policy
 
@@ -114,10 +61,3 @@ Not included in the initial repo:
 - raw retail game files
 - full extracted media dumps
 - raw private working ledgers
-
-## Scope Rules
-
-- Keep promoted facts separate from hypotheses.
-- Keep LoL2 RE canon separate from future patch planning.
-- Do not mix advisory AI output into canon without local confirmation.
-

@@ -32,11 +32,14 @@
     },
     {
       "family": "audio_music",
-      "status": "no clean public inventory yet",
+      "status": "format identified, no decoder implemented",
       "evidence": [
-        "no obvious lol2 audio/music inventory files in current local surface"
+        "DMUSIC.MIX: 33 entries (78 MB, possibly Westwood ADPCM)",
+        "LOCALLNG.MIX: 6 entries including 25 MB dialogue blob",
+        "VQA SND chunks identified",
+        "AdLib BNK + HMI-MIDI identified"
       ],
-      "public_repo_state": "gap"
+      "public_repo_state": "audio-inventory.md documents all containers; no extraction tools exist yet"
     },
     {
       "family": "scripts_dialogue_text",
@@ -50,11 +53,11 @@
       "family": "analysis_tools_and_helpers",
       "status": "very large local surface, needs curation",
       "evidence": [
-        "334 python scripts",
+        "335 python scripts",
         "shell wrappers",
         "native fd trace helper"
       ],
-      "public_repo_state": "catalog added; cleaned public subset still needed"
+      "public_repo_state": "15 curated tools published in tools/"
     }
   ]
 }

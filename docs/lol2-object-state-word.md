@@ -109,7 +109,7 @@ A00F uses a classic Watcom C bit-field pattern: read byte, clear bit 2 with `AND
 
 Disassembly proved:
 - `+0x6C` is loaded from **global address `0x101D0CB6`** by A00F: `MOV 0x101d0cb6,%eax ; MOV %eax,0x6c(%edx)`
-- It is a global timer/frame counter snapshot, NOT a per-entity computed value
+- It is a global timer snapshot, NOT a per-entity computed value
 - The W3/W4 delta (0x1E vs 0x14) was caused by loading at different game-time ticks
 
 ## Remaining Unresolved Semantics

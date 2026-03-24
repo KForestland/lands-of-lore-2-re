@@ -9,6 +9,8 @@ This index points to the local workspace artifacts backing the first promoted Lo
 - `/home/bob/AI_COMMS/LOL2_TQ001_TRACE_CHECKPOINT_2026-03-17.md`
 - `/home/bob/AI_COMMS/CURRENT_STATE.md`
 
+Note: These are local workspace files not included in the repo. They served as coordination checkpoints during the active RE pass.
+
 ## Key Trace Artifacts
 
 - baseline fast-path pivot trace:

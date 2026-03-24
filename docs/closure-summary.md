@@ -4,9 +4,9 @@ Date: 2026-03-23
 
 ## Status
 
-LoL2 is near-final (estimated roughly `98-99%` based on the compact-path closure state and known remaining gaps). See `final-closure-memo.md` for the latest state including disassembly results and wall texture format proof.
+LoL2 is near-final (estimated roughly `~99%` based on the compact-path closure state and known remaining gaps). See `final-closure-memo.md` for the latest state including disassembly results and wall texture format proof.
 
-This repo is not yet claiming full renderer closure. What it does claim is that the core compact runtime lane is now structurally understood well enough to stop treating the renderer question as isolated file archaeology.
+Wall texture format is proven 8bpp palette-indexed by renderer disassembly. The remaining renderer gap is the blob-to-surface decode step.
 
 ## Main Result
 
@@ -65,7 +65,7 @@ This matters because it proves the object-side runtime lane contains real branch
 
 - final semantic names for every byte/field
 - final gameplay-phase meaning of the alternate branch family
-- full renderer/texture payload closure
+- blob-to-surface decode step (see [runtime-to-renderer bridge](lol2-runtime-to-renderer-bridge.md#blob-to-surface-decode-open))
 - full field-by-field semantic map of all descriptor payload bytes
 
 ## Best Read Of The Lane Now

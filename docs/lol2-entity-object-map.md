@@ -3,6 +3,8 @@
 Date: 2026-03-23
 Source: live DOSBox code dumps + read-monitoring traces
 
+Complete proven field layout of the `[+80]` entity object from live DOSBox disassembly and read-monitoring.
+
 ## Overview
 
 The `[+80]` entity object is part of a C++ polymorphic entity system. It contains chain pointers, type/config fields, a vtable pointer for virtual dispatch, animation state, and bit-field status flags.
@@ -43,7 +45,7 @@ All offsets are relative to the `[+80]` base (the live object pointer at compact
 | +0xAA  | 1    | 0x00       | entity sub-type (inferred) | read-monitoring |
 | +0xB0  | 2    | 0x1388     | sprite/animation reference (5000) | read-monitoring |
 | +0xB2  | 2    | 0x0000     | sprite state/frame | read-monitoring |
-| +0xB4  | 1    | 0x04       | **bit-field: bit2=activated** (A00F sets), **bit6=loading** (A0C3 clears) | disassembly |
+| +0xB4  | 1    | 0x04       | **bit-field: bit2=activated** (A00F sets), **bit6=loading-phase** (A0C3 clears) | disassembly |
 | +0xB5  | 1    | 0x01       | **bit-field: bit0=render-skip** (6A50 tests) | disassembly: `testb $0x1,0xb5(%ebx)` |
 | +0xB6  | 1    | 0x80       | **bit-field: bit7=allocated** (91E4 sets) | suppression tests + disassembly |
 
@@ -74,3 +76,12 @@ Byte 1 (+0xB5): [.......x]  bit 0 = render-skip (6A50 tests)
 Byte 2 (+0xB6): [x.......]  bit 7 = allocated/prebuilt (91E4 sets)
 Byte 3 (+0xB7): [........]  zero-enforced (8F91)
 ```
+
+## Unmapped Fields
+
+The following gaps remain in the entity object map:
+
+- 14 fields are labeled "config flag (inferred)" — observed via read-monitoring but with no proven semantic role
+- The `[+0x2C]` secondary descriptor is only partially mapped (3 of its fields proven: `+0x3C`, `+0x81`, `+0x82`)
+- Descriptor prefix fields f0–f11 have no proven semantic roles beyond f12/f13 (global entity IDs, proven by cross-level comparison)
+- The full mapping from 135-byte on-disk descriptor body through the `0E6C` parser to the staged block to the `[+80]` object has not been traced field-by-field
