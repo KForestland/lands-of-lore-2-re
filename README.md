@@ -28,6 +28,30 @@ If you are new to this repo, read these in order:
 10. [`audio-inventory.md`](docs/audio-inventory.md) — what audio/music assets exist, their formats, and extraction status
 11. [`texture-map-inventory.md`](docs/texture-map-inventory.md) — the first deeper public catalog for LoL2 texture and map outputs
 
+## Quick Start
+
+```bash
+git clone https://github.com/KForestland/Lands-of-lore-2-re.git
+cd Lands-of-lore-2-re
+python3 -m venv .venv
+. .venv/bin/activate
+pip install -r requirements.txt
+```
+
+Typical first commands:
+
+```bash
+python3 tools/lol2_mix_parser.py --help
+python3 tools/lol2_wall_texture_extract.py --help
+python3 tools/lol2_geometry_cracker.py --help
+```
+
+Then read:
+
+1. [`docs/closure-summary.md`](docs/closure-summary.md)
+2. [`docs/lol2-current-status.md`](docs/lol2-current-status.md)
+3. [`evidence/lol2-witness-map.md`](evidence/lol2-witness-map.md)
+
 ## Status
 
 RE closure: effectively complete
@@ -45,6 +69,7 @@ RE closure: effectively complete
 - [`docs/`](docs) — promoted writeups and closure notes
 - [`evidence/`](evidence) — trace references, witness maps, and evidence indexes
 - [`data/`](data) — machine-readable inventory summaries
+- [`examples/`](examples) — public-safe screenshots and output examples
 - [`tools/`](tools) — curated analysis and extraction tools
 - [`future-patches/`](future-patches) — future patch planning (separate from RE canon)
 
