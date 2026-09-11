@@ -11,6 +11,13 @@ def signed(v,bits):
  v&=(1<<bits)-1
  return v-(1<<bits) if v&(1<<(bits-1)) else v
 class WallReplay(ResolverReplay):
+ def readmem(self,address,size):
+  # FFFF is the serialized absent-neighbor sentinel, never a region allocation.
+  sentinel=0x400000+0xffff*44
+  if address<sentinel+44 and address+size>sentinel:
+   raise ValueError('Absent-neighbor region dereference')
+  return super().readmem(address,size)
+
  def execute(self,region,code,flags=0,vertical_offset=0,source_flags=0):
   self.regs={r:0 for r in self.regs};self.regs['esp']=0x700000
   for off,value in [(0,0xdeadbeef),(4,0x600000),(8,0x400000+44*region),(12,source_flags&128)]:self.writemem(0x700000+off,4,value)
