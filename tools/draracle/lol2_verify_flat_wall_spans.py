@@ -11,9 +11,9 @@ def signed(v,bits):
  v&=(1<<bits)-1
  return v-(1<<bits) if v&(1<<(bits-1)) else v
 class WallReplay(ResolverReplay):
- def execute(self,region,code,flags=0,vertical_offset=0):
+ def execute(self,region,code,flags=0,vertical_offset=0,source_flags=0):
   self.regs={r:0 for r in self.regs};self.regs['esp']=0x700000
-  for off,value in [(0,0xdeadbeef),(4,0x600000),(8,0x400000+44*region),(12,0)]:self.writemem(0x700000+off,4,value)
+  for off,value in [(0,0xdeadbeef),(4,0x600000),(8,0x400000+44*region),(12,source_flags&128)]:self.writemem(0x700000+off,4,value)
   self.mem[0x600000:0x600046]=bytes(70);self.writemem(0x600042,1,code)
   self.writemem(0x60003e,2,flags);self.writemem(0x600031,1,vertical_offset)
   pc=0x114aa4;zero=less=below=False
@@ -26,6 +26,14 @@ class WallReplay(ResolverReplay):
     destination=self.get(i,o[0])
     if destination not in [0xf4504,0xf4590,0xf49fc]:raise ValueError('Unapproved helper call')
     self.regs['esp']-=4;self.writemem(self.regs['esp'],4,nxt);nxt=destination
+   elif op=='idiv':
+    divisor=signed(self.get(i,o[0]),32)
+    dividend=signed((self.regs['edx']<<32)|self.regs['eax'],64)
+    if not divisor:raise ValueError('Division by zero')
+    quotient=abs(dividend)//abs(divisor)
+    if (dividend<0)!=(divisor<0):quotient=-quotient
+    if not -(1<<31)<=quotient<(1<<31):raise ValueError('Division overflow')
+    self.regs['eax']=quotient&0xffffffff;self.regs['edx']=(dividend-quotient*divisor)&0xffffffff
    elif op=='ret':
     destination=self.readmem(self.regs['esp'],4)
     if destination!=0xdeadbeef:
