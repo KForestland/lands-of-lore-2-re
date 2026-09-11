@@ -192,3 +192,14 @@ Godot V cycles manually and smoke constructs every wall/variant combination.
 Six crossing spans,one unsupported material record,664 inactive and eight
 unresolved geometry records remain excluded. Possible upside-down textures are
 an owner-deferred visual pass; existing mappings are not corrected speculatively.
+
+Native draw eligibility: verify_wall_visibility.py accepts --game-root,
+--geometry-evidence and --out. It replays114806..11484A over3044 verified records
+and all16 low-edge masks (48704 cases), plus768 synthetic active/hidden/zero or
+nonzero reference combinations. All pass. An eligible record needs active byte44,
+source byte5 bit20 clear, nonzero first word, and its edge bit absent from the
+runtime mask. All3044 selected source records have bit20 clear;2380 are active
+and pass with mask0. The mask's live producer, later draw submission, material
+transparency and collision semantics are not established by this gate.
+
+The one-command wall review build now includes this check automatically.
