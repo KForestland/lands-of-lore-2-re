@@ -160,3 +160,11 @@ The corrected A9/80A9 pipeline was exported to the working demo with a prior
 asset backup. Exactly nine PNGs changed; geometry/traversal files are unchanged.
 Godot's full-map sprint checkpoint smoke passed119 routes with zero resets.
 This tests loading/traversal, not live-game texture-orientation parity.
+
+Expanded rectangular export:2035 walls/22 static textures, including clamped
+and horizontal-repeat modes. For rectangular spans, clamped axes use descriptor
+size divided by span extent; repeating axes use recovered world scale. Offsets
+apply only to repeating axes. Existing946 repeat-both entries retain their UVs.
+The diagnostic Godot review uses per-axis clamp/repeat fragment sampling. Native
+mip rounding, transparency and camera parity remain unverified. Exclusions now:
+664 inactive,50 unsupported/multi-variant,295 nonrectangular, eight unresolved.
