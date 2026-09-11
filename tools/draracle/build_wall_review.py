@@ -17,6 +17,7 @@ def main():
  geometry=out/'geometry';textures=out/'textures';uvs=out/'uvs'
  run('run_geometry_pipeline.py','--game-root',game,'--out',geometry)
  run('verify_wall_visibility.py','--game-root',game,'--geometry-evidence',geometry,'--out',out/'visibility')
+ run('verify_wall_edge_mask.py','--game-root',game,'--out',out/'edge_mask')
  run('extract_wall_texture_review.py','--game-root',game,'--out',textures)
  for script,name in [('verify_wall_uv_inputs.py','uv_inputs'),('verify_wall_projection.py','projection')]:run(script,'--game-root',game,'--out',out/name)
  for script,name in [('verify_wall_mip_ids.py','mip_ids'),('verify_wall_uv_wrap.py','addressing')]:run(script,'--game-root',game,'--textures',textures/'wall_textures.json','--out',out/name)
