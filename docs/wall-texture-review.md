@@ -46,3 +46,15 @@ register pushes; runtime renderer selection is still not captured.
 In the first target, 127561 dispatches on C000 scale bits; 12759C..1275B3
 reads wall bytes30/31 and shifts each left16. This identifies original UV-offset
 consumption but does not yet establish full scale/orientation/projection rules.
+
+`verify_wall_uv_inputs.py --game-root /path/to/lol2 --out /path/to/uv-inputs`
+replays integer offset conversion12759C..1275B3 for all3052 serialized offset
+pairs and512 synthetic pairs; zero mismatches. Each unsigned byte becomes
+byte<<16. This verifies input arithmetic even for records whose geometry or
+runtime dispatch remains unresolved, not their renderability.
+
+Original initialized double constants at403C/4034/402C are2,.5,.25. The four
+scale branches therefore divide the horizontal direction by length times
+2,1,.5,.25; their stored vertical coefficients are respectively±.5,±1,±2,±4.
+The tool checks constants and immediate coefficients, not x87 normalization.
+Orientation flags, constructor-adjusted offsets and final projection remain open.
