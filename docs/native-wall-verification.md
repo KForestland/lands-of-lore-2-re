@@ -70,3 +70,19 @@ rejects reads from that sentinel-derived region address before reading host
 memory. This is an input/provenance diagnostic, not evidence of a live game bug.
 The audit emits `coverage/wall_coverage.json`, including incoming links to region
 1851, so downstream work can preserve explicit unresolved records.
+
+## Edge-mask update
+
+`verify_wall_edge_mask.py --game-root GAME --out OUT` checks 15,360 synthetic
+cases against original F5DFB/F5DFD and F5E82..F5EA9 instructions. The edge's
+high-nibble bit is always set; its low-nibble rejection bit is set when helper
+1338B0 returns zero or the supplied signed facing score is positive. Other bits
+are preserved. F5D93 skips an edge whose high bit is already set. This is a
+per-edge computed marker, separate from the low bits used by wall eligibility.
+
+The score-producing arithmetic is deliberately bypassed in this replay. The
+original uses signed multiply high halves and 32-bit subtraction; replacing it
+with an unrestricted floating-point cross product would require verification.
+Helper semantics, edge lookup tables, camera inputs, neighbor propagation and
+live visibility are still open. This check does not enable cave wall culling.
+The portable wall build runs this check automatically.
