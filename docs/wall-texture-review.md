@@ -175,3 +175,12 @@ the preview exporter adds no blue tint. This does not establish live shade-bank,
 transparency or material semantics. Reproduce with audit_wall_palette.py using
 --game-root, --textures (wall review directory), --record2702 (as separate
 argument/value: --record 2702), and --out.
+
+Sloped diagnostic extension:2327 exported walls, including292 additional
+nonrectangular spans. World-space UV anchoring uses maximum upper height for
+top modes and minimum lower height for bottom modes, matching the inverted-height
+renderer frame.1168 original orientation-block checks pass for these292 spans
+across four modes. All2035 previous rectangular UV sets are unchanged. Three
+crossing-boundary spans remain deferred;50 materials and664 inactive records
+remain excluded, plus eight unresolved geometry records. Godot review loads2327
+meshes/23 textures. Native camera/clipping and material visibility parity remain open.
