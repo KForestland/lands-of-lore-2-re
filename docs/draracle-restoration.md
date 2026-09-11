@@ -38,9 +38,9 @@ word of each wall record; 0x114951..0x11495E maps nonnegative values into the
 12-byte compact descriptor table. Local host replay passes 3,052 records mapping
 to 30 descriptor ordinals. This consumer check does not close the supplied
 wall-table pointer provenance, class-specific geometry, UVs or live color parity.
-The full cache/material extraction dependency chain is not yet packaged here;
-these material results are reported local checkpoints, not reproduced by the
-geometry pipeline below.
+The floor cache/material extraction chain is now packaged in
+[build_cave_assets.py](build-cave-assets.md), separately from the smaller geometry
+pipeline below. The wall consumer binding check remains a reported local result.
 
 ## Godot integration
 
@@ -69,14 +69,15 @@ files are pinned to these SHA-256 hashes; other editions fail explicitly:
 
 Outputs include corrected geometry JSON/OBJ, connector and slope checks, lossless
 wall records, and original code excerpts. Generate them locally; do not commit
-asset dumps. This is a geometry/wall-record pipeline, not yet a command that
-builds all textures or a playable Godot cave from a fresh clone.
+asset dumps. This command covers geometry/wall records. Use the separate
+[asset builder](build-cave-assets.md) to generate diagnostic full-cave Godot assets
+from the matching populated cache.
 
 ## Next work
 
 1. Close wall table loading, native span classes and wall UV/material integration.
-2. Package named-cache extraction, palettes, resource bindings and lookup tables
-   into the same configurable pipeline, then connect its outputs to Godot.
+2. Extend the packaged asset builder beyond the matching populated cache: recover
+   cache construction from retail archives and support additional editions.
 3. Restore special openings, moving objects, action dispatch and hazards.
 4. Validate a faithful playable cave before claiming full-game restoration or
    native patch compatibility. Audio remains a later task.
