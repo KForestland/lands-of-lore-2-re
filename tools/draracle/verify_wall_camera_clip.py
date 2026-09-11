@@ -30,10 +30,15 @@ def run(m, start, stops):
         nxt = pc+i.size
         if op == 'mov':
             m.put(i,o[0],m.get(i,o[1]))
-        elif op in ('add','sub','xor','or'):
+        elif op in ('add','sub','xor','or','and'):
             a,b = m.get(i,o[0]),m.get(i,o[1])
-            v = a+b if op == 'add' else a-b if op == 'sub' else a^b if op == 'xor' else a|b
+            v = a+b if op == 'add' else a-b if op == 'sub' else a^b if op == 'xor' else a|b if op == 'or' else a&b
             m.put(i,o[0],v & 0xffffffff)
+            if op in ('and','or','xor'): relation = signed(v & 0xffffffff)
+        elif op == 'setne':
+            m.put(i,o[0],int(relation != 0))
+        elif op == 'imul' and len(o) == 3:
+            m.put(i,o[0],(m.get(i,o[1])*m.get(i,o[2])) & 0xffffffff)
         elif op == 'inc':
             m.put(i,o[0],(m.get(i,o[0])+1) & ((1 << (8*o[0].size))-1))
         elif op == 'shl':
