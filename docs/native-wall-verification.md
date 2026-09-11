@@ -104,3 +104,21 @@ global B8668 (F5C22..F5C4A); equivalence to renderer camera globals remains
 open. Helper 1338B0 contains a separate coordinate transform and clipping
 path, still to be replayed. This check is included in the portable build,
 but does not enable live culling in Godot.
+
+## Horizontal camera transform and camera-plane clipping
+
+`verify_wall_camera_clip.py --game-root GAME --out OUT` checks 3,072
+synthetic horizontal transforms and 2,401 zero-depth clipping cases against
+the original instructions. Transform inputs include signed wrapping and six
+rotation coefficient pairs. The code subtracts camera globals FE470/FE478,
+then multiplies by FE4D8/FE4D4 with signed products shifted by 16 bits.
+Endpoint results are checked separately; the second depth is observed in ESI
+before its final store. Unused vertical scratch inputs are supplied as zero.
+
+The zero-depth stage rejects both-negative depths (441 fixtures), retains
+zero-depth endpoints, and clips one-negative-depth edges with signed integer
+division truncated toward zero. Clipping fixtures deliberately avoid overflow.
+This is the camera plane, not the later depth-65536 projection guard.
+Optional facing shortcut, horizontal outcodes, projection/window bounds and
+live camera setup remain unresolved. These checks run in the portable build;
+the playable cave has not yet adopted this incomplete visibility helper.
