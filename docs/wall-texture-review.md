@@ -168,3 +168,10 @@ apply only to repeating axes. Existing946 repeat-both entries retain their UVs.
 The diagnostic Godot review uses per-axis clamp/repeat fragment sampling. Native
 mip rounding, transparency and camera parity remain unverified. Exclusions now:
 664 inactive,50 unsupported/multi-variant,295 nonrectangular, eight unresolved.
+
+Wall2702 palette audit: record2702, region493, descriptor600, A9, one variant.
+All16384 RGB pixels match original column-major indices and the file palette;
+the preview exporter adds no blue tint. This does not establish live shade-bank,
+transparency or material semantics. Reproduce with audit_wall_palette.py using
+--game-root, --textures (wall review directory), --record2702 (as separate
+argument/value: --record 2702), and --out.
