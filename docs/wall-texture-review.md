@@ -122,3 +122,15 @@ original units, one texel/unit, zero offsets.15 synthetic camera samples agree
 with the recovered projection coefficient ratios. This is a geometric UV
 inference, not live renderer parity. The512x256 preview is a rescaled sampling
 panel, not an aspect-correct in-game screenshot. No scene replacement occurs.
+
+`export_flat_wall_uvs.py` uses the same four arguments as the single fixture.
+The pinned export contains946 rectangular repeating static-material walls,
+Godot-coordinate vertices and unwrapped normalized UVs. Do not wrap vertex UVs:
+that loses repeats during interpolation. A16-panel local gallery accompanies
+flat_wall_uvs.json. Among3044 checked records, exclusions are664 inactive,
+1304 other addressing modes,50 unsupported/multi-variant materials and80
+nonrectangular spans; eight additional geometry records remain unresolved.
+
+These are diagnostic inferred UVs. Pixel previews are file-palette samples,
+not validated lighting/transparency. Texture dimensions are original. Camera
+parity, source material semantics and scene integration remain outstanding.
