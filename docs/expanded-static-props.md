@@ -15,3 +15,14 @@ previews.55 new hanging-vegetation placements,55 stalagmite placements and
 92 boulder placements retain original anchors, state dimensions and trims.
 No new sprite encoding or guessed placement is introduced. Alpha, lighting
 and billboard parity remain provisional.
+
+Rock formations expanded (2026-09-11): resources297/298/299/300/301 added
+through the existing28E decoder. Nine total sprite resources pass44 mip
+images/3142 row checks. Thirteen additional static templates supply366
+placements; total1010. All644 previous placement records remain identical.
+Original positions, state dimensions and trim/flip fields retained.
+Headless1010-prop smoke passed; GPU252 hanging rock and273 floor rock
+visually inspected.45 tests pass. Both local Godot trees updated.
+Source artifacts: lol2_out/draracle_rock_previews_2026-09-11/ and
+lol2_out/draracle_rock_props_2026-09-11/. Alpha, billboarding and shading
+remain provisional; no prop collision or creature placement changes.
