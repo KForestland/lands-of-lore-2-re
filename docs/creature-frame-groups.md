@@ -26,3 +26,13 @@ These are static disassembly findings, not live captures.
 
 Next trace the actual frame-selector consumer and world placement link.
 No original animation rate or creature placement is assigned by this viewer.
+
+The builder also writes gallery.html:93 cards with first/middle/last poses.
+Each pose links to groups.html#group=BASE&frame=INDEX. The playback page
+provides a link to its current pose; invalid fragments fall back safely.
+All gallery image paths and group/frame links were checked, along with
+JavaScript syntax. Browser interaction remains manually reviewable.
+
+Bob reports recognising Kevin, the chef guard. This is a user visual
+observation without an exact resource group yet; no group is renamed from
+this observation alone.
