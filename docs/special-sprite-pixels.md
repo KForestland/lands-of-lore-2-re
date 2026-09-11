@@ -23,3 +23,18 @@ and hint rejection. Original game assets remain outside Git.
 Run either tool with --game-root /path/to/lol2 --out /path/to/output.
 Next recover native table4000 and implement destination remapping in Godot.
 No new scene props were added in this pass.
+
+Special-pixel Godot compositor (2026-09-11): separate indexed640x400
+review scene implements index0 preserve, index1 destination remap, others
+source palette. GPU capture matches CPU reference at all256000 pixels
+(zero mismatches), including256-index strips. Candidate file shade row64
+is exported but its live binding is NOT verified. Static executable data
+at4000 contains strings, so the renderer immediate cannot be interpreted
+as a literal file-backed table address. Runtime adjustment still open.
+No change to the1183-prop cave: RGB cave pixels lose original palette
+indices, so exact integration requires retaining indices or an explicitly
+approximate RGB mapping. Both local trees contain review scene and assets.
+
+Fixture builder: build_special_pixel_review.py. Candidate row, table hash
+and expected RGB hash are recorded in fixture.json. Original assets excluded
+from Git. Review implementation is in the Godot repository.
