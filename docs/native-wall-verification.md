@@ -248,3 +248,18 @@ masks byte 19 to its low nibble and zeroes the 16-byte tail (disassembly).
 9D076 calls it and 9D083 stores the result at world+38. Handoff from that
 field to global22D10 remains to be closed; actual allocations are not captured.
 The new range audit is source evidence, not a full loader instruction replay.
+
+## Neighbor replay within recovered allocations
+
+The neighbor constructor now adds a fourth fixture using each of the 173
+source allocation ranges independently. Object addresses remain synthetic,
+but each replay uses its actual first-region index and source-selected mode.
+All 1,954 region cases pass, raising constructor coverage to 7,816 cases.
+The 5,894 retained directed links all stay within their owning allocation;
+no retained pointer crosses a recovered allocation boundary. Results agree
+with the earlier whole-table fixture.
+
+The portable build also runs the exact-partition allocation audit. This
+closes the earlier assumption of base-region index zero for every object.
+The world+38 to global22D10 handoff and live allocator/camera state are still
+unverified; these checks do not change the playable scene.
