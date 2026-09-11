@@ -17,6 +17,7 @@ def main():
  geometry=out/'geometry';textures=out/'textures';uvs=out/'uvs'
  run('run_geometry_pipeline.py','--game-root',game,'--out',geometry)
  run('verify_wall_visibility.py','--game-root',game,'--geometry-evidence',geometry,'--out',out/'visibility')
+ run('verify_wall_screen_bounds.py','--game-root',game,'--out',out/'screen_bounds')
  run('verify_wall_camera_clip.py','--game-root',game,'--out',out/'camera_clip')
  run('verify_wall_facing.py','--game-root',game,'--out',out/'facing')
  run('verify_wall_edge_mask.py','--game-root',game,'--out',out/'edge_mask')

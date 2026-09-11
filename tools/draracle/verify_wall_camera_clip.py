@@ -30,9 +30,9 @@ def run(m, start, stops):
         nxt = pc+i.size
         if op == 'mov':
             m.put(i,o[0],m.get(i,o[1]))
-        elif op in ('add','sub','xor'):
+        elif op in ('add','sub','xor','or'):
             a,b = m.get(i,o[0]),m.get(i,o[1])
-            v = a+b if op == 'add' else a-b if op == 'sub' else a^b
+            v = a+b if op == 'add' else a-b if op == 'sub' else a^b if op == 'xor' else a|b
             m.put(i,o[0],v & 0xffffffff)
         elif op == 'neg':
             m.put(i,o[0],(-m.get(i,o[0])) & 0xffffffff)
@@ -54,8 +54,8 @@ def run(m, start, stops):
         elif op in ('cmp','test'):
             a,b = (m.get(i,x) for x in o)
             relation = signed(a)-signed(b) if op == 'cmp' else signed(a & b)
-        elif op == 'jge':
-            if relation >= 0:
+        elif op in ('jge','jle','je','jne','jl'):
+            if {'jge': relation >= 0, 'jle': relation <= 0, 'je': relation == 0, 'jne': relation != 0, 'jl': relation < 0}[op]:
                 nxt = m.get(i,o[0])
         elif op == 'jmp':
             nxt = m.get(i,o[0])
