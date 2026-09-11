@@ -5,6 +5,7 @@ from pathlib import Path
 from lol2_cache_named_wall_fixture import load_named,require,sha
 from lol2_extract_cave_materials import ASSET,HASH
 from lol2_wall_material_checkpoint import sections
+from lol2_pixel_layout import column_major_to_rows
 from lol2_palette_png import rgb_palette,colorize,png_rgb
 TARGETS={16:(0x80a9,1),156:(0xe1,5),161:(0xe1,5),285:(0xe1,5)}
 def extract(blob,index):
@@ -25,7 +26,7 @@ def main():
  for k in TARGETS:
   result=extract(b,k);folder=a.out/f'material_{k:04d}';folder.mkdir(exist_ok=True)
   for im in result['images']:
-   data=im.pop('pixels');stem=f'variant_{im["variant"]}_mip_{im["level"]}';(folder/f'{stem}.indices').write_bytes(data);(folder/f'{stem}.png').write_bytes(png_rgb(im['width'],im['height'],colorize(data,rgb)))
+   data=im.pop('pixels');im['preview_layout']='column-major corrected' if result['flags']==0x80a9 else 'row-major unverified';stem=f'variant_{im["variant"]}_mip_{im["level"]}';(folder/f'{stem}.indices').write_bytes(data);(folder/f'{stem}.png').write_bytes(png_rgb(im['width'],im['height'],colorize(column_major_to_rows(data,im['width'],im['height']) if result['flags']==0x80a9 else data,rgb)))
    if im['level']==0:cards.append(f'<article><h2>Descriptor {k}, variant {im["variant"]}</h2><img src="material_{k:04d}/{stem}.png"></article>')
   results.append(result)
  report=dict(identity=identity,materials=results,image_count=sum(len(r['images']) for r in results),scope='Variant boundaries, headers, dimensions and original indexed pixels validated. Flag semantics, playback order/timing, UVs and live shading not established.')
