@@ -14,3 +14,10 @@ class RowSpanTests(unittest.TestCase):
         with self.assertRaises(Exception):decode_rows(self.payload(control=0x4004))
     def test_truncated_payload_rejected(self):
         with self.assertRaises(Exception):decode_rows(self.payload()[:-1])
+
+    def test_sequence_flags_require_explicit_selection(self):
+        payload = bytearray(self.payload())
+        struct.pack_into('<H', payload, 0, 0x2c6)
+        with self.assertRaises(ValueError):
+            decode_rows(payload)
+        self.assertEqual(decode_rows(payload, 0x2c6), (5, 1, b'\0\x07\0\x09\0', 1))
