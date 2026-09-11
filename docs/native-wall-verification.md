@@ -204,3 +204,19 @@ The replay supplies a contiguous allocation covering all regions with base
 index zero; actual allocation range and selection of object flag 40 remain
 open. Full raw neighbor records must not be treated as runtime links without
 these filters. The portable build now includes this check.
+
+## Source-selected neighbor mode
+
+`verify_wall_neighbor_mode.py --game-root GAME --out OUT` verifies
+F58D9..F58FF in 2,466 cases. Region flag 80 sets object flag 40; other object
+bits are preserved. Fifteen cave regions select this mode. The constructor
+replay now also uses source-selected modes: 5,862 cases total, with 5,894
+retained directed links in the source-selected fixture. Every retained link
+has a reciprocal link in this fixture; missing-link fallback is not needed.
+
+Allocation setup disassembly F5853..F589A takes the first region from a
+word at descriptor offset 0 and object count from byte 17, requesting
+count*160 bytes from A1958. Descriptor provenance and allocator execution
+remain open. The constructor fixture still supplies a single contiguous
+allocation for all cave regions, so its graph is not yet a live allocation
+validation. Mode selection itself is no longer hypothetical.

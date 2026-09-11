@@ -27,8 +27,9 @@ def main():
         m.mem[region_base+k*44:region_base+(k+1)*44] = struct.pack('<22H',*r)
     m.writemem(0x22d0c,4,region_base)
     rows = []
-    for mode in [0,64]:
+    for selection in [0,64,"source"]:
         for k,r in enumerate(regions):
+            mode = (64 if r[14]&128 else 0) if selection == "source" else selection
             obj = object_base+k*160
             m.regs.update(ebx=obj,edi=region_base+k*44,esp=stack)
             m.writemem(obj+0x9e,1,mode)
@@ -50,10 +51,12 @@ def main():
                 require(pointer==(object_base+expected[edge]*160 if expected[edge] is not None else 0),'Pointer mismatch')
             require(m.readmem(obj+0x9d,1)==absent,'Sentinel mask mismatch')
             require(m.readmem(obj+0x9f,1)==251,'Traversal flag clear mismatch')
-            rows.append(dict(region=k,mode=mode,neighbors=actual,absent_mask=absent))
-    report=dict(cases=len(rows),regions=len(regions),mismatches=0,
-        retained_links={str(mode):sum(n is not None for r in rows if r['mode']==mode for n in r['neighbors']) for mode in [0,64]},
-        scope='Original F59D4..F5AAE replayed against cave region bytes with synthetic contiguous runtime object allocation and base-region index0. Both supplied object flag40 modes checked. Actual allocation range and flag40 selection remain open; this does not establish live neighbor graph or camera/visibility parity.',results=rows)
+            rows.append(dict(region=k,selection=selection,mode=mode,neighbors=actual,absent_mask=absent))
+    source_rows={r['region']:r for r in rows if r['selection']=='source'}
+    nonreciprocal=[(k,e,n) for k,r in source_rows.items() for e,n in enumerate(r['neighbors']) if n is not None and k not in source_rows[n]['neighbors']]
+    report=dict(cases=len(rows),regions=len(regions),mismatches=0,source_nonreciprocal_links=nonreciprocal,
+        retained_links={str(mode):sum(n is not None for r in rows if r['selection']==mode for n in r['neighbors']) for mode in [0,64,"source"]},
+        scope='Original F59D4..F5AAE replayed against cave region bytes with synthetic contiguous runtime object allocation and base-region index0. Both supplied modes and source flag80-derived mode checked. Actual allocation range remains open; this does not establish live neighbor graph or camera/visibility parity.',results=rows)
     args.out.mkdir(parents=True,exist_ok=True)
     (args.out/'wall_neighbor_constructor.json').write_text(json.dumps(report,indent=2)+'\n')
     print(json.dumps({k:v for k,v in report.items() if k!='results'},indent=2))
