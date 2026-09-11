@@ -11,17 +11,25 @@ def signed(v,bits):
  v&=(1<<bits)-1
  return v-(1<<bits) if v&(1<<(bits-1)) else v
 class WallReplay(ResolverReplay):
- def execute(self,region,code):
+ def execute(self,region,code,flags=0,vertical_offset=0):
   self.regs={r:0 for r in self.regs};self.regs['esp']=0x700000
   for off,value in [(0,0xdeadbeef),(4,0x600000),(8,0x400000+44*region),(12,0)]:self.writemem(0x700000+off,4,value)
   self.mem[0x600000:0x600046]=bytes(70);self.writemem(0x600042,1,code)
+  self.writemem(0x60003e,2,flags);self.writemem(0x600031,1,vertical_offset)
   pc=0x114aa4;zero=less=below=False
   for _ in range(1000):
    i=self.instructions[pc];o=i.operands;op=i.mnemonic;nxt=pc+i.size
    if op=='push':
     v=self.get(i,o[0]);self.regs['esp']-=4;self.writemem(self.regs['esp'],4,v)
    elif op=='pop':self.put(i,o[0],self.readmem(self.regs['esp'],4));self.regs['esp']+=4
+   elif op=='call':
+    destination=self.get(i,o[0])
+    if destination not in [0xf4504,0xf4590,0xf49fc]:raise ValueError('Unapproved helper call')
+    self.regs['esp']-=4;self.writemem(self.regs['esp'],4,nxt);nxt=destination
    elif op=='ret':
+    destination=self.readmem(self.regs['esp'],4)
+    if destination!=0xdeadbeef:
+     self.regs['esp']+=4;pc=destination;continue
     assert self.readmem(self.regs['esp'],4)==0xdeadbeef
     return [list(struct.unpack_from('<3i',self.mem,0x600000+j*12)) for j in range(4)],bool(self.readmem(0x600044,1))
    elif op in ['mov','movzx']:self.put(i,o[0],self.get(i,o[1]))
@@ -36,13 +44,14 @@ class WallReplay(ResolverReplay):
     take={'jmp':True,'je':zero,'jne':not zero,'jl':less,'jge':not less,'jle':less or zero,'jg':not less and not zero,'jb':below,'jbe':below or zero,'ja':not below and not zero}.get(op)
     if take is None:raise ValueError(op)
     if take:nxt=self.get(i,o[0])
-   elif op in ['add','sub','and','xor','shl','sar','inc']:
-    a=self.get(i,o[0]);b=1 if op=='inc' else self.get(i,o[1]);bits=o[0].size*8
+   elif op in ['add','sub','and','xor','shl','shr','sar','inc','dec']:
+    a=self.get(i,o[0]);b=1 if op in ['inc','dec'] else self.get(i,o[1]);bits=o[0].size*8
     if op in ['add','inc']:v=a+b
-    elif op=='sub':v=a-b
+    elif op in ['sub','dec']:v=a-b
     elif op=='and':v=a&b
     elif op=='xor':v=a^b
     elif op=='shl':v=a<<(b&31)
+    elif op=='shr':v=(a&((1<<bits)-1))>>(b&31)
     else:v=signed(a,bits)>>(b&31)
     self.put(i,o[0],v);zero=(v&((1<<bits)-1))==0
     # Only logical-operation flags are used by selected paths; arithmetic branches have CMP.
