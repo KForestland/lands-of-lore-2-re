@@ -186,3 +186,21 @@ score even though the original reads it before checking the helper result.
 The portable build includes this check. Actual runtime neighbor construction,
 traversal scheduling, camera/window setup and live rendering remain outside
 this synthetic replay.
+
+## Runtime neighbor constructor
+
+`verify_wall_neighbor_constructor.py --game-root GAME --out OUT` checks
+F59D4..F5AAE against all 1,954 cave region records in both supplied object
+flag-40 modes (3,908 cases). The ordinary mode retains a neighbor only when
+the two region words at offset 18 match (5,926 directed links in this fixture).
+Mode 40 instead requires the neighbor's region flag 80 (28 links). These
+counts describe separate hypothetical mode assignments, not the live graph.
+
+FFFF source neighbors become null pointers and set the corresponding bit
+in object byte 9D. Filtered neighbors become null without setting that bit.
+The constructor also clears traversal bit 4 in object byte 9F. Non-null
+pointers follow allocation_base + (neighbor_id-base_region_id)*160.
+The replay supplies a contiguous allocation covering all regions with base
+index zero; actual allocation range and selection of object flag 40 remain
+open. Full raw neighbor records must not be treated as runtime links without
+these filters. The portable build now includes this check.
