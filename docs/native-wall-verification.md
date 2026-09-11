@@ -142,3 +142,25 @@ the second endpoint needs depth clipping. No mathematical cleanup is applied.
 This verifies a bounded portion of the original helper, not whole-helper or
 live visibility. Optional facing shortcut and runtime camera/window setup
 remain open. The portable build includes this check.
+
+## Joined visibility helper
+
+`verify_wall_visibility_helper.py --game-root GAME --out OUT` runs continuously
+from 1338B7 (after stack allocation) to all four return decisions. No stage
+outputs are substituted. 9,442 bounded synthetic cases match the composed
+Python model, exercising 1,707 initial-outcode rejections, 710 window
+rejections, 2,196 behind-camera rejections and 4,829 acceptances.
+
+The optional fifth argument enables an early acceptance: the signed
+high-product facing score of the transformed endpoints against the origin
+is nonpositive. This changes 1,599 paired fixture results. It is an acceptance
+shortcut, not a generic backface rejection. Fixtures include both values of
+this argument, six rotation pairs, three windows and varied unused vertical
+scratch words. The caller's region comparison supplies this flag by disassembly;
+its live state has not been captured.
+
+This joins the previously separate transform, clipping and screen-boundary
+checks. It remains a host instruction replay with synthetic coordinates, not
+guest execution. Prologue/epilogue, runtime camera/window setup, edge-mask
+neighbor propagation and final draw submission remain outside this proof.
+The portable build runs this joined check alongside the narrower checks.
