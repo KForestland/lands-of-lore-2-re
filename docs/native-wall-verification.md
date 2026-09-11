@@ -1,6 +1,6 @@
 # Expanded native wall verification
 
-The ordinary wall checks now cover 2,991 distinct original records out of 3,052:
+The ordinary wall checks now cover 3,044 distinct original records out of 3,052:
 
 - Flat middle classes 4/12: 1,064 source cases and 40 synthetic cases.
 - Flat upper/lower classes 0/8: 834 source cases and 320 synthetic cases.
@@ -9,7 +9,7 @@ The ordinary wall checks now cover 2,991 distinct original records out of 3,052:
 
 All pass with zero coordinate/active-flag mismatches. The upper/lower test also
 checks the lower-wall vertical texture-offset byte correction for clipped tops,
-including absent-ceiling selectors, all five scale modes and byte wraparound.
+including absent-ceiling selectors, all six scale modes and byte wraparound.
 No source record in that selected flat set changes its offset, so the correction
 branch is exercised by synthetic cases rather than claimed as an observed cave effect.
 
@@ -19,11 +19,11 @@ helper execution with the earlier independent slope port. Loader/global pointers
 are still supplied by the host fixture. These checks are not live runtime captures
 and do not prove native rendering, UVs, material visibility or collision semantics.
 
-The remaining 61 records need checks for special/subdivision handling and
-other deferred combinations. Geometry checking percentages
+The remaining eight records need runtime preparation/dispatch checks for
+region 1851, whose serialized neighbor IDs are absent. Geometry checking percentages
 must not be described as overall cave readiness percentages.
 
-Run the existing configurable `run_geometry_pipeline.py` to reproduce all five
+Run the existing configurable `run_geometry_pipeline.py` to reproduce all six
 wall groups, or run their individual tools with `--game-root` and `--out`.
 The extended pipeline and all 25 existing geometry/cache/material unit tests pass.
 No Godot wall replacement is made by this evidence-only update.
@@ -49,3 +49,16 @@ not close constructor call-site provenance or collision behavior.
 
 All 88 source records have bit7 clear. The bit7-set height selection is a
 disassembly interpretation, not a branch covered by these source cases.
+
+Special upper/lower classes add 53 source cases (all active), covering flat
+connector-associated records and three subdivision-associated records. Coordinates,
+active flags and vertical-offset bytes match the independent model. The original
+constructor at 11472B..114738 passes source byte6 bit7 to 114AA4, confirming that
+argument's source on the ordinary dispatch path.
+
+The eight remaining records are 245..252, all owned by region 1851. Its four
+serialized neighbor IDs are FFFF. The upper/lower routine dereferences a neighbor
+without an absent-neighbor guard; a zero-filled host allocation cannot establish
+the actual result. Runtime preparation/dispatch for this region remains open.
+Do not interpret the record coverage as proof that every serialized region is
+passed unchanged to this routine during gameplay.
