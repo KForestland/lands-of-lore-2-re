@@ -1,12 +1,14 @@
 # LoL2 Closure Summary
 
+Current status: [Draracle restoration findings](draracle-restoration.md). This March memo is historical; its asset/provenance discussion is not the latest cave pipeline.
+
 Date: 2026-03-24
 
 ## Status
 
-LoL2 is effectively complete. See `final-closure-memo.md` for the latest state including disassembly results, wall texture format proof, and the current texture-source candidate.
+This historical runtime checkpoint is not a claim of overall RE closure. See `final-closure-memo.md` for the latest state including disassembly results, wall texture format proof, and the remaining provenance/confirmation gaps.
 
-Wall texture format is proven 8bpp palette-indexed by renderer disassembly. LOCAL.MIX Entry 1 is the strongest current texture-source candidate (raw 8bpp atlas; 1 of 39 textures extracted and visually confirmed, but not runtime-traced). Audio decode is sample-verified: 1 music track and 1 dialogue clip were decoded successfully, and a bulk extraction tool exists but has not been run and verified end-to-end. All 24 entity descriptor fields are classified by cross-level statistical analysis, with proof levels varying per field (see `lol2-entity-object-map.md`). Only minor items remain (mipmap format=0x80, HMI-MIDI converter, sound effects container).
+Wall texture format is proven 8bpp palette-indexed by renderer disassembly. The remaining wall-side gap is not generic format identification; it is exact source/provenance closure: runtime confirmation of the source-buffer/build path, palette/source linkage, and final atlas/source identification. Audio decode is sample-verified: 1 music track and 1 dialogue clip were decoded successfully, and a bulk extraction tool exists but has not been run and verified end-to-end. All 24 entity descriptor fields are classified by cross-level statistical analysis, with proof levels varying per field (see `lol2-entity-object-map.md`). Remaining work is now mostly provenance/tooling/confirmation work.
 
 ## Main Result
 
@@ -65,13 +67,14 @@ This matters because it proves the object-side runtime lane contains real branch
 
 - final semantic names for every byte/field
 - final gameplay-phase meaning of the alternate branch family
+- exact wall source/provenance closure and runtime confirmation of the texture-source path
 - 39 compressed sub-textures (mipmaps) with format=0x80
 - HMI-MIDI to standard MIDI converter
 - sound effects container location
 
 ## Best Read Of The Lane Now
 
-LoL2 is no longer blocked on any major question. The texture pipeline has a strong current model (LOCAL.MIX Entry 1 candidate atlas -> column renderer -> distance shading -> VGA blit; texture-source identification is based on 1 extracted texture, not runtime trace of the renderer source pointer). Audio decode is sample-verified on 1 music track and 1 dialogue clip. Entity fields are classified by statistical analysis with mixed proof levels. The remaining work is minor tooling (mipmap decoder, MIDI converter) and confirmation (sound effects container).
+LoL2 is no longer blocked on final render-format identification. The texture pipeline has a few competing or partial provenance clues, but lacks one fully runtime-confirmed source-path story. Audio decode is sample-verified on 1 music track and 1 dialogue clip. Entity fields are classified by statistical analysis with mixed proof levels. The remaining work is mainly provenance closure, confirmation, and tooling.
 
 ## Read Next
 
