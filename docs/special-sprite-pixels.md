@@ -21,20 +21,35 @@ both layers, not a final composite.47 unit tests pass, including opt-in
 and hint rejection. Original game assets remain outside Git.
 
 Run either tool with --game-root /path/to/lol2 --out /path/to/output.
-Next recover native table4000 and implement destination remapping in Godot.
-No new scene props were added in this pass.
+The separate Godot indexed compositor matches all 256000 pixels of its
+640×400 CPU reference. The playable cave still has 1183 static props;
+its RGB buffer does not retain exact palette indices.
 
-Special-pixel Godot compositor (2026-09-11): separate indexed640x400
-review scene implements index0 preserve, index1 destination remap, others
-source palette. GPU capture matches CPU reference at all256000 pixels
-(zero mismatches), including256-index strips. Candidate file shade row64
-is exported but its live binding is NOT verified. Static executable data
-at4000 contains strings, so the renderer immediate cannot be interpreted
-as a literal file-backed table address. Runtime adjustment still open.
-No change to the1183-prop cave: RGB cave pixels lose original palette
-indices, so exact integration requires retaining indices or an explicitly
-approximate RGB mapping. Both local trees contain review scene and assets.
+## Initial table binding recovered
 
-Fixture builder: build_special_pixel_review.py. Candidate row, table hash
-and expected RGB hash are recorded in fixture.json. Original assets excluded
-from Git. Review implementation is in the Godot repository.
+`verify_special_pixel_table_binding.py` checks seven LE fixups and the
+hash-pinned native loader instructions. Renderer immediates at 12B441 and
+12B75E relocate to **object4 + 0x4000**; ordinary shade bases relocate to
+object4 + 0. Object4 has virtual size 0x14200 and no file-backed pages.
+Inspecting initialized object5 at offset4000 was therefore the wrong
+object and explained the unrelated strings found there.
+
+Loader 9D894 reads the 0x6A2-byte cache header onto its stack. At 9D9B3 it
+assigns object4 + 0 to the pointer in object5 + 0x223E0. At 9DBAF it seeks
+to header dword +0x18 (section4; the preceding push accounts for the
+stack operand +0x1C), then reads 0x4200 bytes into that pointer at 9DBCC.
+The named cavern cache section has exactly that length: 66 rows of 256.
+Thus the **initial** special-pixel table is section4 row64, file offset
+18850. This is static loader provenance, not a live memory capture or
+proof that later code never modifies the table.
+
+Run the verifier with --game-root /path/to/lol2 --out /path/to/output.
+It writes binding.json and the local-only initial_remap.bin. The fixture
+builder now requires this verification and embeds the evidence in
+fixture.json. The table bytes and reference image are unchanged from the
+previous candidate fixture. 50 unit tests pass, including malformed and
+unsupported relocation rejection. Original assets remain outside Git.
+
+Next: preserve palette indices through the cave render path, or explicitly
+scope an approximate RGB fallback. Ordinary source shading and later
+runtime table changes remain separate research questions.
