@@ -8,6 +8,10 @@ from lol2_extract_draracle_geometry import decode
 from lol2_wall_material_checkpoint import sections
 from lol2_palette_png import rgb_palette,colorize,png_rgb
 
+def column_major_to_rows(data,width,height):
+ require(len(data)==width*height,'Pixel extent mismatch')
+ return bytes(data[x*height+y] for y in range(height) for x in range(width))
+
 def main():
  p=argparse.ArgumentParser(description=__doc__)
  p.add_argument('--game-root',type=Path,required=True);p.add_argument('--out',type=Path,required=True);a=p.parse_args()
@@ -40,12 +44,13 @@ def main():
   folder=a.out/f'material_{k:04d}';folder.mkdir(exist_ok=True);metadata=[]
   for im,data in images:
    stem=f'variant_{im["variant"]}_mip_{im["level"]}'
-   (folder/(stem+'.indices')).write_bytes(data);(folder/(stem+'.png')).write_bytes(png_rgb(im['width'],im['height'],colorize(data,rgb)))
+   (folder/(stem+'.indices')).write_bytes(data);(folder/(stem+'.png')).write_bytes(png_rgb(im['width'],im['height'],colorize(column_major_to_rows(data,im['width'],im['height']) if flags in [0xa9,0x80a9] else data,rgb)))
+   im['preview_layout']='column-major corrected' if flags in [0xa9,0x80a9] else 'row-major unverified'
    im['png']=f'{folder.name}/{stem}.png';metadata.append(im)
    if im['level']==0 and im['variant']==0:cards.append(f'<article><h2>Descriptor {k}</h2><p>{len(records)} wall records; {variants} variant(s)</p><img src="{im["png"]}"></article>')
   results.append(dict(descriptor=k,flags=flags,variant_count=variants,records=records,images=metadata))
  report=dict(identity=identity,materials=results,deferred=deferred,image_count=sum(len(x['images']) for x in results),scope='Original indexed pixels with file palette; descriptor ordinals from wall first words. Transparency, playback, native UVs, shading and runtime pointer provenance remain unresolved.')
  (a.out/'wall_textures.json').write_text(json.dumps(report,indent=2))
- (a.out/'review.html').write_text('<!doctype html><meta charset="utf-8"><title>Cave wall texture review</title><style>body{background:#222;color:#eee;font:16px sans-serif}main{display:flex;flex-wrap:wrap;gap:24px}article{width:300px}img{max-width:280px;image-rendering:pixelated}</style><h1>Original cave wall texture payloads</h1><p>First variants shown. File palette only; transparency, playback and placement unresolved.</p><main>'+''.join(cards)+'</main>')
+ (a.out/'review.html').write_text('<!doctype html><meta charset="utf-8"><title>Cave wall texture review</title><style>body{background:#222;color:#eee;font:16px sans-serif}main{display:flex;flex-wrap:wrap;gap:24px}article{width:300px}img{max-width:280px;image-rendering:pixelated}</style><h1>Original cave wall texture payloads</h1><p>A9 previews corrected from column-major storage. Other layouts unverified. Descriptor 3 is a photographic/test image; its cave use is unresolved. File palette only.</p><main>'+''.join(cards)+'</main>')
  print(dict(materials=len(results),images=report['image_count'],records=sum(len(x['records']) for x in results),deferred=[x['descriptor'] for x in deferred]))
 if __name__=='__main__':main()

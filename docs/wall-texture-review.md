@@ -134,3 +134,13 @@ nonrectangular spans; eight additional geometry records remain unresolved.
 These are diagnostic inferred UVs. Pixel previews are file-palette samples,
 not validated lighting/transparency. Texture dimensions are original. Camera
 parity, source material semantics and scene integration remain outstanding.
+
+User-reported preview correction: walls0,131,1933,1961 exposed an incorrect
+row-major assumption. A9/80A9 PNG previews now reorder source pixels from
+index=x*height+y into PNG rows. Original .indices bytes and source hashes remain
+unchanged. Rectangular and square ordering tests added. This corrects the wall
+review extractor only; other extraction lanes and non-A9 layouts need auditing.
+Descriptor3 resolves visually to a dog/photo test image; wall0 is labelled as
+unresolved cave use, not silently replaced with rock. Header/extent checks alone
+did not establish image layout. The correction is visually supported, not a
+new claim of complete native sampling parity.
