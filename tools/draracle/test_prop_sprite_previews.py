@@ -21,3 +21,12 @@ class RowSpanTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             decode_rows(payload)
         self.assertEqual(decode_rows(payload, 0x2c6), (5, 1, b'\0\x07\0\x09\0', 1))
+
+    def test_special_pixels_require_opt_in(self):
+        payload=self.payload(control=0x8001,pixels=b'\x07\x01\x09')
+        with self.assertRaises(ValueError):decode_rows(payload)
+        self.assertEqual(decode_rows(payload,allow_special=True)[2],b'\0\x07\x01\x09\0')
+
+    def test_special_hint_must_match_index_one(self):
+        with self.assertRaises(ValueError):
+            decode_rows(self.payload(control=1,pixels=b'\x07\x01\x09'),allow_special=True)

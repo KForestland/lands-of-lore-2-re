@@ -9,18 +9,19 @@ from lol2_wall_material_checkpoint import sections
 from lol2_palette_png import rgb_palette
 
 
-def decode_rows(data, expected_flags=0x28e):
+def decode_rows(data, expected_flags=0x28e, allow_special=False):
     flags,w,h,size=struct.unpack_from('<4H',data)
     require(flags==expected_flags and size==len(data)-8,'Unexpected sprite header')
     pixels=bytearray(w*h);pos=8;marked=0
     for y in range(h):
         require(pos+4<=len(data),'Truncated row header')
         control,n=struct.unpack_from('<HH',data,pos);pos+=4
-        require(not control&0x8000,'Unsupported row flag')
+        require(allow_special or not control&0x8000,'Unsupported row flag')
         x=control&0x3fff
         require(x+n<=w and pos+n<=len(data),'Row extent')
         row=data[pos:pos+n];pos+=n
         require(bool(control&0x4000)==(0 in row),'Transparency hint mismatch')
+        if allow_special:require(bool(control&0x8000)==(1 in row),'Special pixel hint mismatch')
         marked+=bool(control&0x4000);pixels[y*w+x:y*w+x+n]=row
     require(pos==len(data),'Trailing sprite bytes')
     return w,h,bytes(pixels),marked
