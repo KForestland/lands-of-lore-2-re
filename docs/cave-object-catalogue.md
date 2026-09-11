@@ -54,3 +54,13 @@ F1DC9/F1E09 and renderer129300..129377 disassembly. Callback1292C0 resolves
 from LE table5D18 slot34. Full renderer replay remains open. Column28 uses
 region-height flag2 and is excluded. Godot uses provisional alpha and
 fixed-Y billboards; frame flags remain stored but unimplemented.
+
+## Column height verification
+
+`verify_prop_region_height.py` replays F1DD2..F1E12 for88 source column
+placements and72 boundary fixtures. It verifies bit2 selection, null-region
+fallback, signed ceiling-floor, cap255 and byte store (negative synthetic
+heights wrap, not lower-clamped). Source heights range88..156. Exporter
+now includes template28/resource306 with region-selected height, for442
+props total. Nine source anchors differ from the base floor and are preserved.
+No column collision or native spawn-state parity is implied.
