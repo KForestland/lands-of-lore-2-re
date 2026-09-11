@@ -46,3 +46,11 @@ boulder417. These labels are visual interpretations, not source names.
 Native alpha, sprite scale, anchoring and orientation remain to verify.
 No props are spawned in the cave yet. Next recover template size/anchor
 consumers before integrating repeated instances.
+
+`export_cave_prop_preview.py` exports354 static instances from templates
+16/21/23/24, requiring resource flags0 and single states/frames. Includes
+source positions, state14/15 dimensions and frame5..8 trims supported by
+F1DC9/F1E09 and renderer129300..129377 disassembly. Callback1292C0 resolves
+from LE table5D18 slot34. Full renderer replay remains open. Column28 uses
+region-height flag2 and is excluded. Godot uses provisional alpha and
+fixed-Y billboards; frame flags remain stored but unimplemented.
