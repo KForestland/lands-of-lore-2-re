@@ -31,7 +31,7 @@ def main():
     _,blob,_,_=load_named(a.game_root,ASSET);require(sha(blob)==HASH,'Cache changed');s=sections(blob)
     paloff=struct.unpack_from('<I',blob,4)[0];pal=rgb_palette(blob[paloff:paloff+768],6)
     a.out.mkdir(parents=True,exist_ok=True);results=[]
-    for descriptor in [278,297,298,299,300,301,302,306,417]:
+    for descriptor in [278,295,296,297,298,299,300,301,302,306,417]:
         v=struct.unpack_from('<6H11I',blob,s[2]+descriptor*56)
         require(v[3]==0x28e and v[4]==1,'Unsupported descriptor')
         for level in range(v[5]&255):

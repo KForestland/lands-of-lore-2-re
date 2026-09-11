@@ -10,14 +10,14 @@ def main():
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('--game-root',type=Path,required=True);p.add_argument('--sprites',type=Path,required=True);p.add_argument('--out',type=Path,required=True);a=p.parse_args()
     mix=(a.game_root/'DAT/L1_DC.MIX').read_bytes();_,_,geo,_,regions,_=decode(mix);entry=next(e for e in parse_mix(mix) if e['key']==2971019266);raw=mix[entry['offset']:entry['offset']+entry['size']]
     off,count=u32(raw,8),u32(raw,0x40);so=off+count*55+4;ns=u32(raw,so-4);fo=so+ns*16+4
-    chosen={8:300,9:299,10:300,11:299,12:300,38:301,39:301,40:301,41:301,42:298,43:297,44:298,45:297,13:302,14:302,15:302,16:302,17:417,18:417,19:417,20:417,21:417,22:278,23:278,24:278,28:306,46:417};states={};state=0;frame=0
+    chosen={56:295,57:296,60:295,61:296,62:296,64:295,8:300,9:299,10:300,11:299,12:300,38:301,39:301,40:301,41:301,42:298,43:297,44:298,45:297,13:302,14:302,15:302,16:302,17:417,18:417,19:417,20:417,21:417,22:278,23:278,24:278,28:306,46:417};states={};state=0;frame=0
     for t in range(count):
         template=raw[off+t*55:off+(t+1)*55];n=template[46]+template[47]
         for selector in range(n):
             s=raw[so+state*16:so+(state+1)*16];c=struct.unpack_from('<b',s,13)[0]
             if t in chosen:
                 f=raw[fo+frame*12:fo+(frame+1)*12]
-                assert n==1 and c==1 and template[50]==(2 if t==28 else 0) and struct.unpack_from('<h',f)[0]==chosen[t]
+                assert n==1 and c==1 and template[50]==(2 if t in [28,56,57,60,61,62,64] else 0) and struct.unpack_from('<h',f)[0]==chosen[t]
                 # Renderer129300..129377: width/2 with left/right trims,
                 # top=anchor+height-top_trim; bottom=anchor+bottom_trim.
                 states[t]=dict(descriptor=chosen[t],left=-s[14]/2+f[5],right=s[14]/2-f[7],bottom=f[8],top=s[15]-f[6],frame_flags=f[2],height_flags=template[50],state_height=s[15],top_trim=f[6])

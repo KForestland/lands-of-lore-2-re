@@ -5,7 +5,7 @@ from pathlib import Path
 import capstone
 from lol2_cache_named_wall_fixture import require,sha
 from lol2_verify_draracle_slopes import EXE_HASH
-from lol2_extract_draracle_geometry import decode,u32
+from lol2_extract_draracle_geometry import decode,u32,parse_mix
 from lol2_verify_flat_wall_spans import WallReplay
 
 
@@ -14,7 +14,7 @@ def selected_height(flags,region_present,floor,ceiling,state_height):
 
 
 def main():
-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--game-root',type=Path,required=True);p.add_argument('--out',type=Path,required=True);a=p.parse_args()
+    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--game-root',type=Path,required=True);p.add_argument('--out',type=Path,required=True);p.add_argument('--templates',type=int,nargs='+',default=[28]);a=p.parse_args()
     exe=(a.game_root/'LOLG.DAT').read_bytes();require(sha(exe)==EXE_HASH,'Executable changed')
     _,_,raw,_,regions,_=decode((a.game_root/'DAT/L1_DC.MIX').read_bytes())
     md=capstone.Cs(capstone.CS_ARCH_X86,capstone.CS_MODE_32);md.detail=True
@@ -39,12 +39,19 @@ def main():
             else:raise ValueError(op)
             pc=nxt
         require(m.readmem(0x700000-0x37,1)==selected_height(flags,present,floor,ceil,h),'Height mismatch')
+    mix=(a.game_root/'DAT/L1_DC.MIX').read_bytes()
+    entry=next(e for e in parse_mix(mix) if e['key']==2971019266)
+    definitions=mix[entry['offset']:entry['offset']+entry['size']]
+    for t in a.templates:
+        require(0<=t<u32(definitions,0x40),'Template index')
+        require(definitions[u32(definitions,8)+t*55+50]==2,'Template must use region-height flag2 only')
     source=[]
     for k in range(u32(raw,0x60)):
         d=raw[u32(raw,0x14)+k*37:u32(raw,0x14)+(k+1)*37]
-        if struct.unpack_from('<H',d,32)[0]!=28:continue
+        template=struct.unpack_from('<H',d,32)[0]
+        if template not in a.templates:continue
         rid=struct.unpack_from('<H',d,10)[0];r=regions[rid];floor,ceil=struct.unpack('<hh',struct.pack('<HH',r[10],r[11]));check(2,True,floor,ceil,128)
-        source.append(dict(record=k,region=rid,height=selected_height(2,True,floor,ceil,128)))
+        source.append(dict(record=k,template=template,region=rid,height=selected_height(2,True,floor,ceil,128)))
     synthetic=0
     for flags,present,(floor,ceil),h in itertools.product([0,2],[False,True],[(-32768,32767),(0,0),(0,254),(0,255),(0,256),(1,0)],[0,128,255]):
         check(flags,present,floor,ceil,h);synthetic+=1
