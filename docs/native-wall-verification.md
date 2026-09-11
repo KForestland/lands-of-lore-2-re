@@ -122,3 +122,23 @@ This is the camera plane, not the later depth-65536 projection guard.
 Optional facing shortcut, horizontal outcodes, projection/window bounds and
 live camera setup remain unresolved. These checks run in the portable build;
 the playable cave has not yet adopted this incomplete visibility helper.
+
+## Horizontal screen rejection
+
+`verify_wall_screen_bounds.py --game-root GAME --out OUT` checks 5,292
+bounded synthetic post-clip cases against 133A49..133BBD, with three supplied
+projection/window settings. All three exits are exercised: 486 initial
+shared-outcode rejections, 674 window rejections and 4,132 acceptances.
+Boundary fixtures include depth 0, 1, 65535, 65536 and 65537.
+
+The first outcodes compare horizontal position against plus/minus depth.
+A shared bit rejects; opposite-side outcodes accept immediately. Endpoints
+inside this initial wedge are projected with a depth-65536 guard, then
+compared with FE424/FE428 using scale FE480. Near endpoints can take a
+conservative early acceptance. The replay preserves sequential scratch
+updates, including use of the already-projected first horizontal value when
+the second endpoint needs depth clipping. No mathematical cleanup is applied.
+
+This verifies a bounded portion of the original helper, not whole-helper or
+live visibility. Optional facing shortcut and runtime camera/window setup
+remain open. The portable build includes this check.
