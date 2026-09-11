@@ -58,3 +58,23 @@ scale branches therefore divide the horizontal direction by length times
 2,1,.5,.25; their stored vertical coefficients are respectively±.5,±1,±2,±4.
 The tool checks constants and immediate coefficients, not x87 normalization.
 Orientation flags, constructor-adjusted offsets and final projection remain open.
+
+Projection block12766A..1277A4: `verify_wall_projection.py` checks256 synthetic
+cases, seven output coefficients each, against independent formulas. Let X/Y/Z
+be incoming locals440/444/448, U/V/W be4F0/4EC/4E4, sx=FE480/65536 and
+sy=FE484/65536. Outputs relative to the renderer stack are:
+
+| Offset | Formula |
+|---|---|
+| 3CC | -W X sx sy |
+| 3D0 | U Y sx sy |
+| 3D4 | -U W sx sy |
+| 3D8 | W Z sy |
+| 3DC | -V Y sy |
+| 3E0 | V W sy |
+| 3F0 | sx (V X - U Z) |
+
+The original floating-point instruction order is interpreted with host doubles
+and float32 stores; integer setup is supplied. Binary-exact inputs avoid rounding
+ambiguity. This verifies algebra, not guest x87 precision/control-state parity,
+orientation setup, camera semantics or downstream rasterization.
