@@ -152,3 +152,11 @@ and is shared by the wall review, cave A9 exporter (PNG and shaded canvas), and
 original indexed payload files across the cave/variant exports remain byte-identical.
 The complete portable asset build passes into a separate output directory;
 existing playable demo assets are not replaced by this audit.
+
+Demo refresh audit: the remaining floor E1 descriptors156/161/285 are square,
+so row/column candidates are simple transposes and both look coherent. Visual
+inspection cannot settle their orientation; they remain unchanged/unverified.
+The corrected A9/80A9 pipeline was exported to the working demo with a prior
+asset backup. Exactly nine PNGs changed; geometry/traversal files are unchanged.
+Godot's full-map sprint checkpoint smoke passed119 routes with zero resets.
+This tests loading/traversal, not live-game texture-orientation parity.
