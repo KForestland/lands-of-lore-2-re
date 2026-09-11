@@ -26,3 +26,14 @@ visually inspected.45 tests pass. Both local Godot trees updated.
 Source artifacts: lol2_out/draracle_rock_previews_2026-09-11/ and
 lol2_out/draracle_rock_props_2026-09-11/. Alpha, billboarding and shading
 remain provisional; no prop collision or creature placement changes.
+
+Additional pillars (2026-09-11): resources295/296 decoded with the28E
+row parser;11 total sprite resources now54 mips/4058 rows checked.
+Templates56/57/60/61/62/64 add86 placements, total1096; previous1010
+records unchanged. Template60 has no placements. Height replay expanded
+with explicit --templates selection and source flag checks:174 source
+cases plus72 synthetic,zero mismatches. GPU169/363 inspected both styles;
+1096-prop smoke and45 tests pass. Both Godot trees updated. Source artifacts
+lol2_out/draracle_pillar_{previews,heights,props}_2026-09-11/.
+Alpha, billboarding and lighting remain provisional; no prop collision
+or enemy placement added.
