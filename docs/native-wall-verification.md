@@ -86,3 +86,21 @@ with an unrestricted floating-point cross product would require verification.
 Helper semantics, edge lookup tables, camera inputs, neighbor propagation and
 live visibility are still open. This check does not enable cave wall culling.
 The portable wall build runs this check automatically.
+
+## Fixed-point edge-facing score
+
+`verify_wall_facing.py --game-root GAME --out OUT` replays F5E03..F5E7B
+for 17,756 synthetic cases, including signed limits and deterministic random
+coordinates. Original LE data tables EB24/EB34 select endpoint pairs (1,0),
+(2,1), (3,2), (0,3). Each coordinate difference wraps to signed 32 bits.
+The score subtracts the independently extracted signed high halves of
+`(observer_x-a_x)*(b_y-a_y)` and `(observer_y-a_y)*(b_x-a_x)`,
+then wraps the subtraction. A positive score sets the edge rejection bit.
+
+This is not interchangeable with the sign of an unrestricted cross product:
+a=(0,0), b=(0,1), observer=(1,0) gives a native score of zero.
+The observer inputs originate at offsets 19/1D of the object referenced by
+global B8668 (F5C22..F5C4A); equivalence to renderer camera globals remains
+open. Helper 1338B0 contains a separate coordinate transform and clipping
+path, still to be replayed. This check is included in the portable build,
+but does not enable live culling in Godot.
