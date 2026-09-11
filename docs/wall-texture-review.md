@@ -101,3 +101,15 @@ mip's width/height in16.16 units. `verify_wall_uv_wrap.py` checks870 cases acros
 Use `--game-root`, `--textures` pointing to wall_textures.json, and `--out`.
 No-overflow test inputs are used; arbitrary32-bit overflow is not modeled by the
 independent formula. Other flag branches and final Godot UV parity remain open.
+
+Addressing follow-up: the verifier now starts at12D4D1 and covers all three
+branches, including flags8+16 together (bit8 wins).3480 cases across58 mip
+layouts pass against the independent `wall_uv_addressing.address_uv` port.
+Without either bit, both coordinates shift arithmetically and clamp; offsets
+are ignored. Bit16 alone repeats U with its offset but clamps V without its
+offset. Bit8 repeats both with offsets. Clamp upper limits are dimension<<16
+minus1. The portable function rejects unverified overflow inputs.
+
+This reusable function accepts pre-addressing renderer16.16 coordinates. It is
+not yet a world-space-to-Godot UV converter; projection integration, filtering,
+transparency and live visual comparisons remain outstanding.
