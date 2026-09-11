@@ -13,3 +13,9 @@ The Godot indexed_cave_wall_review scene consumes these assets. Three
 perspective checkpoints pass a combined1555200-pixel GPU/CPU palette
 resolve comparison. Floors, roof and props are outside this diagnostic;
 see the Godot repository's docs/indexed-cave-walls.md for scope and commands.
+
+`export_cave_surface_indices.py --game-root ... --godot-project ...` extends
+this workflow to13 floor and19 ordinary prop textures. It checks exact
+existing RGB/RGBA parity, preserves the historical floor byte layout and
+rejects special index1 in ordinary props. The Godot complete static indexed
+scene includes floors/roof/props; see docs/indexed-static-cave.md there.
