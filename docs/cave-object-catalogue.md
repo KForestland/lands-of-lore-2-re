@@ -14,3 +14,20 @@ Their repeated use makes them useful identification targets, not proven plants.
 Next inspect source template loading and sprite references, then verify an
 identity at multiple placements before adding its class to the demo.
 No spawn behavior or enemy identity is inferred from template frequency.
+
+## Template/state links
+
+`extract_cave_object_templates.py --game-root GAME --out OUT` reads the
+second non-texture entry (key2971019266): header8 points to 103 templates
+at offset1482, each55 bytes; header40 supplies the count. Native loader
+F1A14 then calls F2B94, which reads count-prefixed16-byte states followed
+by count-prefixed12-byte frames. Template bytes2E+2F partition states;
+signed state byte0D partitions frames (negative means one record).
+
+All172 states and172 frame records are consumed exactly; all1559 placements
+reference valid templates and selectors. This is source parsing backed by
+disassembly, not a full loader replay. Templates23/24 share positive resource
+reference278;16 uses302,28 uses306,21 uses417. These candidate cache
+descriptors use28E encoding and cannot use the raw wall pixel exporter.
+Next verify resource routing and decode sprite transparency before assigning
+plant/prop names or adding instances. No visible props added in this pass.
