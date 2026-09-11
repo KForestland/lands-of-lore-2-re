@@ -25,6 +25,10 @@ is supplied in the host replay; its loader-to-global provenance is still open.
 These are bounded interpretations of original executable instructions, not live
 captures or proof of native walkability.
 
+A [native flat-wall check](native-flat-wall-spans.md) now verifies 1,064 wall
+records and 40 synthetic cases. Of its active spans, 1,044 exactly match the
+existing local Godot boundary corners; other span classes remain open.
+
 ## Material findings from the local research workspace
 
 Named cache identity identifies `sphere1\l1_dc\l1_dc.tex`. The extracted set
