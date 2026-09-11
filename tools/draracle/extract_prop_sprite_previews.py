@@ -9,9 +9,9 @@ from lol2_wall_material_checkpoint import sections
 from lol2_palette_png import rgb_palette
 
 
-def decode_rows(data):
+def decode_rows(data, expected_flags=0x28e):
     flags,w,h,size=struct.unpack_from('<4H',data)
-    require(flags==0x28e and size==len(data)-8,'Unexpected sprite header')
+    require(flags==expected_flags and size==len(data)-8,'Unexpected sprite header')
     pixels=bytearray(w*h);pos=8;marked=0
     for y in range(h):
         require(pos+4<=len(data),'Truncated row header')
