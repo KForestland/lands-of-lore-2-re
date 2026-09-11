@@ -28,3 +28,9 @@ original 1326FA..13270B resource-index arithmetic. All 142 mip cases for the
 base resource ID, not playback or UV selection. The caller at 11495E..11496D
 loads renderer global E890 and invokes callback +28 with wall object, compact
 descriptor and 15. Active callback identification remains open.
+
+`inspect_wall_dispatch.py --game-root /path/to/lol2 --out /path/to/dispatch`
+recovers the two stored callback slots using the existing embedded-MZ/LE page
+mapping. Tables 5D18 and 5DA4 have +28 stored values CDC08 and DFC88 at file
+offsets 1863012 and 1863152. These are not resolved runtime code addresses.
+LE fixup resolution and live renderer selection remain necessary before UV work.
