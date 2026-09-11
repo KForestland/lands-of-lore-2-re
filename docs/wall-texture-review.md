@@ -113,3 +113,12 @@ minus1. The portable function rejects unverified overflow inputs.
 This reusable function accepts pre-addressing renderer16.16 coordinates. It is
 not yet a world-space-to-Godot UV converter; projection integration, filtering,
 transparency and live visual comparisons remain outstanding.
+
+`export_wall_uv_fixture.py` accepts `--game-root`, `--geometry-evidence`,
+`--textures` (wall_textures.json), and `--out`. It selects a verified active flat
+wall with material134 and repeating addressing, exporting wall_fixture.json and
+wall_preview.png. The pinned selection is record2168, region6:222.800359 by228
+original units, one texel/unit, zero offsets.15 synthetic camera samples agree
+with the recovered projection coefficient ratios. This is a geometric UV
+inference, not live renderer parity. The512x256 preview is a rescaled sampling
+panel, not an aspect-correct in-game screenshot. No scene replacement occurs.
