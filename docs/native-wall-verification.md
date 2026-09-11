@@ -62,3 +62,11 @@ without an absent-neighbor guard; a zero-filled host allocation cannot establish
 the actual result. Runtime preparation/dispatch for this region remains open.
 Do not interpret the record coverage as proof that every serialized region is
 passed unchanged to this routine during gameplay.
+
+The pipeline now ends with `audit_wall_coverage.py`: it checks disjoint record
+IDs across all six groups, exact coverage of the source table, and reproduces
+the eight deferred cases reaching the FFFF region dereference. WallReplay
+rejects reads from that sentinel-derived region address before reading host
+memory. This is an input/provenance diagnostic, not evidence of a live game bug.
+The audit emits `coverage/wall_coverage.json`, including incoming links to region
+1851, so downstream work can preserve explicit unresolved records.
