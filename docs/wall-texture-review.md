@@ -20,3 +20,11 @@ Every extracted mip has validated dimensions, payload bounds, variant boundary
 and original header. This does not establish native UV placement, transparency,
 playback order/timing, shading or runtime pointer provenance. The eight geometry
 exceptions remain exceptions even where their texture payloads are available.
+
+`verify_wall_mip_ids.py --game-root /path/to/lol2 --textures
+/path/to/wall-review/wall_textures.json --out /path/to/mip-check` checks the
+original 1326FA..13270B resource-index arithmetic. All 142 mip cases for the
+29 extracted materials pass: identifier + mip * variant_count. This is the
+base resource ID, not playback or UV selection. The caller at 11495E..11496D
+loads renderer global E890 and invokes callback +28 with wall object, compact
+descriptor and 15. Active callback identification remains open.
