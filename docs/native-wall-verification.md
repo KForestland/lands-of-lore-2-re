@@ -234,3 +234,17 @@ Caller disassembly E18BE..E18D9 computes descriptor index relative to global
 connects allocation setup to the runtime descriptor table, but the file
 loader for this table remains unresolved. No actual cave allocation range
 is inferred from synthetic request fixtures. Included in the portable build.
+
+## Source allocation ranges
+
+`audit_wall_allocation_ranges.py --game-root GAME --out OUT` audits the
+pinned cave table at header A4 (offset 265757), with count AC (173). Its
+26-byte descriptors use the first word and byte 17 for allocation ranges.
+They cover all 1,954 regions exactly once, requesting 312,640 object bytes
+in total, excluding allocator overhead. No overlap or uncovered region.
+
+Loader E24D4 allocates count*42, reads 26 bytes per record, clears byte 10,
+masks byte 19 to its low nibble and zeroes the 16-byte tail (disassembly).
+9D076 calls it and 9D083 stores the result at world+38. Handoff from that
+field to global22D10 remains to be closed; actual allocations are not captured.
+The new range audit is source evidence, not a full loader instruction replay.
