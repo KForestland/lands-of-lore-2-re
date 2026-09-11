@@ -36,3 +36,10 @@ JavaScript syntax. Browser interaction remains manually reviewable.
 Bob reports recognising Kevin, the chef guard. This is a user visual
 observation without an exact resource group yet; no group is renamed from
 this observation alone.
+
+Bob subsequently identified resources314–407 as Kevin, the chef guard:
+94 frames in6 complete groups. The builder now labels those exact frames
+and the other guard groups from his visual identification. Insect-like
+resources733–861 remain separately labelled with identity pending. Labels
+and their evidence are included in groups.json. These are user observations,
+not recovered filenames or proof of native character/state bindings.
