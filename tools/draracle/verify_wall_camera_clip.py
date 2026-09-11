@@ -34,6 +34,10 @@ def run(m, start, stops):
             a,b = m.get(i,o[0]),m.get(i,o[1])
             v = a+b if op == 'add' else a-b if op == 'sub' else a^b if op == 'xor' else a|b
             m.put(i,o[0],v & 0xffffffff)
+        elif op == 'inc':
+            m.put(i,o[0],(m.get(i,o[0])+1) & ((1 << (8*o[0].size))-1))
+        elif op == 'shl':
+            m.put(i,o[0],(m.get(i,o[0]) << (m.get(i,o[1]) & 31)) & ((1 << (8*o[0].size))-1))
         elif op == 'neg':
             m.put(i,o[0],(-m.get(i,o[0])) & 0xffffffff)
         elif op == 'imul' and len(o) == 1:
