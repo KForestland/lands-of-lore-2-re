@@ -48,3 +48,15 @@ Single-state/frame dimensions and anchors preserved. GPU391/122 inspected,
 1171-prop smoke and45 tests pass. Both Godot trees updated.
 Artifacts lol2_out/draracle_vegetation_{previews,props}_2026-09-11/.
 Lighting, alpha and billboard behavior remain provisional; enemy binding open.
+
+Static detail props (2026-09-11): added12 placements from templates85/88
+(shrub sprites195/192),47 (mushroom-like469),49 (sack473). Total1183;
+previous1171 unchanged.19 sprite resources pass90 mips/6291 rows.
+GPU1085 sack inspected;1183-prop smoke and45 tests pass. These are static
+visuals: no pickup or interaction behavior added. Both Godot trees updated.
+Resources193/194/474/475/476 deferred: row8000 unsupported. A bounded
+scan across nine candidate resources/1817 rows finds8000 matches index1
+presence exactly, but native blend/shadow semantics remain unverified.
+Next verify this row flag before adding those sprites; do not silently
+render index1 as ordinary opaque pixels. Artifacts:
+lol2_out/draracle_detail_{previews,props}_2026-09-11/.
