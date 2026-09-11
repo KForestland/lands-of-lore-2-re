@@ -10,7 +10,7 @@ def main():
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('--game-root',type=Path,required=True);p.add_argument('--sprites',type=Path,required=True);p.add_argument('--out',type=Path,required=True);a=p.parse_args()
     mix=(a.game_root/'DAT/L1_DC.MIX').read_bytes();_,_,geo,_,regions,_=decode(mix);entry=next(e for e in parse_mix(mix) if e['key']==2971019266);raw=mix[entry['offset']:entry['offset']+entry['size']]
     off,count=u32(raw,8),u32(raw,0x40);so=off+count*55+4;ns=u32(raw,so-4);fo=so+ns*16+4
-    chosen={16:302,21:417,23:278,24:278,28:306};states={};state=0;frame=0
+    chosen={13:302,14:302,15:302,16:302,17:417,18:417,19:417,20:417,21:417,22:278,23:278,24:278,28:306,46:417};states={};state=0;frame=0
     for t in range(count):
         template=raw[off+t*55:off+(t+1)*55];n=template[46]+template[47]
         for selector in range(n):
