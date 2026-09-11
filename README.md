@@ -66,6 +66,12 @@ current evidence, commands and supported game-file hashes. The
 [Godot project](https://github.com/KForestland/lands-of-lore-unified-godot) hosts
 the experimental view; extracted game assets are not included.
 
+## Build the experimental cave
+
+[Asset generation instructions](docs/build-cave-assets.md) cover the new configurable
+texture-to-Godot pipeline. It requires matching original files and a populated
+cache; arbitrary retail-installation cache generation remains open.
+
 ## Repository Layout
 
 - [`docs/`](docs) — promoted writeups and closure notes

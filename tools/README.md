@@ -7,7 +7,8 @@ Curated analysis and extraction tools for LoL2 reverse engineering.
 See [Draracle findings](../docs/draracle-restoration.md). Run
 `python3 tools/draracle/run_geometry_pipeline.py --game-root /path/to/lol2 --out /path/to/output`.
 This requires Python 3.10+ and Capstone 5, and produces corrected geometry and
-wall-record evidence from pinned original files. Texture/Godot generation is not yet bundled.
+wall-record evidence from pinned original files. The separate [full asset builder](../docs/build-cave-assets.md) now packages
+texture/Godot generation for the supported populated cache.
 
 ## Setup
 
