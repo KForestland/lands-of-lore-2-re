@@ -4,6 +4,7 @@ import argparse,base64,collections,html,json,struct
 from pathlib import Path
 from lol2_cache_named_wall_fixture import load_named,sha,require
 from lol2_wall_material_checkpoint import sections,material_record
+from lol2_pixel_layout import column_major_to_rows
 from lol2_palette_png import rgb_palette,colorize,png_rgb
 ASSET='sphere1\\l1_dc\\l1_dc.tex'
 HASH='102410e0b69037da2bdf451dd4de9c7e30df2c9d1309b1d0a1c0224ab7218c97'
@@ -24,12 +25,12 @@ def main():
   for m in r['mips']:
    pixels=b[m['data_start']:m['data_start']+m['width']*m['height']]
    (folder/f'mip_{m["level"]}.indices').write_bytes(pixels)
-   (folder/f'mip_{m["level"]}_palette.png').write_bytes(png_rgb(m['width'],m['height'],colorize(pixels,rgb)))
+   (folder/f'mip_{m["level"]}_palette.png').write_bytes(png_rgb(m['width'],m['height'],colorize(column_major_to_rows(pixels,m["width"],m["height"]),rgb)))
   good.append(r);m=r['mips'][0];pixels=b[m['data_start']:m['data_start']+m['width']*m['height']]
-  viewer.append(dict(index=k,width=m['width'],height=m['height'],pixels=base64.b64encode(pixels).decode()))
+  viewer.append(dict(index=k,width=m['width'],height=m['height'],pixels=base64.b64encode(column_major_to_rows(pixels,m["width"],m["height"])).decode()))
   cards.append(f'<article><h2>Descriptor {k} · {m["width"]} × {m["height"]}</h2><canvas id="m{k}" width="{m["width"]}" height="{m["height"]}"></canvas><p><a href="material_{k:04d}/mip_0_palette.png">Palette PNG</a></p></article>')
  (a.out/'palette_dac.bin').write_bytes(dac);(a.out/'shade_rows.bin').write_bytes(shade)
- report=dict(asset=ASSET,identity=identity,record=record,descriptor_count=count,extracted_count=len(good),mip_count=sum(len(r["mips"]) for r in good),palette_offset=pal,shade_offset=s[4],shade_banks=banks,materials=good,rejected=rejected,scope='Structural extraction using previously witnessed A9 layout. File-palette previews; no cave runtime color replay, material names, geometry bindings or dynamic lighting assignments.')
+ report=dict(asset=ASSET,identity=identity,record=record,descriptor_count=count,extracted_count=len(good),mip_count=sum(len(r["mips"]) for r in good),palette_offset=pal,shade_offset=s[4],shade_banks=banks,materials=good,rejected=rejected,scope='Structural extraction using previously witnessed A9 layout. Column-major source pixels converted to row-major file-palette previews; no cave runtime color replay, material names, geometry bindings or dynamic lighting assignments.')
  (a.out/'materials.json').write_text(json.dumps(report,indent=2)+'\n')
  page='''<!doctype html><meta charset="utf-8"><title>Draracle cave materials</title><style>body{background:#202327;color:#eee;font:16px sans-serif;margin:24px}main{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}article{background:#30353b;padding:16px}h2{font-size:16px}canvas{image-rendering:pixelated;max-width:100%;max-height:256px}a{color:#9df}header{position:sticky;top:0;background:#202327;padding:12px;z-index:1}</style><header><h1>Original Draracle cave texture candidates</h1><p>26 structurally validated materials. Geometry bindings and live lighting remain unverified.</p><label><input id="shaded" type="checkbox"> Apply a file shade row</label> <input id="bank" type="range" min="0" max="65" value="0"><output id="value">0</output><p>Unchecked: direct file palette. Checked: diagnostic shade-row preview, not assigned scene lighting.</p></header><main>'''+''.join(cards)+'''</main><script>const materials='''+json.dumps(viewer)+''';const palette='''+json.dumps(list(rgb))+''';const shades='''+json.dumps(list(shade))+''';for(const m of materials)m.data=Uint8Array.from(atob(m.pixels),c=>c.charCodeAt(0));function draw(){const bank=Number(document.getElementById('bank').value),on=document.getElementById('shaded').checked;document.getElementById('value').textContent=bank;for(const m of materials){const c=document.getElementById('m'+m.index).getContext('2d'),im=c.createImageData(m.width,m.height);for(let i=0;i<m.data.length;i++){let v=m.data[i];if(on)v=shades[bank*256+v];im.data.set([palette[v*3],palette[v*3+1],palette[v*3+2],255],i*4)}c.putImageData(im,0,0)}}document.getElementById('bank').oninput=draw;document.getElementById('shaded').onchange=draw;draw();</script>'''
  (a.out/'review.html').write_text(page)

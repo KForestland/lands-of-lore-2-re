@@ -144,3 +144,11 @@ Descriptor3 resolves visually to a dog/photo test image; wall0 is labelled as
 unresolved cave use, not silently replaced with rock. Header/extent checks alone
 did not establish image layout. The correction is visually supported, not a
 new claim of complete native sampling parity.
+
+Layout audit follow-up: column_major_to_rows now lives in lol2_pixel_layout.py
+and is shared by the wall review, cave A9 exporter (PNG and shaded canvas), and
+80A9 floor variant preview. Non-A9 variant layouts remain explicitly unverified.
+127 A9 mip previews and five80A9 variant/mip previews are corrected. All207
+original indexed payload files across the cave/variant exports remain byte-identical.
+The complete portable asset build passes into a separate output directory;
+existing playable demo assets are not replaced by this audit.

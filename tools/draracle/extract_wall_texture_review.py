@@ -6,11 +6,8 @@ from lol2_cache_named_wall_fixture import load_named, require, sha
 from lol2_extract_cave_materials import ASSET,HASH
 from lol2_extract_draracle_geometry import decode
 from lol2_wall_material_checkpoint import sections
+from lol2_pixel_layout import column_major_to_rows
 from lol2_palette_png import rgb_palette,colorize,png_rgb
-
-def column_major_to_rows(data,width,height):
- require(len(data)==width*height,'Pixel extent mismatch')
- return bytes(data[x*height+y] for y in range(height) for x in range(width))
 
 def main():
  p=argparse.ArgumentParser(description=__doc__)
