@@ -37,3 +37,14 @@ cases plus72 synthetic,zero mismatches. GPU169/363 inspected both styles;
 lol2_out/draracle_pillar_{previews,heights,props}_2026-09-11/.
 Alpha, billboarding and lighting remain provisional; no prop collision
 or enemy placement added.
+
+Hanging vegetation expanded (2026-09-11): templates4/5/6/7 reference
+resources273/274/276/275, adding75 static previews. Total1171; previous
+1096 placements unchanged. Fifteen decoded resources pass72 mips/5359
+rows. Template flag1 retained; F1C58 resource routing masks4/8, F1DD4
+height selection masks2, so these draw paths use ordinary resource/height
+selection. This is not proof of flag1 gameplay or visibility semantics.
+Single-state/frame dimensions and anchors preserved. GPU391/122 inspected,
+1171-prop smoke and45 tests pass. Both Godot trees updated.
+Artifacts lol2_out/draracle_vegetation_{previews,props}_2026-09-11/.
+Lighting, alpha and billboard behavior remain provisional; enemy binding open.
