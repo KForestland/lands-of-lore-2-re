@@ -263,3 +263,13 @@ The portable build also runs the exact-partition allocation audit. This
 closes the earlier assumption of base-region index zero for every object.
 The world+38 to global22D10 handoff and live allocator/camera state are still
 unverified; these checks do not change the playable scene.
+
+## Descriptor initialization replay
+
+`verify_wall_descriptor_loader.py --game-root GAME --out OUT` checks all
+173 source descriptors and 256 synthetic byte patterns against E2516..E2528.
+The allocation fields survive unchanged. Byte 10 is cleared, byte 19 keeps
+its low nibble, and the 16-byte tail is zeroed. Original memset arguments
+are verified before modeling that library call. File reads and allocator
+are supplied boundaries; global22D10 handoff remains unresolved. The
+portable build runs this check.

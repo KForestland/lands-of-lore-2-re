@@ -17,6 +17,7 @@ def main():
  geometry=out/'geometry';textures=out/'textures';uvs=out/'uvs'
  run('run_geometry_pipeline.py','--game-root',game,'--out',geometry)
  run('verify_wall_visibility.py','--game-root',game,'--geometry-evidence',geometry,'--out',out/'visibility')
+ run('verify_wall_descriptor_loader.py','--game-root',game,'--out',out/'descriptor_loader')
  run('audit_wall_allocation_ranges.py','--game-root',game,'--out',out/'allocation_ranges')
  run('verify_wall_allocation_request.py','--game-root',game,'--out',out/'allocation_request')
  run('verify_wall_neighbor_mode.py','--game-root',game,'--out',out/'neighbor_mode')
