@@ -93,3 +93,11 @@ World vertices are supplied as synthetic transformed inputs; it does not replay
 camera transformation or clipping. Constructor flag transfer and final Godot UV
 parity are not established by this test. The export is an intermediate basis,
 not ready-to-use normalized texture coordinates.
+
+The bit8 rasterizer branch12D54F..12D584 clamps each signed coordinate to zero,
+adds its 16.16 offset, logically shifts for the mip level, then wraps by that
+mip's width/height in16.16 units. `verify_wall_uv_wrap.py` checks870 cases across
+58 extracted mip layouts, including negative coordinates, boundaries and offsets.
+Use `--game-root`, `--textures` pointing to wall_textures.json, and `--out`.
+No-overflow test inputs are used; arbitrary32-bit overflow is not modeled by the
+independent formula. Other flag branches and final Godot UV parity remain open.
