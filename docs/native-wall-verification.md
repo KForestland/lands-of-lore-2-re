@@ -220,3 +220,17 @@ count*160 bytes from A1958. Descriptor provenance and allocator execution
 remain open. The constructor fixture still supplies a single contiguous
 allocation for all cave regions, so its graph is not yet a live allocation
 validation. Mode selection itself is no longer hypothetical.
+
+## Allocation request and descriptor caller
+
+`verify_wall_allocation_request.py --game-root GAME --out OUT` verifies
+F5853..F5889 for 1,536 synthetic descriptors, covering every byte-sized
+count and six start indices. The starting region address is base+first*44;
+the requested object allocation is count*160 bytes. Zero count is passed
+through by this block, which contains no range validation.
+
+Caller disassembly E18BE..E18D9 computes descriptor index relative to global
+22D10 with stride 42. E1962/E1963 passes that descriptor to F584C. This
+connects allocation setup to the runtime descriptor table, but the file
+loader for this table remains unresolved. No actual cave allocation range
+is inferred from synthetic request fixtures. Included in the portable build.
