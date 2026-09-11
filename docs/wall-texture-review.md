@@ -78,3 +78,18 @@ The original floating-point instruction order is interpreted with host doubles
 and float32 stores; integer setup is supplied. Binary-exact inputs avoid rounding
 ambiguity. This verifies algebra, not guest x87 precision/control-state parity,
 orientation setup, camera semantics or downstream rasterization.
+
+Orientation setup: `verify_wall_orientation.py --game-root /path/to/lol2
+--geometry-evidence /path/to/geometry-pipeline-output --out /path/to/orientation`
+checks four branches per verified wall:12176 cases over3044 records, zero
+mismatches. Vertex order follows the wall record geometry:0/1 upper endpoints,
+2/3 lower endpoints. Orientation modes0,1,2,3 select anchor/other pairs(0,1),
+(1,0),(3,2),(2,3). Modes0/1 use minimum upper Y;2/3 use maximum lower Y.
+Horizontal direction is anchor minus other endpoint. Results export the five
+intermediate values X,Y,Z,U,V for the source-selected orientation.
+
+This interprets original instruction order with host doubles and float32 stores.
+World vertices are supplied as synthetic transformed inputs; it does not replay
+camera transformation or clipping. Constructor flag transfer and final Godot UV
+parity are not established by this test. The export is an intermediate basis,
+not ready-to-use normalized texture coordinates.
