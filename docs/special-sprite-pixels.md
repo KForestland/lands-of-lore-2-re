@@ -53,3 +53,12 @@ unsupported relocation rejection. Original assets remain outside Git.
 Next: preserve palette indices through the cave render path, or explicitly
 scope an approximate RGB fallback. Ordinary source shading and later
 runtime table changes remain separate research questions.
+
+## In-cave overlap diagnostic
+
+`export_special_sprite_indices.py` exports resource474 and the verified initial
+remap for the Godot special_cave_review scene. It checks the pinned inputs and
+records650 special pixels in the138×83 source. Two diagnostic copies composite
+in sequence over the cave with verified intermediate index/RGB results and
+controlled depth blockers. These are not original placements or native draw
+order evidence. See Godot docs/special-cave-review.md for validation and scope.
