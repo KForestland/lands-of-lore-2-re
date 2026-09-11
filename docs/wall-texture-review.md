@@ -184,3 +184,11 @@ across four modes. All2035 previous rectangular UV sets are unchanged. Three
 crossing-boundary spans remain deferred;50 materials and664 inactive records
 remain excluded, plus eight unresolved geometry records. Godot review loads2327
 meshes/23 textures. Native camera/clipping and material visibility parity remain open.
+
+Manual variant review:2373 walls/27 material descriptors,46 additional walls.
+Exporter includes raw-supported multi-image materials and records variant_count
+and preview_layout. Variant order is storage order only; no playback semantics.
+Godot V cycles manually and smoke constructs every wall/variant combination.
+Six crossing spans,one unsupported material record,664 inactive and eight
+unresolved geometry records remain excluded. Possible upside-down textures are
+an owner-deferred visual pass; existing mappings are not corrected speculatively.
