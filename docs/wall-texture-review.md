@@ -34,3 +34,15 @@ recovers the two stored callback slots using the existing embedded-MZ/LE page
 mapping. Tables 5D18 and 5DA4 have +28 stored values CDC08 and DFC88 at file
 offsets 1863012 and 1863152. These are not resolved runtime code addresses.
 LE fixup resolution and live renderer selection remain necessary before UV work.
+
+Relocation follow-up: the inspector now parses the relevant fixup page, rejecting
+unsupported formats. Both slots have internal 32-bit offset fixups targeting
+object2. Its page map resolves them to file15DC2C and file16FCAC, or analysis
+addresses126C2C and138CAC under the project's file-minus-37000 convention.
+These analysis addresses are not live guest addresses. Fixup records are at
+file518087 and518339 respectively. Both targets begin with the expected four
+register pushes; runtime renderer selection is still not captured.
+
+In the first target, 127561 dispatches on C000 scale bits; 12759C..1275B3
+reads wall bytes30/31 and shifts each left16. This identifies original UV-offset
+consumption but does not yet establish full scale/orientation/projection rules.
