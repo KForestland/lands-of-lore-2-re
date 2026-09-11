@@ -164,3 +164,25 @@ checks. It remains a host instruction replay with synthetic coordinates, not
 guest execution. Prologue/epilogue, runtime camera/window setup, edge-mask
 neighbor propagation and final draw submission remain outside this proof.
 The portable build runs this joined check alongside the narrower checks.
+
+## Reciprocal edge-mask propagation
+
+`verify_wall_neighbor_mask.py --game-root GAME --out OUT` checks 16,128
+cases against original F5EAF..F5EEF. Fixtures cover all 256 existing masks,
+null neighbors, each reciprocal slot, missing reciprocal links and duplicate
+links, with zero/nonzero helper results and negative/zero/positive scores.
+
+A null neighbor causes no write. Otherwise the search compares slots 0, 1
+and 2, choosing the first match. If none matches it uses slot 3 without
+checking that slot. This fallback is recorded as original behavior, not
+asserted to occur in the cave's live topology. The chosen edge always gets
+its checked bit. It gets its rejection bit when the helper returned zero
+or the signed facing score is nonpositive; all existing bits are preserved.
+For a successful helper and zero score, the current side remains eligible
+while the neighbor side gets rejected. This is not a blanket copy of the
+current edge mask. The helper-zero path does not depend on the scratch
+score even though the original reads it before checking the helper result.
+
+The portable build includes this check. Actual runtime neighbor construction,
+traversal scheduling, camera/window setup and live rendering remain outside
+this synthetic replay.
