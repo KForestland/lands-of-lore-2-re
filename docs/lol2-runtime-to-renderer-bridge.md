@@ -1,5 +1,7 @@
 # LoL2 Runtime-To-Renderer Bridge
 
+Current cave source/material findings: [draracle-restoration.md](draracle-restoration.md). The LOCAL.MIX atlas discussion below is historical and does not establish the current cave material source.
+
 Date: 2026-03-24
 
 ## Scope
@@ -113,22 +115,39 @@ Note: +0x6C was resolved by disassembly as a global timer snapshot from `0x101D0
 
 ## Texture Atlas Pipeline (Candidate — Not Runtime-Confirmed)
 
-The "blob-to-surface decode" question has a strong candidate answer. Wall textures appear to be in `LOCAL.MIX` Entry 1, stored as a raw texture atlas, rather than encoded within `L*_DC.MIX` Entry 2. Entry 2 appears to contain level geometry and art metadata, not pixel data. This reclassification is based on static analysis and 1 extracted texture, not runtime tracing.
+The "blob-to-surface decode" question does not yet have one fully closed public answer. One current public candidate model is that wall textures may be in `LOCAL.MIX` Entry 1 as a raw texture atlas rather than encoded directly within `L*_DC.MIX` Entry 2. This reclassification is based on static analysis and 1 extracted texture, not runtime tracing, so it should be treated as a narrowed source candidate rather than a fully proven source path.
 
-Based on the extraction of 1 texture that visually matches in-game appearance, the working hypothesis is that wall textures are stored as raw pixels in LOCAL.MIX rather than encoded within the L*_DC.MIX blob. This has not been confirmed by runtime tracing of the renderer's texture source pointer.
+Based on the extraction of 1 texture that visually matches in-game appearance, one working hypothesis is that wall textures are stored as raw pixels in LOCAL.MIX rather than encoded within the L*_DC.MIX blob. This has not been confirmed by runtime tracing of the renderer's texture source pointer, and should not be read as excluding other upstream builder/decoder stages.
 
-### Texture Atlas Format (LOCAL.MIX Entry 1)
+### Texture Atlas Candidate Structure (LOCAL.MIX Entry 1)
 
-Note: LOCAL.MIX Entry 1 was identified as the texture source by extracting a 128x128 texture that visually matches the Draracle Caverns cave wall. This identification has not been confirmed by runtime tracing of the column renderer's texture source pointer.
+Note: the current repo-safe verdict is narrower than the older atlas
+wording. `LOCAL.MIX` Entry 1 does contain one reproducible raw
+`128x128` image witness that visually matches the Draracle Caverns wall,
+but records `1..38` also parse cleanly under the repo's existing Sphere
+room-section model. So Entry 1 should currently be treated as a
+partially useful candidate container, not a solved 39-texture atlas.
 
-The atlas is a straightforward raw container:
+The reproducible structural facts are:
 
-1. `u16 count` — number of textures in the atlas (39 for L1)
+1. `u16 count` — record count (`39` for L1)
 2. `u16 header_size` — size of the header block
-3. `u32[count]` — offset table pointing to each texture
-4. Per texture: 10-byte sub-header + raw pixels (128x128 8bpp palette-indexed)
+3. `u32[count]` — offset-style table for the record starts
+4. Per record: 10-byte sub-header followed by record-local body bytes
 
-Each texture is 128x128 raw 8bpp palette-indexed. The column renderer reads texture columns from the atlas and composites them into the back buffer; the `REP MOVSD` blit then copies the composed back buffer to VGA.
+Current safest interpretation split:
+
+- record `0` is a reproducible raw `128x128` 8bpp witness
+- records `1..38` are structured wrapped records, not plain byte-0 raw
+  image payloads
+- those later records are not currently safe to describe as solved
+  independent texture sub-images
+
+The column renderer still reads palette-indexed texture columns from
+some prebuilt source surface and composites them into the back buffer;
+the remaining open question is whether Entry 1 record `0`, some other
+part of Entry 1, or another upstream source is the runtime wall-source
+owner for that lane.
 
 ### Column Renderer and Distance Shading
 
@@ -138,8 +157,8 @@ The final blit to VGA Mode X framebuffer occurs at `0x1017B710` via planar write
 
 ### Why This Was Misidentified
 
-Earlier work assumed textures were encoded within the `L*_DC.MIX` Entry 2 compressed blob because Entry 2 was the largest data block per level. In reality, Entry 2 is geometry/art metadata (8-byte mapping records, mipmap chain pointers), and the actual pixel data lives separately in the shared `LOCAL.MIX` atlas.
+Earlier work assumed textures were encoded within the `L*_DC.MIX` Entry 2 compressed blob because Entry 2 was the largest data block per level. The safer current read is narrower: Entry 2 is clearly not just "direct final wall pixels," and a separate source/build stage exists before final rendering. `LOCAL.MIX` Entry 1 is one current public candidate for that source side, but the full provenance chain is still open.
 
 ## Best Current Bridge Statement
 
-The current best model of the LoL2 texture pipeline: `LOCAL.MIX` Entry 1 likely provides raw 8bpp texture atlases (1 texture extracted and visually confirmed, not runtime-traced), `L*_DC.MIX` Entry 2 provides geometry/art metadata, and the column renderer applies distance shading before writing to VGA Mode X framebuffer. The entity pipeline (`L*_DC.MIX` descriptor parsing → `[+80]` live object → 6xxx renderer consumers) handles sprite/entity rendering through a shared-object model with C++ polymorphic dispatch (proven by disassembly). The wall texture source identification remains a strong candidate pending runtime confirmation of the renderer's texture source pointer.
+The current best public model of the LoL2 texture pipeline is still provisional at the source/provenance layer: `LOCAL.MIX` Entry 1 remains one strong raw-atlas candidate (1 texture extracted and visually confirmed, not runtime-traced), `L*_DC.MIX` Entry 2 is clearly not a simple direct final-pixel dump, and the column renderer applies distance shading before writing to VGA Mode X framebuffer. The entity pipeline (`L*_DC.MIX` descriptor parsing → `[+80]` live object → 6xxx renderer consumers) handles sprite/entity rendering through a shared-object model with C++ polymorphic dispatch (proven by disassembly). The remaining wall-side gap is exact runtime-confirmed source-path and palette provenance closure.

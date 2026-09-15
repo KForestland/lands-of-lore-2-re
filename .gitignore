@@ -9,3 +9,6 @@ __pycache__/
 # Large local scratch outputs
 tmp/
 scratch/
+
+# Locally generated restoration evidence and game data
+restoration-output/
