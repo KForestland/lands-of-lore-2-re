@@ -1,5 +1,7 @@
 # Lands of Lore II RE
 
+Recent update: [Executioner combat evidence and portable native verifier](docs/executioner-combat-evidence.md).
+
 Reverse-engineering and documentation for the DOS version of *Lands of Lore: Guardians of Destiny*.
 
 This repository contains:
