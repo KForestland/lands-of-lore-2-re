@@ -30,7 +30,12 @@ If you are new to this repo, read these in order:
 10. [`lol2-witness-map.md`](evidence/lol2-witness-map.md) — short map of the main witnesses and trace variants, so the docs above are easier to follow
 11. [`audio-inventory.md`](docs/audio-inventory.md) — what audio/music assets exist, their formats, and extraction status
 12. [`texture-map-inventory.md`](docs/texture-map-inventory.md) — the first deeper public catalog for LoL2 texture and map outputs
-13. [`lol2-script-engine-facts-2026-10.md`](docs/lol2-script-engine-facts-2026-10.md) — script opcodes, timers, record kinds, curse and collision facts from the 2026 Godot rebuild
+13. [`lol2-script-engine-facts-2026-10.md`](docs/lol2-script-engine-facts-2026-10.md) — script opcodes, timers, record kinds, curse and collision facts from the 2026 Godot rebuild, plus its [addendum](docs/lol2-script-engine-facts-2026-10-addendum.md)
+14. [`lol2-level-script-format.md`](docs/lol2-level-script-format.md) — level header tables and the two command streams; exporter for all 15 levels
+15. [`lol2-level-graph.md`](docs/lol2-level-graph.md) — the 15 levels, room archives and the decoded exit graph
+16. [`lol2-level-texture-container.md`](docs/lol2-level-texture-container.md) and [`lol2-wall-material-provenance.md`](docs/lol2-wall-material-provenance.md) — level textures and the traced wall-material source
+17. [`lol2-item-format.md`](docs/lol2-item-format.md) — item definition records and the item-use dispatcher
+18. [`lol2-vqa-v2.md`](docs/lol2-vqa-v2.md) — VQA v2 movies with partial codebooks
 
 ## Quick Start
 

@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-10-31 (October update)
+
+- Merged the September/October cave-restoration, executioner-combat and Act 1 replay-helper branches into main
+- Sound bank: LOCALLNG.MIX entry 4 is a named bank of 1179 rows (1008 AUD clips + 171 placeholders), not concatenated dialogue; `tools/lol2_sound_bank.py`
+- Level texture containers (`.TE_`, LZO1X) decoded; `tools/lol2_texture_container.py`
+- Wall-material source runtime-traced for one L20_BB span (zero mismatches); supersedes the LOCAL.MIX Entry 1 atlas candidate
+- Level script format and exporter (all 15 levels, 42,594 commands); level graph; item format; VQA v2 decoder; script engine facts and addendum
+- Private local paths replaced by placeholders
+
 ## 2026-03-24 (update 10 — texture atlas candidate identified + pipeline model updated)
 
 - **Texture source candidate: LOCAL.MIX Entry 1** contains a raw 8bpp texture atlas. 1 of 39 textures extracted and visually confirmed as Draracle Caverns cave wall. This identification is based on visual match, not runtime tracing of the renderer's texture source pointer.

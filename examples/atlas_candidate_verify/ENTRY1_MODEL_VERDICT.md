@@ -1,5 +1,12 @@
 # LOCAL.MIX Entry 1 Model Verdict
 
+> **Superseded (2026-10-31).** A runtime witness traced a drawn wall
+> material to the per-level `.TE_` texture container (L20_BB descriptor
+> `556`), not to `LOCAL.MIX` entry `1`. Entry 1 is no longer a wall-texture
+> candidate. See
+> [lol2-wall-material-provenance.md](../../docs/lol2-wall-material-provenance.md).
+> The note below is kept as history.
+
 Date: 2026-04-02
 
 This note records the current repo-safe verdict for `LOCAL.MIX` entry

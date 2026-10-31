@@ -27,6 +27,12 @@ texture/Godot generation for the supported populated cache.
 - `lol2_decompress_sphere.py` — Sphere engine LZ77 with chained room-group decoding (for LOCAL.MIX room sub-sections)
   - example: `python3 tools/lol2_decompress_sphere.py --help`
 
+### Added 2026-10
+- `lol2_sound_bank.py` — list or extract the named AUD sound bank in `LOCALLNG.MIX` (1008 clips)
+- `lol2_texture_container.py` — decode level `.TE_` texture containers (LZO1X; needs system liblzo2)
+- `lol2_source_format.py` + `lol2_export_scripts.py` — export a level's header tables and command streams to JSON (stdlib only)
+- `lol2_vqa_v2_decode.py` — VQA v2 decoder with partial-codebook support (needs NumPy; Pillow for `--out`)
+
 ### Container Utilities
 - `lol2_westwood_hash.py` — Westwood MIX hash functions (TD/RA era and TS/RA2 era)
   - example: `python3 tools/lol2_westwood_hash.py --help`
