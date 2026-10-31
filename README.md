@@ -27,6 +27,7 @@ If you are new to this repo, read these in order:
 9. [`lol2-witness-map.md`](evidence/lol2-witness-map.md) — short map of the main witnesses and trace variants, so the docs above are easier to follow
 10. [`audio-inventory.md`](docs/audio-inventory.md) — what audio/music assets exist, their formats, and extraction status
 11. [`texture-map-inventory.md`](docs/texture-map-inventory.md) — the first deeper public catalog for LoL2 texture and map outputs
+12. [`lol2-script-engine-facts-2026-10.md`](docs/lol2-script-engine-facts-2026-10.md) — script opcodes, timers, record kinds, curse and collision facts from the 2026 Godot rebuild
 
 ## Quick Start
 

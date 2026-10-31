@@ -111,7 +111,14 @@ def save_image(raw, w, h, out_path, bpp=8, palette=None):
             expanded.append(b & 0xF)
         img = Image.frombytes('P', (w, h), bytes(expanded[:n_pixels]))
         if not palette:
-            img.putpalette([i*17 for i in range(16)] * 16 + [0]*(256-16)*3)
+            # Build a valid 256-color grayscale-style palette, with the low 16
+            # entries expanded from 4-bit values and the rest padded to zero.
+            pal = []
+            for i in range(16):
+                v = i * 17
+                pal.extend([v, v, v])
+            pal.extend([0] * ((256 - 16) * 3))
+            img.putpalette(pal)
     else:
         return False
 

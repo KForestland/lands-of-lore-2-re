@@ -1,0 +1,1134 @@
+{
+  "atlas_header": {
+    "count": 39,
+    "header_size": 160
+  },
+  "compressed_probe": {
+    "decoder_tested": "lol2_sprite_decode.decompress_f80",
+    "match_count": 0,
+    "record_count": 38,
+    "records": [
+      {
+        "f80_decoded_size": 18,
+        "f80_matches_pixel_count": false,
+        "flags": 90,
+        "format_byte": 90,
+        "height": 32,
+        "index": 1,
+        "payload_prefix": "a000814ffc000081",
+        "payload_size": 19,
+        "pixel_count": 160,
+        "skip_probe": {
+          "exact_hits": [],
+          "near_hits": []
+        },
+        "width": 5
+      },
+      {
+        "f80_decoded_size": 11,
+        "f80_matches_pixel_count": false,
+        "flags": 0,
+        "format_byte": 128,
+        "height": 5,
+        "index": 2,
+        "payload_prefix": "a000854f4f394f58",
+        "payload_size": 12,
+        "pixel_count": 160,
+        "skip_probe": {
+          "exact_hits": [
+            {
+              "decoded_size": 160,
+              "skip": 2
+            }
+          ],
+          "near_hits": [
+            {
+              "decoded_size": 162,
+              "skip": 6
+            },
+            {
+              "decoded_size": 155,
+              "skip": 8
+            }
+          ]
+        },
+        "width": 32
+      },
+      {
+        "f80_error": "unpack_from requires a buffer of at least 47 bytes for unpacking 2 bytes at offset 45 (actual buffer size is 46)",
+        "f80_matches_pixel_count": false,
+        "flags": 0,
+        "format_byte": 128,
+        "height": 16,
+        "index": 3,
+        "payload_prefix": "9d00814fde000081",
+        "payload_size": 46,
+        "pixel_count": 256,
+        "skip_probe": {
+          "exact_hits": [],
+          "near_hits": []
+        },
+        "width": 16
+      },
+      {
+        "f80_decoded_size": 41,
+        "f80_matches_pixel_count": false,
+        "flags": 0,
+        "format_byte": 128,
+        "height": 16,
+        "index": 4,
+        "payload_prefix": "9d00814fcb000081",
+        "payload_size": 42,
+        "pixel_count": 256,
+        "skip_probe": {
+          "exact_hits": [],
+          "near_hits": []
+        },
+        "width": 16
+      },
+      {
+        "f80_decoded_size": 46,
+        "f80_matches_pixel_count": false,
+        "flags": 0,
+        "format_byte": 128,
+        "height": 16,
+        "index": 5,
+        "payload_prefix": "9d00874f4f394f58",
+        "payload_size": 55,
+        "pixel_count": 256,
+        "skip_probe": {
+          "exact_hits": [],
+          "near_hits": []
+        },
+        "width": 16
+      },
+      {
+        "f80_decoded_size": 29,
+        "f80_matches_pixel_count": false,
+        "flags": 0,
+        "format_byte": 128,
+        "height": 16,
+        "index": 6,
+        "payload_prefix": "9d0087000b4f4f39",
+        "payload_size": 37,
+        "pixel_count": 256,
+        "skip_probe": {
+          "exact_hits": [],
+          "near_hits": []
+        },
+        "width": 16
+      },
+      {
+        "f80_decoded_size": 3,
+        "f80_matches_pixel_count": false,
+        "flags": 0,
+        "format_byte": 128,
+        "height": 17,
+        "index": 7,
+        "payload_prefix": "cc008103c9000081",
+        "payload_size": 130,
+        "pixel_count": 289,
+        "skip_probe": {
+          "exact_hits": [],
+          "near_hits": []
+        },
+        "width": 17
+      },
+      {
+        "f80_decoded_size": 56,
+        "f80_matches_pixel_count": false,
+        "flags": 0,
+        "format_byte": 128,
+        "height": 17,
+        "index": 8,
+        "payload_prefix": "d900844f4f4f03ca",
+        "payload_size": 142,
+        "pixel_count": 289,
+        "skip_probe": {
+          "exact_hits": [],
+          "near_hits": []
+        },
+        "width": 17
+      },
+      {
+        "f80_decoded_size": 24,
+        "f80_matches_pixel_count": false,
+        "flags": 7,
+        "format_byte": 128,
+        "height": 17,
+        "index": 9,
+        "payload_prefix": "ce00874f4f394f58",
+        "payload_size": 133,
+        "pixel_count": 289,
+        "skip_probe": {
+          "exact_hits": [],
+          "near_hits": []
+        },
+        "width": 17
+      },
+      {
+        "f80_decoded_size": 0,
+        "f80_matches_pixel_count": false,
+        "flags": 1,
+        "format_byte": 128,
+        "height": 17,
+        "index": 10,
+        "payload_prefix": "d90087000c4f4f39",
+        "payload_size": 137,
+        "pixel_count": 289,
+        "skip_probe": {
+          "exact_hits": [],
+          "near_hits": []
+        },
+        "width": 17
+      },
+      {
+        "f80_decoded_size": 74,
+        "f80_matches_pixel_count": false,
+        "flags": 0,
+        "format_byte": 128,
+        "height": 29,
+        "index": 11,
+        "payload_prefix": "46028103d7000082",
+        "payload_size": 334,
+        "pixel_count": 841,
+        "skip_probe": {
+          "exact_hits": [],
+          "near_hits": []
+        },
+        "width": 29
+      },
+      {
+        "f80_decoded_size": 8,
+        "f80_matches_pixel_count": false,
+        "flags": 7,
+        "format_byte": 128,
+        "height": 29,
+        "index": 12,
+        "payload_prefix": "4502814f00018103",
+        "payload_size": 357,
+        "pixel_count": 841,
+        "skip_probe": {
+          "exact_hits": [],
+          "near_hits": []
+        },
+        "width": 29
+      },
+      {
+        "f80_decoded_size": 15,
+        "f80_matches_pixel_count": false,
+        "flags": 88,
+        "format_byte": 128,
+        "height": 29,
+        "index": 13,
+        "payload_prefix": "4b02884f4f394f5a",
+        "payload_size": 380,
+        "pixel_count": 841,
+        "skip_probe": {
+          "exact_hits": [],
+          "near_hits": []
+        },
+        "width": 29
+      },
+      {
+        "f80_decoded_size": 71,
+        "f80_matches_pixel_count": false,
+        "flags": 1,
+        "format_byte": 128,
+        "height": 29,
+        "index": 14,
+        "payload_prefix": "48028700184f4f39",
+        "payload_size": 363,
+        "pixel_count": 841,
+        "skip_probe": {
+          "exact_hits": [],
+          "near_hits": []
+        },
+        "width": 29
+      },
+      {
+        "f80_decoded_size": 96,
+        "f80_matches_pixel_count": false,
+        "flags": 2,
+        "format_byte": 128,
+        "height": 147,
+        "index": 15,
+        "payload_prefix": "b82e00025c00905b",
+        "payload_size": 11960,
+        "pixel_count": 22785,
+        "skip_probe": {
+          "exact_hits": [],
+          "near_hits": []
+        },
+        "width": 155
+      },
+      {
+        "f80_decoded_size": 32,
+        "f80_matches_pixel_count": false,
+        "flags": 0,
+        "format_byte": 79,
+        "height": 8,
+        "index": 16,
+        "payload_prefix": "42008300024f2001",
+        "payload_size": 50,
+        "pixel_count": 64,
+        "skip_probe": {
+          "exact_hits": [
+            {
+              "decoded_size": 64,
+              "skip": 10
+            }
+          ],
+          "near_hits": [
+            {
+              "decoded_size": 61,
+              "skip": 12
+            }
+          ]
+        },
+        "width": 8
+      },
+      {
+        "f80_decoded_size": 28,
+        "f80_matches_pixel_count": false,
+        "flags": 1,
+        "format_byte": 128,
+        "height": 6,
+        "index": 17,
+        "payload_prefix": "3000814f20018139",
+        "payload_size": 35,
+        "pixel_count": 48,
+        "skip_probe": {
+          "exact_hits": [],
+          "near_hits": [
+            {
+              "decoded_size": 40,
+              "skip": 3
+            }
+          ]
+        },
+        "width": 8
+      },
+      {
+        "f80_decoded_size": 43,
+        "f80_matches_pixel_count": false,
+        "flags": 1,
+        "format_byte": 128,
+        "height": 6,
+        "index": 18,
+        "payload_prefix": "3000814f20018f39",
+        "payload_size": 43,
+        "pixel_count": 48,
+        "skip_probe": {
+          "exact_hits": [
+            {
+              "decoded_size": 48,
+              "skip": 8
+            }
+          ],
+          "near_hits": [
+            {
+              "decoded_size": 43,
+              "skip": 0
+            },
+            {
+              "decoded_size": 44,
+              "skip": 10
+            },
+            {
+              "decoded_size": 40,
+              "skip": 12
+            }
+          ]
+        },
+        "width": 8
+      },
+      {
+        "f80_decoded_size": 38,
+        "f80_matches_pixel_count": false,
+        "flags": 1,
+        "format_byte": 128,
+        "height": 8,
+        "index": 19,
+        "payload_prefix": "4200814f20018300",
+        "payload_size": 55,
+        "pixel_count": 64,
+        "skip_probe": {
+          "exact_hits": [],
+          "near_hits": []
+        },
+        "width": 8
+      },
+      {
+        "f80_decoded_size": 40,
+        "f80_matches_pixel_count": false,
+        "flags": 2,
+        "format_byte": 128,
+        "height": 10,
+        "index": 20,
+        "payload_prefix": "66008300024f4001",
+        "payload_size": 59,
+        "pixel_count": 100,
+        "skip_probe": {
+          "exact_hits": [],
+          "near_hits": [
+            {
+              "decoded_size": 97,
+              "skip": 10
+            },
+            {
+              "decoded_size": 94,
+              "skip": 12
+            }
+          ]
+        },
+        "width": 10
+      },
+      {
+        "f80_decoded_size": 97,
+        "f80_matches_pixel_count": false,
+        "flags": 1,
+        "format_byte": 128,
+        "height": 10,
+        "index": 21,
+        "payload_prefix": "6400814f60018139",
+        "payload_size": 39,
+        "pixel_count": 100,
+        "skip_probe": {
+          "exact_hits": [],
+          "near_hits": [
+            {
+              "decoded_size": 97,
+              "skip": 0
+            }
+          ]
+        },
+        "width": 10
+      },
+      {
+        "f80_decoded_size": 48,
+        "f80_matches_pixel_count": false,
+        "flags": 1,
+        "format_byte": 128,
+        "height": 10,
+        "index": 22,
+        "payload_prefix": "6400814f60019639",
+        "payload_size": 85,
+        "pixel_count": 100,
+        "skip_probe": {
+          "exact_hits": [],
+          "near_hits": []
+        },
+        "width": 10
+      },
+      {
+        "f80_decoded_size": 48,
+        "f80_matches_pixel_count": false,
+        "flags": 1,
+        "format_byte": 128,
+        "height": 10,
+        "index": 23,
+        "payload_prefix": "6600814f40018300",
+        "payload_size": 72,
+        "pixel_count": 100,
+        "skip_probe": {
+          "exact_hits": [],
+          "near_hits": []
+        },
+        "width": 10
+      },
+      {
+        "f80_decoded_size": 146,
+        "f80_matches_pixel_count": false,
+        "flags": 2,
+        "format_byte": 128,
+        "height": 16,
+        "index": 24,
+        "payload_prefix": "a3009700046e0300",
+        "payload_size": 156,
+        "pixel_count": 256,
+        "skip_probe": {
+          "exact_hits": [],
+          "near_hits": []
+        },
+        "width": 16
+      },
+      {
+        "f80_decoded_size": 29,
+        "f80_matches_pixel_count": false,
+        "flags": 7,
+        "format_byte": 128,
+        "height": 16,
+        "index": 25,
+        "payload_prefix": "93009e00056d0001",
+        "payload_size": 137,
+        "pixel_count": 256,
+        "skip_probe": {
+          "exact_hits": [],
+          "near_hits": []
+        },
+        "width": 16
+      },
+      {
+        "f80_decoded_size": 23,
+        "f80_matches_pixel_count": false,
+        "flags": 7,
+        "format_byte": 128,
+        "height": 16,
+        "index": 26,
+        "payload_prefix": "6a008e00066d7d00",
+        "payload_size": 91,
+        "pixel_count": 256,
+        "skip_probe": {
+          "exact_hits": [],
+          "near_hits": []
+        },
+        "width": 16
+      },
+      {
+        "f80_decoded_size": 112,
+        "f80_matches_pixel_count": false,
+        "flags": 16,
+        "format_byte": 128,
+        "height": 16,
+        "index": 27,
+        "payload_prefix": "68008b00077c6f00",
+        "payload_size": 75,
+        "pixel_count": 256,
+        "skip_probe": {
+          "exact_hits": [],
+          "near_hits": []
+        },
+        "width": 16
+      },
+      {
+        "f80_decoded_size": 2,
+        "f80_matches_pixel_count": false,
+        "flags": 16,
+        "format_byte": 128,
+        "height": 16,
+        "index": 28,
+        "payload_prefix": "82008f00076e6d6d",
+        "payload_size": 116,
+        "pixel_count": 256,
+        "skip_probe": {
+          "exact_hits": [],
+          "near_hits": []
+        },
+        "width": 16
+      },
+      {
+        "f80_decoded_size": 51,
+        "f80_matches_pixel_count": false,
+        "flags": 8,
+        "format_byte": 128,
+        "height": 16,
+        "index": 29,
+        "payload_prefix": "99008f00067e7f00",
+        "payload_size": 142,
+        "pixel_count": 256,
+        "skip_probe": {
+          "exact_hits": [],
+          "near_hits": []
+        },
+        "width": 16
+      },
+      {
+        "f80_decoded_size": 56,
+        "f80_matches_pixel_count": false,
+        "flags": 8,
+        "format_byte": 128,
+        "height": 16,
+        "index": 30,
+        "payload_prefix": "a1009500067e7f00",
+        "payload_size": 156,
+        "pixel_count": 256,
+        "skip_probe": {
+          "exact_hits": [],
+          "near_hits": []
+        },
+        "width": 16
+      },
+      {
+        "f80_decoded_size": 47,
+        "f80_matches_pixel_count": false,
+        "flags": 5,
+        "format_byte": 128,
+        "height": 16,
+        "index": 31,
+        "payload_prefix": "9f00a100067e7f00",
+        "payload_size": 153,
+        "pixel_count": 256,
+        "skip_probe": {
+          "exact_hits": [],
+          "near_hits": []
+        },
+        "width": 16
+      },
+      {
+        "f80_decoded_size": 34,
+        "f80_matches_pixel_count": false,
+        "flags": 8,
+        "format_byte": 128,
+        "height": 16,
+        "index": 32,
+        "payload_prefix": "98009400067d7c00",
+        "payload_size": 150,
+        "pixel_count": 256,
+        "skip_probe": {
+          "exact_hits": [],
+          "near_hits": []
+        },
+        "width": 16
+      },
+      {
+        "f80_decoded_size": 24,
+        "f80_matches_pixel_count": false,
+        "flags": 8,
+        "format_byte": 128,
+        "height": 16,
+        "index": 33,
+        "payload_prefix": "7c008e00077c3f35",
+        "payload_size": 115,
+        "pixel_count": 256,
+        "skip_probe": {
+          "exact_hits": [],
+          "near_hits": []
+        },
+        "width": 16
+      },
+      {
+        "f80_decoded_size": 19,
+        "f80_matches_pixel_count": false,
+        "flags": 8,
+        "format_byte": 128,
+        "height": 16,
+        "index": 34,
+        "payload_prefix": "67008a00076a0300",
+        "payload_size": 80,
+        "pixel_count": 256,
+        "skip_probe": {
+          "exact_hits": [],
+          "near_hits": []
+        },
+        "width": 16
+      },
+      {
+        "f80_decoded_size": 29,
+        "f80_matches_pixel_count": false,
+        "flags": 16,
+        "format_byte": 128,
+        "height": 16,
+        "index": 35,
+        "payload_prefix": "6c009400063e7d00",
+        "payload_size": 94,
+        "pixel_count": 256,
+        "skip_probe": {
+          "exact_hits": [],
+          "near_hits": []
+        },
+        "width": 16
+      },
+      {
+        "f80_decoded_size": 100,
+        "f80_matches_pixel_count": false,
+        "flags": 16,
+        "format_byte": 128,
+        "height": 16,
+        "index": 36,
+        "payload_prefix": "9500ad00053f5f7f",
+        "payload_size": 139,
+        "pixel_count": 256,
+        "skip_probe": {
+          "exact_hits": [],
+          "near_hits": []
+        },
+        "width": 16
+      },
+      {
+        "f80_decoded_size": 74,
+        "f80_matches_pixel_count": false,
+        "flags": 59,
+        "format_byte": 128,
+        "height": 16,
+        "index": 37,
+        "payload_prefix": "a0009d00046c6f00",
+        "payload_size": 149,
+        "pixel_count": 256,
+        "skip_probe": {
+          "exact_hits": [],
+          "near_hits": []
+        },
+        "width": 16
+      },
+      {
+        "f80_decoded_size": 39,
+        "f80_matches_pixel_count": false,
+        "flags": 7,
+        "format_byte": 128,
+        "height": 16,
+        "index": 38,
+        "payload_prefix": "a700a100046d6f00",
+        "payload_size": 156,
+        "pixel_count": 256,
+        "skip_probe": {
+          "exact_hits": [],
+          "near_hits": []
+        },
+        "width": 16
+      }
+    ],
+    "skip_exact_hit_records": [
+      {
+        "exact_hits": [
+          {
+            "decoded_size": 160,
+            "skip": 2
+          }
+        ],
+        "height": 5,
+        "index": 2,
+        "width": 32
+      },
+      {
+        "exact_hits": [
+          {
+            "decoded_size": 64,
+            "skip": 10
+          }
+        ],
+        "height": 8,
+        "index": 16,
+        "width": 8
+      },
+      {
+        "exact_hits": [
+          {
+            "decoded_size": 48,
+            "skip": 8
+          }
+        ],
+        "height": 6,
+        "index": 18,
+        "width": 8
+      }
+    ],
+    "skip_match_count": 3
+  },
+  "compressed_sizes": {
+    "10x10": 4,
+    "155x147": 1,
+    "16x16": 19,
+    "17x17": 4,
+    "29x29": 4,
+    "32x5": 1,
+    "5x32": 1,
+    "8x6": 2,
+    "8x8": 2
+  },
+  "inputs": {
+    "atlas_size": 33430,
+    "entry_index": 1,
+    "local_mix": "/media/bob/Arikv/REFERENCE/game_files/lol2/LOCAL.MIX",
+    "lol2_root": "/media/bob/Arikv/REFERENCE/game_files/lol2"
+  },
+  "model": "LOCAL.MIX entry 1 atlas candidate",
+  "raw_sizes": {
+    "128x128": 1
+  },
+  "sphere_cross_check": {
+    "examples": [
+      {
+        "atlas": {
+          "flags": 0,
+          "format_byte": 0,
+          "height": 128,
+          "offset": 160,
+          "total_size": 16394,
+          "width": 128
+        },
+        "index": 0,
+        "sphere": {
+          "decoded_size": 16384,
+          "flags": 0,
+          "height": 128,
+          "total_size": 16394,
+          "width": 128
+        }
+      },
+      {
+        "atlas": {
+          "flags": 90,
+          "format_byte": 90,
+          "height": 32,
+          "offset": 16554,
+          "total_size": 29,
+          "width": 5
+        },
+        "index": 1,
+        "sphere": {
+          "decoded_size": 160,
+          "flags": 23130,
+          "height": 32,
+          "total_size": 29,
+          "width": 5
+        }
+      },
+      {
+        "atlas": {
+          "flags": 0,
+          "format_byte": 128,
+          "height": 5,
+          "offset": 16583,
+          "total_size": 22,
+          "width": 32
+        },
+        "index": 2,
+        "sphere": {
+          "decoded_size": 160,
+          "flags": 32768,
+          "height": 5,
+          "total_size": 22,
+          "width": 32
+        }
+      },
+      {
+        "atlas": {
+          "flags": 0,
+          "format_byte": 128,
+          "height": 16,
+          "offset": 16605,
+          "total_size": 56,
+          "width": 16
+        },
+        "index": 3,
+        "sphere": {
+          "decoded_size": 157,
+          "flags": 32768,
+          "height": 16,
+          "total_size": 56,
+          "width": 16
+        }
+      },
+      {
+        "atlas": {
+          "flags": 0,
+          "format_byte": 128,
+          "height": 16,
+          "offset": 16661,
+          "total_size": 52,
+          "width": 16
+        },
+        "index": 4,
+        "sphere": {
+          "decoded_size": 157,
+          "flags": 32768,
+          "height": 16,
+          "total_size": 52,
+          "width": 16
+        }
+      },
+      {
+        "atlas": {
+          "flags": 0,
+          "format_byte": 128,
+          "height": 16,
+          "offset": 16713,
+          "total_size": 65,
+          "width": 16
+        },
+        "index": 5,
+        "sphere": {
+          "decoded_size": 157,
+          "flags": 32768,
+          "height": 16,
+          "total_size": 65,
+          "width": 16
+        }
+      },
+      {
+        "atlas": {
+          "flags": 0,
+          "format_byte": 128,
+          "height": 16,
+          "offset": 16778,
+          "total_size": 47,
+          "width": 16
+        },
+        "index": 6,
+        "sphere": {
+          "decoded_size": 157,
+          "flags": 32768,
+          "height": 16,
+          "total_size": 47,
+          "width": 16
+        }
+      },
+      {
+        "atlas": {
+          "flags": 0,
+          "format_byte": 128,
+          "height": 17,
+          "offset": 16825,
+          "total_size": 140,
+          "width": 17
+        },
+        "index": 7,
+        "sphere": {
+          "decoded_size": 204,
+          "flags": 32768,
+          "height": 17,
+          "total_size": 140,
+          "width": 17
+        }
+      },
+      {
+        "atlas": {
+          "flags": 0,
+          "format_byte": 128,
+          "height": 17,
+          "offset": 16965,
+          "total_size": 152,
+          "width": 17
+        },
+        "index": 8,
+        "sphere": {
+          "decoded_size": 217,
+          "flags": 32768,
+          "height": 17,
+          "total_size": 152,
+          "width": 17
+        }
+      },
+      {
+        "atlas": {
+          "flags": 7,
+          "format_byte": 128,
+          "height": 17,
+          "offset": 17117,
+          "total_size": 143,
+          "width": 17
+        },
+        "index": 9,
+        "sphere": {
+          "decoded_size": 206,
+          "flags": 32775,
+          "height": 17,
+          "total_size": 143,
+          "width": 17
+        }
+      }
+    ],
+    "interpretation": "LOCAL.MIX entry 1 also parses cleanly as the repo's known Sphere room-section structure. Atlas-like dimensions/sizes alone do not prove these records are texture sub-images.",
+    "same_count_as_atlas": true,
+    "same_record_count": 39,
+    "same_record_dimensions_and_sizes": true,
+    "section_count": 39
+  },
+  "status": "candidate-only; not runtime-proven",
+  "texture0": {
+    "example_compare": {
+      "example_path": "/home/bob/lands-of-lore-2-re/examples/L1_wall_texture_000.png",
+      "example_sha256": "8bf2175442bea739e8f97a58b41d1fb5b311be5765020e861b8aa51fca90f8d1",
+      "matches_setup_png": true
+    },
+    "flags": 0,
+    "format_byte": 0,
+    "height": 128,
+    "index": 0,
+    "local_png": {
+      "path": "/home/bob/lands-of-lore-2-re/examples/atlas_candidate_verify/tex0_local.png",
+      "sha256": "2026b2504cf152d83c33f1d1ac9084e50eca8b8743279834910334dee1d6ff6e",
+      "stats": {
+        "size": [
+          128,
+          128
+        ],
+        "top10": [
+          {
+            "count": 8003,
+            "rgb": [
+              96,
+              40,
+              32
+            ]
+          },
+          {
+            "count": 5665,
+            "rgb": [
+              112,
+              52,
+              40
+            ]
+          },
+          {
+            "count": 1529,
+            "rgb": [
+              76,
+              28,
+              24
+            ]
+          },
+          {
+            "count": 721,
+            "rgb": [
+              100,
+              48,
+              48
+            ]
+          },
+          {
+            "count": 342,
+            "rgb": [
+              132,
+              64,
+              48
+            ]
+          },
+          {
+            "count": 97,
+            "rgb": [
+              132,
+              68,
+              64
+            ]
+          },
+          {
+            "count": 12,
+            "rgb": [
+              68,
+              24,
+              24
+            ]
+          },
+          {
+            "count": 9,
+            "rgb": [
+              100,
+              4,
+              4
+            ]
+          },
+          {
+            "count": 3,
+            "rgb": [
+              56,
+              20,
+              16
+            ]
+          },
+          {
+            "count": 1,
+            "rgb": [
+              152,
+              164,
+              200
+            ]
+          }
+        ],
+        "unique_rgb": 12
+      }
+    },
+    "offset": 160,
+    "pixel_sha256": "a5fa681f37225e66c6735458e423ebcde6d85501de81c6c38c20a08df306f87a",
+    "setup_png": {
+      "path": "/home/bob/lands-of-lore-2-re/examples/atlas_candidate_verify/tex0_setup.png",
+      "sha256": "8bf2175442bea739e8f97a58b41d1fb5b311be5765020e861b8aa51fca90f8d1",
+      "stats": {
+        "size": [
+          128,
+          128
+        ],
+        "top10": [
+          {
+            "count": 8003,
+            "rgb": [
+              252,
+              136,
+              76
+            ]
+          },
+          {
+            "count": 5665,
+            "rgb": [
+              244,
+              128,
+              88
+            ]
+          },
+          {
+            "count": 1529,
+            "rgb": [
+              252,
+              144,
+              76
+            ]
+          },
+          {
+            "count": 721,
+            "rgb": [
+              160,
+              104,
+              56
+            ]
+          },
+          {
+            "count": 342,
+            "rgb": [
+              240,
+              148,
+              96
+            ]
+          },
+          {
+            "count": 97,
+            "rgb": [
+              168,
+              100,
+              48
+            ]
+          },
+          {
+            "count": 12,
+            "rgb": [
+              168,
+              104,
+              60
+            ]
+          },
+          {
+            "count": 9,
+            "rgb": [
+              24,
+              12,
+              8
+            ]
+          },
+          {
+            "count": 3,
+            "rgb": [
+              252,
+              152,
+              72
+            ]
+          },
+          {
+            "count": 1,
+            "rgb": [
+              108,
+              56,
+              48
+            ]
+          }
+        ],
+        "unique_rgb": 12
+      }
+    },
+    "total_size": 16394,
+    "width": 128
+  },
+  "texture_counts": {
+    "compressed": 38,
+    "raw": 1
+  }
+}

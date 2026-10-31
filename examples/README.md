@@ -7,7 +7,10 @@ Current example set:
 - `L1_DC_wall_map.png`
   - wall-map style output for `L1_DC`
 - `L1_wall_texture_000.png`
-  - first clean raw wall-atlas texture extracted from `LOCAL.MIX` entry 1 using the level-1/global setup palette path
+  - historical raw image witness extracted from `LOCAL.MIX` entry 1 using
+    the level-1/global setup palette path
+  - do not treat this as a verified in-game wall texture without the
+    narrower repo-safe caveats in `atlas_candidate_verify/ENTRY1_MODEL_VERDICT.md`
 - `draracle_clean_map.png`
   - cleaned Draracle Caverns map-style output
 
