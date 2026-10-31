@@ -1,9 +1,16 @@
 #!/usr/bin/env python3
-"""Extract wall textures from Lands of Lore 2 LOCAL.MIX.
+"""Extract the current LOCAL.MIX Entry 1 texture candidate records.
 
-Wall textures are stored as an atlas in LOCAL.MIX Entry 1.
-Each texture is 8bpp palette-indexed.  Raw (uncompressed) textures
-are extracted to PNG; compressed textures are reported but skipped.
+This tool preserves the older Entry 1 atlas-style parser as a workspace
+utility, but the repo-safe verdict is now narrower than "solved wall
+texture atlas":
+
+- record 0 is a reproducible raw 128x128 witness
+- records 1..38 are structured wrapped records
+- those later records also parse cleanly under the repo's Sphere model
+
+So this script should be read as an Entry 1 candidate extractor, not as
+final proof that all parsed records are wall textures.
 
 Atlas layout (Entry 1)
 ----------------------
@@ -11,14 +18,14 @@ Atlas layout (Entry 1)
   u16  header_size   -- byte offset where texture data begins (= 4 + count*4)
   u32[count] offsets -- per-entry: u16 pad(0) + u16 offset
 
-  Texture 0 starts implicitly at *header_size*.
-  offset[i] for i in 0..count-2 gives the start of texture i+1.
+  Record 0 starts implicitly at *header_size*.
+  offset[i] for i in 0..count-2 gives the start of record i+1.
   offset[count-1] is an end-of-data sentinel.
 
-Per-texture sub-header (10 bytes)
----------------------------------
+Per-record sub-header (10 bytes)
+--------------------------------
   u8   flags
-  u8   format       -- 0x00 = raw 8bpp, 0x80 = compressed
+  u8   format       -- 0x00 = raw witness, 0x80 = wrapped/structured
   u16  reserved
   u8   width
   u8   height

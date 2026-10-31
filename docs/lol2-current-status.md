@@ -5,8 +5,8 @@ Date: 2026-03-24
 ## Status
 
 - RE closure: effectively complete
-- Proof levels vary by subsystem: entity pipeline PROVEN by disassembly; wall texture format PROVEN by disassembly; texture atlas source identification based on 1 extracted texture (not runtime-traced); audio decoder verified on 1 track + 1 clip (tool exists for bulk); entity descriptor fields range from PROVEN (f12-f13) to INFERRED (f0-f9, f19-f23)
-- Remaining work is minor: mipmap sub-texture format=0x80, HMI-MIDI converter, sound effects container
+- Proof levels vary by subsystem: entity pipeline PROVEN by disassembly; wall texture format PROVEN by disassembly; exact wall source provenance remains OPEN; one texture-atlas source model exists from 1 extracted texture but is not runtime-traced; audio decoder verified on 1 track + 1 clip (tool exists for bulk); entity descriptor fields range from PROVEN (f12-f13) to INFERRED (f0-f9, f19-f23)
+- Remaining work: exact wall source/palette/runtime provenance closure, mipmap sub-texture format=0x80, HMI-MIDI converter, sound effects container
 
 ## Strongest Current Results
 
@@ -90,9 +90,9 @@ The fast/alternate branch split is **distributed across multiple bit tests** in 
 
 See `lol2-entity-object-map.md` for the complete proven field layout.
 
-## Remaining Open Items (Minor)
+## Remaining Open Items
 
-- Wall texture pixel format: **PROVEN 8bpp palette-indexed** by renderer disassembly. Texture source: **LOCAL.MIX Entry 1** (raw atlas, not in L*_DC.MIX Entry 2). See [`runtime-to-renderer bridge`](lol2-runtime-to-renderer-bridge.md#texture-atlas-pipeline-candidate--not-runtime-confirmed).
+- Wall texture pixel format: **PROVEN 8bpp palette-indexed** by renderer disassembly. What remains open is exact source/palette/runtime provenance. One current public candidate is `LOCAL.MIX` Entry 1 as a raw atlas, but that identification is not runtime-traced and should not be read as full closure by itself. See [`runtime-to-renderer bridge`](lol2-runtime-to-renderer-bridge.md#texture-atlas-pipeline-candidate--not-runtime-confirmed).
 - 39 compressed sub-textures (mipmaps) use format=0x80 — not yet decoded
 - HMI-MIDI to standard MIDI converter not written
 - Sound effects container location not confirmed

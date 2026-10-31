@@ -1,0 +1,193 @@
+{
+  "entry1_record0": {
+    "height": 128,
+    "index": 0,
+    "total_size": 16394,
+    "width": 128
+  },
+  "interpretation": "These checks only test direct raw reuse under straightforward layout assumptions. Negative results do not prove Entry 1 record 0 is unrelated to runtime wall rendering, but they do argue against the simplest 'captured wall buffer == raw tex0' story.",
+  "model": "LOCAL.MIX entry 1 record 0 runtime witness check",
+  "status": "narrow direct-reuse check only",
+  "targets": [
+    {
+      "best_row_match": {
+        "equal_bytes": 3,
+        "lhs_row": 1,
+        "rhs_row": 114,
+        "row_width": 128
+      },
+      "byte_length": 16384,
+      "exact_full_match": false,
+      "exact_patch_match": {
+        "16": null,
+        "8": null
+      },
+      "exact_substring_match": false,
+      "height": 128,
+      "name": "l1cap_wall_lane",
+      "path": "/home/bob/lol2_out/l1cap_wall_lane.bin",
+      "variant_best_row_match": {
+        "flipx": {
+          "equal_bytes": 3,
+          "lhs_row": 8,
+          "rhs_row": 15,
+          "row_width": 128
+        },
+        "flipy": {
+          "equal_bytes": 3,
+          "lhs_row": 30,
+          "rhs_row": 15,
+          "row_width": 128
+        },
+        "orig": {
+          "equal_bytes": 3,
+          "lhs_row": 1,
+          "rhs_row": 114,
+          "row_width": 128
+        },
+        "transpose": {
+          "equal_bytes": 3,
+          "lhs_row": 33,
+          "rhs_row": 114,
+          "row_width": 128
+        }
+      },
+      "width": 128
+    },
+    {
+      "best_row_match": {
+        "equal_bytes": 3,
+        "lhs_row": 1,
+        "rhs_row": 114,
+        "row_width": 128
+      },
+      "byte_length": 16384,
+      "exact_full_match": false,
+      "exact_patch_match": {
+        "16": null,
+        "8": null
+      },
+      "exact_substring_match": false,
+      "height": 128,
+      "name": "bigdump_wall_lane",
+      "path": "/home/bob/lol2_out/bigdump_wall_lane.bin",
+      "variant_best_row_match": {
+        "flipx": {
+          "equal_bytes": 3,
+          "lhs_row": 97,
+          "rhs_row": 114,
+          "row_width": 128
+        },
+        "flipy": {
+          "equal_bytes": 3,
+          "lhs_row": 126,
+          "rhs_row": 114,
+          "row_width": 128
+        },
+        "orig": {
+          "equal_bytes": 3,
+          "lhs_row": 1,
+          "rhs_row": 114,
+          "row_width": 128
+        },
+        "transpose": {
+          "equal_bytes": 3,
+          "lhs_row": 33,
+          "rhs_row": 114,
+          "row_width": 128
+        }
+      },
+      "width": 128
+    },
+    {
+      "best_row_match": {
+        "equal_bytes": 16,
+        "lhs_row": 59,
+        "rhs_row": 119,
+        "row_width": 128
+      },
+      "byte_length": 65536,
+      "exact_full_match": false,
+      "exact_patch_match": {
+        "16": null,
+        "8": null
+      },
+      "exact_substring_match": false,
+      "height": 256,
+      "name": "l1cap_renderer_texture",
+      "path": "/home/bob/lol2_out/l1cap_renderer_texture.bin",
+      "variant_best_row_match": {
+        "flipx": {
+          "equal_bytes": 16,
+          "lhs_row": 102,
+          "rhs_row": 145,
+          "row_width": 128
+        },
+        "flipy": {
+          "equal_bytes": 16,
+          "lhs_row": 68,
+          "rhs_row": 119,
+          "row_width": 128
+        },
+        "orig": {
+          "equal_bytes": 16,
+          "lhs_row": 59,
+          "rhs_row": 119,
+          "row_width": 128
+        },
+        "transpose": {
+          "equal_bytes": 15,
+          "lhs_row": 16,
+          "rhs_row": 119,
+          "row_width": 128
+        }
+      },
+      "width": 256
+    },
+    {
+      "best_row_match": {
+        "equal_bytes": 1,
+        "lhs_row": 0,
+        "rhs_row": 0,
+        "row_width": 128
+      },
+      "byte_length": 8192,
+      "exact_full_match": false,
+      "exact_patch_match": {
+        "16": null,
+        "8": null
+      },
+      "exact_substring_match": false,
+      "height": 64,
+      "name": "bigdump_renderer_src",
+      "path": "/home/bob/lol2_out/bigdump_renderer_src.bin",
+      "variant_best_row_match": {
+        "flipx": {
+          "equal_bytes": 1,
+          "lhs_row": 0,
+          "rhs_row": 0,
+          "row_width": 128
+        },
+        "flipy": {
+          "equal_bytes": 1,
+          "lhs_row": 1,
+          "rhs_row": 1,
+          "row_width": 128
+        },
+        "orig": {
+          "equal_bytes": 1,
+          "lhs_row": 0,
+          "rhs_row": 0,
+          "row_width": 128
+        },
+        "transpose": {
+          "equal_bytes": 1,
+          "lhs_row": 0,
+          "rhs_row": 0,
+          "row_width": 128
+        }
+      },
+      "width": 128
+    }
+  ]
+}
