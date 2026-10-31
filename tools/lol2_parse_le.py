@@ -90,7 +90,7 @@ def main():
         "exe_path", nargs="?",
         default=os.environ.get(
             "LOL2_EXE",
-            "/media/bob/Arikv/REFERENCE/game_files/lol2/LOLG.DAT"
+            "lol2_game/LOLG.DAT"
         ),
         help="Path to LOLG.DAT (default: $LOL2_EXE or built-in path)"
     )

@@ -43,7 +43,7 @@ Usage
   python lol2_wall_texture_extract.py [-o OUTPUT_DIR] [-p setup|local]
 
   Environment:  LOL2_DAT  path to the LoL2 game root (parent of DAT/)
-                          default: /media/bob/Arikv/REFERENCE/game_files/lol2/
+                          default: lol2_game/
 """
 
 from __future__ import annotations
@@ -62,7 +62,7 @@ from lol2_mix_parser import read_mix, read_mix_entry  # noqa: E402
 # ---------------------------------------------------------------------------
 # Defaults
 # ---------------------------------------------------------------------------
-DEFAULT_LOL2_ROOT = "/media/bob/Arikv/REFERENCE/game_files/lol2/"
+DEFAULT_LOL2_ROOT = "lol2_game/"
 SETUP_PAL_ENTRY = 54       # SETUP.MIX palette entry index
 LOCAL_PAL_ENTRY = 94       # LOCAL.MIX level palette entry index
 ATLAS_ENTRY = 1            # LOCAL.MIX entry containing the wall atlas

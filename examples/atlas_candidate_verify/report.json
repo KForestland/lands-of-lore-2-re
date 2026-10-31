@@ -729,8 +729,8 @@
   "inputs": {
     "atlas_size": 33430,
     "entry_index": 1,
-    "local_mix": "/media/bob/Arikv/REFERENCE/game_files/lol2/LOCAL.MIX",
-    "lol2_root": "/media/bob/Arikv/REFERENCE/game_files/lol2"
+    "local_mix": "<LOL2_GAME_DIR>/LOCAL.MIX",
+    "lol2_root": "<LOL2_GAME_DIR>"
   },
   "model": "LOCAL.MIX entry 1 atlas candidate",
   "raw_sizes": {
@@ -928,7 +928,7 @@
   "status": "candidate-only; not runtime-proven",
   "texture0": {
     "example_compare": {
-      "example_path": "/home/bob/lands-of-lore-2-re/examples/L1_wall_texture_000.png",
+      "example_path": "<REPO>/examples/L1_wall_texture_000.png",
       "example_sha256": "8bf2175442bea739e8f97a58b41d1fb5b311be5765020e861b8aa51fca90f8d1",
       "matches_setup_png": true
     },
@@ -937,7 +937,7 @@
     "height": 128,
     "index": 0,
     "local_png": {
-      "path": "/home/bob/lands-of-lore-2-re/examples/atlas_candidate_verify/tex0_local.png",
+      "path": "<REPO>/examples/atlas_candidate_verify/tex0_local.png",
       "sha256": "2026b2504cf152d83c33f1d1ac9084e50eca8b8743279834910334dee1d6ff6e",
       "stats": {
         "size": [
@@ -1032,7 +1032,7 @@
     "offset": 160,
     "pixel_sha256": "a5fa681f37225e66c6735458e423ebcde6d85501de81c6c38c20a08df306f87a",
     "setup_png": {
-      "path": "/home/bob/lands-of-lore-2-re/examples/atlas_candidate_verify/tex0_setup.png",
+      "path": "<REPO>/examples/atlas_candidate_verify/tex0_setup.png",
       "sha256": "8bf2175442bea739e8f97a58b41d1fb5b311be5765020e861b8aa51fca90f8d1",
       "stats": {
         "size": [

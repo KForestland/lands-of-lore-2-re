@@ -29,16 +29,16 @@ The atlas verifier reproduces the repo example exactly:
 - compressed record count: `38`
 - texture `0`: `128x128`
 - setup-palette render matches:
-  [L1_wall_texture_000.png](/home/bob/lands-of-lore-2-re/examples/L1_wall_texture_000.png)
+  [L1_wall_texture_000.png](../../examples/L1_wall_texture_000.png)
 
 Artifacts:
 
-- [lol2_verify_wall_atlas_candidate.py](/home/bob/lands-of-lore-2-re/tools/lol2_verify_wall_atlas_candidate.py)
-- [report.json](/home/bob/lands-of-lore-2-re/examples/atlas_candidate_verify/report.json)
-- [tex0_setup.png](/home/bob/lands-of-lore-2-re/examples/atlas_candidate_verify/tex0_setup.png)
-- [tex0_local.png](/home/bob/lands-of-lore-2-re/examples/atlas_candidate_verify/tex0_local.png)
-- [ENTRY1_RUNTIME_BUFFER_CHECK_2026-04-02.md](/home/bob/lands-of-lore-2-re/examples/atlas_candidate_verify/ENTRY1_RUNTIME_BUFFER_CHECK_2026-04-02.md)
-- [entry1_runtime_witness_check.json](/home/bob/lands-of-lore-2-re/examples/atlas_candidate_verify/entry1_runtime_witness_check.json)
+- [lol2_verify_wall_atlas_candidate.py](../../tools/lol2_verify_wall_atlas_candidate.py)
+- [report.json](../../examples/atlas_candidate_verify/report.json)
+- [tex0_setup.png](../../examples/atlas_candidate_verify/tex0_setup.png)
+- [tex0_local.png](../../examples/atlas_candidate_verify/tex0_local.png)
+- [ENTRY1_RUNTIME_BUFFER_CHECK_2026-04-02.md](../../examples/atlas_candidate_verify/ENTRY1_RUNTIME_BUFFER_CHECK_2026-04-02.md)
+- [entry1_runtime_witness_check.json](../../examples/atlas_candidate_verify/entry1_runtime_witness_check.json)
 
 ### 2. Entry 1 is definitely structured
 

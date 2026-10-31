@@ -25,7 +25,7 @@
       "exact_substring_match": false,
       "height": 128,
       "name": "l1cap_wall_lane",
-      "path": "/home/bob/lol2_out/l1cap_wall_lane.bin",
+      "path": "<LOL2_OUT>/l1cap_wall_lane.bin",
       "variant_best_row_match": {
         "flipx": {
           "equal_bytes": 3,
@@ -70,7 +70,7 @@
       "exact_substring_match": false,
       "height": 128,
       "name": "bigdump_wall_lane",
-      "path": "/home/bob/lol2_out/bigdump_wall_lane.bin",
+      "path": "<LOL2_OUT>/bigdump_wall_lane.bin",
       "variant_best_row_match": {
         "flipx": {
           "equal_bytes": 3,
@@ -115,7 +115,7 @@
       "exact_substring_match": false,
       "height": 256,
       "name": "l1cap_renderer_texture",
-      "path": "/home/bob/lol2_out/l1cap_renderer_texture.bin",
+      "path": "<LOL2_OUT>/l1cap_renderer_texture.bin",
       "variant_best_row_match": {
         "flipx": {
           "equal_bytes": 16,
@@ -160,7 +160,7 @@
       "exact_substring_match": false,
       "height": 64,
       "name": "bigdump_renderer_src",
-      "path": "/home/bob/lol2_out/bigdump_renderer_src.bin",
+      "path": "<LOL2_OUT>/bigdump_renderer_src.bin",
       "variant_best_row_match": {
         "flipx": {
           "equal_bytes": 1,

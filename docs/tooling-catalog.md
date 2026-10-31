@@ -29,8 +29,8 @@ What it enabled:
 
 Typical local wrappers used in the workspace:
 
-- `/home/bob/lol2_dosbox_guest_trace.sh`
-- `/home/bob/run_lol2_l9_watch.sh`
+- `./lol2_dosbox_guest_trace.sh`
+- `./run_lol2_l9_watch.sh`
 
 These wrappers are not yet copied into this repo because they still need cleanup before publication.
 
