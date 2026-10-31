@@ -53,8 +53,8 @@ class CreatureReplay(ResolverReplay):
                 equal = a == b if op == 'cmp' else (a & b) == 0
                 below = a < b if op == 'cmp' else False
                 less = signed(a, o[0].size*8) < signed(b, o[0].size*8) if op == 'cmp' else signed(a & b, o[0].size*8) < 0
-            elif op in ('jmp', 'je', 'jne', 'jge', 'jl', 'jg', 'jle', 'jb', 'ja', 'jbe'):
-                if {'jmp': True, 'je': equal, 'jne': not equal, 'jge': not less, 'jl': less, 'jg': not less and not equal, 'jle': less or equal, 'jb': below, 'ja': not below and not equal, 'jbe': below or equal}[op]:
+            elif op in ('jmp', 'je', 'jne', 'jge', 'jl', 'jg', 'jle', 'jb', 'ja', 'jbe', 'jae'):
+                if {'jmp': True, 'je': equal, 'jne': not equal, 'jge': not less, 'jl': less, 'jg': not less and not equal, 'jle': less or equal, 'jb': below, 'ja': not below and not equal, 'jbe': below or equal, 'jae': not below}[op]:
                     nxt = self.get(i, o[0])
             elif op == 'imul' and len(o) == 1:
                 require(o[0].size == 4, 'Only dword one-operand IMUL supported')
