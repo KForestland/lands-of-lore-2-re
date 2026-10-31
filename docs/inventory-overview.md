@@ -83,8 +83,8 @@ Current read:
 
 - **RESOLVED**: audio inventory now published in `audio-inventory.md`
 - 1 music track decoded and verified from DMUSIC.MIX (195.5s); tool exists for all 33 tracks (~116 min est.)
-- 1008 dialogue clips identified in LOCALLNG.MIX (first clip decoded, bulk extraction straightforward)
-- Remaining gap: sound effects container location, HMI-MIDI converter
+- LOCALLNG.MIX entry 4 (key 1570429112) is a named AUD sound bank: 1179 rows, 1008 clips (22050 Hz mono, codec 99) and 171 size-1 placeholders; tool `tools/lol2_sound_bank.py` (2026-10-31)
+- Remaining gap: full cue-to-row map for the sound bank, HMI-MIDI converter
 
 ### 2. Script / Dialogue / Text Asset Inventory
 

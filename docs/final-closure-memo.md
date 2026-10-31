@@ -1,6 +1,6 @@
 # LoL2 Final Closure Memo
 
-Current status: [Draracle restoration findings](draracle-restoration.md). This March memo is historical; its asset/provenance discussion is not the latest cave pipeline.
+Current status: [Draracle restoration findings](draracle-restoration.md). This March memo is historical; its asset/provenance discussion is not the latest cave pipeline. The October 2026 results (sound bank, level textures, wall-material source, scripts, items) are in [current status](lol2-current-status.md).
 
 Date: 2026-03-24
 

@@ -68,7 +68,9 @@ target's vtable+0x80, gated by flag 0x400, then the hit filter AE2C8.
 
 ## Still open
 
-- The caller paths for control and prop events, and opcodes 196/204, which are heavy in
-  Acts 2-3 (L9_DR, L14_HT, L16_CA, L20_BB) and nearly absent in Act 1.
-- The March gaps listed in `lol2-current-status.md` (exact wall-source provenance, mipmap
-  format 0x80, HMI-MIDI conversion) are not changed by this note.
+- The caller paths for control and prop events.
+- Opcodes 196/204 (heavy in Acts 2-3): now partly decoded, see the
+  [addendum](lol2-script-engine-facts-2026-10-addendum.md).
+- Wall-source provenance is closed for one traced span
+  ([wall material provenance](lol2-wall-material-provenance.md)); texture flags other than 0xA9
+  and HMI-MIDI conversion remain open.
