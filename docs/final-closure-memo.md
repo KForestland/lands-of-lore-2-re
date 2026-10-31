@@ -1,10 +1,12 @@
 # LoL2 Final Closure Memo
 
+Current status: [Draracle restoration findings](draracle-restoration.md). This March memo is historical; its asset/provenance discussion is not the latest cave pipeline.
+
 Date: 2026-03-24
 
 ## Status
 
-The LoL2 lane is effectively complete at the runtime/entity and final-render-format layers — the entity instantiation-to-rendering pipeline is fully decoded via native disassembly, and the wall texture format is proven 8bpp palette-indexed. The exact wall source path is not fully closed: one strong current candidate is LOCAL.MIX Entry 1 (1 of 39 textures extracted and visually confirmed), but that source identification is not runtime-traced as the renderer source and should be read as a provenance candidate rather than total closure by itself. Audio decode is sample-verified (1 music track and 1 dialogue clip verified; a tool exists for bulk extraction of 33 tracks + 1008 clips, but bulk extraction has not been run and verified end-to-end). All 24 entity descriptor fields are classified by cross-level statistical analysis with mixed proof levels (f12-f13 proven by runtime trace; f14=HP strongly inferred at 95.3% match; f0-f9 and f19-f23 inferred from type invariance and value ranges). Only a few follow-through items remain.
+The historical runtime/entity and render-format results are substantial but do not establish overall RE closure — the entity instantiation-to-rendering pipeline is fully decoded via native disassembly, and the wall texture format is proven 8bpp palette-indexed. The exact wall source path is not fully closed: one strong current candidate is LOCAL.MIX Entry 1 (1 of 39 textures extracted and visually confirmed), but that source identification is not runtime-traced as the renderer source and should be read as a provenance candidate rather than total closure by itself. Audio decode is sample-verified (1 music track and 1 dialogue clip verified; a tool exists for bulk extraction of 33 tracks + 1008 clips, but bulk extraction has not been run and verified end-to-end). All 24 entity descriptor fields are classified by cross-level statistical analysis with mixed proof levels (f12-f13 proven by runtime trace; f14=HP strongly inferred at 95.3% match; f0-f9 and f19-f23 inferred from type invariance and value ranges). Full-cave geometry, materials and gameplay restoration remain active.
 
 This repo does not claim that every LoL2 asset family is solved to the same depth as LoL1. It does claim that the compact runtime lane is now strong enough to serve as the public closure backbone for the current state of the project.
 
@@ -59,7 +61,7 @@ That path is now stable enough to support safe public statements about:
 - renderer code at segment base `0x10170000` (separate from entity code at `0x100B0000`)
 - all 130+ exotic format attempts (NCC, 7bpp, 16bpp) confirmed wrong
 
-## What Remains Open (Minor)
+## What Remains Open
 
 - exact wall source/palette/runtime provenance closure
 - 39 compressed sub-textures (mipmaps) use format=0x80 — not yet decoded
@@ -69,7 +71,7 @@ That path is now stable enough to support safe public statements about:
 
 ## Safe Bottom Line
 
-LoL2 is no longer blocked on any major question. The current public repo captures the complete picture:
+Significant restoration questions remain open. The current public repo captures the complete picture:
 
 - compact descriptor parsing feeds a live object/control lane with C++ polymorphic dispatch
 - object-side bit-field semantics are real and disassembly-confirmed

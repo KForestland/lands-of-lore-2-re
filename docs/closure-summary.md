@@ -1,10 +1,12 @@
 # LoL2 Closure Summary
 
+Current status: [Draracle restoration findings](draracle-restoration.md). This March memo is historical; its asset/provenance discussion is not the latest cave pipeline.
+
 Date: 2026-03-24
 
 ## Status
 
-LoL2 is effectively complete at the format/renderer level. See `final-closure-memo.md` for the latest state including disassembly results, wall texture format proof, and the remaining provenance/confirmation gaps.
+This historical runtime checkpoint is not a claim of overall RE closure. See `final-closure-memo.md` for the latest state including disassembly results, wall texture format proof, and the remaining provenance/confirmation gaps.
 
 Wall texture format is proven 8bpp palette-indexed by renderer disassembly. The remaining wall-side gap is not generic format identification; it is exact source/provenance closure: runtime confirmation of the source-buffer/build path, palette/source linkage, and final atlas/source identification. Audio decode is sample-verified: 1 music track and 1 dialogue clip were decoded successfully, and a bulk extraction tool exists but has not been run and verified end-to-end. All 24 entity descriptor fields are classified by cross-level statistical analysis, with proof levels varying per field (see `lol2-entity-object-map.md`). Remaining work is now mostly provenance/tooling/confirmation work.
 
