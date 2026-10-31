@@ -6,7 +6,7 @@ from pathlib import Path
 
 
 def main() -> int:
-    trace_dir = Path(os.environ.get("TRACE_DIR", "/home/bob/lol2_out/dosbox_guest_trace"))
+    trace_dir = Path(os.environ.get("TRACE_DIR", "lol2_out/dosbox_guest_trace"))
     trace_path = trace_dir / "guest_trace.jsonl"
     out_path = trace_dir / "guest_trace_summary.md"
 

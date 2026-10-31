@@ -20,7 +20,7 @@ import os
 import sys
 from collections import defaultdict
 
-DEFAULT_TRACE_PATH = "/home/bob/lol2_out/dosbox_guest_trace_l1_offset_7418566_disarm_rearm/guest_trace.jsonl"
+DEFAULT_TRACE_PATH = "lol2_out/dosbox_guest_trace_l1_offset_7418566_disarm_rearm/guest_trace.jsonl"
 
 
 def load_events(path):
@@ -34,7 +34,7 @@ def load_events(path):
                     events.append(json.loads(line))
     except FileNotFoundError:
         print(f"Trace file not found: {path}")
-        print("Run the trace first: bash /home/bob/run_lol2_disarm_rearm_trace.sh")
+        print("Run the trace first: bash ./run_lol2_disarm_rearm_trace.sh")
         sys.exit(1)
     return events
 

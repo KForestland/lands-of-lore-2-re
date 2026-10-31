@@ -12,7 +12,7 @@ from collections import Counter, defaultdict
 
 MIX_PATH = os.environ.get(
     "MIX_PATH",
-    "/media/bob/Arikv/REFERENCE/game_files/lol2/DAT/L9_DR.MIX",
+    "lol2_game/DAT/L9_DR.MIX",
 )
 RECORD_SIZE = 147
 BODY_SIZE = 135

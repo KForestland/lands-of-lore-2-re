@@ -9,7 +9,7 @@ This note records one narrow follow-up to the Entry 1 verdict:
 
 Tool:
 
-- [lol2_verify_entry1_runtime_witness.py](/home/bob/lands-of-lore-2-re/tools/lol2_verify_entry1_runtime_witness.py)
+- [lol2_verify_entry1_runtime_witness.py](../../tools/lol2_verify_entry1_runtime_witness.py)
 
 Targets checked:
 

@@ -27,31 +27,31 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from lol2_wall_texture_extract import extract_raw_pixels, parse_atlas, read_mix_entry  # noqa: E402
 
 
-DEFAULT_LOL2_ROOT = "/media/bob/Arikv/REFERENCE/game_files/lol2/"
+DEFAULT_LOL2_ROOT = "lol2_game/"
 DEFAULT_OUTPUT = "atlas_candidate_verify/entry1_runtime_witness_check.json"
 
 RUNTIME_TARGETS = [
     {
         "name": "l1cap_wall_lane",
-        "path": "/home/bob/lol2_out/l1cap_wall_lane.bin",
+        "path": "lol2_out/l1cap_wall_lane.bin",
         "width": 128,
         "height": 128,
     },
     {
         "name": "bigdump_wall_lane",
-        "path": "/home/bob/lol2_out/bigdump_wall_lane.bin",
+        "path": "lol2_out/bigdump_wall_lane.bin",
         "width": 128,
         "height": 128,
     },
     {
         "name": "l1cap_renderer_texture",
-        "path": "/home/bob/lol2_out/l1cap_renderer_texture.bin",
+        "path": "lol2_out/l1cap_renderer_texture.bin",
         "width": 256,
         "height": 256,
     },
     {
         "name": "bigdump_renderer_src",
-        "path": "/home/bob/lol2_out/bigdump_renderer_src.bin",
+        "path": "lol2_out/bigdump_renderer_src.bin",
         "width": 128,
         "height": 64,
     },

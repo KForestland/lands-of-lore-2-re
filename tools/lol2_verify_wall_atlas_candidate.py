@@ -38,7 +38,7 @@ from lol2_decompress_sphere import parse_entry1  # noqa: E402
 from lol2_sprite_decode import decompress_f80  # noqa: E402
 
 
-DEFAULT_LOL2_ROOT = "/media/bob/Arikv/REFERENCE/game_files/lol2/"
+DEFAULT_LOL2_ROOT = "lol2_game/"
 DEFAULT_EXAMPLE = os.path.join(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
     "examples",
