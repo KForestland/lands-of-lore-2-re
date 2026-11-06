@@ -1,6 +1,10 @@
 # Lands of Lore II RE
 
-Recent update: [Executioner combat evidence and portable native verifier](docs/executioner-combat-evidence.md).
+**November 2026: LoL2 is almost fully understood.** Every story step from the first cave to the final scene, the script
+opcodes behind them and the engine rules are mapped; a short open list remains. Read
+[LoL2 understanding — November 2026](docs/lol2-understanding-2026-11.md).
+
+Earlier update: [Executioner combat evidence and portable native verifier](docs/executioner-combat-evidence.md).
 
 Reverse-engineering and documentation for the DOS version of *Lands of Lore: Guardians of Destiny*.
 
@@ -18,6 +22,7 @@ It does not aim to redistribute raw game data.
 
 If you are new to this repo, read these in order:
 
+0. [`lol2-understanding-2026-11.md`](docs/lol2-understanding-2026-11.md) — November 2026: what is understood (A to Z) and the short open list
 1. [`draracle-restoration.md`](docs/draracle-restoration.md) — current cave findings and reproducible geometry pipeline
 2. [`closure-summary.md`](docs/closure-summary.md) — plain-English summary of what is closed and what is open
 3. [`final-closure-memo.md`](docs/final-closure-memo.md) — short final handoff-style memo for the current public LoL2 state

@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-11-06
+
+- New: [LoL2 understanding — November 2026](docs/lol2-understanding-2026-11.md): story A to Z (Acts 1-3, branches), opcode 2/9/18/20/196 additions, portal visibility, water surfaces and drowning, collision, storeys, map audit; open list.
+- README and current-status point to it.
+
 ## 2026-10-31 (October update)
 
 - Merged the September/October cave-restoration, executioner-combat and Act 1 replay-helper branches into main

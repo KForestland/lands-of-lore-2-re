@@ -1,6 +1,6 @@
 # LoL2 current status
 
-Updated 2026-10-31. **Active reverse engineering and restoration; not complete.**
+Updated 2026-11-06. **Almost fully understood** — see [LoL2 understanding — November 2026](lol2-understanding-2026-11.md). The October notes below stay as history.
 
 ## October 2026 update
 
