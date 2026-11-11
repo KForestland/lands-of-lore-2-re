@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-11-11
+
+- New: [LoL2 music](docs/lol2-music-2026-11.md): `DMUSIC.MIX` is 33 Westwood AUD (IMA ADPCM) tracks, all decodable; opcode 210 picks the track by a 34-stem name table; one global byte chooses digital or HMI MIDI. Open: which entry is which stem.
+
 ## 2026-11-06
 
 - New: [LoL2 understanding — November 2026](docs/lol2-understanding-2026-11.md): story A to Z (Acts 1-3, branches), opcode 2/9/18/20/196 additions, portal visibility, water surfaces and drowning, collision, storeys, map audit; open list.
