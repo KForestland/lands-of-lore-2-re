@@ -10,6 +10,7 @@ sheet lists, all read from the files:
   - the script streams: command and group counts, opcode use, predicates;
   - exits: every level-transition command (destination level and entry) and
     the objects whose events point straight at that command's group;
+  - wall rows by class and by side type (wall side or portal side);
   - event records by kind, with the native matcher of each kind;
   - held-item tests (event kind 4, mode 3) by item record number;
   - entity records by name tag;
@@ -80,6 +81,35 @@ def geometry_stats(raw):
     return dict(vertices=nv, regions=nr, links=len(links), reciprocal=recip, shared=shared, bad=bad_v + bad_n,
                 walls=sum(1 for r in regs for s in range(4) if r[2 + s] == 0xFFFF),
                 slope_floor=sum(1 for r in regs if r[14] & 4), slope_ceiling=sum(1 for r in regs if r[14] & 8))
+
+
+def wall_stats(raw):
+    """Wall table (header +0x08 offset, +0x54 count, 8-byte rows); region word 13 = first row, byte 30 = count
+    (native 0xF4370-0xF438E). Code = row byte 5 & 0x1F: bits 0-1 side, bits 2-3 class, bit 4 special."""
+    import struct
+    u = lambda o: struct.unpack_from("<I", raw, o)[0]
+    ws, wc, ro, nr = u(0x08), u(0x54), u(0x0C), u(0x58)
+    regs = [struct.unpack_from("<22H", raw, ro + 44 * i) for i in range(nr)]
+    owner, bad = {}, 0
+    by = Counter()
+    for i, r in enumerate(regs):
+        n = r[15] & 0xFF
+        if n == 0:
+            bad += r[13] != 0xFFFF
+            continue
+        if r[13] + n > wc:
+            bad += 1
+            continue
+        for k in range(r[13], r[13] + n):
+            bad += k in owner
+            owner[k] = i
+            code = raw[ws + 8 * k + 5] & 0x1F
+            if code & 16:
+                by["special"] += 1
+            else:
+                by[("wall side" if r[2 + (code & 3)] == 0xFFFF else "portal side", code & 12)] += 1
+    bad += len(owner) != wc or ws + 8 * wc != ro
+    return dict(rows=wc, regions_with_walls=sum(1 for r in regs if r[15] & 0xFF), by=by, bad=bad)
 
 
 # Event record kinds and their native matchers (docs/lol2-script-events.md#event-records).
@@ -179,6 +209,7 @@ def read_level(data_dir, stem):
         comp = (companion.name, len(cb), kinds)
     gs = geometry_stats(geo_raw)
     gs["groups"] = groups(geo_raw)
+    gs["wall_rows"] = wall_stats(geo_raw)
     return dict(stem=stem, size=len(b), rows=rows, geo=geo, geom=gs, tex=tex, ent_entry=ent_entry, records=records,
                 scripts=scripts, comp=comp)
 
@@ -224,6 +255,14 @@ def sheet(L, names, items):
               f"Following the portal links, the regions fall into {len(G['groups'])} connected groups: "
               + ", ".join(f"{n:,}" for n in G["groups"][:8]) + (" …" if len(G["groups"]) > 8 else "")
               + " regions ([maps](../formats/maps.md)).", ""]
+    W = G["wall_rows"]
+    lines += ["## Walls", "",
+              f"{W['rows']:,} wall rows of 8 bytes, owned by {W['regions_with_walls']:,} regions, each row by exactly one region "
+              "([walls](../formats/walls.md)). Class = bits 2-3 of the row's code; the side is bits 0-1.", "",
+              "| Side | Class 0 | Class 4 | Class 8 | Class 12 |", "|---|---:|---:|---:|---:|"]
+    for side in ("wall side", "portal side"):
+        lines.append(f"| {side} | " + " | ".join(f"{W['by'].get((side, c), 0):,}" for c in (0, 4, 8, 12)) + " |")
+    lines += ["", f"Special rows (code bit 4): {W['by'].get('special', 0):,}.", ""]
     lines += ["## Scripts", "",
               "| Stream | Commands | Groups | Bytes |", "|---:|---:|---:|---:|"]
     for st in sc["streams"]:
@@ -341,6 +380,7 @@ def main():
         unknown = sum(1 for k in tests if k not in items)
         gl = sum(L["geom"]["links"] for L in levels); gr = sum(L["geom"]["reciprocal"] for L in levels)
         gs = sum(L["geom"]["shared"] for L in levels); gb = sum(L["geom"]["bad"] for L in levels)
+        wb = sum(L["geom"]["wall_rows"]["bad"] for L in levels); wr = sum(L["geom"]["wall_rows"]["rows"] for L in levels)
         ev = Counter()
         for L in levels:
             ev.update(event_kinds(L["scripts"]))
@@ -349,10 +389,10 @@ def main():
               f"{uns} commands outside the size table); texture container found by name hash in {tex}; entity records in "
               f"{ent}; {exits} level-transition commands; regions {sum(L['geom']['regions'] for L in levels):,}, "
               f"out-of-range vertex/neighbour indices {gb}, portal links {gl:,} (reciprocal {gr:,}, sharing the side's vertices "
-              f"{gs:,}); event records {sum(ev.values()):,} (kinds without a documented matcher: {unknown_kinds or 'none'}); "
+              f"{gs:,}); wall rows {wr:,}, partition faults {wb}; event records {sum(ev.values()):,} (kinds without a documented matcher: {unknown_kinds or 'none'}); "
               f"held-item tests (kind 4 mode 3) {len(tests)}, identity not in the item table: "
               f"{unknown}; bad={bad or 'none'}")
-        return 0 if not bad and not uns and not unknown and not gb else 1
+        return 0 if not bad and not uns and not unknown and not gb and not wb else 1
     items = item_identities(a.data)
     out = Path(a.out)
     out.mkdir(parents=True, exist_ok=True)

@@ -14,6 +14,7 @@ Each page: what the file is, its layout, a worked example with real bytes from t
 | [compression.md](compression.md) | LZO1X blocks, LCW variant, LZ77 with mode byte | `lol2_texture_container.py`, `lol2_decompress_sphere.py`, `lol2_decompress_westwood.py` | two schemes CONFIRMED; Q1, Q2 |
 | [geometry.md](geometry.md) | vertex and region tables of the level data entry | `lol2_level_report.py` | region neighbours, corners, heights, slope flags CONFIRMED (code + 15 levels); other words open (Q16) |
 | [maps.md](maps.md) | top-down map drawn from the region table | `lol2_level_map.py` | 52,669 polygons CONFIRMED; in-game automap data not located |
+| [walls.md](walls.md) | wall table of the level data entry | `lol2_level_report.py` | table, runs, code bits CONFIRMED; 88,994 rows partition exactly; Q16 |
 | [vqa.md](vqa.md) | `WVQA` movies | `lol2_vqa_v2_decode.py` | 1,948 headers CONFIRMED; 948 decoded; 14 unsupported layouts |
 
 Script streams and opcodes: [opcode reference](../lol2-script-opcodes.md). Movies by scene id, sound cues, music selection and the 46 room archives: [movie scenes](../lol2-movie-scenes.md), [sound cues](../lol2-sound-cues.md), [music selection](../lol2-music-selection.md), [room archives](../lol2-room-archives.md). Still to write: sprites.

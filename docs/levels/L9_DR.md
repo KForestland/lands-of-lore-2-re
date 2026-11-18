@@ -35,6 +35,17 @@ From the vertex and region tables ([geometry](../formats/geometry.md)). A link i
 
 Following the portal links, the regions fall into 25 connected groups: 6,319, 476, 12, 1, 1, 1, 1, 1 … regions ([maps](../formats/maps.md)).
 
+## Walls
+
+14,500 wall rows of 8 bytes, owned by 5,628 regions, each row by exactly one region ([walls](../formats/walls.md)). Class = bits 2-3 of the row's code; the side is bits 0-1.
+
+| Side | Class 0 | Class 4 | Class 8 | Class 12 |
+|---|---:|---:|---:|---:|
+| wall side | 40 | 4,744 | 40 | 0 |
+| portal side | 5,016 | 90 | 4,552 | 13 |
+
+Special rows (code bit 4): 5.
+
 ## Scripts
 
 | Stream | Commands | Groups | Bytes |
