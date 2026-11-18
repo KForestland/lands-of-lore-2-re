@@ -281,8 +281,13 @@ def build_entity_table(all_records):
 
 
 def main():
-    dat_dir = (sys.argv[1] if len(sys.argv) > 1
-               else os.environ.get("LOL2_DAT", "."))
+    import lol2_cli
+    ap = lol2_cli.tool_args((__doc__ or "") + """
+  lol2_entity_field_analyzer.py [--data DAT] [--out report.json]   # JSON report (stdout without --out)
+  lol2_entity_field_analyzer.py --check   # entity records found and parsed in the level archives
+""")
+    a = ap.parse_args()
+    dat_dir = a.data
 
     all_records = []
     level_stats = {}
@@ -310,6 +315,13 @@ def main():
         level_stats[lf] = {"entities": len(records), "tags": dict(tags)}
         all_records.extend(records)
 
+    if a.check:
+        found = sum(1 for v in level_stats.values() if v.get("entities"))
+        ascii_tags = all(all(32 <= ord(c) < 127 for c in r["tag"]) for r in all_records)
+        print(f"CHECK entities: {len(all_records)} 147-byte entity records, {len(set(r['tag'] for r in all_records))} "
+              f"types, in {found} of {len(LEVEL_FILES)} level archives; all tags printable ASCII: {ascii_tags}")
+        return 0 if all_records and ascii_tags else 1
+
     type_analysis, field_class = analyze_fields(all_records)
     hp_check = verify_f20_hp_duplicate(all_records)
     entity_table = build_entity_table(all_records)
@@ -328,8 +340,13 @@ def main():
         "level_stats": level_stats,
     }
 
-    json.dump(output, sys.stdout, indent=2)
-    print(file=sys.stdout)
+    if a.out:
+        with open(a.out, "w") as f:
+            json.dump(output, f, indent=2)
+        print(f"wrote {a.out}", file=sys.stderr)
+    else:
+        json.dump(output, sys.stdout, indent=2)
+        print(file=sys.stdout)
 
     # Summary to stderr
     print(f"\n=== LoL2 Entity Field Analysis ===", file=sys.stderr)
@@ -346,4 +363,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

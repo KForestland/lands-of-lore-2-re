@@ -159,29 +159,57 @@ def decompress_mix_entry(mix_path: str, entry_index: int, header_size: int = 4) 
     return decompress_westwood(comp, decomp_size)
 
 
-if __name__ == "__main__":
-    if len(sys.argv) < 4:
-        print("Usage: lol2_decompress_westwood.py <mixfile> <entry_index> <output_file>")
-        print("  Decompresses a Westwood LZ77 entry from a MIX container.")
-        print()
-        print("  Options (via environment):")
-        print(f"    LOL2_DAT = {LOL2_DAT}")
-        print()
-        print("  The entry must start with a u32 decompressed-size field.")
-        sys.exit(1)
+USAGE = """
+  lol2_decompress_westwood.py MIXFILE INDEX --out out.bin   # entry must start with a u32 size
+  lol2_decompress_westwood.py --check   # try every MIX entry whose first u32 looks like an
+                                        # uncompressed size; report how many decode cleanly
+"""
 
-    mix_file = sys.argv[1]
-    entry_idx = int(sys.argv[2])
-    out_file = sys.argv[3]
 
-    if not os.path.isabs(mix_file):
-        mix_file = os.path.join(LOL2_DAT, mix_file)
-
-    data, errors, consumed = decompress_mix_entry(mix_file, entry_idx)
-    with open(out_file, "wb") as f:
+def main():
+    import lol2_cli
+    ap = lol2_cli.tool_args((__doc__ or "") + USAGE)
+    ap.add_argument("mix", nargs="?")
+    ap.add_argument("index", nargs="?", type=int)
+    a = ap.parse_args()
+    if a.check:
+        from lol2_mix_parser import read_mix_with_hashes
+        tried = clean = 0
+        for f in lol2_cli.mix_files(a.data):
+            data, entries, base = read_mix_with_hashes(os.path.join(a.data, f))
+            for h, o, s in entries:
+                raw = data[base + o:base + o + s]
+                if s < 8:
+                    continue
+                size = struct.unpack_from("<I", raw, 0)[0]
+                if not (s < size <= 16 * s and size < 1 << 24):
+                    continue
+                tried += 1
+                try:
+                    out, err, used = decompress_westwood(raw[4:], size)
+                    clean += (err == 0 and len(out) == size)
+                except Exception:
+                    pass
+        # decoder self-test on a built-in stream using only codes whose meaning does not depend on the
+        # mode byte: literal (0x81..), short relative copy (0x00..), fill (0xFE), end (0x80)
+        stream = bytes.fromhex("01" "8140" "0001" "823b3e" "1006" "fe030007" "80")
+        want = bytes.fromhex("40404040" "3b3e" "40404040" "070707")
+        got, err, _ = decompress_westwood(stream, 64)
+        ok = got == want and err == 0
+        print(f"CHECK westwood: decoder self-test {'passed' if ok else 'FAILED'}; data scan: {tried} MIX entries "
+              f"whose first u32 exceeds the entry size, {clean} of them decode to that size with this decoder. "
+              f"Which LoL2 data uses this compression is an open question (docs/OPEN_QUESTIONS.md).")
+        return 0 if ok else 1
+    if not (a.mix and a.index is not None and a.out):
+        ap.print_help(); return 2
+    path = a.mix if os.path.isabs(a.mix) else os.path.join(a.data, a.mix)
+    data, errors, consumed = decompress_mix_entry(path, a.index)
+    with open(a.out, "wb") as f:
         f.write(data)
+    print(f"Decompressed {len(data):,d} bytes to {a.out}; compressed bytes used {consumed:,d}"
+          + (f"; WARNING {errors} bad back-references" if errors else ""))
+    return 0
 
-    print(f"Decompressed {len(data):,d} bytes to {out_file}")
-    if errors:
-        print(f"  WARNING: {errors} back-reference errors (wrote zeroes)")
-    print(f"  Compressed bytes consumed: {consumed:,d}")
+
+if __name__ == "__main__":
+    sys.exit(main())

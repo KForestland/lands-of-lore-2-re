@@ -12,3 +12,42 @@ scratch/
 
 # Locally generated restoration evidence and game data
 restoration-output/
+
+# Never commit game files, extracted or converted media, or tool output (asset policy).
+lol2_wall_textures/
+out/
+lol2_out/
+lol2_game/
+*.mix
+*.MIX
+*.vqa
+*.VQA
+*.aud
+*.AUD
+*.wav
+*.ogg
+*.mp3
+*.mid
+*.hmi
+*.xmi
+*.tex
+*.te_
+*.TE_
+*.wom
+*.WOM
+*.pcx
+*.PCX
+*.smf
+*.lst
+*.trr
+*.exe
+*.EXE
+*.dll
+*.DLL
+*.bin
+*.dat
+*.DAT
+# PNGs only in the two documented places
+*.png
+!examples/*.png
+!docs/images/*.png

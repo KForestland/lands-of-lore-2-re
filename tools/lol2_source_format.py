@@ -60,3 +60,47 @@ SIZES = {0: 4, 1: 6, 2: 6, 3: 12, 5: 6, 6: 6, 7: 6, 8: 8, 9: 6,
          19: 10, 20: 10, 21: 6, 22: 18, 23: 6, 24: 10, 196: 12,
          197: 6, 198: 6, 199: 6, 200: 6, 201: 6, 204: 8, 205: 8,
          206: 6, 207: 6, 208: 8, 209: 10, 210: 6, 240: 6}
+
+
+USAGE = """
+  lol2_source_format.py --check --data DAT   # strict MIX read of every archive, and exactly one
+                                             # geometry entry in each level archive
+It is mainly a library (parse_mix, level_geometry, SIZES) for the other tools.
+"""
+
+
+def main():
+    import os
+    import sys
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    import lol2_cli
+    ap = lol2_cli.tool_args((__doc__ or "") + USAGE)
+    a = ap.parse_args()
+    if not a.check:
+        ap.print_help()
+        return 2
+    mixes = lol2_cli.mix_files(a.data)
+    bad, levels, geo = [], 0, 0
+    for f in mixes:
+        b = open(os.path.join(a.data, f), "rb").read()
+        try:
+            parse_mix(b)
+        except ValueError as ex:
+            bad.append(f"{f}:{ex}")
+            continue
+        stem = f[:-4].upper()
+        if stem.startswith("L") and "_" in stem and not stem.endswith("I"):
+            levels += 1
+            try:
+                level_geometry(b)
+                geo += 1
+            except ValueError as ex:
+                bad.append(f"{f}:{ex}")
+    print(f"CHECK source_format: {len(mixes)} MIX files pass the strict reader (sizes, bounds, no overlap); "
+          f"one geometry entry (dword 0 = 18, dword 4 = 5300) in {geo}/{levels} level archives; bad={bad or 'none'}")
+    return 0 if not bad else 1
+
+
+if __name__ == "__main__":
+    import sys
+    sys.exit(main())

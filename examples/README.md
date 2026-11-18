@@ -1,22 +1,11 @@
 # Examples
 
-Public-safe screenshots and output examples for the LoL2 repo.
+Small images made by the tools, to show what their output looks like. None of them contains game pixels.
 
-Current example set:
+| Image | What it shows |
+|-------|---------------|
+| `L1_DC_wall_map.png` | Positions of the wall tiles of level L1_DC drawn as coloured marks (our own colours) |
+| `draracle_clean_map.png` | An early cell map of Draracle's cave in our own colours; kept for history, not a usable map |
+| [`../docs/images/local_mix_room11_tiles.png`](../docs/images/local_mix_room11_tiles.png) | Room section 11 of `LOCAL.MIX` entry 1: tile-index grid, a fixed colour per index (`tools/lol2_decompress_sphere.py 11 --png out.png`) |
 
-- `L1_DC_wall_map.png`
-  - wall-map style output for `L1_DC`
-- `L1_wall_texture_000.png`
-  - historical raw image witness extracted from `LOCAL.MIX` entry 1 using
-    the level-1/global setup palette path
-  - do not treat this as a verified in-game wall texture without the
-    narrower repo-safe caveats in `atlas_candidate_verify/ENTRY1_MODEL_VERDICT.md`
-- `draracle_clean_map.png`
-  - cleaned Draracle Caverns map-style output
-
-Working rule:
-
-- include only public-safe derived outputs
-- prefer legible map/render outputs over internal probe or survey images
-- do not promote the sprite lane until the LoL2 cell decode is visually clean
-- do not turn this folder into a copyrighted asset dump
+The game wall texture and the decoded tile images that used to be here were removed on 2026-11-18 (asset policy). `atlas_candidate_verify/` keeps its notes and JSON; the images it mentions are no longer in the repository.

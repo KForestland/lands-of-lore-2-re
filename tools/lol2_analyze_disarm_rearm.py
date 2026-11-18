@@ -7,12 +7,7 @@ Reads guest_trace.jsonl from the disarm-rearm trace run and extracts:
 3. Summary of which CS:IP reads which offset relative to [+80]
 
 Usage:
-    python lol2_analyze_disarm_rearm.py [TRACE_FILE]
-
-The trace file path is resolved in order:
-    1. CLI argument (if provided)
-    2. TRACE_PATH environment variable
-    3. Built-in default path
+    python lol2_analyze_disarm_rearm.py --trace TRACE_FILE [--out SUMMARY.json]
 """
 
 import json
@@ -20,7 +15,7 @@ import os
 import sys
 from collections import defaultdict
 
-DEFAULT_TRACE_PATH = "lol2_out/dosbox_guest_trace_l1_offset_7418566_disarm_rearm/guest_trace.jsonl"
+
 
 
 def load_events(path):
@@ -101,7 +96,7 @@ def collect_post_reads(events, rearm_gen, rearm_base):
     return post_reads, readers
 
 
-def print_consumer_analysis(readers, rearm_base, post_reads, trace_path):
+def print_consumer_analysis(readers, rearm_base, post_reads, summary_path=None):
     """Print consumer analysis and write machine-readable summary."""
     for csip, accesses in sorted(readers.items()):
         print(f"\n  Consumer CS:IP = {csip} ({len(accesses)} reads)")
@@ -133,8 +128,6 @@ def print_consumer_analysis(readers, rearm_base, post_reads, trace_path):
                 if a["offset"] == 0x6C:
                     print(f"  +0x6C reader: {csip} (preview={a['preview']})")
 
-    # Write machine-readable summary
-    summary_path = trace_path.replace("guest_trace.jsonl", "consumer_summary.json")
     summary = {
         "rearm_base": rearm_base,
         "rearm_base_hex": f"0x{rearm_base:X}",
@@ -147,19 +140,54 @@ def print_consumer_analysis(readers, rearm_base, post_reads, trace_path):
             for csip, accesses in readers.items()
         }
     }
-    with open(summary_path, "w") as f:
-        json.dump(summary, f, indent=2)
-    print(f"\nMachine-readable summary: {summary_path}")
+    if summary_path:
+        with open(summary_path, "w") as f:
+            json.dump(summary, f, indent=2)
+        print(f"\nMachine-readable summary: {summary_path}")
+    return summary
+
+
+def self_test():
+    """Run the analysis on three synthetic events in the trace format."""
+    base = 0x1000
+    events = [
+        {"event": "watch_disarm_rearm", "cs": "02E0", "ip": "A00F", "rearm_base": base, "rearm_len": 0x100,
+         "watch_generation": 1, "last_write_addr": base, "watch_read_budget": 8},
+        {"event": "watch_read", "watch_generation": 1, "cs": "1234", "ip": "0010", "overlap_addr": base + 0xB4, "overlap_size": 2},
+        {"event": "watch_read", "watch_generation": 1, "cs": "1234", "ip": "0020", "overlap_addr": base + 0x6C, "overlap_size": 2},
+    ]
+    import contextlib, io
+    with contextlib.redirect_stdout(io.StringIO()):
+        rb, gen = analyze_rearm_events(events)
+        post, readers = collect_post_reads(events, gen, rb)
+        summary = print_consumer_analysis(readers, rb, post)
+    return summary["b4_read"] and summary["x6c_read"] and summary["total_post_reads"] == 2
 
 
 def main():
-    path = sys.argv[1] if len(sys.argv) > 1 else os.environ.get("TRACE_PATH", DEFAULT_TRACE_PATH)
-
-    events = load_events(path)
+    import argparse
+    ap = argparse.ArgumentParser(description=(__doc__ or "") + """
+  lol2_analyze_disarm_rearm.py --trace guest_trace.jsonl [--out consumer_summary.json]
+  lol2_analyze_disarm_rearm.py --check   # self-test on built-in synthetic events (needs no trace)
+Traces come from a patched DOSBox guest tracer; none is included.
+""", formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--trace", default=os.environ.get("TRACE_PATH"))
+    ap.add_argument("--out")
+    ap.add_argument("--check", action="store_true")
+    ap.add_argument("--data", help=argparse.SUPPRESS)
+    a = ap.parse_args()
+    if a.check:
+        ok = self_test()
+        print(f"CHECK disarm_rearm: self-test on synthetic trace events {'passed' if ok else 'FAILED'} (no game data needed)")
+        return 0 if ok else 1
+    if not a.trace:
+        ap.print_help(); return 2
+    events = load_events(a.trace)
     rearm_base, rearm_gen = analyze_rearm_events(events)
     post_reads, readers = collect_post_reads(events, rearm_gen, rearm_base)
-    print_consumer_analysis(readers, rearm_base, post_reads, path)
+    print_consumer_analysis(readers, rearm_base, post_reads, a.out)
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

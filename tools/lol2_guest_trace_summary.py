@@ -5,14 +5,10 @@ import os
 from pathlib import Path
 
 
-def main() -> int:
-    trace_dir = Path(os.environ.get("TRACE_DIR", "lol2_out/dosbox_guest_trace"))
-    trace_path = trace_dir / "guest_trace.jsonl"
-    out_path = trace_dir / "guest_trace_summary.md"
-
+def summarize(trace_path) -> str:
+    trace_path = Path(trace_path)
     if not trace_path.exists() or trace_path.stat().st_size == 0:
-        out_path.write_text("# DOSBox Guest Trace Summary\n\nNo guest trace events captured.\n", encoding="utf-8")
-        return 0
+        return "# DOSBox Guest Trace Summary\n\nNo guest trace events captured.\n"
 
     counts = collections.Counter()
     file_reads = collections.Counter()
@@ -78,7 +74,40 @@ def main() -> int:
     for event in first_events:
         lines.append(f"- `{json.dumps(event, sort_keys=True)}`")
 
-    out_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    return "\n".join(lines) + "\n"
+
+
+def main() -> int:
+    """Summarize a DOSBox guest trace (guest_trace.jsonl from the patched tracer; none is included)."""
+    import argparse, tempfile
+    ap = argparse.ArgumentParser(description="""Summarize a DOSBox guest trace (JSON lines) as Markdown.
+
+  lol2_guest_trace_summary.py --trace guest_trace.jsonl [--out summary.md]
+  lol2_guest_trace_summary.py --check   # self-test on a synthetic trace (needs no game data)""",
+                                 formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--trace")
+    ap.add_argument("--out")
+    ap.add_argument("--check", action="store_true")
+    ap.add_argument("--data", help=argparse.SUPPRESS)
+    a = ap.parse_args()
+    if a.check:
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d) / "guest_trace.jsonl"
+            p.write_text("\n".join(json.dumps(e) for e in [
+                {"event": "read", "guest_name": "LOLG.DAT", "actual": 512},
+                {"event": "read", "guest_name": "LOLG.DAT", "actual": 512},
+                {"event": "watch_read", "watch_file": "L1_DC.MIX"}]) + "\n")
+            md = summarize(p)
+        ok = "`LOLG.DAT`: 1024 bytes" in md and "`watch_read` `L1_DC.MIX`: 1" in md
+        print(f"CHECK guest_trace_summary: self-test on a synthetic trace {'passed' if ok else 'FAILED'} (no game data needed)")
+        return 0 if ok else 1
+    if not a.trace:
+        ap.print_help(); return 2
+    md = summarize(a.trace)
+    if a.out:
+        Path(a.out).write_text(md, encoding="utf-8"); print("wrote", a.out)
+    else:
+        print(md)
     return 0
 
 

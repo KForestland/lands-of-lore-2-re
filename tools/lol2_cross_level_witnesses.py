@@ -140,7 +140,13 @@ def print_tag_table(tag, records):
 
 
 def main():
-    dat_dir = sys.argv[1] if len(sys.argv) > 1 else os.environ.get("LOL2_DAT", ".")
+    import lol2_cli
+    ap = lol2_cli.tool_args((__doc__ or "") + """
+  lol2_cross_level_witnesses.py [--data DAT]   # tables of B_HUMAN and WORM records
+  lol2_cross_level_witnesses.py --check        # every listed level archive yields its records
+""")
+    a = ap.parse_args()
+    dat_dir = a.data
 
     all_records = defaultdict(list)
 
@@ -161,6 +167,13 @@ def main():
         for r in records:
             r["file"] = fname
             all_records[r["tag"]].append(r)
+
+    if a.check:
+        n = {t: len(v) for t, v in all_records.items()}
+        files = len({r["file"] for v in all_records.values() for r in v})
+        ok = n.get("B_HUMAN", 0) > 0 and n.get("WORM", 0) > 0
+        print(f"CHECK witnesses: {sum(n.values())} records {n} found in {files} of {len(LEVEL_FILES)} level archives")
+        return 0 if ok else 1
 
     # Print B_HUMAN table and groupings
     if all_records["B_HUMAN"]:
@@ -192,4 +205,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

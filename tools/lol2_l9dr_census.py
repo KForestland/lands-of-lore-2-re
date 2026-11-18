@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """
-LoL2 L9_DR.MIX static census.
+LoL2 L9_DR.MIX static census (EXPLORATORY: it reads the whole archive as
+147-byte records from offset 0, ignoring the MIX structure; for the real
+entity records use lol2_entity_field_analyzer.py, which finds their region).
 Extracts all fixed-stride records, catalogs tags, and computes simple per-tag
 field invariants for the first staged 24-word prefix.
 """
@@ -10,17 +12,21 @@ import os
 import struct
 from collections import Counter, defaultdict
 
-MIX_PATH = os.environ.get(
-    "MIX_PATH",
-    "lol2_game/DAT/L9_DR.MIX",
-)
+import sys
 RECORD_SIZE = 147
 BODY_SIZE = 135
 N_HEADER_WORDS = 24
-OUTPUT_JSON = os.environ.get("OUTPUT_JSON", "/tmp/lol2_l9dr_census.json")
 
 
-def main() -> None:
+
+def main() -> int:
+    import lol2_cli
+    ap = lol2_cli.tool_args((__doc__ or "") + """
+  lol2_l9dr_census.py [--data DAT] --out census.json
+  lol2_l9dr_census.py --check     # how many 147-byte slots carry a printable tag
+""")
+    a = ap.parse_args()
+    MIX_PATH = os.path.join(a.data, "L9_DR.MIX")
     with open(MIX_PATH, "rb") as f:
         data = f.read()
 
@@ -77,8 +83,13 @@ def main() -> None:
             "f23_invariant": len(f23_dist) == 1,
         }
 
+    if a.check:
+        printable = sum(c for t, c in tag_counts.items() if t != "<empty>" and all(32 <= ord(ch) < 127 for ch in t))
+        print(f"CHECK l9dr_census (exploratory): L9_DR.MIX read as {n_records} slots of {RECORD_SIZE} bytes "
+              f"(+{tail_bytes} tail); {printable} slots end in a printable tag, {len(tag_counts)} distinct tag strings")
+        return 0
     output = {
-        "file": MIX_PATH,
+        "file": "L9_DR.MIX",
         "file_size": file_size,
         "total_records": n_records,
         "tail_bytes": tail_bytes,
@@ -87,11 +98,14 @@ def main() -> None:
         "per_tag_analysis": tag_analysis,
     }
 
-    with open(OUTPUT_JSON, "w", encoding="utf-8") as f:
+    if not a.out:
+        print(f"{n_records} slots, {len(tag_counts)} distinct tag strings (use --out FILE for the JSON census)")
+        return 0
+    with open(a.out, "w", encoding="utf-8") as f:
         json.dump(output, f, indent=2)
-
-    print(f"Saved census to {OUTPUT_JSON}")
+    print(f"Saved census to {a.out}")
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

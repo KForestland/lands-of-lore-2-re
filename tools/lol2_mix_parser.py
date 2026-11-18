@@ -16,7 +16,7 @@ Environment variables:
 import os
 import struct
 
-LOL2_DAT = os.environ.get("LOL2_DAT", ".")
+LOL2_DAT = os.environ.get("LOL2_DAT")   # no built-in default; see lol2_cli.py
 
 
 def read_mix(path):
@@ -55,23 +55,55 @@ def read_mix_entry(path, entry_idx):
     return entries[entry_idx]
 
 
+USAGE = """
+  lol2_mix_parser.py L1_DC.MIX                  # list entries (key, offset, size)
+  lol2_mix_parser.py L1_DC.MIX 3 --out e3.bin   # extract entry 3
+  lol2_mix_parser.py --check                    # parse every MIX in the DAT folder
+"""
+
+
+def main():
+    import sys
+    import lol2_cli
+    import lol2_source_format as strict
+    ap = lol2_cli.tool_args((__doc__ or "") + USAGE)
+    ap.add_argument("mix", nargs="?")
+    ap.add_argument("index", nargs="?", type=int)
+    a = ap.parse_args()
+    if a.check:
+        n = rows = 0
+        bad = []
+        for f in lol2_cli.mix_files(a.data):
+            path = os.path.join(a.data, f)
+            data, entries, base = read_mix_with_hashes(path)
+            other = strict.parse_mix(data)
+            n += 1
+            rows += len(entries)
+            same = [(h, base + o, s) for h, o, s in entries] == [(r["key"], r["offset"], r["size"]) for r in other]
+            inside = all(base + o + s <= len(data) for h, o, s in entries)
+            if not (same and inside):
+                bad.append(f)
+        print(f"CHECK mix: {n} MIX files, {rows} entries; this reader and lol2_source_format.parse_mix agree "
+              f"and every entry lies inside its file: {n - len(bad)}/{n}, bad={bad or 'none'}")
+        return 0 if not bad else 1
+    if not a.mix:
+        ap.print_help(); return 2
+    path = a.mix if os.path.isabs(a.mix) else os.path.join(a.data, a.mix)
+    data, entries, base = read_mix_with_hashes(path)
+    if a.index is not None:
+        h, o, s = entries[a.index]
+        blob = data[base + o:base + o + s]
+        if a.out:
+            open(a.out, "wb").write(blob); print(f"wrote {len(blob)} bytes to {a.out}")
+        else:
+            print(f"entry {a.index}: key 0x{h:08X}, offset {base + o}, size {s} (use --out to write it)")
+        return 0
+    print(f"MIX file: {path}\nEntries: {len(entries)}")
+    for i, (h, o, s) in enumerate(entries):
+        print(f"  [{i:3d}] key=0x{h:08X}  offset={base + o:9d}  size={s:9d}")
+    return 0
+
+
 if __name__ == "__main__":
     import sys
-    if len(sys.argv) < 2:
-        print("Usage: lol2_mix_parser.py <mixfile> [entry_index]")
-        print("  Lists entries or extracts a single entry to stdout")
-        print(f"  LOL2_DAT={LOL2_DAT}")
-        sys.exit(1)
-    mix_path = sys.argv[1]
-    if not os.path.isabs(mix_path):
-        mix_path = os.path.join(LOL2_DAT, mix_path)
-    data, entries, data_base = read_mix_with_hashes(mix_path)
-    if len(sys.argv) >= 3:
-        idx = int(sys.argv[2])
-        entry = data[data_base + entries[idx][1] : data_base + entries[idx][1] + entries[idx][2]]
-        sys.stdout.buffer.write(entry)
-    else:
-        print(f"MIX file: {mix_path}")
-        print(f"Entries: {len(entries)}")
-        for i, (h, o, s) in enumerate(entries):
-            print(f"  [{i:3d}] hash=0x{h:08X}  offset={o:8d}  size={s:8d}")
+    sys.exit(main())

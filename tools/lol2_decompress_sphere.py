@@ -2,7 +2,7 @@
 """Sphere engine LZ77 decompressor for Lands of Lore 2 room sub-sections.
 Reverse-engineered from LOCAL.MIX Entry 1 (Draracle Caverns).
 
-Algorithm (Gemini's analysis, confirmed working):
+Algorithm (the Westwood LCW / "format 80" scheme; checked on all compressed sections of LOCAL.MIX entry 1):
   0x80-0xBF: Literal copy — count = cmd & 0x3F
   0x00-0x7F: Short relative copy — count = (cmd>>4)+3, offset = ((cmd&0xF)<<8)|next_byte
   0xC0-0xFF: Long absolute copy — count = (cmd&0x3F)+3, abs_offset = next_2_bytes (LE)
@@ -59,7 +59,7 @@ ROOM_GROUPS = [
     list(range(24, 39)),
 ]
 
-LOL2_DAT = os.environ.get("LOL2_DAT", ".")
+LOL2_DAT = os.environ.get("LOL2_DAT")
 
 
 def decompress(payload: bytes, decoded_size: int, ref_buf: bytes = None) -> bytes:
@@ -227,46 +227,71 @@ def print_grid(grid: list):
         print(''.join(f'{c:2X}' if c != 0 else ' .' for c in row))
 
 
-if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print("Usage: lol2_decompress_sphere.py <entry1_blob> [section_index]")
-        print()
-        print("  Decompresses Sphere engine room sections from a LOCAL.MIX Entry 1 blob.")
-        print("  If section_index is given, prints that section's grid.")
-        print("  Otherwise prints a summary of all sections.")
-        print()
-        print(f"  LOL2_DAT = {LOL2_DAT}")
-        sys.exit(1)
+USAGE = """
+  lol2_decompress_sphere.py [--data DAT] [SECTION]   # LOCAL.MIX entry 1: summary, or one section's grid
+  lol2_decompress_sphere.py --blob entry1.bin [SECTION]
+  lol2_decompress_sphere.py 11 --png room11.png      # draw a section's tile-index grid (no game pixels)
+  lol2_decompress_sphere.py --check                  # every section of LOCAL.MIX entry 1 decodes
+LOCAL.MIX sits in the game folder next to DAT/ (it is looked for in --data and its parent).
+"""
 
-    blob_path = sys.argv[1]
-    if not os.path.isabs(blob_path):
-        blob_path = os.path.join(LOL2_DAT, blob_path)
 
-    with open(blob_path, "rb") as f:
-        blob = f.read()
+def load_entry1(data_dir):
+    import lol2_source_format as S
+    for d in (data_dir, os.path.dirname(os.path.normpath(data_dir))):
+        p = os.path.join(d, "LOCAL.MIX")
+        if os.path.isfile(p):
+            b = open(p, "rb").read()
+            r = S.parse_mix(b)[1]
+            return b[r["offset"]:r["offset"] + r["size"]]
+    raise FileNotFoundError("LOCAL.MIX not found in --data or its parent")
 
+
+def main():
+    import lol2_cli
+    ap = lol2_cli.tool_args((__doc__ or "") + USAGE)
+    ap.add_argument("section", nargs="?", type=int)
+    ap.add_argument("--blob", help="a saved LOCAL.MIX entry 1 instead of --data")
+    ap.add_argument("--png", help="draw the chosen section's tile-index grid (colours by index, no game pixels)")
+    a = ap.parse_args()
+    blob = open(a.blob, "rb").read() if a.blob else load_entry1(a.data)
     sections = parse_entry1(blob)
-
-    if len(sys.argv) >= 3:
-        idx = int(sys.argv[2])
-        if idx not in sections:
-            print(f"Section {idx} not found. Available: {sorted(sections.keys())}")
-            sys.exit(1)
-        s = sections[idx]
-        print(f"Section {idx}: {s['w']}x{s['h']} flags=0x{s['flags']:04X} "
-              f"decoded={s['decoded_size']} bytes")
-        if s['grid']:
-            print_grid(s['grid'])
+    if a.check:
+        comp = [s for i, s in sections.items() if i not in (0, 15)]
+        exact = sum(1 for s in comp if len(s["data"]) == s["decoded_size"])
+        raw = {i: s["decoded_size"] - len(s["data"]) for i, s in sections.items() if i in (0, 15)}
+        print(f"CHECK sphere: LOCAL.MIX entry 1 has {len(sections)} sections; compressed sections decoding to their "
+              f"stated size: {exact}/{len(comp)}; stored sections 0 and 15 are short of their stated size by "
+              f"{raw} bytes (open question)")
+        return 0 if exact == len(comp) else 1
+    if a.section is not None:
+        if a.section not in sections:
+            print(f"Section {a.section} not found. Available: {sorted(sections)}"); return 1
+        s = sections[a.section]
+        print(f"Section {a.section}: {s['w']}x{s['h']} flags=0x{s['flags']:04X} decoded={s['decoded_size']} bytes")
+        if s["grid"]:
+            print_grid(s["grid"])
+            if a.png:
+                from PIL import Image, ImageDraw
+                cell = 12
+                img = Image.new("RGB", (s["w"] * cell, s["h"] * cell), (24, 24, 32))
+                d = ImageDraw.Draw(img)
+                for y, row in enumerate(s["grid"]):
+                    for x, c in enumerate(row):
+                        if c:   # a fixed colour per tile index, not the game's palette
+                            d.rectangle([x * cell, y * cell, x * cell + cell - 2, y * cell + cell - 2],
+                                        fill=((c * 67) % 200 + 40, (c * 131) % 200 + 40, (c * 29) % 200 + 40))
+                img.save(a.png); print("wrote", a.png)
+        return 0
+    for i in sorted(sections):
+        s = sections[i]
+        if s["grid"]:
+            placed = sum(1 for row in s["grid"] for c in row if c != 0)
+            print(f"Section {i:2d}: {s['w']:3d}x{s['h']:<3d} flags=0x{s['flags']:04X} placed={placed:3d} void={s['w'] * s['h'] - placed:3d}")
         else:
-            print(f"  Raw data: {len(s['data'])} bytes (no grid for this section)")
-    else:
-        for i in sorted(sections.keys()):
-            s = sections[i]
-            if s['grid']:
-                placed = sum(1 for row in s['grid'] for c in row if c != 0)
-                void = s['w'] * s['h'] - placed
-                print(f"Section {i:2d}: {s['w']:3d}x{s['h']:<3d} "
-                      f"flags=0x{s['flags']:04X} placed={placed:3d} void={void:3d}")
-            else:
-                print(f"Section {i:2d}: {s['w']:3d}x{s['h']:<3d} "
-                      f"flags=0x{s['flags']:04X} raw={len(s['data'])} bytes")
+            print(f"Section {i:2d}: {s['w']:3d}x{s['h']:<3d} flags=0x{s['flags']:04X} raw={len(s['data'])} bytes")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
