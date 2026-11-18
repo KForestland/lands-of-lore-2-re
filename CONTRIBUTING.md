@@ -34,6 +34,21 @@ Out of scope for this repo:
 - `examples/` holds public-safe screenshots and outputs.
 - `tools/` holds public-safe analysis and extraction helpers.
 
+## Release procedure (maintainers)
+
+Every commit that reaches a public branch must carry the project's noreply identity as author and committer:
+
+```bash
+git -c user.name=KForestland -c user.email=261564562+KForestland@users.noreply.github.com commit ...
+```
+
+Before a release branch is pushed:
+
+1. Work from contributor branches is squash-merged (`git merge --squash`), then committed with the identity above, so no contributor address enters the published history.
+2. Never merge, cherry-pick or push from `refs/original`, a reflog entry or a commit hash from before a history rewrite.
+3. In a fresh clone of the release branch, with `$LOL2_DAT` set to your game files, `python3 tools/check_all.py` must end with `ALL ... CHECKS PASSED`. It includes `tools/repo_guard.py`. The guard fails on game files and media, on machine paths and lane or agent names, and on any author or committer address in the branch history other than the allowed noreply ones (`ALLOWED_AUTHORS` in the guard; GitHub web merges may commit as `noreply@github.com`).
+4. The tree must be clean after the checks, and the tools must write nothing into the repository.
+
 ## Pull Requests
 
 Small, focused PRs are preferred:
