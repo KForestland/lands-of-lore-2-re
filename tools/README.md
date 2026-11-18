@@ -164,6 +164,15 @@ $ python3 tools/lol2_text_tables.py --data /path/to/DAT --check
 CHECK text: help/opt/automap/credits in LOCALLNG, credits also MOVIES entry 28, loose ERRTEXT 39 / OPTTEXT 212 / CREDITS 44; TEXT and TCEL have no TRR entry
 ```
 
+### `lol2_speech_names.py`
+
+Re-read the spoken-line format, the category switch, and two `MCEL.MIX` keys. Writes nothing unless `--out` is set, and then only the check line. Not one of the 20 `check_all.py` checks. Page: `docs/lol2-speech.md`.
+
+```
+$ python3 tools/lol2_speech_names.py --data /path/to/DAT --check
+CHECK speech: format at file 0x1C427A; switch at 0xF133C enters eight arms through slots at 0xF131C; cue id from table 0x269CC calls 0xE3924; .aud probe is the other branch; MCEL entries 5 and 7 are 44100 Hz codec 99 (17564 and 21668 bytes)
+```
+
 ### `lol2_hmi_midi.py`
 
 Walk the 33 `HMI-MIDISONG` entries in `LOCAL.MIX` and build a standard MIDI file in memory. `--out` writes one `.mid` per song outside the repository. `--check` writes nothing. Page: `docs/lol2-music-2026-11.md`.

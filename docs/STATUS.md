@@ -26,7 +26,7 @@ Run the checks: `python3 tools/check_all.py` (with `$LOL2_DAT` set) (20 checks; 
 | Spells | [Costs, acquisition and rewards](lol2-spells.md), [spell dispatch](lol2-spell-dispatch.md) | — | Q9 |
 | Saves | [Native save format](lol2-save-format.md), [save sections](lol2-save-sections.md) | 27 slots from the reference `SAVEGAME` folder (written by the original game during one player's play, not shipped) and 149 nonempty level blocks checked; 6,765 nonempty level spans decode to their stated lengths | Q11 |
 | Executable | [Addresses and tables](lol2-executable-tables.md) | — | |
-| Text | [Message tables](lol2-text-tables.md) | `lol2_text_tables.py` re-reads the five named TRR tables | Q13 |
+| Text | [Message tables](lol2-text-tables.md), [spoken lines](lol2-speech.md) | `lol2_text_tables.py` re-reads the five named TRR tables. `lol2_speech_names.py` re-reads the name format, the category switch, and two `MCEL.MIX` keys (not one of the 20) | Q13 |
 
 ## Tools
 

@@ -64,7 +64,7 @@ and on a cache miss seeks and reads from the bank's saved handle
 also uses the same row's length for the playback request at
 `0xE4D1F–0xE4D2F`. Thus the worked example selects
 bank row 1049, `0190108e.aud`, on the ordinary startup path
-when the voice is admitted for playback.
+when the voice is admitted for playback. The category arms pass a cue id from the runtime u16 table at data `0x269CC` to the same player ([spoken lines](lol2-speech.md)).
 
 **CONFIRMED.** Command bytes
 6 and 7 copy to voice +0x20 and +0x21. Bytes 8 and 9, treated
