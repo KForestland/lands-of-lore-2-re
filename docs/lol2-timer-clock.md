@@ -48,7 +48,7 @@ through `0x14FAA1` and `0x14FABD`, e.g. `0xA0234–0xA0243` and
 `current_counter+1` at object +0. The hardware rate above and this generic
 clock arithmetic have separate native call sites.
 
-## Saved frame witness and open producer
+## Saved frame witness and live producer
 
 **CONFIRMED.** Per-level save selector 67 starts at `0x22C40` and writes
 0x51 bytes (`0xE9123–0xE9137`). In the native reference save with SHA-256
@@ -58,7 +58,10 @@ at slot `0x19D6F` holds three values at section offsets +0x14/+0x18/+0x1A
 See the [save sections](lol2-save-sections.md). The values are
 `[0x22C54]=225280`, `[0x22C58]=880`, and `[0x22C5A]=4`.
 
-**UNCONFIRMED.** Treating the first two as 16.16 and 8.8 gives 3.4375 in both cases. The third value is 4. The arithmetic alone leaves the representation, rounding path and relationship among these saved values open.
+**CONFIRMED.** The first two saved values represent 3.4375 ticks in
+16.16 and 8.8 (ring sum 110). By the formula below, a whole-tick value
+of 4 on that frame needs the whole-tick carry to be at least `0x9000`;
+the save's carry cell was not checked.
 
 **CONFIRMED.** Two clock operations about 0x110 bytes before the
 main service `0xA055B`, with other calls between them (among them the restart
@@ -75,15 +78,45 @@ two calls before the timer service take the list-pointer pairs
 `0x67460([0x22D44], [0x22D64])` at `0xA053E` and `0x110754([0x22D54], [0x22D74])` at `0xA0553`.
 This identifies which clock and dispatch paths were inspected.
 
-**UNCONFIRMED.** The live frame writer is still open. The
-word and dword loads at `0xB8C0D` and `0xB8BE5`
-identify the countdown inputs. Checking LE references and
-absolute write operands overlapping the three frame cells
-in the retail main code object found no direct store. The
-level save can restore them together (`0xE9123–0xE9137`).
-To distinguish a computed live write from a restore, capture
-the first store to each cell after the main update restarts,
-before `0xA055B`. Record the previous/current value
-from the producing counter and include a long frame to test
-fractional carry. Wall-clock delay across pauses and frame
-boundaries remains open.
+### Live write and conversion
+
+**CONFIRMED.** The program registers the frame clock at 480 Hz: `0xE00D0` pushes `0x1E0` and `0xE00E8` calls the registration routine `0x14F9BC`; a 60 Hz registration follows at `0xE00F0–0xE00F8`.
+
+**CONFIRMED.** A fresh L1_DC run of DOS 1.30 (`LOLG.DAT` SHA-256 prefix
+`b27a3534`) under DOSBox 0.74-3 reached the timer service after the
+restart at `0xA0457`. Guest write watches saw `0xE0C5C`, `0xE0C82` and
+`0xE0CD2` write the three cells before the call at `0xA055B`. The
+stores address `EBX+0x4B0/+0x4B4/+0x4B6`. `EBX` was object-5 `+0x227A4`,
+which explains why a scan for absolute operands missed these stores.
+The same base gives the timer at `EBX+0x4A0` (object-5 `+0x22C44`).
+Its counter pointer at +8 matched row 1 of the live `0x1962C` frequency
+table. That row's frequency was 480, while rows 0 and 2 held 60 and
+120. The program's table compares frequency at `0x15CD30` and installs
+the row's counter pointer at `0x15CD4C–0x15CD53`.
+
+| Step | Native computation in the observed positive range | Original DOS instruction |
+|---|---|---|
+| Frame sample | Read the clock at `0x22C44`. Replace slot `frame_index & 3` in a four-entry ring with the sample capped at 480. Subtract the old slot and add the new one to the sum `S`. | `0xE0BE4–0xE0C3E` |
+| Base elapsed `F` at `0x22C54` | `min(0x80000, (S << 16) / 32)` using signed dword arithmetic and truncation toward zero. Four equal samples of 24 from the 480 Hz clock yield `F=0x30000`, or 3 units of the 60 Hz timer. | `0xE0C43–0xE0C73` |
+| 8.8 elapsed `W` at `0x22C58` | `W = (F + C8) >> 8`. The carry at object-5 `0x22CCD` becomes `(C8 & 0xFF) + F - (sign_extend16(W) << 8)`. | `0xE0C73–0xE0CB8` |
+| Whole ticks `T` at `0x22C5A` | `T = (F + C16) >> 16`. The carry at object-5 `0x22CD1` becomes `(C16 & 0xFFFF) + F - (T << 16)`. | `0xE0CBA–0xE0CF3` |
+
+**CONFIRMED.** After resuming L1_DC from the menu, adjacent samples at
+`0xE0BE9` read clock counts `0x34BF` and `0x34D7` (the stored marker
+is count plus one). The returned count increments were 24. In a
+steady sample the ring held `24,24,24,24`. During the initial run
+the same `F=0x34000` and `W=0x340` produced `T=4` on one frame
+and `T=3` on the next. This is consistent with the carry formula (a whole-tick carry of `0xC000` would give 4); the carry cell was not logged.
+
+**CONFIRMED.** Reducing the emulator's fixed CPU cycles produced longer
+frames. One sample at `0xE0BE9` was 63. Its running sum 246 gave
+`F=0x7B000`, `W=0x7B0`, `T=7` before `0xA055B`. At `0xB8CE1`,
+the service entered the short countdown path with a previously read
+count of `0x25` and decrement 7. The store at `0xB8CE4` subtracts
+that decrement from the timer's word at +8. A later sample had
+sum 269 and the uncapped `0x86800` at `0xE0C5C`. After the cap at
+`0xE0C62–0xE0C69`, the service saw `0x80000`, `0x800` and 8.
+
+The counts, samples and sums above (`0x34BF`/`0x34D7`, 63, 246, 269, `0x25`) were observed in one run and are not constants. Because `F` is always a multiple of `0x800` (or exactly `0x80000`), its low byte is zero, so `W = F >> 8` exactly and the 8.8 carry does not change in the positive range.
+
+**UNCONFIRMED.** Not observed in this run: the save-load restore of the three cells, the wall-clock delay across pauses and frame boundaries, and the site that increments the frame index `[0x22CB6]`.

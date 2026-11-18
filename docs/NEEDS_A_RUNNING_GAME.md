@@ -21,21 +21,16 @@ Question: [Q7 in OPEN_QUESTIONS](OPEN_QUESTIONS.md).
 `0x22C58` at `0xB8C0D` and the dword at `0x22C5A`
 at `0xB8BE5`. The saved witness (one save written by the game during play, not shipped) has 225280, 880 and 4
 at `0x22C54/58/5A` respectively. Restore has a known
-path through section 67. [Timer witness and inspected callers](lol2-timer-clock.md#saved-frame-witness-and-open-producer)
+path through section 67. [Timer witness and inspected callers](lol2-timer-clock.md#saved-frame-witness-and-live-producer)
 
-**UNCONFIRMED.** The actual live writer and its rounding.
-In L1_DC without loading a save, set write watches on all
-three cells. Open and close the menu, break at the restart
-`0xA0457`, and run until the timer service `0xA055B`. Log the
-first write to each cell, the producing counter's previous and
-current values, and the next timer decrement. Repeat after a
-long frame, then load a save as a separate restore control.
-If the cells use 16.16 and 8.8 views of one elapsed quantity,
-a fixed-point pair should satisfy `u32(0x22C54) >> 8 =
-u16(0x22C58)` in range. A half-tick or near-boundary example
-distinguishes floor, ceiling and round-to-nearest for the
-whole-tick cell. A write only during restore identifies that
-path without explaining the live source.
+**ANSWERED, CONFIRMED.** A fresh DOS 1.30 L1_DC run wrote the
+three cells at `0xE0C5C`, `0xE0C82` and `0xE0CD2`. The 480 Hz
+counter feeds the four-sample average and the separate fractional
+carries feed the 8.8 and whole-tick outputs. The same triplet's first
+two values `0x34000` and `0x340` yielded whole ticks 4 and 3 on
+adjacent frames. A slowed frame supplied `0x7B000`, `0x7B0`, and 7 to
+the service before the subtraction at `0xB8CE4`.
+[Live trace and conversion formulas](lol2-timer-clock.md#live-write-and-conversion)
 
 ## Q9. What starts the timed message 0x26?
 
