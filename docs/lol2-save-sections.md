@@ -30,8 +30,9 @@ pointers at `0xE7598`. Flag `0x4` selects the section compression at
 `0xE8293–0xE82AE` or `0xE8300–0xE8316`. When the level writer's
 third argument is zero, flag `0x8` selects which sections it writes
 (`0xE815D–0xE8176`). Only level sections 0–2 have `0x8` set.
-The table preserves the `0x1` flag as an observed value. A general semantic
-label for that bit is **UNCONFIRMED**.
+Flag `0x1` admits the section to the reader at `0xE742E–0xE7436`.
+See [save field witnesses](lol2-save-field-witnesses.md) for the other
+read-path flags and the two saved world-list heads.
 
 ## Global sections
 
@@ -88,8 +89,8 @@ The item and list-node evidence is below.
 | 25 | `elements(0x968F8)` | pool length | pool stride | 0x7 | `0xE8CCD` | Placed item objects |
 | 26 | `[0x22D44]` | 24 × [0x22D64] | 24 | 0x7 | `0xE8CF2` | — |
 | 27 | `[0x22D54]` | 8 × [0x22D74] | 8 | 0x7 | `0xE8D1F` | — |
-| 28 | `0xB7D6C` | 0x4 | 0x4 | 0x1 | `0xE8D42` | — |
-| 29 | `0xB7D70` | 0x4 | 0x4 | 0x1 | `0xE8D5D` | — |
+| 28 | `0xB7D6C` | 0x4 | 0x4 | 0x1 | `0xE8D42` | First world-list head |
+| 29 | `0xB7D70` | 0x4 | 0x4 | 0x1 | `0xE8D5D` | Second world-list head |
 | 30 | `0x26B4C` | 0x30 | 0x30 | 0x7 | `0xE8D78` | — |
 | 31 | `elements(0x9691C)` | pool length | pool stride | 0x7 | `0xE8D93` | Non-player item instances |
 | 32 | `bitmap(0x9691C)` | pool length | 1 | 0x7 | `0xE8DB8` | Non-player item occupancy |
@@ -144,8 +145,10 @@ dwords at +0 and +8, leaving +4/+5 in the byte data.
 
 **CONFIRMED.** The placement loader copies 0x25 bytes per input record,
 allocates a 0x3C-byte row from `[0x968F8]`, and calls `0x93FBC`
-(`0x94090–0x940C4`). That constructor uses placement +0x20, resolved through `0x9EB5C` with `0x22CD8` before the copy at `0x95824` (its reading as the definition is UNCONFIRMED)
-and +0x24 (initial instance byte) and installs the vtable at object-5 `0x573C`
+(`0x94090–0x940C4`). That constructor resolves placement +0x20 as an item identity through
+`0x9EB5C` and supplies placement +0x24 as the initial instance byte. See
+[the 663 placement witnesses](lol2-save-field-witnesses.md#from-placement-row-to-item-definition).
+The constructor installs the vtable at object-5 `0x573C`
 (`0x93FD4–0x93FFC`). The world-object method invoked by the transfer at
 `0x95AB9` is the vtable +0xF0 entry (dword `LOLG.DAT+0x1C6850`, LE fixup
 `LOLG.DAT+0x7F548`, target `0x940F8`). With argument 2, the method calls
@@ -180,18 +183,19 @@ Both adjustment helpers clear their address-map status before processing
 (`0xE9207`, `0xE9719`). The short layout skips that processing in the level
 writer because none of sections 0–2 has flag `0x2` (`0xE8192`).
 
-**CONFIRMED.** In the paired `L1_DC.LSV` and `L1_DC.IMG` (SHA-256 prefixes
-`6bfca0ca5f71` and `1d2165406adc`), the lengths of the flag-`0x2` sections
-sum to `0x4AFE3`, the entire `.IMG`. The following offsets are relative to
-the two files. Expand each `.LSV` span and XOR it with the indicated `.IMG`
-span to check non-pointer byte changes.
+**CONFIRMED.** In the native reference save with SHA-256 prefix
+`a97f9c4782d4`, the level-1 block starts at slot `0x6EA8`. The lengths
+of its flag-`0x2` sections sum to `0x4AFE3`. The measurements below come from
+the decoded save deltas alone. A runtime baseline `L1_DC.IMG` written by the game
+(not shipped; SHA-256 prefix `1d2165406adc`, same length) is zero at every byte
+these rows use, so it is not needed to reproduce them.
 
-| Section | `.LSV` offset and span | `.IMG` offset and raw length | Measured delta |
+| Section | Slot offset and span | `.IMG` offset and raw length | Measured delta |
 |---:|---|---|---|
-| 24 | `0x12398`, `0x1E` | `0x4664E`, `0x34` | Local script byte indices 43–48 change. |
-| 25 | `0x123B6`, `0x200` | `0x46682`, `0x4380` | 378 byte positions differ in the decoded delta, including pointer data. No row changes bit `0x80` at +0x16 in this pair. |
-| 31 | `0x1266E`, `0x38` | `0x4AC42`, `0x300` | 38 nonzero decoded bytes. Pointer words are processed separately. |
-| 32 | `0x126A6`, `0x14` | `0x4AF42`, `8` | One bitmap byte changes. The bit count goes from 0 to 6. |
+| 24 | `0x19240`, `0x1E` | `0x4664E`, `0x34` | Local script byte indices 43–48 change. |
+| 25 | `0x1925E`, `0x200` | `0x46682`, `0x4380` | 378 byte positions differ in the decoded delta, including pointer data. No row changes bit `0x80` at +0x16 in this pair. |
+| 31 | `0x19516`, `0x38` | `0x4AC42`, `0x300` | 38 nonzero decoded bytes. Pointer words are processed separately. |
+| 32 | `0x1954E`, `0x14` | `0x4AF42`, `8` | One bitmap byte of the delta, `0x3F`: 6 bits set. |
 
 ## Open fields
 
@@ -209,8 +213,7 @@ span to check non-pointer byte changes.
   determine how those four bytes acquire their value.
 - **UNCONFIRMED.** An isolated before/after save pair for taking a specific
   placed item is still missing. The original pickup, release and write paths
-  identify the row flag and both saved pools, while the available `L1_DC`
-  pair has no bit transition in section 25. With a same-level pair around
+  identify the row flag and both saved pools, while the reference level-1 block shows no bit transition in section 25. With a same-level pair around
   one pickup, follow that object's section-25 row and +0x16 bit, the global
   section-3 allocation bit, and the corresponding section-2 definition and
   instance bytes. The row may be reused, so compare immediately after pickup.

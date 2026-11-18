@@ -216,15 +216,9 @@ def read_level(data_dir, stem):
         for r in rows:
             if r["key"] == key:
                 tex[r["index"]] = n
-    ent = E.find_entity_region(b)
-    records, ent_entry = [], None
-    if ent:
-        base, first, last = ent
-        records = E.extract_entities(b, base, first, last)
-        start = base + first * E.RECORD_SIZE
-        for r in rows:
-            if r["offset"] <= start < r["offset"] + r["size"]:
-                ent_entry = (r["index"], start - r["offset"], start)
+    odf, start, count = E.locate_entity_table(b, stem)
+    records = E.extract_entities(b, start, count)
+    ent_entry = (odf["index"], start - odf["offset"], start)
     scripts = X.export(path)
     companion = Path(data_dir) / f"{stem}I.MIX"
     comp = None

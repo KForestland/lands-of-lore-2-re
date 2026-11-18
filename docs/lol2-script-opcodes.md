@@ -52,14 +52,14 @@ identifies a continuation whose effect is still open.
 | 15 (0F) | 8 | 761 | `0xB5C82` | Resolves a secondary object from u8 +5 and u16 +6 through `0x5FBC8`. Copies its three coordinate dwords into locals and adds the unsigned low byte of vtable +0xEC's return to Z in 16.16 units. +4 indexes the switch at `0xB5CF1`. |
 | 16 (10) | 6 | 4873 | `0xB5A3C` | Stores u8 +4 in object byte +0x25. |
 | 17 (11) | 6 | 66 | `0xB5A76` | Adds s8 +4 to object byte +0x25 and clamps to 0–255. |
-| 18 (12) | 18 | 634 | `0xB59CE` | Occupies the sequence slot `[0xB7D5E]` if vacant. If u16 +0xA has bit 0x20 set, it calls `0x660F8` immediately, clears the slot and sends kind-6 value 6 through `0xADDE0`. |
+| 18 (12) | 18 | 634 | `0xB59CE` | Occupies the sequence slot `[0xB7D5E]` if vacant. If u16 +0xA has bit 0x20 set, it resets its progress, clears the slot and sends kind-6 value 6. Otherwise the object update advances the sequence at `0x65BB0`. See [sequence motion](lol2-script-motion.md#opcode-18). |
 | 19 (13) | 10 | 156 | `0xB6B5F → 0x66130` | Builds and delivers a hit through vtable +0x80. Mask and flags are u16 +4 and u16 +6. +8 carries magnitude, and +9 selects a literal or percentage. See [scripted hits](lol2-combat-ai.md#scripted-hits-and-thresholds) for the native calculations. |
 | 20 (14) | 10 | 2444 | `0xB5BDC → 0xB5C0D` | Calls sound request `0xE3924` with u16 +4, the object, a pointer to +6 and constant 1. |
 | 21 (15) | 6 | 577 | `0xB5AB5 → 0xCF2B4` | Passes u8 +4 and +5. The callee bounds +4 against `[0xE740]` and resolves dword slot `[0xE568+4*index]` at `0xCF2E2`. There is also a high-dispatch arm at `0x6486A`. |
 | 22 (16) | 18 | 54 | `0xB5C3B` | Sends the block at +4 to `0x61190`, then calls `0xE3D2C` with the result, object, pointer to +0xE and sentinel 0xFFFE. |
 | 23 (17) | 6 | 28 | `0xB5A4C` | Draws through `0x12415C`, shifts the result right five and stores its low byte at object +0x25. |
-| 24 (18) | 10 | 58 | `0xB5BDC → 0xB5C2E` | Calls `0xE3D2C` with the object, a pointer to +6 and u16 +4. Shares pointer suppression with opcode 20 at `0xB5BE5`. |
-| 196 (C4) | 12 | 3018 | `0x6484A → 0x64DDC` | Modifies a 44-byte region row selected by u16 +2 from `[0x22D0C]`. Reads signed height fields +4 and +0xA, option bits of +6, and +7/+8. Also checks queued opcode-196 requests for the same region. **UNCONFIRMED** eight post-call values and the complete interaction between flags. |
+| 24 (18) | 10 | 58 | `0xB5BDC → 0xB5C2E` | Calls `0xE3D2C(0x23C68, 0, object, command+6, u16(+4))`. The callee substitutes resource 0x3103 for the zero second argument at `0xE3D4C`. The early path sends the fifth argument to the kind-8 matcher at `0xE3FED`. The fifth argument is also stored at sound object +0x2BB4 (`0xE3E76`). Its full use is **UNCONFIRMED**. |
+| 196 (C4) | 12 | 3018 | `0x6484A → 0x64DDC` | Modifies a 44-byte region row selected by u16 +2 from `[0x22D0C]`. Updates floor or ceiling. Signed +4 provides the height operand and +0xA holds the remaining movement. See [rate, callbacks and the eight post-call stores](lol2-script-motion.md#opcode-196). |
 | 197 (C5) | 6 | 536 | `0x6485A → 0x64CD4` | Selects a 44-byte region via u16 +2 and switches on +4 at `0x64D0A`. Arms change region flags at +0x1C/+0x1D or use the associated 42-byte row from `[0x22D10]`. |
 | 198 (C6) | 6 | 2011 | `0x64887` | Sets level-local byte u8 +4 to u8 +5 in `[0x26E54]`. |
 | 199 (C7) | 6 | 132 | `0x648F6 → 0x64A8C` | Sets shared byte u8 +4 to u8 +5 in `[0x26E58]`, with special ceilings below. |

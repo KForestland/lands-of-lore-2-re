@@ -2,7 +2,7 @@
 
 **As of:** 2026-11-18. What is documented about the original game, which tool reads it, what the tools check on the game files, and what is open. This table replaces the "almost fully understood" summary of earlier pages: those pages ([understanding](lol2-understanding-2026-11.md), [current status](lol2-current-status.md), [closure summary](closure-summary.md), [final closure memo](final-closure-memo.md)) are kept as history.
 
-Run the checks: `python3 tools/check_all.py --data <DAT>` (17 checks; all pass on the copy read).
+Run the checks: `python3 tools/check_all.py --data <DAT>` (19 checks; all pass on the copy read).
 
 **Short format pages** (one per format, with a worked example from the game files): [formats/](formats/README.md), 12 pages; **level sheets**: [levels/](levels/README.md).
 
@@ -26,7 +26,7 @@ Run the checks: `python3 tools/check_all.py --data <DAT>` (17 checks; all pass o
 | Spells | [Costs, acquisition and rewards](lol2-spells.md) | — | Q9 |
 | Saves | [Native save format](lol2-save-format.md), [save sections](lol2-save-sections.md) | 27 reference slots and 149 nonempty level blocks checked; 6,765 nonempty level spans decode to their stated lengths | Q11 |
 | Executable | [Addresses and tables](lol2-executable-tables.md) | — | |
-| Text | — | — | Q13 |
+| Text | [Message tables](lol2-text-tables.md) | `lol2_text_tables.py` re-reads the five named TRR tables | Q13 |
 
 ## Tools
 

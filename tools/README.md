@@ -23,13 +23,13 @@ The tools below follow one set of rules: `--help` changes nothing; the game's `D
 
 ### `check_all.py`
 
-Run every `--check` (17) and print one line each, then a summary.
+Run every `--check` (19) and print one line each, then a summary.
 
 ```
-$ python3 tools/check_all.py | sed -n "1,2p;18p"
-CHECK repo_guard: 230 tracked files; game files, media, stray images, files over 1 MiB, machine paths, private or assistant names, or commit identities: none (0)
+$ python3 tools/check_all.py | sed -n "1,2p;20p"
+CHECK repo_guard: 291 tracked files; game files, media, stray images, files over 1 MiB, machine paths, private or assistant names, or commit identities: none (0)
 CHECK mix: 81 MIX files, 2905 entries; this reader and lol2_source_format.parse_mix agree and every entry lies inside its file: 81/81; index sorted by signed key: 81/81 (by unsigned key: 20); bad=none
-ALL 17 CHECKS PASSED
+ALL 19 CHECKS PASSED
 ```
 
 ### `lol2_mix_parser.py`
@@ -150,13 +150,22 @@ $ python3 tools/lol2_media_check.py --data /path/to/DAT --check
 CHECK media: scene limit 85; L12 opcode 21/20/210 at 9823886/9821090/9823696; citadel L12_CMI entry 21; lolg MOVIES entry 2; bank 1179 row 1049 0190108e.aud; 32 AUD in DMUSIC and 32 HMI in LOCAL; DMUSIC entry 16 unmatched; 46/46 room archives carry the code banner
 ```
 
+### `lol2_text_tables.py`
+
+Re-read the five named message tables. Writes nothing unless `--out` is set, and then only the check line. Page: `docs/lol2-text-tables.md`.
+
+```
+$ python3 tools/lol2_text_tables.py --data /path/to/DAT --check
+CHECK text: help/opt/automap/credits in LOCALLNG, credits also MOVIES entry 28, loose ERRTEXT 39 / OPTTEXT 212 / CREDITS 44; TEXT and TCEL have no TRR entry
+```
+
 ### `repo_guard.py`
 
 Fails if a game file, media file or stray image is committed. Needs no game data.
 
 ```
 $ python3 tools/repo_guard.py --check
-CHECK repo_guard: 230 tracked files; game files, media, stray images, files over 1 MiB, machine paths, private or assistant names, or commit identities: none (0)
+CHECK repo_guard: 232 tracked files; game files, media, stray images, files over 1 MiB, machine paths, private or assistant names, or commit identities: none (0)
 ```
 
 ## Tool Index

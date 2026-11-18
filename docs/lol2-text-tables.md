@@ -1,0 +1,73 @@
+# Message tables
+
+The executable loads five named message files through one reader. Each file is a count, an id table, an offset table, and NUL-terminated records. `TEXT.MIX` and `TCEL.MIX` are not these files. They are two of the 46 room archives ([room archives](lol2-room-archives.md)).
+
+`tools/lol2_text_tables.py --check` re-reads the four tables inside `LOCALLNG.MIX`, the same credits table in `MOVIES.MIX`, the three loose copies beside the game, and the two room archives. It writes nothing.
+
+`LOLG.DAT` in this note is the 1,977,007-byte image whose sha256 begins `b27a3534`. A code address is a file offset minus `0x37000`. A data address is a file offset minus `0x1C1024`.
+
+## Where the files are
+
+CONFIRMED for the names, the archive keys, and the sizes. The name hash is `ww_hash_v1` ([MIX](formats/mix.md)). `LOCALLNG.MIX` is the archive next to the game, not inside `DAT/`. It has 6 entries. Four of them are message tables. Entry 2 is the movie whose name hashes as `OUTTAKES\TITLE_E.VQA`. Entry 4 hashes as `global\sounds.efx`. Neither is a message table.
+
+| File | Where | Entry | Bytes | Records |
+| --- | --- | --- | --- | --- |
+| `automap.trr` | `LOCALLNG.MIX` | 0 | 4383 | 364 |
+| `opttext.trr` | `LOCALLNG.MIX` | 1 | 4328 | 202 |
+| `helptext.trr` | `LOCALLNG.MIX` | 3 | 3851 | 41 |
+| `credits.trr` | `LOCALLNG.MIX` | 5 | 6041 | 43 |
+| `credits.trr` | `DAT/MOVIES.MIX` | 28 | 6041 | 43 |
+| `ERRTEXT.TRR` | beside the game | loose file | 2444 | 39 |
+| `OPTTEXT.TRR` | beside the game | loose file | 4587 | 212 |
+| `CREDITS.TRR` | beside the game | loose file | 6151 | 44 |
+
+`MOVIES.MIX` entry 28 is byte-identical to the `LOCALLNG.MIX` credits table. The loose `OPTTEXT.TRR` and `CREDITS.TRR` are not the archive copies: both differ from the first byte, and both have more records. `errtext.trr` is not a key in `LOCALLNG.MIX`. `LANGUAGE.ENG`, beside the game, is the two bytes CR LF. It is not a table. The executable also names `LANGUAGE.JAP`, `LANGUAGE.FRE`, and `LANGUAGE.GER`. Those three files are not beside this copy of the game.
+
+A scan of every entry of every MIX archive in the game folder, plus the three loose `.TRR` files, found this layout in eight places: the four `LOCALLNG` tables, `MOVIES` entry 28, and the three loose files. No room archive has an entry in this layout. The hash of `WOMS\<ROOM>_.WOM` is the code entry already described on the room-archive page, the one that begins `This is a linear executable dll`.
+
+## The reader
+
+CONFIRMED. VA `0xCF014` is the reader. It is called directly with `helptext.trr` at VA `0x6FC63`, `0x6FDB4`, and `0x70C47` (three copies of the name, at data `0x5B0`, `0x5E3`, and `0x608`). It is called with `opttext.trr` at `0x6FD93`, `0xB93CF`, `0xCB9D4`, and `0xCC310` (data `0x5D7`, `0x1425`, `0x16E4`, `0x1AD4`). It is called with `automap.trr` at `0x145C49` (data `0x41AE`).
+
+VA `0xDE048` allocates the same 16-byte block and calls `0xCF014` with its second argument. VA `0xCABA1` passes `credits.trr` (data `0x16CB`). VA `0x14E6B4` passes `errtext.trr` (data `0x4271`), after VA `0x14E698` has probed data `0x4265` through VA `0x118934`. Those are the nine direct calls of the reader found from file `0x90024` through `0x1C1024`. No other filename is passed to it.
+
+The reader opens the name through VA `0x118730`. It reads one dword, the count, into the block. It reads `count` more dwords into a buffer at block+4. It reads `count + 1` dwords into a buffer at block+8, then subtracts `8 * count + 4` from each of them. It allocates `file_size - (8 * count + 4)` bytes at block+12 and reads that many bytes. The bytes actually still in the file at that point are four fewer, because the read starts at file offset `8 * count + 8`. VA `0x15F44C` then walks the heap. For each byte it looks through the nine bytes at data `0x19720` and, on a match, stores the byte at the same index in data `0x1972C`.
+
+Those nine source bytes are `CF E1 E6 EF F5 F8 F9 FC FD`. The nine stored in their place are `B0 B1 B2 B3 B4 B5 B6 B7 B8`. None of the eight tables above contains a source byte, so the records on disk are the records the reader keeps.
+
+Which directory VA `0x118730` searches first when a loose file and a MIX entry share a name was not re-read. The two copies of `opttext.trr` and of `credits.trr` are different, so the answer matters. The check accepts both copies as this layout and requires them to differ.
+
+## Record layout
+
+CONFIRMED on all eight files. Little-endian.
+
+| Offset | What |
+| --- | --- |
+| 0 | `u32` count `N` |
+| 4 | `N` dwords, the record ids |
+| `4 + 4N` | `N + 1` dwords, absolute file offsets |
+| `8N + 8` | the records |
+
+The stored offsets count from file byte 4, just after the count, so the first one is `8N + 4`; that value is also the rebase the reader subtracts. The last stored offset is the file size minus 4. Record `i` is the bytes from file offset `offset[i] + 4` up to `offset[i + 1] + 4`. Each record contains exactly one NUL, and that NUL is its last byte. The next record starts at the next byte. The offsets are strictly increasing.
+
+The id table is not always `0 .. N-1`. In the archive copy of `helptext.trr` the 41 ids are `0` through `49` except `10` through `18`. The other archive tables, and loose `ERRTEXT.TRR`, use `0 .. N-1`.
+
+## Worked example
+
+CONFIRMED. Archive `helptext.trr`, 3851 bytes, count 41.
+
+The id table occupies file `4` through `167`. The offset table occupies file `168` through `335`: 42 dwords. Its first value is 332 and its last is 3847. The heap starts at file 336 and is 3515 bytes. `332` is `8 * 41 + 4`, and `3847` is `3851 - 4`.
+
+Five of the 41 records are a single NUL. One record contains byte `0x07` and no other byte below 32. The other 35 records are bytes in the printable ASCII range, tab, CR, or LF, plus the trailing NUL. The first record is 262 bytes including that NUL. The longest record is 369 bytes including the NUL.
+
+`automap.trr` uses the same framing and different payloads. Of its 364 records, 285 are a single NUL, 22 are non-empty printable ASCII, and 57 contain byte `0x07` and no other byte below 32. `opttext.trr` in the archive has 11 empty records and 2 records that contain byte `0x11`. Its loose copy has the same two counts and 212 records instead of 202. Archive `credits.trr` has no empty record. Two of its records contain byte `0x81` or `0x82` and no other byte above 126. Loose `ERRTEXT.TRR` has 39 records, all printable ASCII with the trailing NUL. Across those 39 records, byte `0x0A` occurs 10 times and byte `0x5E` occurs 9 times.
+
+## What this is not
+
+The eight callers of VA `0xEE784` build a path with the format at data `0x3256`, `WOMS\%s\%02d%03d%02d%c`. The `%s` is the runtime buffer at data `0xDB504`, which is past the file-backed part of object 5. The character pushed for `%c` is `0x45`. Each caller passes `2`, then one of `0x14`, `0x15`, `0x1A`, `0x1B`, `0x21`, `0x38`, `0x39`, `0x3A`, then `0x18`. Because the first number is `2`, the builder joins VA `0xEE8AC`. Later, at VA `0xEEC42`, a path in this function appends the string at data `0x326D`, which is `.aud`, and probes the buffer with VA `0x118934`. Hashing `WOMS\<stem>\02<mid>24E` for all 81 MIX stems and those eight middle numbers finds no MIX key; with `.aud` appended, `WOMS\MCEL\0202024E.aud` and `WOMS\MCEL\0202624E.aud` are keys in `DAT/MCEL.MIX` (entries 5 and 7, 17,564 and 21,668 bytes). That path is an audio name. It is not one of these tables.
+
+No sentence from a record is copied here.
+
+## What would settle the rest
+
+Show whether VA `0x118730` opens the loose file or the MIX entry when both exist. Show whether the eight callers of VA `0xEE784` reach the `.aud` append at VA `0xEEC42`, and what text, if any, is stored beside those audio names. A second text reader, one that does not call VA `0xCF014`, would be a different container.

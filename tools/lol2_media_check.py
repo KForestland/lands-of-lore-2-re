@@ -126,7 +126,7 @@ def parent_file(dat_dir, name):
     return path
 
 
-def check(dat_dir):
+def scene_names(dat_dir):
     image_path = parent_file(dat_dir, "LOLG.DAT")
     image = open(image_path, "rb").read()
     import hashlib
@@ -137,13 +137,15 @@ def check(dat_dir):
     limit = u32(image, OBJ5 + 0xE740)
     if limit != 85:
         raise ValueError("scene limit %s" % limit)
-    names = []
-    for i in range(limit + 1):
-        ptr = u32(image, OBJ5 + 0xE568 + 4 * i)
-        names.append(cstr(image, OBJ5 + ptr))
+    names = [cstr(image, OBJ5 + u32(image, OBJ5 + 0xE568 + 4 * i)) for i in range(limit + 1)]
     if names[0] != "lolg" or names[13] != "citadel" or names[85] != "-----":
         raise ValueError("scene names moved")
 
+    return image, names
+
+
+def check(dat_dir):
+    image, names = scene_names(dat_dir)
     formats = image[OBJ5 + 0x2C84:OBJ5 + 0x2CC0]
     if formats[:3] != b"ss-" or b"%s.vqa" not in formats or b"outtakes\\%s" not in formats:
         raise ValueError("movie format strings moved")

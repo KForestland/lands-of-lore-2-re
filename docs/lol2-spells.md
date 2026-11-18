@@ -16,7 +16,7 @@ object-5 `0xB95C + 4*effect` is four bytes.
 | Row | Fields used here | Evidence |
 |---|---|---|
 | School at object-5 +0xBB20 | +0 first effect | `0xD0F4D` |
-| Same | +1 is a candidate effect count based on contiguous stored ranges | **UNCONFIRMED** per-row use |
+| Same | +1 is a candidate effect count based on contiguous stored ranges | Row 0 uses it as an exclusive upper bound at `0xFB91F–0xFB92A`. General per-row use is **UNCONFIRMED**. |
 | Effect at object-5 +0xB95C | +0 stored cost byte | `0x7C1AB`, `0xD1060` |
 | Same | +1 base magic experience for damage feedback | `0xD0CDF` |
 | Same | +3 bit 0 selects whether cast state +0x1B2 gets 2 or 3 | `0xD1035–0xD1050` |
@@ -77,6 +77,8 @@ On the debit path, effect 20 bypasses the two effect-specific ranges.
 With the debit flag set, cost is 25 in form 0, or 12 in form 2. The
 effect row's second byte is 12 and is used in the damage reward below.
 
+See [player effect arms and additional effect bits](lol2-spell-dispatch.md#player-effect-switch).
+
 ## Acquisition
 
 **CONFIRMED.** Scroll handlers call `0x8619C` with the acquired-school ID,
@@ -102,6 +104,8 @@ Messages 0x25 and 0x26 call helper `0x8651C` with IDs 6 and 1
 school ID and increments the count (`0x86455–0x86473`). It suppresses
 a duplicate ID 5 (`0x86423–0x86450`). **UNCONFIRMED.** The full message
 timing and all producers of acquisitions need separate call tracing.
+The [lesson producers](lol2-spell-dispatch.md#lessons-from-native-producers)
+page traces two additional message paths and the update threshold.
 The [item effects](lol2-item-effects.md#selected-item-use-handlers)
 page documents the original scroll calls individually.
 

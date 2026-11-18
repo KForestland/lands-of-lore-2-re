@@ -51,10 +51,11 @@ clock arithmetic have separate native call sites.
 ## Saved frame witness and open producer
 
 **CONFIRMED.** Per-level save selector 67 starts at `0x22C40` and writes
-0x51 bytes (`0xE9123–0xE9137`). In the original game directory’s root `L1_DC.IMG` and paired
-`L1_DC.LSV` documented in [save sections](lol2-save-sections.md), the
-baseline bytes at `.IMG+0x4AF92` and the raw delta at `.LSV+0x12EC7` give
-three reconstructed values at section offsets +0x14/+0x18/+0x1A:
+0x51 bytes (`0xE9123–0xE9137`). In the native reference save with SHA-256
+prefix `a97f9c4782d4` (level-1 block at slot `0x6EA8`), the decoded delta
+at slot `0x19D6F` holds three values at section offsets +0x14/+0x18/+0x1A
+(a runtime baseline written by the game, not shipped, is zero at these bytes).
+See the [save sections](lol2-save-sections.md). The values are
 `[0x22C54]=225280`, `[0x22C58]=880`, and `[0x22C5A]=4`.
 
 **UNCONFIRMED.** Treating the first two as 16.16 and 8.8 gives 3.4375 in both cases. The third value is 4. The arithmetic alone leaves the representation, rounding path and relationship among these saved values open.

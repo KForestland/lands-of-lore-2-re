@@ -44,7 +44,7 @@ can take additional branches.
 | 9 | `0xA2F1D` | Fill null +0x38 with the player. Branch on +0xB9 bit 0 at `0xA2F2A`. |
 | 10 | `0xA315B` | Fill null +0x38 with the player. Check low three bits of +0x9E at `0xA3168`. |
 | 13 | `0xA31B5` | Same initial target and observation fields as mode 10. With the observation bits set, copies the target XYZ dwords through `0xA31CB–0xA31DE`. |
-| 14 | `0xA3D24` | Write +0xAA = 9, clear +0xB8 bits 4–5 and clear update flags `0x9699D/0x9699F`; the following clauses can request action 0 (`0xA3D50–0xA3D72`). |
+| 14 | `0xA3D24` | Write +0xAA = 9, clear +0xB8 bits 4–5 and clear update flags `0x9699D/0x9699F`. The following clauses can request action 0 (`0xA3D50–0xA3D72`). |
 
 The observation update at `0xAA208` can be called by the actor's frame
 update at `0xA4C55`, when +0xB9 bit 0x08 is set and +0xA8 differs
@@ -91,7 +91,7 @@ value 3 through `0xADDE0` (`0xA56A3–0xA56B3`).
 When update byte `[0x9699F]` is 1, the earlier frame path at
 `0xA5551–0xA55A8` copies +0xA9 into +0xA8 and +0xAB into +0xAA
 (`0xA5589`, `0xA55A8`). Value 2 permits the same copies at the
-terminal-frame path (`0xA56CD–0xA571B`; `0xA56FC`, `0xA571B`). When behavior
+terminal-frame path (`0xA56CD–0xA571B`, `0xA56FC`, `0xA571B`). When behavior
 differs, both paths clear dword +0xB8 and set bit 0. The dispatcher sets
 `[0x9699D]` and `[0x9699F]` to 1 on every entry (`0xA2688–0xA2697`); mode 14
 clears them. The early path also clears +0xB8 bit 0 (`0xA5556`).
@@ -121,8 +121,11 @@ values land at actor +0x4E and +0x4F. Those are the inputs in the
 
 ## What is still open
 
+The [observation and mode 2 trace](lol2-creature-observation.md) follows all
+three observation fields and several dispatch consequences.
+
 **UNCONFIRMED.** The 15 behavior destinations and the current/requested
-state updates are mapped. The full decisions within modes 2–5 and
+state updates are mapped. The full decisions within modes 3–5 and
 7–10, the semantics of each observation bit and the initial producer
 of actor +0xA3 remain open. The latter was checked by looking for
 direct operand writes to +0xA3 in the actor code range

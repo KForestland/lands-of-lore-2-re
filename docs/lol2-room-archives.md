@@ -1,6 +1,6 @@
 # Room archives
 
-The executable names 46 MIX archives from a table of short names. `TEXT` and `TCEL` are two of those archives. They are not a text container. The dialogue tables are not in them, and where those tables live is open.
+The executable names 46 MIX archives from a table of short names. `TEXT` and `TCEL` are two of those archives. They are not a text container. The game's message tables (help, options, automap, credits and error text) are the TRR files in [the text-table note](lol2-text-tables.md). Where character dialogue is stored is still open.
 
 Each of the 46 archives has one entry that begins with the banner `This is a linear executable dll`. That entry is a header plus executable bytes. `TEXT` and `TCEL` are the worked example of the name table and of that entry.
 
@@ -65,10 +65,8 @@ The movie entries use the same `VQHD` layout as [the movie note](lol2-movie-scen
 
 ## Dialogue
 
-The dialogue tables are not in `TEXT.MIX` or `TCEL.MIX`. Those two archives hold a code entry, the 13-byte `ECHO is OFF` member, and `FORM` / `WVQA` movies. Where the dialogue tables live is open.
+`TEXT.MIX` and `TCEL.MIX` are not message tables. Each holds a code entry, the 13-byte `ECHO is OFF` member, and `FORM` / `WVQA` movies. The message tables (help, options, automap, credits and error text) are [the TRR files](lol2-text-tables.md). Where character dialogue is stored is still open ([Q13](OPEN_QUESTIONS.md)).
 
 ## What would settle it
 
 Frame the dword `0x34` from the bytes (a count, an id, or a size), and show one call inside the bytes that follow the prologue landing on an address in `LOLG.DAT`. The entry counts, the banner and the movie tags do not depend on that reading.
-
-A reader that loads dialogue from a named file other than these 46 code entries would settle where the tables live.

@@ -78,7 +78,7 @@ It can be shared with other producers of the same event number.
 produce. Remaining kinds 5/6/12 IDs and some contexts in the table still
 need input provenance. The direct-call scan found two kind-3 matcher calls,
 17 kind-5 calls and 50 kind-6 calls to `0xADDE0`, and 16 calls to the region kind-12 entry `0xF2D2C` (including `0xD607C` and `0xD70BA`). The
-per-level event rows (`tools/lol2_export_scripts.py`) provide the original
-dispatch IDs and offsets to pair with them. To settle callers with computed operands,
+per-level [event rows](levels/notes/README.md) provide the original dispatch
+IDs and offsets to pair with them. To settle callers with computed operands,
 trace each reaching assignment to the argument and the selection of its
 object or region before the call. The caller list covers direct calls.

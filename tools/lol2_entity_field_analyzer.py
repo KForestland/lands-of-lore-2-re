@@ -40,6 +40,9 @@ import struct
 import sys
 from collections import Counter, defaultdict
 
+from lol2_source_format import parse_mix, u32
+from lol2_westwood_hash import ww_hash_v1
+
 LEVEL_FILES = [
     "L1_DC.MIX", "L3_DH.MIX", "L4_HJ.MIX", "L5_HC.MIX", "L7_DH.MIX",
     "L8_SJ.MIX", "L9_DR.MIX", "L10_DC.MIX", "L12_CM.MIX", "L13_RC.MIX",
@@ -79,69 +82,27 @@ FIELD_SEMANTICS = {
 }
 
 
-def find_entity_region(data):
-    """Find the entity record region by scanning for known entity tags.
-
-    Strategy: find the rightmost occurrence of B_HUMAN (present in all 12
-    levels), determine the 147-byte alignment base, then scan backward and
-    forward to find all contiguous tagged records.
-
-    Returns (base_offset, first_slot, last_slot) or None.
-    """
-    anchor_tags = [
-        b"B_HUMAN\x00", b"WORM\x00", b"GGCAPT\x00", b"GGUARD\x00",
-        b"StSquid\x00", b"SSAR\x00", b"BELSTAT\x00", b"Kenneth\x00",
-        b"Roach\x00", b"ROACH\x00",
-    ]
-
-    idx = -1
-    for tag in anchor_tags:
-        idx = data.rfind(tag)
-        if idx != -1:
-            break
-
-    if idx == -1:
-        return None
-
-    rec_start = idx - BODY_SIZE
-    base = rec_start % RECORD_SIZE
-    anchor_slot = (rec_start - base) // RECORD_SIZE
-
-    def is_valid_tag(slot):
-        off = base + slot * RECORD_SIZE
-        if off < 0 or off + RECORD_SIZE > len(data):
-            return False
-        tag_bytes = data[off + BODY_SIZE:off + RECORD_SIZE]
-        name = tag_bytes.split(b'\x00')[0]
-        return (len(name) >= 2 and
-                all(32 < c < 127 for c in name) and
-                not any(c in name for c in b'()[]{}'))
-
-    first = anchor_slot
-    for s in range(anchor_slot - 1, max(anchor_slot - 300, -1), -1):
-        if is_valid_tag(s):
-            first = s
-        else:
-            break
-
-    last = anchor_slot
-    for s in range(anchor_slot + 1, anchor_slot + 300):
-        off = base + s * RECORD_SIZE
-        if off + RECORD_SIZE > len(data):
-            break
-        if is_valid_tag(s):
-            last = s
-        else:
-            break
-
-    return base, first, last
+def locate_entity_table(data, stem):
+    """Return the original level ODF directory row, record start, and count."""
+    keys = {ww_hash_v1(f"SPHERE{sphere}\\{stem}\\{stem}.ODF") for sphere in range(1, 4)}
+    entries = [row for row in parse_mix(data) if row["key"] in keys]
+    if len(entries) != 1:
+        raise ValueError(f"{stem}: expected one level ODF, found {len(entries)}")
+    row = entries[0]
+    base = row["offset"]
+    if row["size"] < 0x204 or u32(data, base) != 18:
+        raise ValueError(f"{stem}: invalid ODF header")
+    offset, count = u32(data, base + 0x10), u32(data, base + 0x48)
+    if count and (offset < 0x204 or offset + count * RECORD_SIZE > row["size"]):
+        raise ValueError(f"{stem}: entity table outside ODF entry")
+    return row, base + offset, count
 
 
-def extract_entities(data, base, first_slot, last_slot):
-    """Extract all entity records from the tagged region."""
+def extract_entities(data, start, count):
+    """Extract the counted entity records from a checked ODF table."""
     records = []
-    for s in range(first_slot, last_slot + 1):
-        off = base + s * RECORD_SIZE
+    for slot in range(count):
+        off = start + slot * RECORD_SIZE
         body = data[off:off + BODY_SIZE]
         tag_bytes = data[off + BODY_SIZE:off + RECORD_SIZE]
         name = tag_bytes.split(b'\x00')[0].decode('ascii', errors='replace')
@@ -154,7 +115,7 @@ def extract_entities(data, base, first_slot, last_slot):
         records.append({
             "tag": name,
             "offset": off,
-            "slot": s,
+            "slot": off // RECORD_SIZE,
             "words": words,
         })
 
@@ -301,13 +262,12 @@ def main():
         with open(path, "rb") as f:
             data = f.read()
 
-        result = find_entity_region(data)
-        if result is None:
-            level_stats[lf] = {"entities": 0}
-            continue
-
-        base, first, last = result
-        records = extract_entities(data, base, first, last)
+        try:
+            _, start, count = locate_entity_table(data, lf[:-4])
+        except ValueError as error:
+            print(error, file=sys.stderr)
+            return 1
+        records = extract_entities(data, start, count)
         for r in records:
             r["level"] = lf
 
@@ -320,7 +280,7 @@ def main():
         ascii_tags = all(all(32 <= ord(c) < 127 for c in r["tag"]) for r in all_records)
         print(f"CHECK entities: {len(all_records)} 147-byte entity records, {len(set(r['tag'] for r in all_records))} "
               f"types, in {found} of {len(LEVEL_FILES)} level archives; all tags printable ASCII: {ascii_tags}")
-        return 0 if all_records and ascii_tags else 1
+        return 0 if found == len(LEVEL_FILES) and len(all_records) == 128 and ascii_tags else 1
 
     type_analysis, field_class = analyze_fields(all_records)
     hp_check = verify_f20_hp_duplicate(all_records)

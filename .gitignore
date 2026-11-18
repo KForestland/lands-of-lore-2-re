@@ -51,3 +51,11 @@ lol2_game/
 *.png
 !examples/*.png
 !docs/images/*.png
+
+# Full script listings from tools/lol2_level_notes.py --out (tool output, never tracked)
+*.groups.jsonl
+*.groups-*.jsonl
+*.events.jsonl
+*.events-*.jsonl
+*.group-notes*.md
+level-notes/
