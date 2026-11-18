@@ -7,14 +7,14 @@ Numbered so the pages and [`STATUS.md`](STATUS.md) can point at them. Each is so
 | Q1 | Which LoL2 data, if any, uses the Westwood LZ77 variant with a leading mode byte (`tools/lol2_decompress_westwood.py`)? No MIX entry whose first u32 looks like a size decodes with it | tools |
 | Q2 | `LOCAL.MIX` entry 1: the two stored (uncompressed) sections 0 and 15 are 2 bytes shorter than their headers state. Is the header 10 bytes for stored sections, or the size counted differently? | [lol2-level-texture-container.md](lol2-level-texture-container.md) |
 | Q3 | Room archives: the level graph lists 45 room archives with a `WOMS\<ROOM>_.WOM` module plus 3 movie-only ones; the hash check finds the WOM name in 47 archives. Which count is right, and what are the two extra? | [lol2-level-graph.md](lol2-level-graph.md) |
-| Q4 | The full script opcode table: 37 opcodes have known command lengths (native routine 0x645E0); the meaning of every arm (open: opcode 14 arm 5, opcode 9 arm 6, opcode 18 drift speed, the rest of opcode 196). **Partly answered** ([lol2-script-opcodes.md](lol2-script-opcodes.md)): every opcode's handler and command layout located in the native dispatchers; effects behind virtual calls and some subcommand switches open | [lol2-script-engine-facts-2026-10.md](lol2-script-engine-facts-2026-10.md) |
-| Q5 | Record kinds and the events that run them; caller paths for control and prop events. **Partly answered** ([lol2-script-events.md](lol2-script-events.md)): native matchers for object kinds 2-10, region kinds 11, 12, 15 and the kind-19 trailer; object kind 1 consumer open | same |
-| Q6 | Global variables, flags and predicates (the soul value and branch flags) as stored by the original | — |
-| Q7 | Timers and the game clock: units and kinds | same |
-| Q8 | Items beyond the record format: which script groups grant which item, and each item-use handler's effect | [lol2-item-format.md](lol2-item-format.md) |
-| Q9 | Spells: costs, effects, teaching | — |
-| Q10 | Combat and monster behaviour beyond the one traced encounter | [executioner-combat-evidence.md](executioner-combat-evidence.md) |
-| Q11 | The save file layout | — |
+| Q4 | What do the remaining subcommands and virtual continuations do, including opcode 18 drift and opcode 196 post-call writes? | [Opcode table](lol2-script-opcodes.md) |
+| Q5 | What consumes object kind 1, and which player and object actions supply the remaining event IDs? | [Event records](lol2-script-events.md#event-records) |
+| Q6 | Which shared-array indexes and values gate the remaining plot branches, and what does predicate operand type 7 return? | [Predicates and shared bytes](lol2-script-events.md#predicates-and-shared-bytes) |
+| Q7 | What produces the timer elapsed cells, and how do they convert to wall-clock units? | [Object timers](lol2-script-events.md#object-timers) |
+| Q8 | What do the remaining item-use handlers do, and how do they interpret the instance fields? | [Item grants and effects](lol2-item-effects.md) |
+| Q9 | What are the remaining spell effects and lesson conditions? | [Native spell tables](lol2-spells.md) |
+| Q10 | What drives the remaining AI transitions and descriptor flags? | [Combat and creature decisions](lol2-combat-ai.md) |
+| Q11 | What are the remaining global and level save sections, including taken-item state? | [Native save slots](lol2-save-format.md) |
 | Q12 | Movies: the control table that maps scenes to VQA files; full codebooks for every movie | [lol2-vqa-v2.md](lol2-vqa-v2.md) |
 | Q13 | Text: the TEXT/TCEL container and the dialogue tables | — |
 | Q14 | Texture flags other than 0xA9 (including 0x80A9) | [lol2-level-texture-container.md](lol2-level-texture-container.md) |

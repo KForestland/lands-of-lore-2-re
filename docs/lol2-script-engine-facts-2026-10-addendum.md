@@ -2,6 +2,9 @@
 
 Date: 2026-10-31
 
+For the current checks and corrected matcher arms, see the [opcode table](lol2-script-opcodes.md),
+[event reference](lol2-script-events.md) and [combat rules](lol2-combat-ai.md).
+
 This adds to [`lol2-script-engine-facts-2026-10.md`](lol2-script-engine-facts-2026-10.md) and uses the same
 conventions: `LOLG.DAT` 1.30 (sha256 `b27a3534...`), VA = file offset - 0x37000, relocated jump tables
 decoded from LE fixup records (an object-2 target offset + 0x59024 is the handler VA). The data layout is in

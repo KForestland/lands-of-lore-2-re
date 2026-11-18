@@ -36,10 +36,11 @@ Full table with evidence: [`docs/STATUS.md`](docs/STATUS.md).
 |------|-------|
 | Archives (MIX), entry names, compression | [Format page](docs/formats/mix.md); readers check all 81 archives in `DAT/` and 6 of the 7 in the game folder (Q20) |
 | Levels, geometry, walls, textures | Documented for the traced parts; geometry entry found in all 15 levels; wall spans and UVs partly open (Q16) |
-| Level scripts | Format and many opcodes documented; full opcode table open (Q4) |
-| Entities, items, combat | Record layouts documented; item grants and effects, combat beyond one encounter open (Q8, Q10) |
+| Level scripts | Opcode dispatch and event layouts documented. Disassembler checks all 15 levels (Q4–Q7). |
+| Entities, items, combat | Item definitions, native grants, selected effects and combat formulas documented (Q8, Q10). |
 | Sound, music, movies | AUD bank, music archive and VQA v2 decoded; HMI music and the movie control table open (Q12, Q15) |
-| Globals, timers, spells, text, saves | Not yet documented here (Q6, Q7, Q9, Q11, Q13) |
+| Spells and saves | Native spell costs, selected effects, save directories and mapped sections documented (Q9, Q11). |
+| Text | Open (Q13). |
 
 ## Repository layout
 

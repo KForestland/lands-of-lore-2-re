@@ -18,7 +18,7 @@ The group walker at `0x646EC` puts commands below 195 in the queue at
 `0x64770` through `0x664AD`.
 
 **CONFIRMED.** Command byte +0 is the opcode. Many object commands pass
-byte +1 and u16 +2 to the selector at `0x5FBC8`; The remaining bytes depend
+byte +1 and u16 +2 to the selector at `0x5FBC8`. The remaining bytes depend
 on the opcode. For example, kind 0x20 selects pool `0x2B500` at `0x5FCB5`
 and kind 0x90 reaches the 44-byte region table at `0x5FCE6`. Raw operands
 are preserved in the listing. For selectors below 0x10
@@ -37,7 +37,7 @@ identifies a continuation whose effect is still open.
 | 0 (00) | 4 | 0 | `0xB6B6E` guard | Fails the low switch range after subtracting one. The size is defined at `0x645E0`. |
 | 1 (01) | 6 | 1166 | `0xB5937` | Passes object and command to vtable slot +0xAC. Result controls whether the node is consumed. |
 | 2 (02) | 6 | 2252 | `0xB5BAC` | +4 selects an action. Arms 5 and 6 resolve a target at `0xB5AE4` and `0xB5B14`. Arm 5 calls `0xDD5DC` with the player, target and u8 +5. Other arms go to `0xD7890`. Arm 0x1C splits u8 +5 into a low five-bit level and high three-bit arrival index (`0xD8797–0xD87C5`). |
-| 3 (03) | 12 | 1086 | `0xB5937` | Calls vtable +0xAC as opcode 1 does. Player item identities and delivery: see the item notes in [lol2-item-format.md](lol2-item-format.md). |
+| 3 (03) | 12 | 1086 | `0xB5937` | Calls vtable +0xAC as opcode 1 does. The player target resolves the definition identity and creates an instance. See [script grants](lol2-item-effects.md#script-grants). |
 | 4 (04) | — | 0 | `0xB5947` | Common low-table epilogue. No framed command length at `0x645E0`. |
 | 5 (05) | 6 | 3752 | `0xB5970` | Calls vtable +0xB0 with u8 +4 and u8 +5. |
 | 6 (06) | 6 | 963 | `0xB598B → 0xB3EC8` | Object-action switch on +4. Arm 1 calls `0x9F584` at `0xB3F5D`. The other arms depend on object flags and class. |
@@ -45,19 +45,19 @@ identifies a continuation whose effect is still open.
 | 8 (08) | 8 | 2390 | `0xB5A1B` | Calls vtable +0xAC. A zero result exits immediately at `0xB5A33`. |
 | 9 (09) | 6 | 6586 | `0xB59B3 → 0xB50C0` | Switches on +4. See the property arms below. |
 | 10 (0A) | — | 0 | `0xB5947` | Common low-table epilogue. No framed command length at `0x645E0`. |
-| 11 (0B) | 8 | 0 | `0xB5C6E` | Calls `0xA1A74` with u16 +4. **UNCONFIRMED** gameplay meaning. |
-| 12 (0C) | 6 | 174 | `0xB5AA2` | Calls `0xED6D0` with u8 +4. **UNCONFIRMED** gameplay meaning. |
+| 11 (0B) | 8 | 0 | `0xB5C6E` | Calls `0xA1A74` with u16 +4. The callee checks the index against `[0x96954]` and passes `[0x96958][index]` in a request to `0x156BD0`, storing the result at `0xD0A4` (`0xA1A7E–0xA1ADC`). **UNCONFIRMED** gameplay meaning. |
+| 12 (0C) | 6 | 174 | `0xB5AA2` | Calls `0xED6D0` with u8 +4. It checks bit 25 of `[0x2279A]`, forwards +4 to `0xED470` and takes a further resource and audio path for indices below 46 (`0xED6DB–0xED78B`). **UNCONFIRMED** selection by index. |
 | 13 (0D) | 8 | 1452 | `0xB5937` | Calls vtable +0xAC as opcode 1 does. **UNCONFIRMED** effects for individual classes. |
 | 14 (0E) | 8 | 3026 | `0xB59BF → 0xB47B4` | +4 is the timer action, +5 its argument, +6 the zero-based timer selector. See [timer actions](lol2-script-events.md#object-timers). |
 | 15 (0F) | 8 | 761 | `0xB5C82` | Resolves a secondary object from u8 +5 and u16 +6 through `0x5FBC8`. Copies its three coordinate dwords into locals and adds the unsigned low byte of vtable +0xEC's return to Z in 16.16 units. +4 indexes the switch at `0xB5CF1`. |
 | 16 (10) | 6 | 4873 | `0xB5A3C` | Stores u8 +4 in object byte +0x25. |
 | 17 (11) | 6 | 66 | `0xB5A76` | Adds s8 +4 to object byte +0x25 and clamps to 0–255. |
 | 18 (12) | 18 | 634 | `0xB59CE` | Occupies the sequence slot `[0xB7D5E]` if vacant. If u16 +0xA has bit 0x20 set, it calls `0x660F8` immediately, clears the slot and sends kind-6 value 6 through `0xADDE0`. |
-| 19 (13) | 10 | 156 | `0xB6B5F → 0x66130` | Builds and delivers a hit through vtable +0x80. Mask and flags are u16 +4 and u16 +6. +8 carries magnitude, and +9 selects a literal or percentage. Combat details are not yet documented in this repository. |
+| 19 (13) | 10 | 156 | `0xB6B5F → 0x66130` | Builds and delivers a hit through vtable +0x80. Mask and flags are u16 +4 and u16 +6. +8 carries magnitude, and +9 selects a literal or percentage. See [scripted hits](lol2-combat-ai.md#scripted-hits-and-thresholds) for the native calculations. |
 | 20 (14) | 10 | 2444 | `0xB5BDC → 0xB5C0D` | Calls sound request `0xE3924` with u16 +4, the object, a pointer to +6 and constant 1. |
 | 21 (15) | 6 | 577 | `0xB5AB5 → 0xCF2B4` | Passes u8 +4 and +5. The callee bounds +4 against `[0xE740]` and resolves dword slot `[0xE568+4*index]` at `0xCF2E2`. There is also a high-dispatch arm at `0x6486A`. |
 | 22 (16) | 18 | 54 | `0xB5C3B` | Sends the block at +4 to `0x61190`, then calls `0xE3D2C` with the result, object, pointer to +0xE and sentinel 0xFFFE. |
-| 23 (17) | 6 | 28 | `0xB5A4C` | Draws through `0x12415C`; shifts the result right five and stores its low byte at object +0x25. |
+| 23 (17) | 6 | 28 | `0xB5A4C` | Draws through `0x12415C`, shifts the result right five and stores its low byte at object +0x25. |
 | 24 (18) | 10 | 58 | `0xB5BDC → 0xB5C2E` | Calls `0xE3D2C` with the object, a pointer to +6 and u16 +4. Shares pointer suppression with opcode 20 at `0xB5BE5`. |
 | 196 (C4) | 12 | 3018 | `0x6484A → 0x64DDC` | Modifies a 44-byte region row selected by u16 +2 from `[0x22D0C]`. Reads signed height fields +4 and +0xA, option bits of +6, and +7/+8. Also checks queued opcode-196 requests for the same region. **UNCONFIRMED** eight post-call values and the complete interaction between flags. |
 | 197 (C5) | 6 | 536 | `0x6485A → 0x64CD4` | Selects a 44-byte region via u16 +2 and switches on +4 at `0x64D0A`. Arms change region flags at +0x1C/+0x1D or use the associated 42-byte row from `[0x22D10]`. |
@@ -93,6 +93,22 @@ independently readable effects.
 | 17 / 18 | `0xB50FB` / `0xB5109` | Sets or clears object flags bit 0x4000. |
 | 19 | `0xB5420` | Stores u8 +5 in object byte +0x26. |
 | 21 | `0xB5448` | Obtains the object list via vtable +0xB8 and sends kind-6 event value 20 through `0xADDE0`. |
+
+### Region command 197
+
+**CONFIRMED.** These direct actions use the switch at `0x64D0A` and
+table at object-2 offset `0xBC84`. The secondary row is 42 bytes,
+indexed by region u16 +0x18 from `[0x22D10]`.
+
+| Command +4 | Arm VA | Effect |
+|---:|---|---|
+| 0 / 1 | `0x64D28` / `0x64D33` | Clear bits 0 / 1 of region byte +0x1C, respectively. |
+| 2 / 3 | `0x64D3E` / `0x64D49` | Set bits 0 / 1 of region byte +0x1C, respectively. |
+| 4 / 5 | `0x64D5F` / `0x64D54` | Set / clear both low bits of region byte +0x1C. |
+| 6 / 7 | `0x64D6A` / `0x64D90` | Clear / set bit 0x04 in secondary row byte +0x19. |
+| 8 / 9 | `0x64D1D` / `0x64D12` | Set / clear bit 0x01 of region byte +0x1D. |
+| 10 | `0x64DB7` | Look up u16 +2 through `0x66664`. If found, set returned row +9 to 1. |
+| 11 or greater | `0x64C7E` | Return 1 without a write. |
 
 **UNCONFIRMED.** Virtual implementations of +0xAC, the complete +4 switches
 of opcodes 2, 6, 9 and 15, and downstream effects in helpers such as

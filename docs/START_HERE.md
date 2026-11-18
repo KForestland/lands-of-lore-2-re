@@ -23,7 +23,14 @@ Words you do not know are in the [glossary](GLOSSARY.md); what is known and chec
 
 ## I want to understand the scripts
 
-- [lol2-level-script-format.md](lol2-level-script-format.md) and [lol2-script-engine-facts-2026-10.md](lol2-script-engine-facts-2026-10.md) (+ [addendum](lol2-script-engine-facts-2026-10-addendum.md)). The full opcode table is open ([Q4](OPEN_QUESTIONS.md)).
+- Run `python3 tools/lol2_disassemble_scripts.py --data <DAT> L1_DC` to list commands and their MIX offsets.
+- Read the [stream format](lol2-level-script-format.md), [opcode table](lol2-script-opcodes.md) and [event and timer reference](lol2-script-events.md).
+
+## I want to understand items, combat or saves
+
+- [Item format](lol2-item-format.md) and [item grants and effects](lol2-item-effects.md) cover definitions, script grants and selected item-use handlers.
+- [Spells](lol2-spells.md) covers costs, acquisition and magic rewards. [Combat and creature decisions](lol2-combat-ai.md) covers hit calculation and the actor update.
+- [Native save slots](lol2-save-format.md) covers directories, compression and runtime sections. [Executable addresses](lol2-executable-tables.md) maps code and data references to file offsets.
 
 ## I want sound, music or movies
 

@@ -17,17 +17,17 @@ the length. Object group offsets are u16 +2 relative to `[0x2B514]`
 | List and kind | Records | Native interpretation and source |
 |---|---:|---|
 | Object 1 | 1369 | **CONFIRMED** as a 14-byte record in the framed corpus, e.g. `L10_DC.MIX+0xC8296B`. **UNCONFIRMED** native consumer and field meanings. Its u16 +2 matches a framed group at only two sites. |
-| Object 2 | 616 | **CONFIRMED** periodic timer. The 10-byte row is indexed by `0xB47B4` and serviced by `0xB8BA0`; see below. |
+| Object 2 | 616 | **CONFIRMED** periodic timer. The 10-byte row is indexed by `0xB47B4` and serviced by `0xB8BA0`. The timer details follow below. |
 | Object 3 | 715 | **CONFIRMED** six-byte row. `0xAD7F4` compares u8 +4 with its second argument, checks the predicate and runs every matching group. The effective source event depends on the caller. |
 | Object 4 | 1382 | **CONFIRMED** 10-byte held-item test. `0xADC76` dispatches mode +4 in 0–7 using a u32 argument at +6. It reads item identity +0x18 or field tests on +0x3D, +0x3F, +0x43 or +0x45. Zero at +5 leaves the test uninverted. |
 | Object 5 | 403 | **CONFIRMED** `0xAD8E0` matches event u8 +4 and value u8 +5. A value of 0xFF on either side passes the value test. All predicate-qualified matches run. |
-| Object 6 | 5153 | **CONFIRMED** `0xADDE0` compares u8 +4 with the supplied value and checks the predicate. Opcode 18 sends value 6 at `0xB5A0E`; property 21 sends 20 at `0xB5448`. |
+| Object 6 | 5153 | **CONFIRMED** `0xADDE0` compares u8 +4 with the supplied value and checks the predicate. Opcode 18 sends value 6 at `0xB5A0E`. Property 21 sends 20 at `0xB5448`. |
 | Object 7 | 49 | **CONFIRMED** `0xAE134` evaluates a health threshold with u8 +4 mode and u8 +5 threshold. The table at object-2 offset `0x55100` maps modes 0–3 to `0xAE162`, `0xAE1B6`, `0xAE1CE`, `0xAE1E6`. See below. |
-| Object 8 | 149 | **CONFIRMED** the six-byte row has a u16 match value +4 and 0xFFFF wildcard in the object-event walker at `0xAE510`. Corpus witness `L10_DC.MIX+0xC82CC5`; engine matcher uses the word comparison and predicate trailer. |
-| Object 9 | 1339 | **CONFIRMED** hit-filter row at `0xAE2C8`. Two u16 masks at +4/+6, threshold +8, and flags +9. The first qualifying match is queued. Combat details are not yet documented in this repository. |
+| Object 8 | 149 | **CONFIRMED** the six-byte row has a u16 match value +4 and 0xFFFF wildcard in the object-event walker at `0xAE510`. A corpus witness is `L10_DC.MIX+0xC82CC5`. The matcher checks the predicate trailer. |
+| Object 9 | 1339 | **CONFIRMED** hit-filter row at `0xAE2C8`. Two u16 masks at +4/+6, threshold +8, and flags +9. The first qualifying match is queued. See [combat](lol2-combat-ai.md#scripted-hits-and-thresholds). |
 | Object 10 | 110 | **CONFIRMED** `0xAE608` first compares u8 +4 with the signed low byte of the second argument. On equality it compares `[0x22D0C]+44*u16(+6)` with the third argument. The alternative branch requires event zero, record +4 = 7 and `u16(arg3+0x18) == u16(+6)` (`0xAE6E7–0xAE70F`). |
 | Region 11 | 700 | **CONFIRMED** `0xF2FC0` checks u16 +4 against the supplied selector and u8 +6 against the supplied event, then checks the predicate and invokes stream 0. The descriptor-based entry near `0xF30FA` checks the event and already has its descriptor list. |
-| Region 12 | 3241 | **CONFIRMED** the walker at `0xF2D87` compares region u16 +4 and event u8 +6. Its event-2 arm at `0xF2DFD` requires u8 +7 zero before the predicate. **UNCONFIRMED** the full calling sequences for the numbered events. |
+| Region 12 | 3241 | **CONFIRMED** the walker at `0xF2D87` compares region u16 +4 and event u8 +6. The switch at `0xF2E16` applies the event arms below before the predicate. |
 | Region 15 | 18 | **CONFIRMED** `0xF37C8` matches region u16 +4 and evaluates the predicate. Mode +6 compares values from `0xF5094` to u16 +8 (byte +7 zero) or to a value computed for the region indexed by u16 +8. The eight arms at `0xF38E0–0xF396D` use unsigned >, <, = or ≠ on the callback sum or qualifying-object count. |
 | Object or region 19 | 6009 / 1645 | **CONFIRMED** a four-byte trailer. After a match, e.g. at `0xAD863–0xAD88B`, the walker checks the immediately following record's kind for 0x13 and, if found, calls `0x66AB0(u16(+2))`. |
 
@@ -38,6 +38,27 @@ the threshold and clears the byte on success. Mode 1 tests
 `after < threshold <= before`. Mode 2 tests
 `before <= threshold < after`. Mode 3 tests `threshold == after`.
 A passing trailer is required if present (`0xAE213–0xAE281)).
+
+### Region event arms
+
+**CONFIRMED.** Region kind 12 uses the switch at
+`LOLG.DAT+0x129D04`. Let `a` be u8 record +7 and `v` the third
+argument to `0xF2D2C`. All listed tests precede predicate evaluation.
+
+| Event | Condition | VA |
+|---:|---|---|
+| 0, 7 | Pass | `0xF2DB7` |
+| 1, 9 | `a << 2 <= v` using signed comparison | `0xF2DD1`, `0xF2DE7` |
+| 2, 3, 4 | Pass if `a == 0` or `v != 0` | `0xF2DFD` |
+| 5, 6 or above 9 | Test the incoming ESI value | `0xF2E1E`, range branch at `0xF2E10` |
+| 8 | `a <= v` using signed comparison | `0xF2DBE` |
+
+An adjacent special arm at `0xF2EB9` can dispatch a kind-12
+record with stored event 6 when the caller requests event 2.
+In the player's region transition path, the walker gets event 3
+for the previous region at `0xD383C` and event 2 for the new
+one at `0xD39BB`. Those calls establish two uses of the event
+IDs. Other caller sequences remain **UNCONFIRMED**.
 
 ## Object timers
 
@@ -116,14 +137,22 @@ signed ≤ (`0x66C6B`), ≥ (`0x66C7F`), > (`0x66C8F`),
 < (`0x66CA3`), logical AND (`0x66C10`) and OR (`0x66C2B`).
 **CONFIRMED** by the relocated switch and comparison instructions.
 
-**CONFIRMED.** Opcode 198 writes the `0x26E54` buffer at `0x64887`;
+**CONFIRMED.** Opcode 198 writes the `0x26E54` buffer at `0x64887`. Opcodes
 201 and 207 randomize/add at `0x64906` and `0x648AF`. Opcodes
 199, 200 and 206 change the `0x26E58` buffer through `0x64A8C`,
 `0x64BB4` and `0x64B1C`. These are the same pointer cells used by
 the evaluator. The per-level save switch `0xE8914` uses `0x26E54` in
 section 24, and the global save switch `0xE867C` uses `0x26E58` in
-section 1. Object binding is explicit in the timer service at `0xB8BD4`;
-binding at each other dispatch caller needs a separate check.
+section 1. Object binding is explicit in the timer service at `0xB8BD4`. Binding at each other dispatch caller needs a separate check.
+
+**CONFIRMED.** The native name lookups for shared and local slots are
+`0x61514` and `0x61560`. They step 41-byte name rows at
+`[0x2B4C0]` or `[0x2B4BC]` and return the zero-based index.
+The first shared name in the retail archive is `GV_LUTHERS_SOUL`
+(`GLOBAL.MIX+0x667C18`, second row starts 41 bytes later).
+The caller at `0x9F17B–0x9F193` looks up the same identifier from
+`LOLG.DAT+0x1C1D0A` and caches the result. The ranges or thresholds
+used by each branch that reads the soul byte are **UNCONFIRMED**.
 
 ### Worked predicate
 

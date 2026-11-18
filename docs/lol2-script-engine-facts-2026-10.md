@@ -2,6 +2,9 @@
 
 Date: 2026-10-31
 
+For the current checks and corrected matcher arms, see the [opcode table](lol2-script-opcodes.md),
+[event reference](lol2-script-events.md) and [combat rules](lol2-combat-ai.md).
+
 These facts were collected in September-October 2026.
 Each was settled by disassembly of `LOLG.DAT` (sha256 prefix `b27a3534`, version 1.30),
 and most were also checked by running the original routine in a small native harness.

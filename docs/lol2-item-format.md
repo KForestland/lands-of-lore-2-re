@@ -2,8 +2,8 @@
 
 Date: 2026-10-31
 
-Field layout only. No item names, text or icons are reproduced here; read them from your own
-`GLOBAL.MIX`. Addresses follow [`lol2-script-engine-facts-2026-10.md`](lol2-script-engine-facts-2026-10.md):
+See [item effects](lol2-item-effects.md) for grants and selected handlers,
+and [combat](lol2-combat-ai.md) for the damage and descriptor switch. Addresses follow [`lol2-script-engine-facts-2026-10.md`](lol2-script-engine-facts-2026-10.md):
 `LOLG.DAT` 1.30 (sha256 `b27a3534...`), VA = file offset - 0x37000. Labels: PROVEN (bytes read),
 INTERPRETATION (a reading of proven calls), UNKNOWN.
 
@@ -100,13 +100,12 @@ Consequence: two weapons with the same +0x3B / +0x3D words get the same damage f
 that differ between them (+0x1C, +0x20, +0x29..+0x2D, +0x39, +0x40, +0x46) are not read on it. (PROVEN for
 the slice)
 
-UNKNOWN: the relocated descriptor-op table at 0x96E0 used by `jmp [ecx*4 + 0x96E0]` at 0x62E6B (the
-creature-side loop that runs for live targets), the writer of creature byte +0xA7 (the scalar), the names
+UNKNOWN: the names
 of the attack-sum terms and of byte 0xB7FB2, what `[0x22C5A]` counts, and the runtime value of 0x23C2D.
 No random-number call appears on this path before the descriptor callbacks.
 
 ## Still open
 
-- Descriptor ops (+0x47 rows and the 0x96E0 table).
+- Mapping individual definition descriptors to their assembled hit contributions.
 - Effects of most of the 107 handlers.
 - The remaining undecoded record bytes.
