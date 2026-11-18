@@ -23,8 +23,6 @@ Most useful files:
   - which LoL2 asset families are strong, partial, or still gaps
 - `data/script-catalog.json`
   - grouped inventory of the current Python scripts and helper wrappers
-- `data/output-catalog.json`
-  - grouped inventory of the `lol2_out/` output surface
 
 ## What We Clearly Have
 

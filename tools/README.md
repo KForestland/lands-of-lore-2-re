@@ -28,7 +28,7 @@ Run every `--check` (20) and print one line each, then a summary.
 
 ```
 $ python3 tools/check_all.py | sed -n "1,2p;21p"
-CHECK repo_guard: 260 tracked files; game files, media, stray images, files over 300 KB, machine paths, words from the local list, or commit identities: none (0); private word list: not present, skipped
+CHECK repo_guard: N tracked files; game files, media, stray images, files over 300 KB, machine paths, words from the local list, or commit identities: none (0); private word list: not present, skipped
 CHECK mix: 81 MIX files, 2905 entries; this reader and lol2_source_format.parse_mix agree and every entry lies inside its file: 81/81; index sorted by signed key: 81/81 (by unsigned key: 20); bad=none
 ALL 20 CHECKS PASSED
 ```
@@ -55,7 +55,7 @@ Library: strict MIX reader, level geometry entry, opcode lengths. `--check`: all
 
 ```
 $ python3 tools/lol2_source_format.py --check
-CHECK source_format: 81 MIX files pass the strict reader (sizes, bounds, no overlap); one geometry entry (dword 0 = 18, dword 4 = 5300) in 15/15 le...
+CHECK source_format: 81/81 MIX files pass the strict reader (sizes, bounds, no overlap); one geometry entry (dword 0 = 18, dword 4 = 5300) in 15/15 le...
 ```
 
 ### `lol2_disassemble_scripts.py`
@@ -179,7 +179,7 @@ Fails if a game file, media file or stray image is committed. Needs no game data
 
 ```
 $ python3 tools/repo_guard.py --check
-CHECK repo_guard: 260 tracked files; game files, media, stray images, files over 300 KB, machine paths, words from the local list, or commit identities: none (0); private word list: not present, skipped
+CHECK repo_guard: N tracked files; game files, media, stray images, files over 300 KB, machine paths, words from the local list, or commit identities: none (0); private word list: not present, skipped
 ```
 
 ## Tool Index

@@ -10,8 +10,6 @@ Read these first:
   - honest status of the major LoL2 asset families
 - `script-catalog.json`
   - grouped catalog of the current LoL2 scripts and helpers
-- `output-catalog.json`
-  - grouped catalog of the current `lol2_out/` output surface
 - `texture-map-catalog.json`
   - curated texture/map output catalog
 

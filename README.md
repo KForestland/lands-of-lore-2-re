@@ -24,7 +24,7 @@ It contains documentation, tools and small tables of numbers. It contains no gam
 
 ## Quick start
 
-You need Python 3.10+ and your own copy of the game: the English GOG release (DOS program `LOLG.DAT`, SHA-256 starting `b27a35341c6e877e`; some tools refuse other editions). Most files are in its `DAT/` folder; seven MIX files sit in the game folder next to it (`LOCAL`, `LOCALLNG`, `DMUSIC`, `SETUP`, `GLOBAL`, `CACHEBAK` and the game-written `CDCACHE`), and the tools find them there from `$LOL2_DAT`. Optional: the system LZO library (`apt install liblzo2-2`) for the texture tool.
+You need Python 3.10+ and your own copy of the game: the English GOG release, DOS version 1.30 (program `LOLG.DAT`, SHA-256 starting `b27a35341c6e877e`; some tools refuse other editions). Most files are in its `DAT/` folder; seven MIX files sit in the game folder next to it (`LOCAL`, `LOCALLNG`, `DMUSIC`, `SETUP`, `GLOBAL`, `CACHEBAK` and the game-written `CDCACHE`), and the tools find them there from `$LOL2_DAT`. Optional: the system LZO library (`apt install liblzo2-2`) for the texture tool.
 
 ```bash
 git clone https://github.com/KForestland/lands-of-lore-2-re.git
@@ -42,7 +42,7 @@ Full table with evidence: [`docs/STATUS.md`](docs/STATUS.md).
 
 | Area | State |
 |------|-------|
-| Archives (MIX), entry names, compression | [Format page](docs/formats/mix.md); readers check all 81 archives in `DAT/` and the 6 shipped ones in the game folder; the game-written cache `CDCACHE.MIX` is not one (Q20) |
+| Archives (MIX), entry names, compression | [Format page](docs/formats/mix.md); readers check all 81 archives in `DAT/` (`check_all`) and the 6 shipped ones in the game folder (`lol2_mix_parser.py --check --data <game folder>` gives 6/7: the seventh, `CDCACHE.MIX`, is written by the game); the game-written cache `CDCACHE.MIX` is not one (Q20) |
 | Levels, geometry, walls, textures | Documented for the traced parts; geometry entry found in all 15 levels; wall spans and UVs partly open (Q16) |
 | Level scripts | Opcode dispatch and event layouts documented. Disassembler checks all 15 levels (Q4–Q7). |
 | Entities, items, combat | Item definitions, native grants, selected effects and combat formulas documented (Q8, Q10). |

@@ -16,7 +16,7 @@ absolute within the named archive. Code addresses use the
    request +0x28 with `0x01000000`. The prop event-list virtual at
    `0x5DA20` reads the live offset at prop +0x36, and `0xB5013–0xB501D`
    passes the list to the matcher. The slots +0x24 and +0xB8 of the vtable at
-   `LOLG.DAT+0x1C64E8` (file `+0x1C650C`, `+0x1C65A0`) hold these routines.
+   `LOLG.DAT+0x1C64E8` (file `+0x1C650C`, `+0x1C65A0`) hold these routines (stored as object-2 offsets `0x4A24`/`0x49FC`; add `0x59024`).
    **UNCONFIRMED:** that prop 1050's class installs this vtable at prop
    +0x28, and the link from placement word +0xC to prop +0x36 through
    `[0x273E4]`; no constructor is cited here (see the test below).
@@ -39,7 +39,7 @@ absolute within the named archive. Code addresses use the
 **UNCONFIRMED.** The screen coordinate that picks prop 1050 and the
 input call sequence that leads to its binding virtual are open. The
 static trace starts where the world interaction supplies the prop and
-request. **Test:** a breakpoint at `0x5DA48` conditioned on `[esp+4]` = prop
+request. **Test:** a breakpoint at `0x5DA48` with the prop object in `ebx` at `0x5DA51`, conditioned on `word [ebx+0x36] == 0x14D4`, i.e. prop
 1050's object (the routine is a shared class method), on an in-game
 click, can establish
 the calling sequence and confirm that `[0xB7D80]` equals that prop before

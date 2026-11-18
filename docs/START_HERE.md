@@ -25,7 +25,7 @@ Follow the engine from startup to saving in [How Lands of Lore II works](HOW_THE
 
 ## I want to understand the scripts
 
-- Run `python3 tools/lol2_disassemble_scripts.py --data <DAT> L1_DC` to list commands and their MIX offsets.
+- Run `python3 tools/lol2_disassemble_scripts.py --data "$LOL2_DAT" L1_DC` to list commands and their MIX offsets.
 - Read the [stream format](lol2-level-script-format.md), [opcode table](lol2-script-opcodes.md) and [event and timer reference](lol2-script-events.md).
 
 ## I want to understand items, combat or saves

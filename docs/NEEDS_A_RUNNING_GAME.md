@@ -7,8 +7,8 @@ the [LOLG.DAT analysis addresses](lol2-executable-tables.md). Within
 the loaded LE code object (object 2), a breakpoint at analysis address
 `A` is at offset `A − 0x59024`. Data addresses name displacements from
 the loaded object-5 base. To find the linear bases under DOS/4GW, search memory for the
-fixup-free bytes `C7 83 85 01 00 00 00 00 00 00` (analysis address
-`0xCFB8B`): object-2 base = match − (`0xCFB8B` − `0x59024`).
+fixup-free bytes `C7 83 85 01 00 00 00 00 00 00 C7 83` (analysis address
+`0xCFB8B`; the first ten bytes alone also match at `0xD2E57`): object-2 base = match − (`0xCFB8B` − `0x59024`).
 Object-5 base = the relocated operand of the `mov ax,[…]` at
 `0xB8C0D`, minus `0x22C58`. Record the release, save slot,
 level, action, native instruction and values for each observation.
@@ -19,7 +19,7 @@ Question: [Q7 in OPEN_QUESTIONS](OPEN_QUESTIONS.md).
 
 **CONFIRMED.** The timer reads the signed word at object-5
 `0x22C58` at `0xB8C0D` and the dword at `0x22C5A`
-at `0xB8BE5`. The saved witness has 225280, 880 and 4
+at `0xB8BE5`. The saved witness (one save written by the game during play, not shipped) has 225280, 880 and 4
 at `0x22C54/58/5A` respectively. Restore has a known
 path through section 67. [Timer witness and inspected callers](lol2-timer-clock.md#saved-frame-witness-and-open-producer)
 
@@ -149,7 +149,7 @@ an item held as a comparison.
 ## Level-1 tutorial: which click binds prop 1050?
 
 In L1_DC, use the same approach for prop 1050 ([tutorial](tutorial-one-event.md)). Break at
-`0x5DA48` conditioned on `[esp+4]` = prop 1050's object (a shared class method), record the caller and input action, compare the
+`0x5DA48` (a shared class method); at `0x5DA51` the prop object is in `ebx`, so condition on `word [ebx+0x36] == 0x14D4`, prop 1050's event-list offset (this assumes the placement link the tutorial marks UNCONFIRMED), record the caller and input action, compare the
 selected prop to `[0xB7D80]` at `0xADD8A`, and read its
 +0x25. Binding to prop 1050 with byte zero reaches group
 `0x228E` and the cursor grant. A different pointer establishes
