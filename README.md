@@ -16,7 +16,7 @@ It contains documentation, tools and small tables of numbers. It contains no gam
 
 ## Quick start
 
-You need Python 3.8+ and your own copy of the game.
+You need Python 3.10+ and your own copy of the game.
 
 ```bash
 git clone https://github.com/KForestland/lands-of-lore-2-re.git

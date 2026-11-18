@@ -2,14 +2,7 @@
 
 Date: 2026-03-23
 
-This index points to the local workspace artifacts backing the first promoted LoL2 closure docs.
-
-## Canonical Workspace Sources
-
-- `AI_COMMS/LOL2_TQ001_TRACE_CHECKPOINT_2026-03-17.md`
-- `AI_COMMS/CURRENT_STATE.md`
-
-Note: These are local workspace files not included in the repo. They served as coordination checkpoints during the active RE pass.
+This index lists the DOSBox trace captures behind the March 2026 notes. The captures themselves are not published; `<LOL2_OUT>` stands for the folder they were written to.
 
 ## Key Trace Artifacts
 

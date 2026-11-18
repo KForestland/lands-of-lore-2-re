@@ -11,6 +11,9 @@ Environment variables:
   LOL2_OUT   - output directory (default: ./lol2_geometry_out)
   LOL2_LEVEL - level name override (e.g. L1_DC, L10_DC)
 """
+import os as _os, sys as _sys
+_sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))
+from lol2_cli import refuse_repo_output  # noqa: E402
 import struct, os, sys, argparse, json
 from collections import Counter, defaultdict
 from PIL import Image
@@ -318,7 +321,7 @@ def main():
     args = parser.parse_args()
 
     dat_dir = os.environ.get("LOL2_DAT", ".")
-    out_dir = args.output or os.environ.get("LOL2_OUT", "./lol2_geometry_out")
+    out_dir = refuse_repo_output(args.output or os.environ.get("LOL2_OUT", "./lol2_geometry_out"))
     level = args.level or os.environ.get("LOL2_LEVEL", "L1_DC")
     os.makedirs(out_dir, exist_ok=True)
 

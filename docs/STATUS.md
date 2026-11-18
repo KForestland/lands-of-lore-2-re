@@ -4,7 +4,7 @@
 
 Run the checks: `python3 tools/check_all.py --data <DAT>` (17 checks; all pass on the copy read).
 
-**Short format pages** (one per format, with a worked example from the game files): [formats/](formats/README.md) — MIX, level data, texture container, room sections, entity records, items, sound.
+**Short format pages** (one per format, with a worked example from the game files): [formats/](formats/README.md), 12 pages; **level sheets**: [levels/](levels/README.md).
 
 **Columns**: *Pages*: where it is described. *Tool check*: what `--check` measures on the game files. *Open*: numbered in [OPEN_QUESTIONS.md](OPEN_QUESTIONS.md).
 
@@ -21,7 +21,7 @@ Run the checks: `python3 tools/check_all.py --data <DAT>` (17 checks; all pass o
 | Walls and textures | [walls](formats/walls.md), [texture container](lol2-level-texture-container.md), [wall material provenance](lol2-wall-material-provenance.md), [texture map inventory](texture-map-inventory.md) | the `tools/draracle/` pipeline has its own tests | Q14, Q16 |
 | Sprites | [block sprite decoder](block-sprite-decoder.md), [creature frame groups](creature-frame-groups.md) | — | |
 | Sound and music | [format page](formats/sound.md), [audio inventory](audio-inventory.md), [music](lol2-music-2026-11.md) | `lol2_aud_decode`: 453 AUD entries in 29 `DAT/` archives decode (437 exactly, 16 one sample short) | Q15 |
-| Movies | [VQA v2](lol2-vqa-v2.md) | — | Q12 |
+| Movies | [VQA format page](formats/vqa.md), [VQA v2](lol2-vqa-v2.md), [movie scenes](lol2-movie-scenes.md) | `lol2_vqa_v2_decode`: 1,948 movie headers valid, 948 decoded by the tool; `lol2_media_check`: scene table and two worked movies | Q12 |
 | Combat | [Combat and creature decisions](lol2-combat-ai.md), [creature transitions](lol2-creature-transitions.md), [executioner combat evidence](executioner-combat-evidence.md) | Bounded arithmetic replay in `tools/draracle/` | Q10 |
 | Spells | [Costs, acquisition and rewards](lol2-spells.md) | — | Q9 |
 | Saves | [Native save format](lol2-save-format.md), [save sections](lol2-save-sections.md) | 27 reference slots and 149 nonempty level blocks checked; 6,765 nonempty level spans decode to their stated lengths | Q11 |
@@ -30,7 +30,7 @@ Run the checks: `python3 tools/check_all.py --data <DAT>` (17 checks; all pass o
 
 ## Tools
 
-The top-level tools answer `--help`. The 10 that had no argument handling now take `--data` (or `$LOL2_DAT`), write only with `--out`, and have a `--check`; `check_all.py` runs them and `repo_guard.py` (no game files, media or stray images may be committed). The other tools and the `tools/draracle/` pipeline still use their own options; giving them `--check` is the next tool step.
+The top-level tools answer `--help`, take `--data` (or `$LOL2_DAT`) and write only where you tell them, never inside the repository. Those listed in `check_all.py` have a `--check`. The other tools and the `tools/draracle/` pipeline still use their own options.
 
 ## Corrections made in this pass (2026-11-18)
 

@@ -20,7 +20,7 @@ python3 tools/lol2_level_map.py --check --data <DAT>
 
 *L1_DC: 1,954 regions with floor heights from −1000 to 580. The level runs as one long cave from south to north.*
 
-Following the portal links splits L1_DC into 9 groups that no portal connects:
+Following the portal links splits L1_DC into 9 groups that no portal connects (listed in the [level sheet](../levels/L1_DC.md), section "Regions and portals"):
 - the main cave, 1,933 regions;
 - the square at the top right, 14 regions, whose interior lines are portals between its own regions;
 - 7 single regions, the small dark blocks.

@@ -121,7 +121,7 @@ Based on the extraction of 1 texture that visually matches in-game appearance, o
 
 ### Texture Atlas Candidate Structure (LOCAL.MIX Entry 1)
 
-Note: the current repo-safe verdict is narrower than the older atlas
+Note: the current verdict supported by the evidence is narrower than the older atlas
 wording. `LOCAL.MIX` Entry 1 does contain one reproducible raw
 `128x128` image witness that visually matches the Draracle Caverns wall,
 but records `1..38` also parse cleanly under the repo's existing Sphere
@@ -146,8 +146,8 @@ Current safest interpretation split:
 The column renderer still reads palette-indexed texture columns from
 some prebuilt source surface and composites them into the back buffer;
 the remaining open question is whether Entry 1 record `0`, some other
-part of Entry 1, or another upstream source is the runtime wall-source
-owner for that lane.
+part of Entry 1, or another upstream source is the runtime source of the
+wall columns.
 
 ### Column Renderer and Distance Shading
 

@@ -8,7 +8,7 @@ This is a narrow verifier for the surviving Entry 1 witness:
 - compare them against a few preserved runtime wall/renderer buffers
 
 The goal is not to prove total non-use. It only answers a smaller,
-repo-safe question:
+question the evidence can answer:
 
   "Do the currently preserved runtime buffer captures contain direct raw
    reuse of Entry 1 record 0 under straightforward layout assumptions?"

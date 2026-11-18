@@ -1,39 +1,23 @@
 # Docs
 
-Promoted writeups documenting the LoL2 runtime entity pipeline, wall texture format, and closure state.
+Start with **[START_HERE.md](START_HERE.md)** (by goal), then:
 
-This folder is for promoted LoL2 reverse-engineering writeups only.
+- [STATUS.md](STATUS.md): what is documented, which tool checks it, and what is open.
+- [formats/](formats/README.md): one short page per file format, each with a worked example from the game files.
+- [levels/](levels/README.md): one generated sheet per level.
+- Pages on the game's program and rules:
+  - [script opcodes](lol2-script-opcodes.md)
+  - [script events](lol2-script-events.md)
+  - [items](lol2-item-effects.md) and [item handlers](lol2-item-handlers.md)
+  - [spells](lol2-spells.md)
+  - [combat](lol2-combat-ai.md) and [creature transitions](lol2-creature-transitions.md)
+  - [saves](lol2-save-format.md) and [save sections](lol2-save-sections.md)
+  - [executable tables](lol2-executable-tables.md)
+- Media:
+  - [movie scenes](lol2-movie-scenes.md)
+  - [sound cues](lol2-sound-cues.md)
+  - [music selection](lol2-music-selection.md)
+  - [room archives](lol2-room-archives.md)
+- [OPEN_QUESTIONS.md](OPEN_QUESTIONS.md) and [GLOSSARY.md](GLOSSARY.md).
 
-Read order:
-
-- `closure-summary.md`
-  - Plain-English summary of the current closure state.
-- `final-closure-memo.md`
-  - Short final handoff memo for the current public repo state.
-- `lol2-current-status.md`
-  - Short state of the work, strongest proven results, and remaining open items.
-- `lol2-compact-path-branch-steering.md`
-  - Main closure note for the compact `L1` control path and the fast-vs-alternate loading-phase branch split.
-- `lol2-object-state-word.md`
-  - Focused explanation of the bit-field register at `[+80] + 0xB4` and its proven bit layout.
-- `lol2-runtime-to-renderer-bridge.md`
-  - Explains how the runtime-object results change the renderer/texture problem.
-- `inventory-overview.md`
-  - Explains what the LoL2 repo does and does not yet inventory cleanly.
-- `texture-map-inventory.md`
-  - The first deeper public inventory for texture/map outputs.
-- `repo-scope.md`
-  - Explains what this repo includes and excludes.
-- `provenance.md`
-  - Explains where the current repo claims came from.
-- `tooling-catalog.md`
-  - Explains what tools and workflows were actually used.
-- `lol2-entity-object-map.md`
-  - Complete proven field layout of the `[+80]` entity object (25+ fields with semantic roles).
-- `audio-inventory.md`
-  - What audio/music assets exist, their formats, and extraction status.
-
-Working rule:
-
-- only move material here after it has been locally verified and cleaned
-- no raw advisory dumps
+The other pages in this folder are older notes, kept as history. Where they disagree with the pages above, the pages above are current.

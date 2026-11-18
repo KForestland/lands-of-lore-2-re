@@ -27,8 +27,8 @@ Run every `--check` (17) and print one line each, then a summary.
 
 ```
 $ python3 tools/check_all.py | sed -n "1,2p;18p"
-CHECK repo_guard: 230 tracked files; game files, media, stray images, files over 1 MiB, machine paths, lane/agent names or commit identities: none (0)
-CHECK mix: 81 MIX files, 2905 entries; this reader and lol2_source_format.parse_mix agree and every entry lies inside its file: 81/81; index sorted by signed key: 81/81; bad=none
+CHECK repo_guard: 230 tracked files; game files, media, stray images, files over 1 MiB, machine paths, private or assistant names, or commit identities: none (0)
+CHECK mix: 81 MIX files, 2905 entries; this reader and lol2_source_format.parse_mix agree and every entry lies inside its file: 81/81; index sorted by signed key: 81/81 (by unsigned key: 20); bad=none
 ALL 17 CHECKS PASSED
 ```
 
@@ -156,7 +156,7 @@ Fails if a game file, media file or stray image is committed. Needs no game data
 
 ```
 $ python3 tools/repo_guard.py --check
-CHECK repo_guard: 194 tracked files; game files, media, stray images or files over 1 MiB: none (0)
+CHECK repo_guard: 230 tracked files; game files, media, stray images, files over 1 MiB, machine paths, private or assistant names, or commit identities: none (0)
 ```
 
 ## Tool Index
@@ -164,9 +164,9 @@ CHECK repo_guard: 194 tracked files; game files, media, stray images or files ov
 ### Container & Compression
 - `lol2_mix_parser.py` — shared Westwood MIX container parser (imported by other tools, also usable standalone)
   - example: `python3 tools/lol2_mix_parser.py --help`
-- `lol2_decompress_westwood.py` — Westwood LZ77 decompressor (proven from LOLG.DAT disassembly)
+- `lol2_decompress_westwood.py` — Westwood LZ77 decompressor with a leading mode byte; no game data is known to use it and its source address is not cited (UNCONFIRMED, [Q1](../docs/OPEN_QUESTIONS.md))
   - example: `python3 tools/lol2_decompress_westwood.py --help`
-- `lol2_decompress_sphere.py` — Sphere engine LZ77 with chained room-group decoding (for LOCAL.MIX room sub-sections)
+- `lol2_decompress_sphere.py` — LCW variant with chained room-group decoding, for the `LOCAL.MIX` entry 1 room sections ([room sections](../docs/formats/room-sections.md))
   - example: `python3 tools/lol2_decompress_sphere.py --help`
 
 ### Added 2026-10
@@ -205,7 +205,7 @@ CHECK repo_guard: 194 tracked files; game files, media, stray images or files ov
   - example: `python3 tools/lol2_aud_decode.py --help`
 
 ### Texture Extraction
-- `lol2_wall_texture_extract.py` — LOCAL.MIX wall texture atlas extractor (raw 8bpp; 1 of 39 textures verified)
+- `lol2_wall_texture_extract.py` — SUPERSEDED: an early reading of `LOCAL.MIX` entry 1 as a wall texture atlas. The entry holds room tile grids ([room sections](../docs/formats/room-sections.md)); kept only for its recorded examples
   - example: `python3 tools/lol2_wall_texture_extract.py --help`
 
 ### Asset Extraction

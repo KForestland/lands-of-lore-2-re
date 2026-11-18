@@ -57,7 +57,7 @@ def read_mix_entry(path, entry_idx):
 
 USAGE = """
   lol2_mix_parser.py L1_DC.MIX                  # list entries (key, offset, size)
-  lol2_mix_parser.py L1_DC.MIX 3 --out e3.bin   # extract entry 3
+  lol2_mix_parser.py L1_DC.MIX 1 --out e1.bin   # extract entry 1 (write outside the repository)
   lol2_mix_parser.py --check                    # parse every MIX in the DAT folder
 """
 
@@ -71,7 +71,7 @@ def main():
     ap.add_argument("index", nargs="?", type=int)
     a = ap.parse_args()
     if a.check:
-        n = rows = signed = 0
+        n = rows = signed = unsigned = 0
         bad = []
         for f in lol2_cli.mix_files(a.data):
             path = os.path.join(a.data, f)
@@ -87,11 +87,12 @@ def main():
             inside = all(base + o + s <= len(data) for h, o, s in entries)
             keys = [h - (1 << 32) if h >= 1 << 31 else h for h, o, s in entries]
             signed += keys == sorted(keys)
+            unsigned += [h for h, o, s in entries] == sorted(h for h, o, s in entries)
             if not (same and inside):
                 bad.append(f)
         good = n - len(bad)
         print(f"CHECK mix: {n} MIX files, {rows} entries; this reader and lol2_source_format.parse_mix agree "
-              f"and every entry lies inside its file: {good}/{n}; index sorted by signed key: {signed}/{good}; "
+              f"and every entry lies inside its file: {good}/{n}; index sorted by signed key: {signed}/{good} (by unsigned key: {unsigned}); "
               f"bad={bad or 'none'}")
         return 0 if not bad else 1
     if not a.mix:
@@ -99,6 +100,8 @@ def main():
     path = a.mix if os.path.isabs(a.mix) else os.path.join(a.data, a.mix)
     data, entries, base = read_mix_with_hashes(path)
     if a.index is not None:
+        if not 0 <= a.index < len(entries):
+            ap.error(f"{os.path.basename(path)} has entries 0 to {len(entries) - 1}")
         h, o, s = entries[a.index]
         blob = data[base + o:base + o + s]
         if a.out:

@@ -7,7 +7,6 @@ palette (CPL0), and audio chunks (SND0/SND1/SND2).
 
 Environment variables:
   LOL2_DAT   - path to the LoL2 DAT directory (default: current directory)
-  LOL2_OUT   - output directory (default: ./lol2_vqa_out)
 """
 import struct, os, sys, argparse
 from collections import defaultdict

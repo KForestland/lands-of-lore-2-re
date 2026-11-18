@@ -8,6 +8,9 @@ with valid byte/word order fields (both 0) since the standard e_lfanew
 mechanism is not used in bound DOS4GW executables.
 """
 
+import os as _os, sys as _sys
+_sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))
+from lol2_cli import refuse_repo_output  # noqa: E402
 import argparse
 import struct
 import os
@@ -92,7 +95,7 @@ def main():
             "LOL2_EXE",
             "lol2_game/LOLG.DAT"
         ),
-        help="Path to LOLG.DAT (default: $LOL2_EXE or built-in path)"
+        help="Path to LOLG.DAT (default: $LOL2_EXE or ./lol2_game/LOLG.DAT)"
     )
     parser.add_argument(
         "output_dir", nargs="?",
@@ -102,7 +105,7 @@ def main():
     args = parser.parse_args()
 
     input_file = args.exe_path
-    output_dir = args.output_dir
+    output_dir = refuse_repo_output(args.output_dir)
 
     os.makedirs(output_dir, exist_ok=True)
 

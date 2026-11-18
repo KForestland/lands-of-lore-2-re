@@ -2,7 +2,7 @@
 
 Date: 2026-04-01
 
-This note records the first repo-safe structural pass over the
+This note records the first structural pass over the
 compressed `16x16` atlas records in `LOCAL.MIX` entry `1`.
 
 Important update:
@@ -989,7 +989,7 @@ The early backrefs in the dependent records all point before the current
 output start, so the current helper collapses them toward dictionary
 position `0`.
 
-That makes the best current repo-safe read:
+That makes the best current reading supported by the evidence:
 
 - `skip 4` is a real body-start class
 - some records in that class are standalone enough to self-seed

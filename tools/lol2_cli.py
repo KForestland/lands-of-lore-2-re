@@ -22,3 +22,13 @@ def tool_args(doc, data=True, out_help="write the result here (default: print on
 
 def mix_files(data_dir):
     return sorted(f for f in os.listdir(data_dir) if f.upper().endswith(".MIX"))
+
+
+def refuse_repo_output(path):
+    """Exit with a message if an output path lies inside this repository (game data must not land in it)."""
+    import sys
+    repo = os.path.realpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
+    target = os.path.realpath(path)
+    if target == repo or target.startswith(repo + os.sep):
+        sys.exit(f"refusing to write inside the repository ({path}); give an output path outside it")
+    return path

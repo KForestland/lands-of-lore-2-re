@@ -9,7 +9,7 @@
 
 Date: 2026-04-02
 
-This note records the current repo-safe verdict for `LOCAL.MIX` entry
+This note records the current verdict supported by the evidence for `LOCAL.MIX` entry
 `1` after the atlas verifier was cross-checked against the repo's
 existing Sphere room-section parser.
 
@@ -138,6 +138,6 @@ questions explicitly:
 3. Is the actual wall-texture source somewhere else entirely, with entry
    `1` serving only map/room composition roles?
 
-Until one of those is answered, the repo-safe verdict is:
+Until one of those is answered, the verdict supported by the evidence is:
 
 `entry 1 is partially useful, but not texture-closure-safe beyond record 0`.

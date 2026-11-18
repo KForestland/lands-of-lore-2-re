@@ -16,7 +16,7 @@ Each vertex is 8 bytes, two s32 (x, y) in 16.16 fixed point; see the [cave page]
 |---:|---:|---|---|
 | 2–5 | +0x04 | neighbouring region on side 0–3; `0xFFFF` = none (a wall) | CONFIRMED in code: `0xF4504` reads word `2 + side` and treats `0xFFFF` as no neighbour |
 | 6–9 | +0x0C | the four corner vertices; side *s* runs from corner *s* to corner *s*+1 (mod 4) | CONFIRMED on the data (shared edges, below) |
-| 10 | +0x14 | floor height (signed) | CONFIRMED in code: `0xF4504` takes its base and the neighbour's height from this word |
+| 10 | +0x14 | floor height (signed; larger values are higher: the ceiling word is at least the floor word in 52,495 of 52,669 regions) | CONFIRMED in code: `0xF4504` takes its base and the neighbour's height from this word |
 | 11 | +0x16 | ceiling height (signed); also the raised edge of a sloped floor that has no neighbour | CONFIRMED in code: the `0xFFFF` path of `0xF4504` |
 | 14 | +0x1C | flags: bit 2 = sloped floor, bit 3 = sloped ceiling; bits 12–13 = side of the floor slope, bits 14–15 = side of the ceiling slope | CONFIRMED in code for the floor (`0xF4510–0xF4519`); ceiling by the matching routine `0xF4590` (UNCONFIRMED here) |
 | others | | wall-record slice, subdivision links and more | UNCONFIRMED; see the [cave page](../draracle-restoration.md) |

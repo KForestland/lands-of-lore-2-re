@@ -4,9 +4,9 @@ Numbered so the pages and [`STATUS.md`](STATUS.md) can point at them. Each is so
 
 | ID | Question | Page |
 |----|----------|------|
-| Q1 | Which LoL2 data, if any, uses the Westwood LZ77 variant with a leading mode byte (`tools/lol2_decompress_westwood.py`)? No MIX entry whose first u32 looks like a size decodes with it | tools |
-| Q2 | `LOCAL.MIX` entry 1: the two stored (uncompressed) sections 0 and 15 are 2 bytes shorter than their headers state. Is the header 10 bytes for stored sections, or the size counted differently? | [lol2-level-texture-container.md](lol2-level-texture-container.md) |
-| Q3 | Room archives: the level graph lists 45 room archives with a `WOMS\<ROOM>_.WOM` module plus 3 movie-only ones; the hash check finds the WOM name in 47 archives. Which count is right, and what are the two extra? | [lol2-level-graph.md](lol2-level-graph.md) |
+| Q1 | Which LoL2 data, if any, uses the Westwood LZ77 variant with a leading mode byte (`tools/lol2_decompress_westwood.py`)? No MIX entry whose first u32 looks like a size decodes with it | [formats/compression.md](formats/compression.md) |
+| Q2 | `LOCAL.MIX` entry 1: the two stored (uncompressed) sections 0 and 15 are 2 bytes shorter than their headers state. Is the header 10 bytes for stored sections, or the size counted differently? | [formats/room-sections.md](formats/room-sections.md) |
+| Q3 | Room archives: the level graph lists 45 room archives with a `WOMS\<ROOM>_.WOM` module plus 3 movie-only ones; the hash check finds the WOM name in 47 archives. Which count is right, and what are the two extra?. **Answered in part:** 47 archives carry a `WOMS\<ROOM>_.WOM` key; they are the 46 room archives the executable names in its table at file `0x1CFA90` ([lol2-room-archives.md](lol2-room-archives.md)) plus `ARENA`, which the table does not name. How `ARENA` is opened is open | [lol2-level-graph.md](lol2-level-graph.md) |
 | Q4 | What do the remaining subcommands and virtual continuations do, including opcode 18 drift and opcode 196 post-call writes? | [Opcode table](lol2-script-opcodes.md) |
 | Q5 | What consumes object kind 1, and which player and object actions supply the remaining event IDs? | [Event records](lol2-script-events.md#event-records) |
 | Q6 | Which shared-array indexes and values gate the remaining plot branches, and what does predicate operand type 7 return? | [Predicates and shared bytes](lol2-script-events.md#predicates-and-shared-bytes) |

@@ -2,7 +2,7 @@
 """Extract the current LOCAL.MIX Entry 1 texture candidate records.
 
 This tool preserves the older Entry 1 atlas-style parser as a workspace
-utility, but the repo-safe verdict is now narrower than "solved wall
+utility, but the verdict supported by the evidence is now narrower than "solved wall
 texture atlas":
 
 - record 0 is a reproducible raw 128x128 witness

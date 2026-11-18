@@ -15,6 +15,9 @@ Environment variables:
   LOL2_DAT   - path to the LoL2 DAT directory (default: current directory)
   LOL2_OUT   - output directory (default: current directory)
 """
+import os as _os, sys as _sys
+_sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))
+from lol2_cli import refuse_repo_output  # noqa: E402
 import struct, os, sys, argparse
 from collections import defaultdict
 
@@ -324,9 +327,9 @@ def main():
     level_name = os.path.splitext(os.path.basename(args.mix_path))[0]
 
     if args.output:
-        obj_path = args.output
+        obj_path = refuse_repo_output(args.output)
     else:
-        obj_path = os.path.join(out_dir, f"{level_name}_walls.obj")
+        obj_path = refuse_repo_output(os.path.join(out_dir, f"{level_name}_walls.obj"))
 
     stats = generate_wall_mesh(args.mix_path, obj_path, args.geo_index)
     if stats is None:

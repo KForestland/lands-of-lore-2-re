@@ -1,6 +1,6 @@
 # Start here, by goal
 
-You need Python 3.8+, Pillow (`pip install -r requirements.txt`) and your own copy of *Lands of Lore: Guardians of Destiny*. Point the tools at its `DAT` folder once:
+You need Python 3.10+, Pillow (`pip install -r requirements.txt`) and your own copy of *Lands of Lore: Guardians of Destiny*. Point the tools at its `DAT` folder once:
 
 ```bash
 export LOL2_DAT=/path/to/your/LOL2/DAT

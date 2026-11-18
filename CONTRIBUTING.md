@@ -6,11 +6,11 @@ Thanks for contributing to the public *Lands of Lore II* reverse-engineering rep
 
 Good contributions for this repo:
 
-- wording and clarity fixes in promoted docs
+- wording and clarity fixes in the documentation
 - evidence-backed corrections
-- public-safe tooling cleanup
+- tool fixes and new readers (no game data in the repository)
 - output examples that improve reviewability
-- machine-readable summary updates that match promoted docs
+- machine-readable summary updates that match the documentation
 
 Out of scope for this repo:
 
@@ -23,16 +23,16 @@ Out of scope for this repo:
 
 - Prefer narrower claims over attractive overreach.
 - Keep runtime proof, static proof, and interpretation distinct.
-- Update existing promoted docs before adding new scattered notes.
-- If a result is witness-local or phase-local, say so directly.
+- Update the existing format page before adding a new note.
+- If a result holds only for one sample or one phase of the game, say so directly.
 
 ## Repo Shape
 
 - `docs/` holds promoted writeups.
 - `evidence/` holds witness maps and short evidence indexes.
 - `data/` holds machine-readable summaries.
-- `examples/` holds public-safe screenshots and outputs.
-- `tools/` holds public-safe analysis and extraction helpers.
+- `examples/` holds small outputs made by the tools, without game pixels.
+- `tools/` holds the readers and analysers.
 
 ## Release procedure (maintainers)
 
@@ -46,7 +46,7 @@ Before a release branch is pushed:
 
 1. Work from contributor branches is squash-merged (`git merge --squash`), then committed with the identity above, so no contributor address enters the published history.
 2. Never merge, cherry-pick or push from `refs/original`, a reflog entry or a commit hash from before a history rewrite.
-3. In a fresh clone of the release branch, with `$LOL2_DAT` set to your game files, `python3 tools/check_all.py` must end with `ALL ... CHECKS PASSED`. It includes `tools/repo_guard.py`. The guard fails on game files and media, on machine paths and lane or agent names, and on any author or committer address in the branch history other than the allowed noreply ones (`ALLOWED_AUTHORS` in the guard; GitHub web merges may commit as `noreply@github.com`).
+3. In a fresh clone of the release branch, with `$LOL2_DAT` set to your game files, `python3 tools/check_all.py` must end with `ALL ... CHECKS PASSED`. It includes `tools/repo_guard.py`. The guard fails on game files and media, on machine paths and private or assistant names, and on any author or committer address in the branch history other than the allowed noreply ones (`ALLOWED_AUTHORS` in the guard; GitHub web merges may commit as `noreply@github.com`).
 4. The tree must be clean after the checks, and the tools must write nothing into the repository.
 
 ## Pull Requests

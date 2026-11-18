@@ -69,7 +69,7 @@ This repo does not treat the following as public proof by themselves:
 
 When in doubt, trust:
 
-1. the promoted docs in `docs/`
+1. the pages in `docs/`
 2. the inventories in `data/`
 3. the witness/evidence maps in `evidence/`
 

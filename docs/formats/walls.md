@@ -60,7 +60,7 @@ Read with the neighbour's heights, the opening into region 37 runs from height 5
 
 So the side is a window into a raised room, not a doorway at floor level.
 
-Across the Huline Temple, 5,951 of its 8,117 rows stand on portal sides (classes 0: 3,090; 8: 2,734; 4: 97; 12: 30), against 2,134 class-4 rows on wall sides ([level sheet](../levels/L14_HT.md)). Most of the temple's walls are therefore pieces around openings, not full walls.
+Across the Huline Temple, 5,951 of its 8,117 rows stand on portal sides (classes 0: 3,090; 8: 2,734; 4: 97; 12: 30), against 2,150 rows on wall sides (2,134 of class 4 and 16 of classes 0 and 8) and 16 special rows ([level sheet](../levels/L14_HT.md)). Most of the temple's walls are therefore pieces around openings, not full walls.
 
 This is why the temple's interior cannot be drawn by treating every portal as fully open, nor every region side as a wall. The rows say how much of each opening is closed. CONFIRMED for the row data; the drawing rule is UNCONFIRMED.
 
