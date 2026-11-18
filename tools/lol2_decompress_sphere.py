@@ -66,8 +66,8 @@ def decompress(payload: bytes, decoded_size: int, ref_buf: bytes = None) -> byte
     """Decompress Sphere LZ77 payload into raw byte buffer.
 
     Args:
-        payload: compressed data after 12-byte header
-        decoded_size: expected output size (from header bytes 10-11)
+        payload: the bytes the tool reads at offset 12. Whether the game starts at 10 or 12 is open.
+        decoded_size: the word at offset 10, used as the output size
         ref_buf: optional reference buffer from previous section (for chained decode)
     """
     out = bytearray(decoded_size)

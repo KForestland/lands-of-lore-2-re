@@ -6,7 +6,7 @@
 
 ## How it is found
 
-It is the one entry whose header starts with dword 18 (0x12) and dword 5300, and that has at least 0x244 bytes; the native loader reads 0x244 header bytes and continues only when dword +0 is 0x12 ([lol2-level-script-format.md](../lol2-level-script-format.md#finding-the-geometry-entry), loader around file offset 0xD3CBC). Exactly one such entry exists in each of the 15 level archives. CONFIRMED (`lol2_source_format.py --check`).
+It is the one entry whose header starts with dword 18 (0x12) and dword 5300, and that has at least 0x244 bytes; the native loader reads 0x244 header bytes (VA `0x9CCCE–0x9CCDB`, `LOLG.DAT+0xD3CCE–0xD3CDB`) and continues only when dword +0 is 0x12 and the region count at +0x58 is nonzero (`0x9CCE3–0x9CCEE`; [lol2-level-script-format.md](../lol2-level-script-format.md#finding-the-geometry-entry)). The loader does not test the 5300 at +0x04; the tools use it only to pick the entry in the corpus. Exactly one such entry exists in each of the 15 level archives. CONFIRMED (`lol2_source_format.py --check`).
 
 ## Header tables
 

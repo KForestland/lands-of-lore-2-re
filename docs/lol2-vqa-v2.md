@@ -48,7 +48,8 @@ codebook before frame F is drawn. The size on frame 0 is the compressed length o
 palette and a codebook of 8-bit vectors, so they are not 15-bit frames. `CAN.MIX` entry 22 shows the
 mismatch: 340 blocks would need a 680-byte table, and the `VPRZ` decompresses to 492 bytes. The tool
 checks the codebook and that the `VPRZ` is LCW. It does not expand the stream. Two further `VPTZ` frames
-do not finish as absolute LCW; they are named in the check line.
+fail on a relative copy inside an absolute-mode LCW stream. `--full` prints the frame numbers the
+decoder reports. The bytes are on the [format page](formats/vqa.md).
 
 ## The FFmpeg problem this explains
 
@@ -83,6 +84,8 @@ Run on retail files (2026-10-31): the listing mode found 126 partial-codebook mo
 65-frame movie from `L3_DHI.MIX` decoded to frames that look correct on inspection. The FFmpeg comparison
 above was not re-run for this note.
 
-Re-run on 2026-11-18 over every `WVQA` in `DAT/`: 1,109 pointer-table movies pass the index check, including
-the 4×2 movies and the byte-13 value 0 movies, and 837 pointer-stream movies pass the codebook check. The
-check line names the two `VPTZ` frames that do not finish. `L4_HJI.MIX` entry 67 still expands to 9 of 9 frames.
+Re-run on 2026-11-18 over every `WVQA` in `DAT/`. `--check` is the chunk census and one sample of each
+layout. `--full` walks every frame: 1,109 pointer-table movies pass, including the 4×2 movies and the
+byte-13 value 0 movies, and 837 pointer-stream movies pass the codebook check. Two frames fail on a
+relative LCW copy; the count is 1,109 + 837 + 2 = 1,948. Of the 130 movies with byte 13 equal to 0,
+10 stage `CBPZ` parts and 120 have a single `CBFZ`. `L4_HJI.MIX` entry 67 still expands to 9 of 9 frames.

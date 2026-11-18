@@ -9,7 +9,7 @@ Words used across these pages, in plain terms.
 | CONFIRMED / UNCONFIRMED | CONFIRMED: checked on the game files or in the original program's code. UNCONFIRMED: inferred, not yet checked. |
 | Native | In or from the original program (`LOLG.DAT` and its loader), as opposed to a reimplementation. |
 | Q1 … Q20 | Numbered open questions, see [OPEN_QUESTIONS.md](OPEN_QUESTIONS.md). |
-| MIX | Westwood's archive: a 6-byte header (entry count, data size), 12-byte rows (key, offset, size), then the data. Almost all game data lives in the 81 MIX files under `DAT/`; seven more (`LOCAL`, `LOCALLNG`, `DMUSIC`, `SETUP`, `GLOBAL`, `CACHEBAK`, and the game-written `CDCACHE`) sit next to it ([MIX page](formats/mix.md)). |
+| MIX | Westwood's archive: a 6-byte header (entry count, data size), 12-byte rows (key, offset, size), then the data. Almost all game data lives in the 81 MIX files under `DAT/`; six more (`LOCAL`, `LOCALLNG`, `DMUSIC`, `SETUP`, `GLOBAL`, `CACHEBAK`) sit next to it. `CDCACHE.MIX` is written when the game runs ([MIX page](formats/mix.md)). |
 | Key | A MIX entry's name is not stored; its key is a hash of the name (`ww_hash_v1`, `tools/lol2_westwood_hash.py`). |
 | Level archive | `DAT/L<n>_<xx>.MIX`, one per level (15), e.g. `L1_DC` = level 1, Draracle's Caverns. |
 | Geometry entry | The one entry in a level archive whose header starts with 18 and 5300; the level's regions, walls and floors. |

@@ -102,9 +102,14 @@ note).
 
 ## Room archives
 
-Rooms are separate archives `DAT/<ROOM>.MIX`. 45 of them contain a room module at the name hash of
-`WOMS\<ROOM>_.WOM` plus VQA movies and sprites; SPKSTON1, SPKSTON2 and SPKSTON4 hold only movies. Counts
-below were checked against the retail files. A later name-hash check finds the `WOMS\<ROOM>_.WOM` key in 47 archives: the 46 named by the room table at file `0x1CFA90` plus `ARENA` ([Q3](OPEN_QUESTIONS.md), [room archives](lol2-room-archives.md)).
+Rooms are separate archives `DAT/<ROOM>.MIX`. 47 of them contain a room module at the name hash of
+`WOMS\<ROOM>_.WOM`: the 46 names in the executable's table ([room archives](lol2-room-archives.md))
+plus `ARENA`, which that table does not name. SPKSTON1, SPKSTON2 and SPKSTON4 do not have the module;
+they hold only movies. Counts below were checked against the retail files. Both counts are right:
+the dword table names 46 rooms, and 47 archives contain the `WOMS\<ROOM>_.WOM` key. `ARENA` is the
+extra archive. How `ARENA.MIX` is opened is open. The executable has no `ARENA.MIX` string and no
+`arena_` string, and the dword `ww_hash_v1("ARENA.MIX")` (`0xCBAFA5DF`) is not stored. The movie-scene
+stem `arenaapr` is at file `0x1C3D1A`, between `a_cam` and `b_cam`.
 
 | Room | Entries | VQA movies | | Room | Entries | VQA movies |
 |---|---:|---:|---|---|---:|---:|

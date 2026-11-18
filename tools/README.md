@@ -90,7 +90,7 @@ Section  2:  32x5   flags=0x8000 placed=160 void=  0
 
 ### `lol2_decompress_westwood.py`
 
-Westwood LZ77 with a leading mode byte; `--out` required. Which data uses it is open (Q1).
+Westwood LZ77. The function is at VA `0x158D58`; `--out` required. Which buffer each call decompresses is open (Q1).
 
 ```
 $ python3 tools/lol2_decompress_westwood.py --check
@@ -183,7 +183,7 @@ CHECK repo_guard: 260 tracked files; game files, media, stray images, files over
 ### Container & Compression
 - `lol2_mix_parser.py` — shared Westwood MIX container parser (imported by other tools, also usable standalone)
   - example: `python3 tools/lol2_mix_parser.py --help`
-- `lol2_decompress_westwood.py` — Westwood LZ77 decompressor with a leading mode byte; no game data is known to use it and its source address is not cited (UNCONFIRMED, [Q1](../docs/OPEN_QUESTIONS.md))
+- `lol2_decompress_westwood.py` — Westwood LZ77 decompressor. The function is at VA `0x158D58`. No size-prefixed MIX entry decodes with it; which buffer each call reads is open ([Q1](../docs/OPEN_QUESTIONS.md))
   - example: `python3 tools/lol2_decompress_westwood.py --help`
 - `lol2_decompress_sphere.py` — LCW variant with chained room-group decoding, for the `LOCAL.MIX` entry 1 room sections ([room sections](../docs/formats/room-sections.md))
   - example: `python3 tools/lol2_decompress_sphere.py --help`
@@ -197,7 +197,7 @@ CHECK repo_guard: 260 tracked files; game files, media, stray images, files over
   - example: `python3 tools/lol2_level_map.py --data DAT --level 1 --out l1_map.png`
 - `lol2_level_report.py` — one Markdown sheet per level (entries, counts, opcode use, exits, entity records); writes `docs/levels/`
   - example: `python3 tools/lol2_level_report.py --data DAT --out levels/`
-- `lol2_vqa_v2_decode.py` — VQA v2 pointer-table decoder, including 4×2 blocks and `CIND`-scheduled codebooks (needs NumPy; Pillow for `--out`). `VPRZ`/`VPTR` movies are checked only as far as the codebook
+- `lol2_vqa_v2_decode.py` — VQA v2 pointer-table decoder, including 4×2 blocks and `CIND`-scheduled codebooks (needs NumPy; Pillow for `--out`). `--check` is a chunk census and one sample of each layout. `--full` walks every movie. `VPRZ`/`VPTR` movies are checked only as far as the codebook. `--out` refuses a path inside the repository
 
 ### Container Utilities
 - `lol2_westwood_hash.py` — Westwood MIX hash functions (TD/RA era and TS/RA2 era)

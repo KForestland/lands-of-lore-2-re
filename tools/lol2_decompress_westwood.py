@@ -10,9 +10,11 @@ Command format:
   0xFE:      RLE fill, count=u16, value=next_byte
   0xFF:      Longest back-ref, length=u16, distance=u16
 
-Mode byte at start:
-  src[0] != 0: absolute back-ref mode (distance from dst_start)
-  src[0] == 0: skip 1 more byte, relative back-ref mode (distance from current pos)
+First byte, as the function at VA 0x158D58 does it:
+  src[0] == 0: consume it, then relative long back-refs (distance from current pos)
+  src[0] != 0: do not consume it; it is the first command, and long back-refs
+               are absolute (distance from the start of the output)
+Short back-refs are relative in both paths.
 
 Usage:
   python lol2_decompress_westwood.py <mixfile> <entry_index> <output_file>
@@ -40,10 +42,9 @@ def decompress_westwood(comp: bytes, max_out: int) -> tuple:
     out = bytearray()
     pos = 0
 
-    # Mode byte
-    mode = comp[pos]; pos += 1
-    if mode == 0:
-        # Relative mode - skip one more byte
+    # VA 0x158D6C. A zero byte selects the relative loop and is consumed.
+    # Any other byte is the first command of the absolute loop.
+    if comp[pos] == 0:
         pos += 1
         absolute_mode = False
     else:
@@ -62,8 +63,11 @@ def decompress_westwood(comp: bytes, max_out: int) -> tuple:
             distance = ((cmd & 0x0F) << 8) | nb
 
             if distance == 0:
-                last = out[-1] if out else 0
-                out.extend(bytes([last]) * min(length, max_out - len(out)))
+                # VA 0x158DAE and 0x158E62: mov esi, edi; sub esi, eax; rep movsb.
+                # Distance 0 leaves the source on the destination, so those bytes
+                # stay as they are. A zeroed buffer gains zeros, not a copy of the
+                # previous byte.
+                out.extend(b'\x00' * min(length, max_out - len(out)))
             else:
                 src_pos = len(out) - distance
                 if src_pos < 0:
@@ -190,18 +194,28 @@ def main():
                     clean += (err == 0 and len(out) == size)
                 except Exception:
                     pass
-        # decoder self-test on a built-in stream using only codes whose meaning does not depend on the
-        # mode byte: literal (0x81..), short relative copy (0x00..), fill (0xFE), end (0x80)
-        stream = bytes.fromhex("01" "8140" "0001" "823b3e" "1006" "fe030007" "80")
-        want = bytes.fromhex("40404040" "3b3e" "40404040" "070707")
-        got, err, _ = decompress_westwood(stream, 64)
-        ok = got == want and err == 0
+        # Relative mode (leading 00): literal, short relative copy, fill, end.
+        # Absolute mode (no leading 00): a long back-reference is a distance from
+        # the start of the output. Distance 0 on a short copy writes zeros.
+        cases = (
+            (bytes.fromhex("00" "8140" "0001" "823b3e" "1006" "fe030007" "80"),
+             bytes.fromhex("40404040" "3b3e" "40404040" "070707")),
+            (bytes.fromhex("84" "11223344" "c10000" "80"),
+             bytes.fromhex("11223344" "11223344")),
+            (bytes.fromhex("00" "82abcd" "0000" "80"),
+             bytes.fromhex("abcd" "000000")),
+        )
+        ok = True
+        for stream, want in cases:
+            got, err, _ = decompress_westwood(stream, 64)
+            ok = ok and got == want and err == 0
         print(f"CHECK westwood: decoder self-test {'passed' if ok else 'FAILED'}; data scan: {tried} MIX entries "
               f"whose first u32 exceeds the entry size, {clean} of them decode to that size with this decoder. "
               f"Which LoL2 data uses this compression is an open question (docs/OPEN_QUESTIONS.md).")
         return 0 if ok else 1
     if not (a.mix and a.index is not None and a.out):
         ap.print_help(); return 2
+    lol2_cli.refuse_repo_output(a.out)
     path = a.mix if os.path.isabs(a.mix) else os.path.join(a.data, a.mix)
     data, errors, consumed = decompress_mix_entry(path, a.index)
     with open(a.out, "wb") as f:

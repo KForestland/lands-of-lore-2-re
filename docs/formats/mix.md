@@ -1,6 +1,6 @@
 # MIX archives
 
-**What:** Westwood's archive format. Almost all game data sits in MIX files: 81 in `DAT/` (levels, rooms, global data) and 7 in the game folder next to `DAT/` (`LOCAL.MIX`, `LOCALLNG.MIX`, `DMUSIC.MIX`, `SETUP.MIX`, `GLOBAL.MIX` (a byte-identical copy of `DAT/GLOBAL.MIX`), `CACHEBAK.MIX` and `CDCACHE.MIX`). Entry names are not stored; each entry is found by a 32-bit key computed from its name ([name hash](#keys)).
+**What:** Westwood's archive format. Almost all game data sits in MIX files: 81 in `DAT/` (levels, rooms, global data) and 6 in the game folder next to `DAT/` (`LOCAL.MIX`, `LOCALLNG.MIX`, `DMUSIC.MIX`, `SETUP.MIX`, `GLOBAL.MIX`, which is a byte-identical copy of `DAT/GLOBAL.MIX`, and `CACHEBAK.MIX`). Entry names are not stored; each entry is found by a 32-bit key computed from its name ([name hash](#keys)). The installer also ships `CDCACHE.LS_` beside those archives. `CDCACHE.MIX` and `CDCACHE.LST` are written when the game runs.
 
 **Read:** the English GOG release (88 archives). Tools: `tools/lol2_mix_parser.py`, `tools/lol2_source_format.py` (strict reader), `tools/lol2_westwood_hash.py`.
 
@@ -13,7 +13,19 @@
 | 6 | n x 12 bytes | index rows: uint32 key, uint32 offset (from the start of the data), uint32 size |
 | 6 + 12n | data size | entry data |
 
-All little-endian. The file is exactly 6 + 12n + data size bytes; entries lie inside the data and do not overlap. Index rows are sorted by key read as a **signed** 32-bit number. CONFIRMED on 87 of the 88 archives: `lol2_mix_parser.py --check`, run once with `--data` on `DAT/` (81/81, signed order 81/81) and once on the game folder (6/7, signed order 6/6); unsigned order holds in only 21 of the 87 (the same check prints both counts). The exception is `CDCACHE.MIX`, a file the game writes when it runs (not shipped; one installation's copy was read): it has the same 131-byte header as `CACHEBAK.MIX` (5 entries, 65 data bytes) but is about 90 MB long; the bytes after the index are not covered by it. They include the decoded level texture blobs: the LZO-decoded `L1_DC` texture container (13,040,404 bytes) is byte-identical to `CDCACHE.MIX` from file offset 5,070, and `L20_BB`'s (28,451,111 bytes) from offset 13,045,474 (re-checked 2026-11-18 with `lol2_texture_container.py blob`). How the cache indexes them is open ([Q20](../OPEN_QUESTIONS.md)). The signed order fits a binary search over signed keys; the lookup routine in `LOLG.DAT` was not traced here (UNCONFIRMED).
+All little-endian. The file is exactly 6 + 12n + data size bytes; entries lie inside the data and do not overlap. Index rows are sorted by key read as a **signed** 32-bit number. CONFIRMED on 87 of the 88 archives: `lol2_mix_parser.py --check`, run once with `--data` on `DAT/` (81/81, signed order 81/81) and once on the game folder (6/7, signed order 6/6); unsigned order holds in only 21 of the 87 (the same check prints both counts). The exception is `CDCACHE.MIX`, and it is not shipped data.
+
+`CACHEBAK.MIX` is 131 bytes, dated with the install (2024-01-07). It is 5 index rows (each entry 13 bytes) and then five copies of the 13 bytes `ECHO is OFF` plus CR LF. `CDCACHE.LS_` is 4,008 bytes and has the same install date. It is a name index, not a MIX archive: the first u32 is 168, the end of a table of 21 slots (a u32 record offset and a u32 tag). Those slots cover 15 unique records of 256 bytes, one per level texture. The name is a NUL-terminated string at byte 8. A state dword and a length dword sit at byte `0xD8`. A pointer dword sits at byte `0xE8`. Every state in the shipped file is `0xFFFFFFFF` (-1).
+
+`CDCACHE.MIX` and `CDCACHE.LST` are written when the game runs. What they hold depends on that run, so a directory measured in one copy is not the format. On the copy read for this note (both files dated 2026-10-20), `CDCACHE.MIX` is 90,037,470 bytes. Its first 66 bytes are the `CACHEBAK.MIX` header, including the declared data size of 65, but the 65 bytes are not the `ECHO is OFF` text. `CDCACHE.LST` has the same 15-record shape. Three records are state 2 and the other 12 are state -1:
+
+| Record name | State | Pointer | Length |
+|---|---:|---:|---:|
+| `sphere3\l20_bb\l20_bb.te_` | 2 | 5,070 | 28,451,111 |
+| `sphere1\l1_dc\l1_dc.te_` | 2 | 28,456,181 | 13,040,404 |
+| `sphere1\l3_dh\l3_dh.te_` | 2 | 41,496,585 | 10,799,733 |
+
+The same three offsets are the first three 25-byte records at file offset 66 of this copy (a u32, then the file offset, then the size, then 13 bytes that were not identified). A fourth record on this copy, at file offset 52,296,318 for 37,703,682 bytes, is not a state-2 name. The shipped `CDCACHE.LS_` pointers and lengths are not these values: its `l1_dc` pointer is 5,066, and its `l20_bb` length is 27,801,780. Another written copy (the reference installation, files dated 2026-04-04) differs: two state-2 records, `l1_dc` at 5,070 and `l20_bb` at 13,045,474, and its third 25-byte record is (41,496,585, 48,503,415). These numbers differ between copies. How the game builds `CDCACHE.MIX` and `CDCACHE.LST` from `CACHEBAK.MIX` and `CDCACHE.LS_` is open ([Q20](../OPEN_QUESTIONS.md)). The parser in `tools/draracle/lol2_cache_named_wall_fixture.py` reads the 256-byte records.
 
 ## Keys
 
@@ -39,5 +51,5 @@ The three entries sit at file offsets 7,389,520 (35,028 bytes), 7,091,978 (297,5
 
 ## Open
 
-- Names for most entries ([Q3](../OPEN_QUESTIONS.md) concerns the room count).
-- `CDCACHE.MIX` and `CDCACHE.LST` are written by the game when it runs; their contents depend on play and are not shipped data. How the game builds them from the shipped `CACHEBAK.MIX` and `CDCACHE.LS_` is open ([Q20](../OPEN_QUESTIONS.md)).
+- Names for most entries ([Q3](../OPEN_QUESTIONS.md) concerns how `ARENA.MIX` is opened).
+- How a run builds `CDCACHE.MIX` and `CDCACHE.LST` from the shipped `CACHEBAK.MIX` and `CDCACHE.LS_` ([Q20](../OPEN_QUESTIONS.md)). The first u32 and the 13-byte tail of a directory record on one written copy were not identified.

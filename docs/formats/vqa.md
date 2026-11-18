@@ -28,14 +28,15 @@ Details are in [lol2-vqa-v2.md](../lol2-vqa-v2.md#format-notes).
 
 ## Confirmed on the data
 
-`lol2_vqa_v2_decode.py --check --data <DAT>` re-ran on 2026-11-18. CONFIRMED:
+`lol2_vqa_v2_decode.py --check --data <DAT>` is a chunk census plus one sample of each layout. `--full` decodes every movie. Re-ran on 2026-11-18. CONFIRMED:
 - **All movies valid:** `DAT/` holds 1,948 `WVQA` movies. Every header is valid, every frame count matches, all are version 2, and the colour count at `VQHD` offset 14 is 256 in every one.
-- **Pointer tables:** 1,109 movies. The tool checks every frame: the codebook is a whole number of vectors, and every index that is not a solid block lands inside it.
-  - 974 are 4×4 with `VQHD` byte 13 greater than 0. One of them, `POOL.MIX` entry 4, uses the raw chunks `CBF0`, `CBP0` and `VPT0` instead of the LCW forms.
+- **The count:** 1,109 pointer-table movies pass every frame, 837 are pointer streams, and 2 pointer-table movies fail on one frame. 1,109 + 837 + 2 = 1,948. An earlier "948 decoded" figure was a classification, not a frame-by-frame pass: that class is 948 movies with a `CBPZ` or `CBP0` chunk, 4×4 blocks and byte 13 greater than 0, and it includes one `VPRZ` movie (`L4_HJI.MIX` entry 103) and the 2 open movies. The 1,109 holds 945 of that class and 164 outside it: 29 4×4 movies with byte 13 greater than 0 and no `CBPZ`/`CBP0` chunk, the 5 4×2 movies and the 130 byte-13 = 0 movies.
+- **Pointer tables:** 1,111 movies have a pointer table in the header.
+  - 976 are 4×4 with `VQHD` byte 13 greater than 0. 974 of them pass every frame. One of the passing movies, `POOL.MIX` entry 4, uses the raw chunks `CBF0`, `CBP0` and `VPT0` instead of the LCW forms.
   - 5 are 4×2. A high byte of `0xFF` is still a solid block. `L10_DCI.MIX` entry 40 (129 frames) is checked in full.
-  - 130 have byte 13 equal to 0. `CINF`/`CIND` says which frame the staged parts become the codebook.
+  - 130 have byte 13 equal to 0. 10 of them stage `CBPZ` parts, and `CINF`/`CIND` says which frame those parts become the codebook. The other 120 have a single `CBFZ` and no `CBPZ`.
 - **Pointer streams:** 837 movies carry `VPRZ` and/or `VPTR`. The codebook still decompresses to whole vectors, and each `VPRZ` is LCW. The tool does not turn that stream into pixels.
-- **Two frames stay open:** `L20_BBI.MIX` entry 25 frame 115, and `SPKSTON2.MIX` entry 4 frame 492. Each `VPTZ` stops inside absolute LCW. Every other pointer table in those two movies finishes.
+- **Two frames stay open:** `L20_BBI.MIX` entry 25 frame 115, and `SPKSTON2.MIX` entry 4 frame 492. Both are relative copies inside an absolute-mode LCW stream (long back-references are distances from the start of the output; these commands are the short form). On frame 115 the command bytes are `00 00` at input 23,847: distance 0, with 30,400 bytes already written. On frame 492 the command bytes are `22 a2`: distance 674, with 564 bytes already written. Every other pointer table in those two movies finishes.
 - **Game folder:** the folder next to `DAT/` holds 11 more movies (in `SETUP.MIX` and others), all version 2. This check does not re-read them.
 
 ## Worked example
@@ -70,5 +71,5 @@ The intro movie, `MOVIES.MIX` entry 2 (`outtakes\lolg.vqa`, key 0xB3593D3C), has
 ## Open
 
 - The `VPRZ`/`VPTR` pointer stream. `CAN.MIX` entry 22 is 80×68 (340 blocks of 4×4). Its first `VPRZ` decompresses to 492 bytes, not the 680 a full pointer table would be, and begins `00 b6 00 e0 01 e0 02 e0`. Reading each little-endian word by the top 3 bits, the way a published HiColor note describes `VPTR`, takes the first word as a run of length 0 and the next as a skip of 480. That covers the frame and leaves 487 of the 492 bytes unread, so it does not describe this stream. What would settle it is the routine that expands the accepted buffer.
-- The two `VPTZ` frames named above. On `L20_BBI.MIX` entry 25 frame 115 the copy offset is 0 with 30,400 bytes already written (a full table is 32,000). Treating that one command as "repeat the last byte", or as a command that writes nothing, finishes the stream at 32,010 or 32,007 bytes.
+- The two `VPTZ` frames named above. The distance-0 command does not repeat the previous byte: in the executable a distance of 0 copies the destination onto itself. What would settle the frame is that rule applied to the absolute-mode stream, checked against the 32,000-byte table.
 - How a script names a movie is a separate page: [movie scenes](../lol2-movie-scenes.md).

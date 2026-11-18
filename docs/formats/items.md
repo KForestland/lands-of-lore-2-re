@@ -29,4 +29,4 @@ python3 -c "import sys,struct; sys.path.insert(0,'tools'); import lol2_source_fo
 
 ## Open
 
-Which script groups grant which item, and each handler's effect ([Q8](../OPEN_QUESTIONS.md)).
+Grants: [grant census](../lol2-item-effects.md); handlers: [handler catalog](../lol2-item-handlers.md); the dispatcher reads +0x42 and calls the table at `0x9584E–0x95865`. Remaining handler details: [Q8](../OPEN_QUESTIONS.md).

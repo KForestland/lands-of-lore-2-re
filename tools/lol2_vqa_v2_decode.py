@@ -350,22 +350,33 @@ def _layout(f: dict, stream: bool) -> str:
     return 'partial codebook'
 
 
-def check(folder) -> int:
-    """Decode every pointer-table movie in folder. Count pointer-stream movies apart."""
-    if folder is None:
-        print('CHECK vqa: no --data folder given')
-        return 1
-    total = 0
-    bad = []
+def _frame_tag_counts(payload: bytes, where: str) -> dict:
+    """Count sub-chunk tags in one VQFR without copying the payloads."""
+    counts = {}
+    i = 0
+    end = len(payload)
+    while i < end:
+        if end - i < 8:
+            raise VQAError(f'{where}: truncated chunk header at {i}')
+        tag = bytes(payload[i:i + 4])
+        size = int.from_bytes(payload[i + 4:i + 8], 'big')
+        if not all(0x20 <= c < 0x7f for c in tag):
+            raise VQAError(f'{where}: invalid chunk tag {tag!r} at {i}')
+        if size > end - (i + 8):
+            raise VQAError(f'{where}: chunk {tag.decode()} size {size} exceeds data at {i}')
+        counts[tag] = counts.get(tag, 0) + 1
+        i += 8 + size + (size & 1)
+    if i != end:
+        raise VQAError(f'{where}: chunk padding overruns data')
+    return counts
+
+
+def _census(folder):
+    """Header and chunk census. Does not run LCW."""
+    total = streams = 0
     layouts = {}
-    streams = 0
-    samples = {
-        ('L4_HJI.MIX', 67): None,
-        ('L10_DCI.MIX', 40): None,
-        ('L20_BBI.MIX', 403): None,
-        ('POOL.MIX', 4): None,
-        ('CAN.MIX', 22): None,
-    }
+    staged = single = 0
+    bad = []
     for mix in sorted(Path(folder).glob('*.[Mm][Ii][Xx]')):
         data = mix.read_bytes()
         try:
@@ -377,7 +388,91 @@ def check(folder) -> int:
             if len(blob) < 12 or blob[:4] != b'FORM' or blob[8:12] != b'WVQA':
                 continue
             total += 1
-            name = (mix.name, e['index'])
+            try:
+                top, f = header(blob)
+                _supported(f)
+                tags = {}
+                for fi, pl in enumerate(pl for t, pl in top if t == b'VQFR'):
+                    for tag, n in _frame_tag_counts(pl, f'VQFR {fi}').items():
+                        tags[tag] = tags.get(tag, 0) + n
+            except VQAError as error:
+                bad.append(f'{mix.name}#{e["index"]}: {error}')
+                continue
+            if tags.get(b'VPRZ') or tags.get(b'VPTR'):
+                streams += 1
+                continue
+            key = _layout(f, False)
+            layouts[key] = layouts.get(key, 0) + 1
+            if f['parts'] == 0:
+                if tags.get(b'CBPZ'):
+                    staged += 1
+                elif tags.get(b'CBFZ') == 1 and not tags.get(b'CBF0'):
+                    single += 1
+    return total, streams, layouts, staged, single, bad
+
+
+def _sample_decode(folder, bad):
+    """Decode one movie of each layout. Returns the sample text."""
+    samples = {
+        ('L4_HJI.MIX', 67): None,
+        ('L10_DCI.MIX', 40): None,
+        ('L20_BBI.MIX', 403): None,
+        ('POOL.MIX', 4): None,
+        ('CAN.MIX', 22): None,
+    }
+    for mix_name, index in samples:
+        try:
+            blob = _entry_blob(folder, mix_name, index)
+            _, f = header(blob)
+            saw = {'vpt': 0, 'stream': 0}
+            for kind, _rgb in decode(blob, pixels=False):
+                saw[kind] += 1
+            samples[(mix_name, index)] = (f, saw)
+        except VQAError as error:
+            bad.append(f'{mix_name}#{index}: {error}')
+    expect = {
+        ('L4_HJI.MIX', 67): ('vpt', 9, 4, 4, 8),
+        ('L10_DCI.MIX', 40): ('vpt', 129, 4, 2, 8),
+        ('L20_BBI.MIX', 403): ('vpt', 312, 4, 4, 0),
+        ('POOL.MIX', 4): ('vpt', 231, 4, 4, 8),
+        ('CAN.MIX', 22): ('stream', 20, 4, 4, 0),
+    }
+    bits = []
+    for key, want in expect.items():
+        got = samples.get(key)
+        kind, frames_n, bw, bh, parts = want
+        if got is None:
+            bad.append(f'missing sample {key[0]} entry {key[1]}')
+            continue
+        f, saw = got
+        if saw[kind] != frames_n or f['block_w'] != bw or f['block_h'] != bh or f['parts'] != parts:
+            bad.append(f'sample {key[0]}#{key[1]} is {f} {saw}, expected {want}')
+        elif kind == 'vpt':
+            bits.append(f'{key[0]} entry {key[1]} {frames_n}/{frames_n}')
+    if samples.get(('L4_HJI.MIX', 67)) is not None and not any(b.startswith('L4_HJI.MIX#67') for b in bad):
+        n = sum(1 for _ in frames(_entry_blob(folder, 'L4_HJI.MIX', 67)))
+        if n != 9:
+            bad.append(f'L4_HJI.MIX entry 67 expanded {n} frames')
+    return bits
+
+
+def _walk_all(folder):
+    """Decode every movie. Relative-reference failures are returned apart from other errors."""
+    bad = []
+    layouts = {}
+    streams = 0
+    total = 0
+    for mix in sorted(Path(folder).glob('*.[Mm][Ii][Xx]')):
+        data = mix.read_bytes()
+        try:
+            entries = _mix_entries(data)
+        except Exception:
+            continue
+        for e in entries:
+            blob = data[e['offset']:e['offset'] + e['size']]
+            if len(blob) < 12 or blob[:4] != b'FORM' or blob[8:12] != b'WVQA':
+                continue
+            total += 1
             try:
                 _, f = header(blob)
                 saw = {'vpt': 0, 'stream': 0}
@@ -392,50 +487,43 @@ def check(folder) -> int:
                 else:
                     key = _layout(f, False)
                     layouts[key] = layouts.get(key, 0) + 1
-                if name in samples:
-                    samples[name] = (f, saw)
             except VQAError as error:
                 bad.append(f'{mix.name}#{e["index"]}: {error}')
-    decoded = sum(layouts.values())
-    # Two frames, one in each movie, do not finish as absolute LCW. Every other
-    # pointer table in those movies does. They stay named until the command is known.
-    open_frames = [b for b in bad if b.startswith(('L20_BBI.MIX#25:', 'SPKSTON2.MIX#4:'))]
-    bad = [b for b in bad if b not in open_frames]
-    sample_bits = []
-    expect = {
-        ('L4_HJI.MIX', 67): ('vpt', 9, 4, 4, 8),
-        ('L10_DCI.MIX', 40): ('vpt', 129, 4, 2, 8),
-        ('L20_BBI.MIX', 403): ('vpt', 312, 4, 4, 0),
-        ('POOL.MIX', 4): ('vpt', 231, 4, 4, 8),
-        ('CAN.MIX', 22): ('stream', 20, 4, 4, 0),
-    }
-    for key, want in expect.items():
-        got = samples.get(key)
-        kind, frames_n, bw, bh, parts = want
-        if got is None:
-            bad.append(f'missing sample {key[0]} entry {key[1]}')
-            continue
-        f, saw = got
-        if saw[kind] != frames_n or f['block_w'] != bw or f['block_h'] != bh or f['parts'] != parts:
-            bad.append(f'sample {key[0]}#{key[1]} is {f} {saw}, expected {want}')
-        elif kind == 'vpt':
-            sample_bits.append(f'{key[0]} entry {key[1]} {frames_n}/{frames_n}')
-    # Fully expand the shortest partial movie, the check the page quotes.
-    short = samples.get(('L4_HJI.MIX', 67))
-    if short is not None and not any(b.startswith('L4_HJI.MIX#67') for b in bad):
-        blob = _entry_blob(folder, 'L4_HJI.MIX', 67)
-        n = sum(1 for _ in frames(blob))
-        if n != 9:
-            bad.append(f'L4_HJI.MIX entry 67 expanded {n} frames')
-    four = ' '.join(f'{k} {layouts.get(k, 0)}' for k in ('partial codebook', '4x2', 'parts 0'))
-    line = (f'CHECK vqa: {total} WVQA; pointer tables {decoded} ({four}); '
-            f'uncompressed in that count: POOL.MIX entry 4; pointer-stream codebooks {streams}, '
-            f'pointers not expanded; open VPTZ frames: L20_BBI.MIX entry 25 frame 115, '
-            f'SPKSTON2.MIX entry 4 frame 492; samples: {", ".join(sample_bits)}; bad={bad[:3] or "none"}')
-    print(line)
-    census = (total == 1948 and decoded == 1109 and streams == 837 and layouts.get('partial codebook') == 974
-              and layouts.get('4x2') == 5 and layouts.get('parts 0') == 130 and len(open_frames) == 2)
-    return 0 if not bad and census else 1
+    # Accept only a relative copy inside the LCW stream. The frame number is the
+    # one the decoder reports; it is not a separate filter on the movie name.
+    open_rel = [b for b in bad if 'relative reference' in b]
+    bad = [b for b in bad if b not in open_rel]
+    return total, streams, layouts, open_rel, bad
+
+
+def check(folder, full=False) -> int:
+    """Census plus one sample of each layout. --full also walks every movie."""
+    if folder is None:
+        print('CHECK vqa: no --data folder given')
+        return 1
+    total, streams, layouts, staged, single, bad = _census(folder)
+    bits = _sample_decode(folder, bad)
+    four = ', '.join(f'{k} {layouts.get(k, 0)}' for k in ('partial codebook', '4x2', 'parts 0'))
+    ok = (not bad and total == 1948 and streams == 837 and layouts.get('partial codebook') == 976
+          and layouts.get('4x2') == 5 and layouts.get('parts 0') == 130 and staged == 10 and single == 120)
+    if full:
+        w_total, w_streams, w_layouts, open_rel, w_bad = _walk_all(folder)
+        bad.extend(w_bad)
+        named = '; '.join(open_rel) if open_rel else 'none'
+        print(f'CHECK vqa full: {w_total} WVQA; pointer tables {sum(w_layouts.values())} '
+              f'(partial codebook {w_layouts.get("partial codebook", 0)}, 4x2 {w_layouts.get("4x2", 0)}, '
+              f'parts 0 {w_layouts.get("parts 0", 0)}); pointer-stream {w_streams}; '
+              f'relative-reference frames: {named}; bad={bad[:3] or "none"}')
+        ok = (ok and not bad and w_total == 1948 and w_streams == 837
+              and sum(w_layouts.values()) == 1109 and w_layouts.get('partial codebook') == 974
+              and w_layouts.get('4x2') == 5 and w_layouts.get('parts 0') == 130
+              and len(open_rel) == 2 and all('relative reference' in b for b in open_rel))
+        return 0 if ok else 1
+    print(f'CHECK vqa: {total} WVQA; pointer-table headers {sum(layouts.values())} ({four}; '
+          f'of parts 0, {staged} stage CBPZ and {single} have a single CBFZ); '
+          f'pointer-stream {streams}; samples: {", ".join(bits)}; full frame walk is --full; '
+          f'bad={bad[:3] or "none"}')
+    return 0 if ok else 1
 
 
 def _entry_blob(folder, mix_name, index):
@@ -453,11 +541,17 @@ def main(argv=None) -> int:
     ap.add_argument('--key', type=lambda s: int(s, 0), help='MIX entry key (hash) to decode')
     ap.add_argument('--out', type=Path, help='write PNG frames here (needs Pillow)')
     ap.add_argument('--check', action='store_true',
-                    help='decode every pointer-table movie in --data; one line')
+                    help='census and one sample of each layout; one line')
+    ap.add_argument('--full', action='store_true',
+                    help='with --check, also decode every movie (slow)')
     ap.add_argument('--data', type=Path, default=os.environ.get('LOL2_DAT'), help='DAT folder (default $LOL2_DAT)')
     a = ap.parse_args(argv)
-    if a.check:
-        return check(a.data)
+    if a.out is not None:
+        sys.path.insert(0, str(Path(__file__).resolve().parent))
+        from lol2_cli import refuse_repo_output
+        refuse_repo_output(a.out)
+    if a.check or a.full:
+        return check(a.data, full=a.full)
     if a.path is None:
         ap.print_help(); return 2
     data = Path(lol2_cli.resolve_input(a.path, a.data)).read_bytes()

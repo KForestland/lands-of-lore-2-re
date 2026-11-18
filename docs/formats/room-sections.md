@@ -4,18 +4,18 @@
 
 ## Layout
 
-The entry starts with a uint16 section count and a table of uint32 section offsets. Each section has a 12-byte header:
+The entry starts with a uint16 section count and a table of uint32 section offsets. The first bytes of a section are:
 
 | Offset | Type | Meaning |
 |---|---|---|
 | 0 | uint16 | flags |
-| 2 | uint16 | 0 |
+| 2 | uint16 | 0 on a compressed section; 2 on the stored sections 0 and 15 |
 | 4 | uint8 | width |
 | 5 | uint8 | height |
 | 6 | uint8 | 0 |
 | 7 | uint8 | width again |
-| 8 | uint16 | section size |
-| 10 | uint16 | decoded size |
+| 8 | uint16 | bytes from the start of this section to the next |
+| 10 | uint16 | decoded size on a compressed section; on a stored section, bytes counted from offset 10 |
 
 Sections other than 0 and 15 are compressed with a variant of Westwood's LCW ("format 80"; Lands of Lore 1's Frame4 is the classic form). Commands, as `tools/lol2_decompress_sphere.py` decodes them (lines 81-92 and its docstring):
 
@@ -29,7 +29,16 @@ Decoding stops when the stated decoded size is reached. Within a group of rotati
 
 ## Confirmed
 
-All 37 compressed sections decode to exactly their stated size (`lol2_decompress_sphere.py --check`). The stored sections 0 (128 x 128) and 15 (155 x 147) hold 2 bytes fewer than their headers state ([Q2](../OPEN_QUESTIONS.md)).
+All 37 compressed sections decode to exactly their stated size (`lol2_decompress_sphere.py --check`).
+
+Sections 0 and 15 are the stored ones. Measured on `LOCAL.MIX` entry 1:
+
+| Section | +2 | Width × height | Word at +8 | Word at +10 | Bytes after offset 12 |
+|---|---:|---|---:|---:|---:|
+| 0 | 2 | 128 × 128 | 16,394 | 16,384 | 16,382 |
+| 15 | 2 | 155 × 147 | 11,970 | 11,960 | 11,958 |
+
+The word at +8 equals the bytes from the start of the section to the next section. The word at +10 equals the bytes from offset 10 to the next section. The compressed sections have 0 at +2, and their word at +10 is a decoded size that is not equal to that tail. Those two facts do not say whether the payload starts at offset 10 or at offset 12: the reader in the executable was not traced, so that stays open ([Q2](../OPEN_QUESTIONS.md)). The tool reads the payload at offset 12, which is 2 bytes short of the word at +10. Section 0's tail from offset 10 is exactly 128 × 128. Section 15's tail is 11,960 bytes, and 155 × 147 is 22,785, so that section is not a raw grid of its stated dimensions. The last section, 38, declares 166 bytes and the entry has 168, two trailing bytes.
 
 ## Worked example
 
