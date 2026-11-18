@@ -12,8 +12,10 @@ L20_BB; see docs), then the section offset table at +8.
   section 3: material payload records referenced by the descriptors
   section 4: 256-byte shade (remap) rows
 
-Only descriptor flag 0xA9 (raw 8-bit indices after an 8-byte header) is
-decoded. Every other flag value is refused rather than guessed.
+Ten flag values share one raw layout: 8-bit indices after an 8-byte header,
+stored column by column. The check covers those, the 22-byte movie-name
+records, and the headers of the other flags. It does not decode the
+compressed payloads.
 
 Requirements: Python 3.9+ standard library and the system liblzo2 shared
 library (Debian/Ubuntu: liblzo2-2). It is loaded through ctypes; no python-lzo
@@ -24,6 +26,7 @@ Usage:
   lol2_texture_container.py material --mix DAT/L1_DC.MIX --index 0
   lol2_texture_container.py export   --mix DAT/L1_DC.MIX --index 0 --out DIR
   lol2_texture_container.py blob     --mix DAT/L1_DC.MIX --out l1_dc.bin
+  lol2_texture_container.py --check --data DAT
 """
 import argparse
 import collections
@@ -40,6 +43,7 @@ from pathlib import Path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from lol2_mix_parser import read_mix_with_hashes  # noqa: E402
 from lol2_westwood_hash import ww_hash_v1  # noqa: E402
+import lol2_cli  # noqa: E402
 
 MAX_DECOMPRESSED = 64 * 1024 * 1024
 LZO_BLOCK = 1024 * 1024
@@ -47,7 +51,31 @@ DESCRIPTOR_SIZE = 56
 DESCRIPTOR_FORMAT = "<6H11I"
 SHADE_ROW_BYTES = 256
 INITIAL_SHADE_ROW = 64
-RAW_FLAGS = 0xA9
+# Same 8-byte header and width*height index bytes. 0x8000 and 0x2000 do not
+# change that layout. Measured on every mip of all 15 level containers.
+RAW_LAYOUT_FLAGS = frozenset({
+    0x008B, 0x00A9, 0x00C3, 0x00E1,
+    0x20C3, 0x20E1,
+    0x808B, 0x80A9, 0x80C3, 0x80E1,
+})
+NAME_FLAGS = frozenset({0x0143, 0x0161, 0x0342})
+# Fourth header word is the payload length (record size minus 8).
+PAYLOAD_FLAGS = frozenset({
+    0x008F, 0x00C7, 0x028E, 0x02AC, 0x02C6,
+    0x20C7, 0x808F, 0x80C7, 0x828E, 0x82C6,
+})
+FIELD8_IS_ONE = frozenset({
+    0x008B, 0x008F, 0x00A9, 0x028E, 0x02AC, 0x808B, 0x808F, 0x80A9, 0x828E,
+})
+EXPECTED_COUNTS = {
+    0x0000: 15, 0x008B: 74, 0x008F: 225, 0x00A9: 863, 0x00C3: 359, 0x00C7: 790,
+    0x00E1: 570, 0x0143: 23, 0x0161: 1, 0x028E: 794, 0x02AC: 2, 0x02C6: 4785,
+    0x0342: 857, 0x1246: 27889, 0x20C3: 36, 0x20C7: 25, 0x20E1: 19, 0x808B: 14,
+    0x808F: 23, 0x80A9: 47, 0x80C3: 19, 0x80C7: 74, 0x80E1: 38, 0x828E: 70,
+    0x82C6: 749,
+}
+# Rectangular samples of these flags match column-major storage.
+COLUMN_FLAGS = frozenset({0x008B, 0x00A9, 0x00C3, 0x00E1, 0x20C3, 0x808B, 0x80A9, 0x80C3})
 
 
 def require(condition, message):
@@ -163,10 +191,11 @@ def descriptor(blob, index):
 
 
 def material_record(blob, index, allow_partial_mips=False):
-    """Validate one 0xA9 descriptor and its mip chain (5 levels by default)."""
+    """Validate one raw-layout descriptor and its mip chain (5 levels by default)."""
     offsets = sections(blob)
     d = descriptor(blob, index)
-    require(d["flags"] == RAW_FLAGS, f"flag 0x{d['flags']:X} unsupported (only 0xA9)")
+    require(d["flags"] in RAW_LAYOUT_FLAGS,
+            f"flag 0x{d['flags']:X} is not a raw 8-bit layout")
     require(d["width"] > 0 and d["height"] > 0, "zero material dimension")
     payload = offsets[3]
     payload_end = min((v for v in offsets if v > payload), default=len(blob))
@@ -249,10 +278,12 @@ def cmd_info(args):
 def cmd_material(args):
     blob, _ = load_blob(args.mix, args.level)
     d = descriptor(blob, args.index)
-    if d["flags"] == RAW_FLAGS:
+    if d["flags"] in RAW_LAYOUT_FLAGS:
         d = material_record(blob, args.index, args.partial_mips)
+    elif d["flags"] in NAME_FLAGS:
+        d["note"] = "22-byte movie-name record; not pixels"
     else:
-        d["note"] = "flag not decoded by this tool"
+        d["note"] = "header only; payload is not raw pixels"
     print(json.dumps(d, indent=2))
 
 
@@ -280,7 +311,172 @@ def cmd_blob(args):
     print(json.dumps(info, indent=2))
 
 
-def main():
+def _mix_keys(data_dir):
+    keys = set()
+    for name in sorted(os.listdir(data_dir)):
+        if not name.upper().endswith(".MIX"):
+            continue
+        with open(os.path.join(data_dir, name), "rb") as handle:
+            head = handle.read(6)
+            if len(head) < 6:
+                continue
+            count = struct.unpack_from("<H", head)[0]
+            table = handle.read(count * 12)
+        for index in range(min(count, len(table) // 12)):
+            keys.add(struct.unpack_from("<I", table, index * 12)[0])
+    return keys
+
+
+def _column_scores(pixels, width, height):
+    step = max(1, (width * height) // 2500)
+    adj = sw = sh = na = nw = nh = 0
+    for pos in range(0, width * height - 1, step):
+        adj += abs(pixels[pos] - pixels[pos + 1])
+        na += 1
+    for pos in range(0, width * height - width, step):
+        sw += abs(pixels[pos] - pixels[pos + width])
+        nw += 1
+    for pos in range(0, width * height - height, step):
+        sh += abs(pixels[pos] - pixels[pos + height])
+        nh += 1
+    if not (na and nw and nh):
+        return None
+    return adj / na, sw / nw, sh / nh
+
+
+def check(data_dir):
+    """Walk every level .TE_ and pin the flag layouts measured on 2026-11-18."""
+    bad = []
+    counts = collections.Counter()
+    levels = 0
+    name_hit = name_total = 0
+    height_mismatch = 0
+    scores = {flag: [0.0, 0.0, 0.0, 0] for flag in COLUMN_FLAGS}
+    keys = _mix_keys(data_dir)
+    for name in sorted(os.listdir(data_dir)):
+        if not name.upper().endswith(".MIX"):
+            continue
+        path = os.path.join(data_dir, name)
+        try:
+            _data, entry, _entry_name = find_texture_entry(path)
+        except ValueError:
+            continue
+        levels += 1
+        raw = Path(path).read_bytes()[entry["offset"]:entry["offset"] + entry["size"]]
+        blob, _blocks = decode_lzo_container(raw)
+        total = descriptor_count(blob)
+        offsets = sections(blob)
+        payload = offsets[3]
+        for index in range(total):
+            d = descriptor(blob, index)
+            flag = d["flags"]
+            counts[flag] += 1
+            present = [level for level in range(5) if d["mip_sizes"][level]]
+            if flag in FIELD8_IS_ONE and d["field8"] != 1:
+                bad.append(f"{name}#{index} flag 0x{flag:X} field8 {d['field8']}")
+            if flag == 0:
+                if d["width"] or d["height"] or present:
+                    bad.append(f"{name}#{index} empty flag has dimensions or mips")
+                continue
+            if not present:
+                bad.append(f"{name}#{index} flag 0x{flag:X} has no mips")
+                continue
+            if flag in RAW_LAYOUT_FLAGS:
+                try:
+                    material_record(blob, index, allow_partial_mips=True)
+                except ValueError as error:
+                    bad.append(f"{name}#{index}: {error}")
+                    continue
+                if (d["width"] != d["height"] and d["width"] >= 8 and d["height"] >= 8
+                        and flag in scores):
+                    start = payload + d["mip_offsets"][0] + 8
+                    pixels = blob[start:start + d["width"] * d["height"]]
+                    got = _column_scores(pixels, d["width"], d["height"])
+                    if got:
+                        for part in range(3):
+                            scores[flag][part] += got[part]
+                        scores[flag][3] += 1
+                continue
+            start = payload + d["mip_offsets"][0]
+            size = d["mip_sizes"][0]
+            if size < 8 or start + size > len(blob):
+                bad.append(f"{name}#{index} mip0 out of range")
+                continue
+            header_flags, header_w, header_h, fourth = struct.unpack_from("<4H", blob, start)
+            if header_flags != flag or header_w != d["width"]:
+                bad.append(f"{name}#{index} header 0x{header_flags:X} {header_w}x{header_h}")
+                continue
+            if flag in NAME_FLAGS:
+                body = blob[start + 8:start + size]
+                text, _, rest = body.partition(b"\0")
+                if (size != 22 or fourth != 22 or header_h != d["height"]
+                        or d["field8"] != 0xFF or (d["field10"] >> 8) != 4
+                        or rest.strip(b"\0") or not text.endswith(b".vqa")
+                        or any(c < 32 or c > 126 for c in text)):
+                    bad.append(f"{name}#{index} bad movie name {body[:14]!r}")
+                else:
+                    name_total += 1
+                    if ww_hash_v1(text.decode("ascii")) in keys:
+                        name_hit += 1
+                continue
+            if flag == 0x1246:
+                if (header_h != d["height"] or size != 22 + fourth or present != [0]
+                        or (d["field10"] & 0xFF) != 1 or (d["field10"] >> 8) != 3):
+                    bad.append(f"{name}#{index} bad 0x1246 size {size} fourth {fourth}")
+                continue
+            if flag in PAYLOAD_FLAGS:
+                if size != 8 + fourth or (d["field10"] >> 8) != 3:
+                    bad.append(f"{name}#{index} payload header size {size} fourth {fourth}")
+                    continue
+                if header_h != d["height"]:
+                    height_mismatch += 1
+                    if not (d["width"] == 640 and d["height"] == 434 and header_h == 192):
+                        bad.append(f"{name}#{index} unexpected height {header_h} vs {d['height']}")
+                continue
+            bad.append(f"{name}#{index} unclassified flag 0x{flag:X}")
+    if levels != 15:
+        bad.append(f"levels {levels}")
+    if dict(counts) != EXPECTED_COUNTS:
+        bad.append("flag counts " + ", ".join(
+            f"0x{flag:X}:{counts[flag]}" for flag in sorted(set(counts) | set(EXPECTED_COUNTS))
+            if counts[flag] != EXPECTED_COUNTS.get(flag)))
+    if height_mismatch != 1:
+        bad.append(f"header-height mismatches {height_mismatch}")
+    if name_total != 881 or name_hit != 0:
+        bad.append(f"movie names {name_total} bare keys {name_hit}")
+    for flag, (adj, stride_w, stride_h, count) in scores.items():
+        if count < (2 if flag == 0x808B else 10):
+            bad.append(f"0x{flag:X} rectangular samples {count}")
+            continue
+        adj, stride_w, stride_h = adj / count, stride_w / count, stride_h / count
+        if not (stride_w > stride_h and abs(adj - stride_h) < abs(adj - stride_w)):
+            bad.append(f"0x{flag:X} orientation adj {adj:.2f} stride_w {stride_w:.2f} "
+                       f"stride_h {stride_h:.2f} n {count}")
+    raw_n = sum(counts[flag] for flag in RAW_LAYOUT_FLAGS)
+    payload_n = sum(counts[flag] for flag in PAYLOAD_FLAGS)
+    line = (f"CHECK textures: {levels} levels, {sum(counts.values())} descriptors; "
+            f"raw 8-bit {raw_n}; movie-name records {name_total} "
+            f"({name_hit} bare names are DAT keys); payload-length header {payload_n} "
+            f"({height_mismatch} header-height mismatch); flag 0x1246 records {counts[0x1246]}; "
+            f"empty {counts[0]}; rectangular raw samples store columns; "
+            f"bad={'none' if not bad else '; '.join(bad[:6])}")
+    print(line)
+    return 1 if bad else 0
+
+
+def main(argv=None):
+    argv = sys.argv[1:] if argv is None else list(argv)
+    if "--check" in argv or (argv[:1] == ["check"]):
+        parser = argparse.ArgumentParser(description=__doc__,
+                                         formatter_class=argparse.RawDescriptionHelpFormatter)
+        parser.add_argument("--data", default=os.environ.get("LOL2_DAT"),
+                            help="the game's DAT folder (default: $LOL2_DAT)")
+        parser.add_argument("--check", action="store_true")
+        parser.add_argument("check_word", nargs="?")
+        args = parser.parse_args(argv)
+        if not args.data:
+            parser.error("--data or $LOL2_DAT is required")
+        return check(args.data)
     parser = argparse.ArgumentParser(description=__doc__,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = parser.add_subparsers(dest="command", required=True)
@@ -301,6 +497,8 @@ def main():
         if name == "blob":
             p.add_argument("--out", required=True, help="output file for the decoded blob")
     args = parser.parse_args()
+    if getattr(args, "out", None):
+        lol2_cli.refuse_repo_output(args.out)
     try:
         args.func(args)
     except (ValueError, OSError, struct.error) as error:
@@ -308,4 +506,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main() or 0)

@@ -74,5 +74,6 @@ target's vtable+0x80, gated by flag 0x400, then the hit filter AE2C8.
 - Opcodes 196/204 (heavy in Acts 2-3): now partly decoded, see the
   [addendum](lol2-script-engine-facts-2026-10-addendum.md).
 - Wall-source provenance is closed for one traced span
-  ([wall material provenance](lol2-wall-material-provenance.md)); texture flags other than 0xA9
-  and HMI-MIDI conversion remain open.
+  ([wall material provenance](lol2-wall-material-provenance.md)). Compressed texture
+  payloads remain open ([texture container](lol2-level-texture-container.md)).
+  HMI-MIDI conversion is documented in [music](lol2-music-2026-11.md).

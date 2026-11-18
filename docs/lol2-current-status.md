@@ -23,7 +23,7 @@ Updated 2026-11-06. **Almost fully understood** — see [LoL2 understanding — 
 - **Movies:** [VQA v2 partial-codebook decoder](lol2-vqa-v2.md); tool `tools/lol2_vqa_v2_decode.py`.
 - **Levels:** [level graph](lol2-level-graph.md): 15 levels, 48 room archives, the decoded exit graph.
 
-Still open: the HMI-MIDI music converter, texture flags other than 0xA9 (including 0x80A9),
+Still open: non-raw texture payloads (flag 0x1246 and the payload-length flags; layout open), full VQA codebooks for every movie,
 op196's remaining stores, and the control/prop event caller paths.
 
 ## September 2026 state

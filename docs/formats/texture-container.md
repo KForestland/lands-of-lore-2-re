@@ -1,6 +1,6 @@
 # Level texture container (.TE_)
 
-**What:** each level archive holds `SPHERE<n>\<LEVEL>\<LEVEL>.TE_`, the level's wall and floor textures, compressed in LZO1X blocks. Full notes (blob header, sections, the 0xA9 material encoding): [lol2-level-texture-container.md](../lol2-level-texture-container.md). Tool: `tools/lol2_texture_container.py` (needs the system `liblzo2`).
+**What:** each level archive holds `SPHERE<n>\<LEVEL>\<LEVEL>.TE_`, the level's wall and floor textures, compressed in LZO1X blocks. Full notes (blob header, sections, the ten raw flags, the movie-name records): [lol2-level-texture-container.md](../lol2-level-texture-container.md). Tool: `tools/lol2_texture_container.py` (needs the system `liblzo2`).
 
 ## Layout
 
@@ -18,4 +18,4 @@ uint32 0   (trailer)
 
 ## Open
 
-Texture flags other than 0xA9 ([Q14](../OPEN_QUESTIONS.md)); wall spans and UVs ([Q16](../OPEN_QUESTIONS.md)).
+Non-raw texture payloads (layout open), including flag `0x1246` ([Q14](../OPEN_QUESTIONS.md)); wall spans and UVs ([Q16](../OPEN_QUESTIONS.md)). The ten raw flags and the 22-byte `.vqa` name records are confirmed on the level containers.

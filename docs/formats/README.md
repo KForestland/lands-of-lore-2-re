@@ -6,7 +6,7 @@ Each page: what the file is, its layout, a worked example with real bytes from t
 |------|-------|------|-------|
 | [mix.md](mix.md) | `*.MIX` | `lol2_mix_parser.py`, `lol2_westwood_hash.py` | CONFIRMED (87 of 88 archives; signed key order); Q20 |
 | [level-data.md](level-data.md) | level data entry in `L<n>_<xx>.MIX` | `lol2_source_format.py`, `lol2_export_scripts.py` | header tables CONFIRMED on 3 levels; rest open (Q4, Q5) |
-| [texture-container.md](texture-container.md) | `<LEVEL>.TE_` | `lol2_texture_container.py` | container CONFIRMED; flags open (Q14) |
+| [texture-container.md](texture-container.md) | `<LEVEL>.TE_` | `lol2_texture_container.py` | raw flags and movie-name records CONFIRMED; non-raw payloads open, layout unknown (Q14) |
 | [room-sections.md](room-sections.md) | `LOCAL.MIX` entry 1 | `lol2_decompress_sphere.py` | 37/37 CONFIRMED; Q2 |
 | [entity-records.md](entity-records.md) | 147-byte records in level archives | `lol2_entity_field_analyzer.py` | records CONFIRMED; containing structure open (Q19) |
 | [items.md](items.md) | `GLOBAL.MIX` item table | `lol2_mix_parser.py` | header and counts CONFIRMED; Q8 |
