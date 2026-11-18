@@ -2,7 +2,7 @@
 
 **As of:** 2026-11-18. What is documented about the original game, which tool reads it, what the tools check on the game files, and what is open. This table replaces the "almost fully understood" summary of earlier pages: those pages ([understanding](lol2-understanding-2026-11.md), [current status](lol2-current-status.md), [closure summary](closure-summary.md), [final closure memo](final-closure-memo.md)) are kept as history.
 
-Run the checks: `python3 tools/check_all.py --data <DAT>` (11 checks; all pass on the copy read).
+Run the checks: `python3 tools/check_all.py --data <DAT>` (12 checks; all pass on the copy read).
 
 **Short format pages** (one per format, with a worked example from the game files): [formats/](formats/README.md) — MIX, level data, texture container, room sections, entity records, items, sound.
 
@@ -20,7 +20,7 @@ Run the checks: `python3 tools/check_all.py --data <DAT>` (11 checks; all pass o
 | Items | [item format](lol2-item-format.md) | — | Q8 |
 | Walls and textures | [texture container](lol2-level-texture-container.md), [wall material provenance](lol2-wall-material-provenance.md), [texture map inventory](texture-map-inventory.md) | the `tools/draracle/` pipeline has its own tests | Q14, Q16 |
 | Sprites | [block sprite decoder](block-sprite-decoder.md), [creature frame groups](creature-frame-groups.md) | — | |
-| Sound and music | [audio inventory](audio-inventory.md), [music](lol2-music-2026-11.md) | — | Q15 |
+| Sound and music | [format page](formats/sound.md), [audio inventory](audio-inventory.md), [music](lol2-music-2026-11.md) | `lol2_aud_decode`: 453 AUD entries in 29 `DAT/` archives decode (437 exactly, 16 one sample short) | Q15 |
 | Movies | [VQA v2](lol2-vqa-v2.md) | — | Q12 |
 | Combat | [executioner combat evidence](executioner-combat-evidence.md) | — | Q10 |
 | Globals, timers, spells, text, saves | — | — | Q6, Q7, Q9, Q11, Q13 |

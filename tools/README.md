@@ -23,13 +23,13 @@ The tools below follow one set of rules: `--help` changes nothing; the game's `D
 
 ### `check_all.py`
 
-Run every `--check` (11) and print one line each, then a summary.
+Run every `--check` (12) and print one line each, then a summary.
 
 ```
-$ python3 tools/check_all.py | sed -n "1,2p;12p"
-CHECK repo_guard: 194 tracked files; game files, media, stray images or files over 1 MiB: none (0)
-CHECK mix: 81 MIX files, 2905 entries; this reader and lol2_source_format.parse_mix agree and every entry lies inside its file: 81/81, bad=none
-ALL 11 CHECKS PASSED
+$ python3 tools/check_all.py | sed -n "1,2p;13p"
+CHECK repo_guard: 189 tracked files; game files, media, stray images, files over 1 MiB, machine paths or lane/agent names: none (0)
+CHECK mix: 81 MIX files, 2905 entries; this reader and lol2_source_format.parse_mix agree and every entry lies inside its file: 81/81; index sorted by signed key: 81/81; bad=none
+ALL 12 CHECKS PASSED
 ```
 
 ### `lol2_mix_parser.py`
@@ -183,8 +183,7 @@ CHECK repo_guard: 194 tracked files; game files, media, stray images or files ov
 ### Asset Extraction
 - `lol2_vqa_decode.py` — VQA (Vector Quantization Animation) video/audio chunk parser
   - example: `python3 tools/lol2_vqa_decode.py --help`
-- `lol2_sprite_decode.py` — Westwood 0x2256 Cell sprite decoder (8bpp/4bpp, requires Pillow)
-  - example: `python3 tools/lol2_sprite_decode.py --help`
+- `lol2_lcw.py` — Westwood LCW (format 80) decompressor, a library for `lol2_verify_wall_atlas_candidate.py`
 - `lol2_geometry_cracker.py` — level geometry parser and 2D map visualizer (requires Pillow)
   - example: `python3 tools/lol2_geometry_cracker.py --help`
 - `lol2_wall_mesh.py` — 3D OBJ wall mesh generator from decoded face records

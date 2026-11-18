@@ -174,7 +174,12 @@ def decode_aud(data):
             print(f"WARNING: chunk {chunk_count} truncated (expected {chunk_comp}, got {len(chunk_data)} bytes)",
                   file=sys.stderr)
 
-        samples, predictor, step_index = decode_ima_adpcm_block(chunk_data, predictor, step_index)
+        if chunk_comp == chunk_decomp and chunk_comp % 2 == 0:
+            # Stored chunk: compressed size equals decoded size, so the bytes are 16-bit PCM already
+            # (one SETUP.MIX file does this throughout although its header says codec 99).
+            samples = list(struct.unpack(f"<{chunk_comp // 2}h", chunk_data))
+        else:
+            samples, predictor, step_index = decode_ima_adpcm_block(chunk_data, predictor, step_index)
         all_samples.extend(samples)
         chunk_count += 1
         pos += CHUNK_HEADER_SIZE + chunk_comp
@@ -228,18 +233,87 @@ def write_wav(filename, pcm_data, sample_rate, channels, sample_width):
 # ---------------------------------------------------------------------------
 # CLI
 # ---------------------------------------------------------------------------
+def is_aud(entry):
+    """True if the bytes are one complete AUD file: 12-byte header whose size field covers the rest,
+    codec 1 or 99, and 0x0000DEAF chunks that end at the last byte and sum to the decoded size."""
+    if len(entry) < 20:
+        return False
+    rate, size, dsize, flags, codec = struct.unpack_from("<HIIBB", entry)
+    if size + 12 != len(entry) or codec not in (1, 99) or rate not in (11025, 22050, 44100):
+        return False
+    pos, total = 12, 0
+    while pos < len(entry):
+        if pos + 8 > len(entry):
+            return False
+        cs, ds, magic = struct.unpack_from("<HHI", entry, pos)
+        if magic != 0xDEAF:
+            return False
+        pos += 8 + cs
+        total += ds
+    return pos == len(entry) and total == dsize
+
+
+def check(data_dir):
+    """Scan every MIX in data_dir for complete AUD files and decode each; one CHECK line."""
+    import lol2_source_format as strict
+    files = sorted(f for f in os.listdir(data_dir) if f.upper().endswith(".MIX"))
+    found, archives, decoded, short1, stored, magic2256, magic2256_aud, bad = 0, set(), 0, 0, 0, 0, 0, []
+    for f in files:
+        b = open(os.path.join(data_dir, f), "rb").read()
+        try:
+            rows = strict.parse_mix(b)
+        except ValueError:
+            continue
+        for r in rows:
+            e = b[r["offset"]:r["offset"] + r["size"]]
+            aud = is_aud(e)
+            if e[:2] == b"\x22\x56":
+                magic2256 += 1
+                magic2256_aud += aud
+            if not aud:
+                continue
+            found += 1
+            archives.add(f)
+            first = struct.unpack_from("<HH", e, 12)
+            stored += first[0] == first[1]
+            try:
+                diff = len(decode_aud(e)[1]) - struct.unpack_from("<I", e, 6)[0]
+            except Exception as ex:  # report, do not stop
+                bad.append(f"{f}#{r['index']}: {ex}")
+                continue
+            if diff == 0:
+                decoded += 1
+            elif diff == -2:
+                short1 += 1  # the last chunk states one sample more than its bytes hold
+            else:
+                bad.append(f"{f}#{r['index']}: {diff:+d} bytes")
+    print(f"CHECK aud: {found} complete AUD files in {len(archives)} of {len(files)} MIX files; decoded to exactly their "
+          f"stated size: {decoded}, one sample short (last chunk states one sample more than its bytes hold): {short1}; "
+          f"files with stored 16-bit chunks: {stored}; entries starting 22 56 (22,050 Hz): {magic2256}, of which AUD: "
+          f"{magic2256_aud}; bad={bad[:3] or 'none'}")
+    return 0 if not bad else 1
+
+
 def main():
     import argparse
 
     parser = argparse.ArgumentParser(description="Decode Westwood AUD audio from LoL2 MIX files")
-    parser.add_argument("mixfile", help="MIX filename (resolved relative to LOL2_DAT)")
+    parser.add_argument("mixfile", nargs="?", help="MIX filename (resolved relative to LOL2_DAT)")
     parser.add_argument("entry", nargs="?", type=int, default=0, help="Entry index (default: 0)")
     parser.add_argument("-o", "--output", default=None, help="Output WAV file (default: auto-named)")
     parser.add_argument("--raw", action="store_true", help="Treat input as raw AUD file, not MIX")
     parser.add_argument("--info", action="store_true", help="Print header info only, don't decode")
     parser.add_argument("--list", action="store_true", help="List MIX entries and probe AUD headers")
+    parser.add_argument("--check", action="store_true",
+                        help="Find every AUD entry in the MIX files of --data by structure and decode them; one line")
+    parser.add_argument("--data", default=os.environ.get("LOL2_DAT", "."), help="folder with the MIX files (default $LOL2_DAT)")
 
     args = parser.parse_args()
+    if args.check:
+        return check(args.data)
+    if not args.mixfile:
+        parser.print_help()
+        return 2
 
     lol2_dat = os.environ.get("LOL2_DAT", ".")
     mix_path = args.mixfile

@@ -4,7 +4,7 @@
     "header_size": 160
   },
   "compressed_probe": {
-    "decoder_tested": "lol2_sprite_decode.decompress_f80",
+    "decoder_tested": "lol2_lcw.decompress_f80",
     "match_count": 0,
     "record_count": 38,
     "records": [

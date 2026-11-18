@@ -35,7 +35,7 @@ from lol2_wall_texture_extract import (  # noqa: E402
     read_mix_entry,
 )
 from lol2_decompress_sphere import parse_entry1  # noqa: E402
-from lol2_sprite_decode import decompress_f80  # noqa: E402
+from lol2_lcw import decompress_f80  # noqa: E402
 
 
 DEFAULT_LOL2_ROOT = "lol2_game/"
@@ -257,7 +257,7 @@ def main() -> None:
         compressed_probe.append(entry)
 
     report["compressed_probe"] = {
-        "decoder_tested": "lol2_sprite_decode.decompress_f80",
+        "decoder_tested": "lol2_lcw.decompress_f80",
         "match_count": f80_match_count,
         "skip_match_count": skip_match_count,
         "skip_exact_hit_records": exact_skip_hits,

@@ -10,6 +10,6 @@ Each page: what the file is, its layout, a worked example with real bytes from t
 | [room-sections.md](room-sections.md) | `LOCAL.MIX` entry 1 | `lol2_decompress_sphere.py` | 37/37 CONFIRMED; Q2 |
 | [entity-records.md](entity-records.md) | 147-byte records in level archives | `lol2_entity_field_analyzer.py` | records CONFIRMED; containing structure open (Q19) |
 | [items.md](items.md) | `GLOBAL.MIX` item table | `lol2_mix_parser.py` | header and counts CONFIRMED; Q8 |
-| [sound.md](sound.md) | `LOCALLNG.MIX` sound bank, music, movies | `lol2_sound_bank.py`, `lol2_aud_decode.py`, `lol2_vqa_v2_decode.py` | bank CONFIRMED; Q12, Q15 |
+| [sound.md](sound.md) | `LOCALLNG.MIX` sound bank, music, movies | `lol2_sound_bank.py`, `lol2_aud_decode.py`, `lol2_vqa_v2_decode.py` | bank and 517 AUD entries CONFIRMED; Q12, Q15 |
 
 Still to write: level script streams and opcodes, VQA and music detail pages, sprites, text (TEXT/TCEL, Q13).
