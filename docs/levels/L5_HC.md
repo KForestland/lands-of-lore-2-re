@@ -85,6 +85,10 @@ Level-transition commands (bytes `02 01 00 00 1c`, then level in the low 5 bits 
 | L4_HJ | 3 | 0 | 860 | region:460 |
 | L4_HJ | 4 | 0 | 6400 | region:835 |
 
+## Movie scenes
+
+No opcode-21 command in this level's scripts.
+
 ## Held-item tests
 
 Event records of kind 4 with mode 3: the object's event runs when the held item has this identity ([events](../lol2-script-events.md#event-records); mode table at VA `0xADBAC`, compare at `0xADC84`). Item = record number in the [item table](../formats/items.md). Byte +5 nonzero inverts the test.

@@ -82,6 +82,10 @@ Level-transition commands (bytes `02 01 00 00 1c`, then level in the low 5 bits 
 | L19_BC | 1 | 0 | 1632 | region:1312 |
 | L19_BC | 1 | 0 | 1638 | region:1313 |
 
+## Movie scenes
+
+No opcode-21 command in this level's scripts.
+
 ## Held-item tests
 
 None in this level.

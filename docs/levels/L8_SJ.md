@@ -93,6 +93,17 @@ Level-transition commands (bytes `02 01 00 00 1c`, then level in the low 5 bits 
 | L12_CM | 1 | 0 | 1908 | region:3277 |
 | L14_HT | 1 | 1 | 11612 | prop:1198 |
 
+## Movie scenes
+
+Opcode 21 commands name a scene id from the executable's 86-name table ([movie scenes](../lol2-movie-scenes.md)); the movie file is `<name>.vqa`.
+
+| Scene id | Name | Commands |
+|---:|---|---:|
+| 12 | `cem_apr` | 1 |
+| 30 | `gla_apr` | 1 |
+| 37 | `ruin_app` | 1 |
+| 80 | `4025108e` | 1 |
+
 ## Held-item tests
 
 Event records of kind 4 with mode 3: the object's event runs when the held item has this identity ([events](../lol2-script-events.md#event-records); mode table at VA `0xADBAC`, compare at `0xADC84`). Item = record number in the [item table](../formats/items.md). Byte +5 nonzero inverts the test.

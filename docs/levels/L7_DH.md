@@ -88,6 +88,10 @@ Level-transition commands (bytes `02 01 00 00 1c`, then level in the low 5 bits 
 | L4_HJ | 6 | 0 | 946 | region:1412 |
 | L4_HJ | 6 | 0 | 964 | region:1413 |
 
+## Movie scenes
+
+No opcode-21 command in this level's scripts.
+
 ## Held-item tests
 
 None in this level.

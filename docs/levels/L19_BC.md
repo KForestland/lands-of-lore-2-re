@@ -83,6 +83,17 @@ Level-transition commands (bytes `02 01 00 00 1c`, then level in the low 5 bits 
 | L20_BB | 1 | 0 | 15784 | region:2369 |
 | L20_BB | 2 | 0 | 15790 | region:2369 |
 
+## Movie scenes
+
+Opcode 21 commands name a scene id from the executable's 86-name table ([movie scenes](../lol2-movie-scenes.md)); the movie file is `<name>.vqa`.
+
+| Scene id | Name | Commands |
+|---:|---|---:|
+| 58 | `bchm_apr` | 2 |
+| 64 | `bc-vs-sb` | 1 |
+| 83 | `0310919e` | 1 |
+| 84 | `0311219e` | 1 |
+
 ## Held-item tests
 
 None in this level.

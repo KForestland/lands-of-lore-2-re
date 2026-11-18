@@ -12,6 +12,7 @@ sheet lists, all read from the files:
     the objects whose events point straight at that command's group;
   - wall rows by class and by side type (wall side or portal side);
   - event records by kind, with the native matcher of each kind;
+  - movie scenes the scripts play (opcode 21) by scene id and name;
   - held-item tests (event kind 4, mode 3) by item record number;
   - entity records by name tag;
   - the companion archive's entries by kind (AUD sound, VQA movie, other).
@@ -163,6 +164,33 @@ def groups(raw):
     return sorted(Counter(find(i) for i in range(nr)).values(), reverse=True)
 
 
+def scene_names(data_dir):
+    """The 86-name movie scene table in LOLG.DAT (file 0x1CF58C; name pointers are data addresses,
+    file = data + 0x1C1024), limit dword at file 0x1CF764 (docs/lol2-movie-scenes.md)."""
+    import struct
+    exe = Path(data_dir).resolve().parent / "LOLG.DAT"
+    if not exe.exists():
+        return {}
+    b = exe.read_bytes()
+    limit = struct.unpack_from("<I", b, 0x1CF764)[0]
+    out = {}
+    for i in range(limit + 1):
+        p = struct.unpack_from("<I", b, 0x1CF58C + 4 * i)[0] + 0x1C1024
+        out[i] = b[p:b.index(b"\0", p)].decode("ascii", "replace")
+    return out
+
+
+def scenes_played(scripts):
+    """Opcode 21 commands: byte 4 is the scene id (high dispatcher arm 0x6486A -> player 0xCF2B4)."""
+    from collections import Counter
+    c = Counter()
+    for g in scripts["groups"]:
+        for cmd in g["commands"]:
+            if cmd["opcode"] == 21:
+                c[bytes.fromhex(cmd["raw_hex"])[4]] += 1
+    return c
+
+
 def level_files(data_dir):
     out = []
     for f in lol2_cli.mix_files(data_dir):
@@ -214,7 +242,7 @@ def read_level(data_dir, stem):
                 scripts=scripts, comp=comp)
 
 
-def sheet(L, names, items):
+def sheet(L, names, items, scenes):
     s, sc, c = L["stem"], L["scripts"], L["scripts"]["counts"]
     t = c["object_tables"]
     raw_geo = None
@@ -296,6 +324,16 @@ def sheet(L, names, items):
                          f"{', '.join(who[:6]) + (' …' if len(who) > 6 else '') if who else '—'} |")
     else:
         lines.append("No level-transition command in this archive's scripts.")
+    played = scenes_played(sc)
+    lines += ["", "## Movie scenes", ""]
+    if played:
+        lines += ["Opcode 21 commands name a scene id from the executable's 86-name table "
+                  "([movie scenes](../lol2-movie-scenes.md)); the movie file is `<name>.vqa`.", "",
+                  "| Scene id | Name | Commands |", "|---:|---|---:|"]
+        for sid, n in sorted(played.items()):
+            lines.append(f"| {sid} | `{scenes.get(sid, '?')}` | {n} |")
+    else:
+        lines.append("No opcode-21 command in this level's scripts.")
     tests = item_tests(sc)
     lines += ["", "## Held-item tests", ""]
     if tests:
@@ -378,6 +416,11 @@ def main():
         items = item_identities(a.data)
         tests = [k for L in levels for k, v in item_tests(L["scripts"]).items() for _ in v]
         unknown = sum(1 for k in tests if k not in items)
+        sn = scene_names(a.data)
+        sp = Counter()
+        for L in levels:
+            sp.update(scenes_played(L["scripts"]))
+        bad_scene = sorted(k for k in sp if sn and k not in sn)
         gl = sum(L["geom"]["links"] for L in levels); gr = sum(L["geom"]["reciprocal"] for L in levels)
         gs = sum(L["geom"]["shared"] for L in levels); gb = sum(L["geom"]["bad"] for L in levels)
         wb = sum(L["geom"]["wall_rows"]["bad"] for L in levels); wr = sum(L["geom"]["wall_rows"]["rows"] for L in levels)
@@ -390,14 +433,15 @@ def main():
               f"{ent}; {exits} level-transition commands; regions {sum(L['geom']['regions'] for L in levels):,}, "
               f"out-of-range vertex/neighbour indices {gb}, portal links {gl:,} (reciprocal {gr:,}, sharing the side's vertices "
               f"{gs:,}); wall rows {wr:,}, partition faults {wb}; event records {sum(ev.values()):,} (kinds without a documented matcher: {unknown_kinds or 'none'}); "
-              f"held-item tests (kind 4 mode 3) {len(tests)}, identity not in the item table: "
+              f"opcode-21 movie commands {sum(sp.values())} naming {len(sp)} scene ids (outside the scene table: {bad_scene or 'none'}); held-item tests (kind 4 mode 3) {len(tests)}, identity not in the item table: "
               f"{unknown}; bad={bad or 'none'}")
-        return 0 if not bad and not uns and not unknown and not gb and not wb else 1
+        return 0 if not bad and not uns and not unknown and not gb and not wb and not bad_scene else 1
     items = item_identities(a.data)
+    scenes = scene_names(a.data)
     out = Path(a.out)
     out.mkdir(parents=True, exist_ok=True)
     for L in levels:
-        (out / f"{L['stem']}.md").write_text(sheet(L, names, items), encoding="utf-8")
+        (out / f"{L['stem']}.md").write_text(sheet(L, names, items, scenes), encoding="utf-8")
     if a.level is None:
         (out / "README.md").write_text(readme(levels), encoding="utf-8")
     print(f"wrote {len(levels)} sheets to {out}" + (f"; failed: {bad}" if bad else ""))
