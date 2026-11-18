@@ -23,9 +23,8 @@ set at `0xADBDD–0xADC04` and read at `0xADC41`. At
 **UNCONFIRMED.** The spatial interpretation as a ladder and the
 input path that reaches the common interaction method for this exact
 control remain open. The archive records establish the player destination
-and the interaction test. To settle the input path statically, resolve
-control 69's constructed vtable and trace the caller of its
-`0xB5000` interaction entry.
+and the interaction test. The live object and caller target below narrow
+the breakpoint to the instance.
 
 ## Control 114
 
@@ -46,3 +45,30 @@ props and the linked control remain open. The command list was traced
 through each direct group target. Match the three placements to their
 render or world-region consumers and follow the form branch at `0xD7EE0`
 for the clear-bit case to settle the remaining presentation and condition.
+
+## Live binding of both L8 controls
+
+**CONFIRMED.** The DOS 1.30 run loaded L8_SJ from a player slot (a save written by the game, not shipped) with
+SHA-256 prefix `9a46a2bdecb4`. The control pool `0x273E0` had 168
+64-byte elements, read through the fields the save writer uses at
+`0xE8BF8–0xE8C10`. Its indices 69 and 114 matched the placements:
+
+| Index | Live X, Y, Z | Object +0x18 | Record at `[0xB7D74]` plus that offset |
+|---|---|---:|---|
+| 69 | −1034, 2606, −10 | `0x1338` | `0A 04 7C 31 00 00 00 00`, group 12668 |
+| 114 | 5096, −1916, 0 | `0x13C4` | `0A 04 22 33 00 00 00 00`, group 13090 |
+
+Both objects had byte +0x15=`0x04` and vtable object-5 `0x5484`,
+installed statically at `0x5B64D`. The relocated vtable +0x64 was
+`0x5DA48`. That entry directly calls `0xB5000` at `0x5DAAD`, after
+checking that the requester dword +0x28 is at most `0x1000000` and
+the control +0x15 mask 0x80 is clear (`0x5DA51–0x5DA70`). Its event
+getter at vtable +0xB8 was `0xB71A0`, which bound the object and used
+the +0x18 offset at `0xB71A4–0xB71C7`.
+
+**UNCONFIRMED.** The run created both controls and the player moved
+from the save's starting point. The empty-hand input there left both groups
+unobserved. `0x5DA48` was not hit in that input. For a closer save, condition the breakpoint at `0x5DA51`
+on `word [EBX+0x18]` equal to `0x1338` or `0x13C4`. `0xB5000` has two other direct callers (`0x95218`, `0xA74CB`), so also break at its entry with the object at `[esp+4]` and the same +0x18 test. Record the requester,
+group and visible change for the matched control. The destination and
+linked props in the tables above identify the two expected outcomes.

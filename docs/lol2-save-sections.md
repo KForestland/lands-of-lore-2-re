@@ -169,6 +169,38 @@ sections 16/17 (`0xE8B8A`, `0xE8BAF`). This gives two places to look when
 following one pickup through a save. Level section 25 contains world rows,
 and the recipient's separate pool holds the copied item instance.
 
+### Controlled pickup in L20_BB
+
+**CONFIRMED.** A DOS 1.30 run loaded a copy of the level-20 player
+save (`e2393dbe4d2b`; a player save written by the game, not shipped), put one inventory item on the floor, and saved
+with the native autosave input. The first save is `90221f6db5cf` (like the second, written by the game in this run; neither is shipped or tracked). After
+reloading that save, the player picked up the item and placed it in the
+empty inventory slot, then saved again (`b0d9f5b1588b`). Slot +0x17C
+holds 20 in both files. The position dwords at slot +0x180 and region
+index 807 at +0x18C agree. The game-written `GLOBAL.IMG` and
+`L20_BB.IMG` baselines each had the same hash before and after.
+
+The floor object's live row index was 4, from the placement pool
+at object-5 `0x968F8`. Its definition +0x18 held `0xD2C8551E`.
+The call at `0xD266A` passed that row (`0x1128A074`) and the player
+(`0x101D0574` in this run). The return from `0x5F7C0` at `0x95A99`
+was `0x102F55B8`. With element base `0x102F54EC` and stride 12, this
+is player pool index 17. At `0x9412C` the floor row's +0x16 changed
+from `0x02` to `0x82`, making the placement slot reusable. These
+addresses identify the original native copy and removal paths.
+
+| Decoded save section | Before / after compressed span starts | Observed comparison |
+|---|---|---|
+| Global 2, player elements | `+0x8745` / `+0x886A` | All 3,072 bytes agree. The reused row's serialized payload was already present before the pickup. |
+| Global 3, player bitmap | `+0x8A04` / `+0x8B29` | Decoded byte +2 changes `0xFD` to `0xFF` (stored XORed), flipping the bit for pool index 17. |
+| Level 25, placed items | `+0x18951E` / `+0x189672` | All 11 changed bytes are in row 4. The section is stored XORed with `L20_BB.IMG`, whose row-4 +0x16 is `0x80`, so the stored `0x82` → `0x02` is the live flag going `0x02` → `0x82`. The +0x0C/+0x10 dwords becoming zero and the +0x28 word becoming `0x0DE4` are likewise XOR deltas against the baseline, not live values. |
+| Level 31/32, non-player elements and bitmap | `+0x1896C1/+0x1896EC` / `+0x18981B/+0x189846` | All 960 element bytes and 10 bitmap bytes agree. |
+
+The runtime placement flag and the player occupancy bit identify the
+transfer. The serialized player payload bytes agree because the allocator
+reused the item's previous pool index. The floor item occupied section 25.
+Sections 31/32 describe a separate pool.
+
 ## Reference measurements
 
 **CONFIRMED.** The 27-slot reference set yields 135 compressed and 162

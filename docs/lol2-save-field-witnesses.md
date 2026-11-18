@@ -68,8 +68,8 @@ is item-specific, as shown in [item handlers](lol2-item-handlers.md).
 For example, `L1_DC.MIX+0x6FBD7E` is placed-item row 0. Its identity at
 `+0x6FBD9E` is `0x082D2562` and its instance input at `+0x6FBDA2` is zero.
 The identity is definition row 34 (`GLOBAL.MIX+0x5B78E9+34*91+0x18`).
-The pickup path in the section reference explains how the live row and
-its transferred payload are saved.
+The [controlled L20_BB pickup](lol2-save-sections.md#controlled-pickup-in-l20_bb)
+shows the changed placement row and player occupancy bit in two native saves.
 
 ## Short snapshot status
 
@@ -85,6 +85,5 @@ zero store in `0xE96EC` therefore does not execute on a short write.
 49 short native examples lacks a verified producer. The map path and
 entire header write were checked. A targeted trace would watch the stack
 address passed at `0xE83D9` plus 0xD4, starting before `0xE7F68`.
-A controlled pickup save pair still requires original inputs immediately
-before and after the same pickup. The two list heads and placed-item
-identity resolved here give additional joins for comparing that pair.
+The controlled pickup resolves a separate question from this
+short-header value.

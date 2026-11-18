@@ -68,6 +68,70 @@ The intro movie, `MOVIES.MIX` entry 2 (`outtakes\lolg.vqa`, key 0xB3593D3C), has
 
 `L20_BBI.MIX` entry 403 is the short scheduled example the check walks in full (312 frames). Its `CIND` entries are frame 0, size 29,591, and frame 160, size 22,860. 29,591 is the `CBFZ` on frame 0. 22,860 is the sum of the 160 `CBPZ` parts on frames 0 through 159, and those bytes are one LCW stream of 46,336 bytes (2,896 vectors of 16). On the intro, the `CIND` entry for frame 96 has size 26,274, the single `CBPZ` carried on frame 95. That part decompresses to 31,728 bytes. Frame 96's indexes fit the new book. On frame 496, 1,489 indexes fall outside the previous book, so the new book is in force on the scheduled frame and not on the frame that carried the part.
 
+## Native short-copy runtime control
+
+**CONFIRMED.** On the original DOS 1.30 intro, the bounded DOSBox
+trace reached the pointer LCW call at `0x172838`. The first logged
+call passed guest source `0x10394CB6`, destination `0x1038834C`, and
+capacity `0x7D04` in that run. The call enters `0x158D58`. In the
+absolute-mode path, a short copy uses length `(command >> 4) + 3`
+limited by the remaining capacity and reads from `EDI − distance`
+(`0x158D81–0x158DB2`). `EDI` is the next output byte and the
+distance is `((command & 0x0F) << 8) | next_byte` at `0x158D94–0x158DB0`.
+
+| Original case | VPTZ payload start in MIX | Static prediction at `0x158DB2` (not observed) |
+|---|---|---|
+| `L20_BBI.MIX`, key `0xD3C844E7`, entry 25 frame 115 | `+0x35202D6` | `ESI` equals `EDI` at destination base +30,400. Up to 3 bytes advance through a self-copy. |
+| `SPKSTON2.MIX`, key `0x4119C826`, entry 4 frame 492 | `+0x17695E8` | `EDI` is destination base +564 and `ESI` is destination base −110. Up to 5 bytes come from that preceding range. |
+
+**UNCONFIRMED.** The source bytes and the active codebook in the two
+specific frames are still open. The Extras menu exposed the intro and
+other replays. Loading L20_BB from the copied autosave (a player save written by the game, not shipped) read the directory
+of `L20_BBI.MIX` at offsets 0, 4 and 6, leaving the target payload unvisited.
+The `SPKSTON2.MIX` key matches `OUTTAKES\ss-4e.vqa` by the original
+[name hash](mix.md#keys). The matching item-use path starts at
+`0x99EF4`. That handler's item was absent from the sampled player pool
+in the loaded slot.
+At the native LCW call, first match the archive read and the VPTZ
+payload above. Then log `ESI`, `EDI` and `ECX` at `0x158DB2`
+and the new `EDI` at `0x158DB4`. Compare the destination contents
+with the resulting tile references before the colour conversion.
+
+### Original trigger routes for the two frames
+
+**CONFIRMED.** Scene 65 points to `bb_brth` in the original
+`LOLG.DAT+0x1CF690` table slot. The hash of
+`SPHERE3\L20_BB\bb_brth.vqa` is `0xD3C844E7`, the key of
+`L20_BBI.MIX` entry 25. Stream 1 group 770 in
+`L20_BB.MIX+0xEC61EB` plays 65 at command `+0xEC6217`.
+Prop 87's kind-6 record at `+0xECD705` matches value 20.
+Predicate 219 at `+0xEE1701` requires the bound object's +0x25
+byte to equal 13 (`0xADDE0`, `0x66B3B`, `0x66C43`). A native
+property-21 path sends value 20 at `0xB5448`.
+
+**CONFIRMED.** Scene 42 is `ss-4e` (`LOLG.DAT+0x1CF634`).
+`L9_DR.MIX+0x16265B6` plays it from stream 1 group 5448.
+Prop 967's kind-6 record at `+0x162A7BE` matches value 20. Its
+predicate 19 at `+0x166EA91` requires level byte 13 to equal 4
+(`0x66B15`, `0x66C43`). The `ss-` movie path calls `0x95E4C`
+and opens the formatted clip at `0x95ECA`. Regular handler 74
+also formats clip 4 and opens it through `0xCF3C0` at `0x99F89`.
+Its one original definition is row 139, identity `0x5AA2B9B5`
+at `GLOBAL.MIX+0x5BAA6A`.
+
+| Original way to get definition 139 | Witness |
+|---|---|
+| L5_HC floor placement 9 | `L5_HC.MIX+0x5ABD3F` (region 325, field +0x24 = 0). The 37-byte placement reader resolves its identity at `0x93FD8–0x93FE1`. |
+| L9_DR item-use consumer | `L9_DR.MIX+0x162BEB6` (identity at `+0x162BEBC`): a mode-3 kind-4 record (group 14860, predicate 30) that tests for this identity. |
+| L9_DR script grant | `L9_DR.MIX+0x1628C06`, stream 1 group 15238. Control 119 has the kind-4 record at `+0x162BF5E` with mode 0 and predicate 19. The command before the grant resets level byte 13 at `+0x1628C00`. The [native player grant path](../lol2-item-handlers.md) resolves the same identity. |
+
+The 663 original placements and 876 stored opcode-3 selector-1
+commands across the 15 levels have these two matches.
+**UNCONFIRMED.** The exact on-screen interactions that deliver
+the value-20 events and the contents of the native output history
+on either target frame. Use the named groups and acquired item
+as breakpoint targets for the next runtime trial; the `SPKSTON` open also needs `[0xB860]` nonzero (`0x95E60`), and the L9 route needs level byte 13 = 4 (predicate 19).
+
 ## Open
 
 - The `VPRZ`/`VPTR` pointer stream. `CAN.MIX` entry 22 is 80×68 (340 blocks of 4×4). Its first `VPRZ` decompresses to 492 bytes, not the 680 a full pointer table would be, and begins `00 b6 00 e0 01 e0 02 e0`. Reading each little-endian word by the top 3 bits, the way a published HiColor note describes `VPTR`, takes the first word as a run of length 0 and the next as a skip of 480. That covers the frame and leaves 487 of the 492 bytes unread, so it does not describe this stream. What would settle it is the routine that expands the accepted buffer.

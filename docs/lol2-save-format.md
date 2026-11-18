@@ -128,5 +128,5 @@ size 0x758C, ending at that same offset.
 
 The [save section descriptors](lol2-save-sections.md#items-and-occupancy)
 trace item pickup through the placed-object row and the recipient's saved
-item pool. That page also records the remaining unknown section roles,
-header fields and the missing controlled pickup pair.
+item pool. A [controlled original save pair](lol2-save-sections.md#controlled-pickup-in-l20_bb)
+identifies the changed placement row and player occupancy bit.
