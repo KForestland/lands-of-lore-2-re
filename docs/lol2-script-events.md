@@ -19,7 +19,7 @@ the length. Object group offsets are u16 +2 relative to `[0x2B514]`
 | Object 1 | 1369 | **CONFIRMED** as a 14-byte record in the framed corpus, e.g. `L10_DC.MIX+0xC8296B`. **UNCONFIRMED** native consumer and field meanings. Its u16 +2 matches a framed group at only two sites. |
 | Object 2 | 616 | **CONFIRMED** periodic timer. The 10-byte row is indexed by `0xB47B4` and serviced by `0xB8BA0`. The timer details follow below. |
 | Object 3 | 715 | **CONFIRMED** six-byte row. `0xAD7F4` compares u8 +4 with its second argument, checks the predicate and runs every matching group. The effective source event depends on the caller. |
-| Object 4 | 1382 | **CONFIRMED** 10-byte held-item test. `0xADC76` dispatches mode +4 in 0–7 using a u32 argument at +6. It reads item identity +0x18 or field tests on +0x3D, +0x3F, +0x43 or +0x45. Zero at +5 leaves the test uninverted. |
+| Object 4 | 1382 | **CONFIRMED** 10-byte held-item test. `0xADD36` dispatches mode +4 in 0–7 using a u32 argument at +6. The mode-3 arm compares item identity +0x18 (`0xADC84–0xADC8F`). Other arms test fields on +0x3D, +0x3F, +0x43 or +0x45. Zero at +5 leaves the test uninverted (`0xADC47`). |
 | Object 5 | 403 | **CONFIRMED** `0xAD8E0` matches event u8 +4 and value u8 +5. A value of 0xFF on either side passes the value test. All predicate-qualified matches run. |
 | Object 6 | 5153 | **CONFIRMED** `0xADDE0` compares u8 +4 with the supplied value and checks the predicate. Opcode 18 sends value 6 at `0xB5A0E`. Property 21 sends 20 at `0xB5448`. |
 | Object 7 | 49 | **CONFIRMED** `0xAE134` evaluates a health threshold with u8 +4 mode and u8 +5 threshold. The table at object-2 offset `0x55100` maps modes 0–3 to `0xAE162`, `0xAE1B6`, `0xAE1CE`, `0xAE1E6`. See below. |

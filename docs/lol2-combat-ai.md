@@ -3,7 +3,9 @@
 The code references below use the DOS 1.30
 [address convention](lol2-executable-tables.md). The common combat
 routine uses a temporary hit context. Actors and the player take
-different receiver paths around that routine.
+different receiver paths around that routine. The
+[creature transition reference](lol2-creature-transitions.md) follows
+the behavior dispatch, state updates and animation changes.
 
 ## Hit context and reduction
 
@@ -149,8 +151,8 @@ delivers it to the target. Frame event +4/+6 supply mask and flags.
 `L5_HC.MIX+0x5BF2DB`. The CSV-style entry at `GLOBAL.MIX+0x6A3AC0`
 (key 0xCC491243) contains 50 in each of the third and fourth data
 rows. The constructor copies the source profile into the actor at
-`0xA231A`. The link from definition +0x87 to that CSV entry is
-**UNCONFIRMED**. With 50 in each relevant actor byte, +0xA6 is 15, or 12 on the +0xA3 nonzero
+`0xA231A`. The [profile loader](lol2-creature-transitions.md#profile-source)
+links this definition to the CSV entry. With 50 in each relevant actor byte, +0xA6 is 15, or 12 on the +0xA3 nonzero
 branch. A native frame record at `L5_HC.MIX+0x5C014F` is
 `01 08 32 00 08 00 24 00`: frame 8, 50 percent, mask 8 and flags
 0x24. The input is 7 or 6 before target handling. It varies with
@@ -159,5 +161,6 @@ actor state and the target's eventual health loss can differ.
 **UNCONFIRMED.** The complete AI mode transitions, the first producer of
 actor +0xA3, and all condition-driven changes to the profile need additional
 caller tracing. The places to inspect first are the two branches from
-`0xAA2FC/0xAA305`, state changes to actor +0xA8 and each call to
+`0xAA2FC/0xAA305`, the remaining state changes to actor +0xA8 (the frame
+reconciliation is traced in [creature transitions](lol2-creature-transitions.md)) and each call to
 `0x5A1A0` that adjusts the 30 active stat bytes.

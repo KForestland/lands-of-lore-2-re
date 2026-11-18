@@ -102,6 +102,9 @@ and has predicate trailer index 5.
 
 ## Selected item-use handlers
 
+The [handler catalog](lol2-item-handlers.md) lists all 108 dispatch slots
+and traces charges, coating, equipment flags and other effects.
+
 **CONFIRMED.** These cases follow the dispatch table, the definition bytes,
 and the original handler. Mappings for other items can be read from the same
 definition byte and dispatch table.

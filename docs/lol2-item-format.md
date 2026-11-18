@@ -68,13 +68,14 @@ the class byte as an equipment slot is not traced).
 | 8 | 0x797A4 | timer maintenance for one handler (INTERPRETATION) |
 | 10 / 11 | equipment slot routines | slot in / slot out for passive items (INTERPRETATION) |
 | 12 | 0x7DB54, after the weapon-ring hit test | item dropped on the weapon circle (PROVEN for the coat handlers) |
-| 16 | several world-interaction routines, always with the hand item | hand item applied to a world object (INTERPRETATION) |
+| 16 | equipment slot category query at 0x8FDE6–0x8FE0F and world-interaction callers | category result in the equipment path (CONFIRMED). See [handler effects](lol2-item-handlers.md#equipment-modes). |
 | 18 | 0x942A8 and the player update 0xD0F2C | periodic tick for carried items (INTERPRETATION) |
 | 0, 9, 14, 15, 17 | various | UNKNOWN |
 
 Handlers read by hand so far: the two poison-coat handlers (mode 12 adds one coat, up to 9; mode 1 hits
-the player with the coat flag), the on-strike handlers for two weapons (modes 5), the passive slot
-handlers (modes 10/11, writing player flag words 0x2270E / 0x22712), and the consumables.
+the player with the coat flag), the on-strike handlers for two weapons (mode 5), the passive slot
+handlers and the consumables. Player flag writes include byte `0x2270E` at `0x972F5` and
+`0x97868`, byte `0x22711` at `0x9B265` and byte `0x22712` at `0x9673A`.
 The other handlers are listed only by their head compares and calls. (Source: an automated per-handler scan
 plus hand reads; effects not read stay UNKNOWN.)
 

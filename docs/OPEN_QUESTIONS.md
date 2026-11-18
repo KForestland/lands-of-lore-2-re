@@ -11,10 +11,10 @@ Numbered so the pages and [`STATUS.md`](STATUS.md) can point at them. Each is so
 | Q5 | What consumes object kind 1, and which player and object actions supply the remaining event IDs? | [Event records](lol2-script-events.md#event-records) |
 | Q6 | Which shared-array indexes and values gate the remaining plot branches, and what does predicate operand type 7 return? | [Predicates and shared bytes](lol2-script-events.md#predicates-and-shared-bytes) |
 | Q7 | What produces the timer elapsed cells, and how do they convert to wall-clock units? | [Object timers](lol2-script-events.md#object-timers) |
-| Q8 | What do the remaining item-use handlers do, and how do they interpret the instance fields? | [Item grants and effects](lol2-item-effects.md) |
+| Q8 | What do the remaining item-use handlers do, and how do they interpret the instance fields? | [Native item handlers](lol2-item-handlers.md) |
 | Q9 | What are the remaining spell effects and lesson conditions? | [Native spell tables](lol2-spells.md) |
-| Q10 | What drives the remaining AI transitions and descriptor flags? | [Combat and creature decisions](lol2-combat-ai.md) |
-| Q11 | What are the remaining global and level save sections, including taken-item state? | [Native save slots](lol2-save-format.md) |
+| Q10 | What drives the remaining AI transitions and descriptor flags? | [Native creature transitions](lol2-creature-transitions.md) |
+| Q11 | What are the gameplay roles of the remaining save sections and header fields? The placed-item row and recipient-pool write paths are mapped. A controlled before/after pickup pair remains open. | [Native save section descriptors](lol2-save-sections.md) |
 | Q12 | Movies: full codebooks for every movie, and the 14 partial-codebook movies the decoder does not handle. **Partly answered:** scripts pick a movie by scene id through an 86-name table ([lol2-movie-scenes.md](lol2-movie-scenes.md)) | [lol2-vqa-v2.md](lol2-vqa-v2.md), [formats/vqa.md](formats/vqa.md) |
 | Q13 | Text: where the dialogue and message tables are stored, and their format. `TEXT.MIX` and `TCEL.MIX` are not text containers: they are 2 of the 46 room archives ([lol2-room-archives.md](lol2-room-archives.md)) | — |
 | Q14 | Texture flags other than 0xA9 (including 0x80A9) | [lol2-level-texture-container.md](lol2-level-texture-container.md) |

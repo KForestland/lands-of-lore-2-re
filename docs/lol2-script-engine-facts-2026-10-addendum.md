@@ -47,7 +47,7 @@ through `0x646EC(group + [0x2B514])`.
 | Kind | Layout | Runner | Rule |
 |---|---|---|---|
 | 2 | timer rows | 0xB47B4 | op14 timer operations (see the facts doc) |
-| 4 | `0a 04 gggg mode inv dword` | 0xADC76 | byte +4 is a mode index 0-7 (held-item tests: identity +0x18, class +0x3F bits, word +0x3D bits, byte +0x43 bits, byte +0x45 equal); byte +5 = 0 leaves the result uninverted; mode 0 does not use the dword at +6. (PROVEN) |
+| 4 | `0a 04 gggg mode inv dword` | `0xADBCC` entry, `0xADD36` mode dispatch | Byte +4 indexes modes 0–7. Mode 3 compares held-item identity +0x18 (`0xADC84–0xADC8F`). Other tests use class +0x3F bits, word +0x3D bits, byte +0x43 bits or byte +0x45 equality. Byte +5 = 0 leaves the result uninverted (`0xADC47`). Mode 0 tests for absence of the held item without using the dword at +6 (`0xADC01`, `0xADC41`). (PROVEN) |
 | 5 | `06 05 gggg event value` | 0xAD8E0 | runs every record with `[rec+4] == event` and (`value == 0xFF` or `[rec+5] == 0xFF` or `[rec+5] == value`), predicate checked; all matches run. (PROVEN) |
 | 6 | `06 06 gggg value` | 0xADDE0 | `[rec+4] == value` (byte compare). (PROVEN) |
 | 7 | `06 07 gggg mode thr` | 0xAE134 | health thresholds over hit points before / after; all matches run. Four blocks are proven (countdown, crossed down, crossed up, equal); which mode number selects which block is UNKNOWN. No Act 1 level has a kind-7 record. |
