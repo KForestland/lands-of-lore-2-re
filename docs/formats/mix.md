@@ -13,7 +13,7 @@
 | 6 | n x 12 bytes | index rows: uint32 key, uint32 offset (from the start of the data), uint32 size |
 | 6 + 12n | data size | entry data |
 
-All little-endian. The file is exactly 6 + 12n + data size bytes; entries lie inside the data and do not overlap. Index rows are sorted by key read as a **signed** 32-bit number. CONFIRMED on 87 of the 88 archives: `lol2_mix_parser.py --check`, run once with `--data` on `DAT/` (81/81, signed order 81/81) and once on the game folder (6/7, signed order 6/6); unsigned order holds in only 21 of the 87 (the same check prints both counts). The exception is `CDCACHE.MIX`: it has the same 131-byte header as `CACHEBAK.MIX` (5 entries, 65 data bytes) but is about 90 MB long; the bytes after the index are not covered by it. They include the decoded level texture blobs: the LZO-decoded `L1_DC` texture container (13,040,404 bytes) is byte-identical to `CDCACHE.MIX` from file offset 5,070, and `L20_BB`'s (28,451,111 bytes) from offset 13,045,474 (re-checked 2026-11-18 with `lol2_texture_container.py blob`). How the cache indexes them is open ([Q20](../OPEN_QUESTIONS.md)). The signed order fits a binary search over signed keys; the lookup routine in `LOLG.DAT` was not traced here (UNCONFIRMED).
+All little-endian. The file is exactly 6 + 12n + data size bytes; entries lie inside the data and do not overlap. Index rows are sorted by key read as a **signed** 32-bit number. CONFIRMED on 87 of the 88 archives: `lol2_mix_parser.py --check`, run once with `--data` on `DAT/` (81/81, signed order 81/81) and once on the game folder (6/7, signed order 6/6); unsigned order holds in only 21 of the 87 (the same check prints both counts). The exception is `CDCACHE.MIX`, a file the game writes when it runs (not shipped; one installation's copy was read): it has the same 131-byte header as `CACHEBAK.MIX` (5 entries, 65 data bytes) but is about 90 MB long; the bytes after the index are not covered by it. They include the decoded level texture blobs: the LZO-decoded `L1_DC` texture container (13,040,404 bytes) is byte-identical to `CDCACHE.MIX` from file offset 5,070, and `L20_BB`'s (28,451,111 bytes) from offset 13,045,474 (re-checked 2026-11-18 with `lol2_texture_container.py blob`). How the cache indexes them is open ([Q20](../OPEN_QUESTIONS.md)). The signed order fits a binary search over signed keys; the lookup routine in `LOLG.DAT` was not traced here (UNCONFIRMED).
 
 ## Keys
 
@@ -40,4 +40,4 @@ The three entries sit at file offsets 7,389,520 (35,028 bytes), 7,091,978 (297,5
 ## Open
 
 - Names for most entries ([Q3](../OPEN_QUESTIONS.md) concerns the room count).
-- The layout of `CDCACHE.MIX` beyond its index ([Q20](../OPEN_QUESTIONS.md)).
+- `CDCACHE.MIX` and `CDCACHE.LST` are written by the game when it runs; their contents depend on play and are not shipped data. How the game builds them from the shipped `CACHEBAK.MIX` and `CDCACHE.LS_` is open ([Q20](../OPEN_QUESTIONS.md)).

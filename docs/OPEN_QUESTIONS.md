@@ -2,6 +2,35 @@
 
 Numbered so the pages and [`STATUS.md`](STATUS.md) can point at them. Each is something not yet known about the ORIGINAL game's files or rules. When one is answered, its page is updated and the entry says so. Sources: the repo's own "still open" lists ([understanding](lol2-understanding-2026-11.md#still-open), [script engine facts](lol2-script-engine-facts-2026-10.md#still-open)) and the checks added on 2026-11-18.
 
+## At a glance
+
+One line per question: its state and what would settle what is left.
+
+| ID | State | What would settle the rest |
+|---|---|---|
+| Q1 | Open | Find a caller of the LZ77 routine at `0x158D58` whose input is a known file; no MIX entry decodes with it |
+| Q2 | Partly | Trace the reader of `LOCAL.MIX` stored sections to see whether the payload starts at byte 10 or 12 |
+| Q3 | Mostly | Find how `ARENA` is opened (it is not in the room table at `0x1CFA90`) |
+| Q4 | Partly | Trace the remaining subcommands and virtual continuations of opcodes 18 and 196 |
+| Q5 | Partly | Trace the remaining event producers and render-parameter readers |
+| Q6 | Partly | Map which shared-array indexes gate each remaining plot branch |
+| Q7 | Partly | Capture the first store to each elapsed cell after the main update restarts |
+| Q8 | Partly | Trace the remaining item-use handlers |
+| Q9 | Partly | Trace downstream spell effects and the quest inputs of each lesson |
+| Q10 | Partly | Trace the remaining AI mode branches and descriptor flags |
+| Q11 | Partly | Compare an original save pair written before and after one known pickup |
+| Q12 | Partly | Decode the remaining codebook layouts (see the page) |
+| Q13 | Partly | Find where character dialogue is stored |
+| Q14 | Mostly | Decode the non-raw payloads (`0x1246` and the payload-length flags) |
+| Q15 | Answered | Name the stem of key `0x1305A4F0` |
+| Q16 | Partly | Trace wall spans, UVs and openings beyond the traced span |
+| Q17 | Partly | Trace the visible geometry and input conditions of L8 controls 69 and 114 |
+| Q18 | Partly | Trace the gameplay producers of the unresolved events |
+| Q19 | Answered | — |
+| Q20 | Open | Trace how the game builds its cache from `CACHEBAK.MIX` and `CDCACHE.LS_` |
+
+## Questions
+
 | ID | Question | Page |
 |----|----------|------|
 | Q1 | Which LoL2 data, if any, uses the Westwood LZ77 variant with a leading mode byte (`tools/lol2_decompress_westwood.py`)? No MIX entry whose first u32 looks like a size decodes with it | [formats/compression.md](formats/compression.md) |
@@ -23,4 +52,4 @@ Numbered so the pages and [`STATUS.md`](STATUS.md) can point at them. Each is so
 | Q17 | L8 controls 69 and 114. Direct events, motion, link and unlink commands mapped. Visible geometry and some input conditions remain open | [L8 controls](lol2-l8-controls.md) |
 | Q18 | What gameplay conditions produce the unresolved events and indirect effects in the 15 indexed levels? | [Per-level script notes](levels/notes/README.md) |
 | Q19 | **Answered.** The level ODF entry stores the 147-byte definitions at header u32 +0x10 with count at +0x48, verified in all 15 level archives and in the native reader | [formats/entity-records.md](formats/entity-records.md) |
-| Q20 | `CDCACHE.MIX` in the game folder: its index (5 entries, 65 data bytes) matches `CACHEBAK.MIX`, but the file is about 90 MB; the bytes after it include decoded level texture blobs (L1_DC at file offset 5,070, L20_BB at 13,045,474, byte-identical); how they are indexed, and when the game writes them | [formats/mix.md](formats/mix.md) |
+| Q20 | The texture cache. The game ships `CACHEBAK.MIX` (131 bytes) and `CDCACHE.LS_` (4,008 bytes); when it runs it writes `CDCACHE.MIX` (about 90 MB) and `CDCACHE.LST` in the game folder. What the shipped files hold, and how the game builds the cache from them, is open. Measurements of a written `CDCACHE.MIX` (decoded level texture blobs, e.g. L1_DC at file offset 5,070 in one copy) describe one installation's run-time state, not shipped data | [formats/mix.md](formats/mix.md) |

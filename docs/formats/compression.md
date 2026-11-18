@@ -26,7 +26,7 @@ uint32 0
 - 13 blocks follow: 12 decode to 1 MiB each, and the last decodes to 457,492 bytes.
 - The zero trailer ends exactly at the entry's last byte.
 
-The result is byte-identical to the copy the game keeps in `CDCACHE.MIX` from file offset 5,070 ([texture container](texture-container.md)).
+The result is byte-identical to the copy found in one game-written `CDCACHE.MIX` at file offset 5,070 ([texture container](texture-container.md)); that cache is written by the game when it runs, not shipped ([Q20](../OPEN_QUESTIONS.md)).
 
 ## LCW variant
 
