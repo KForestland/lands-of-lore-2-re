@@ -2,7 +2,7 @@
 
 **As of:** 2026-11-18. What is documented about the original game, which tool reads it, what the tools check on the game files, and what is open. This table replaces the "almost fully understood" summary of earlier pages: those pages ([understanding](lol2-understanding-2026-11.md), [current status](lol2-current-status.md), [closure summary](closure-summary.md), [final closure memo](final-closure-memo.md)) are kept as history.
 
-Run the checks: `python3 tools/check_all.py --data <DAT>` (15 checks; all pass on the copy read).
+Run the checks: `python3 tools/check_all.py --data <DAT>` (16 checks; all pass on the copy read).
 
 **Short format pages** (one per format, with a worked example from the game files): [formats/](formats/README.md) — MIX, level data, texture container, room sections, entity records, items, sound.
 
