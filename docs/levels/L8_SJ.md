@@ -25,6 +25,14 @@ Counts from the level data entry header ([field table](../formats/level-data.md#
 | region descriptors | 491 |
 | objects with an event list | 339 |
 
+## Regions and portals
+
+From the vertex and region tables ([geometry](../formats/geometry.md)). A link is a region side whose neighbour word names another region (a portal); a side without one is a wall.
+
+| Vertices | Regions | Portal links | Reciprocal | Sharing the side's two vertices | Wall sides | Sloped floors | Sloped ceilings |
+|---:|---:|---:|---:|---:|---:|---:|---:|
+| 5,453 | 3,961 | 12,892 | 12,892 | 12,836 | 2,952 | 946 | 775 |
+
 ## Scripts
 
 | Stream | Commands | Groups | Bytes |

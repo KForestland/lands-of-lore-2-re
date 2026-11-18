@@ -5,7 +5,8 @@ For each level archive DAT/L<n>_<xx>.MIX (and its companion L<n>_<xx>I.MIX) the
 sheet lists, all read from the files:
   - the archive's entries and what each one is (level data entry, texture
     container, the entry holding the 147-byte entity records, other);
-  - geometry and object counts from the level data entry header;
+  - geometry and object counts from the level data entry header, and region/portal
+    statistics from the region table;
   - the script streams: command and group counts, opcode use, predicates;
   - exits: every level-transition command (destination level and entry) and
     the objects whose events point straight at that command's group;
@@ -59,6 +60,27 @@ def item_tests(scripts):
     return out
 
 
+def geometry_stats(raw):
+    """Vertex/region counts and portal statistics from the level data entry (docs/formats/geometry.md)."""
+    import struct
+    nv, nr = struct.unpack_from("<I", raw, 0x50)[0], struct.unpack_from("<I", raw, 0x58)[0]
+    ro = struct.unpack_from("<I", raw, 0x0C)[0]
+    regs = [struct.unpack_from("<22H", raw, ro + 44 * i) for i in range(nr)]
+    bad_v = sum(1 for r in regs for v in r[6:10] if v >= nv)
+    links = [(i, s, r[2 + s]) for i, r in enumerate(regs) for s in range(4) if r[2 + s] != 0xFFFF]
+    bad_n = sum(1 for _, _, n in links if n >= nr)
+    recip = shared = 0
+    for i, s, n in links:
+        if n >= nr:
+            continue
+        recip += i in regs[n][2:6]
+        edge = {regs[i][6 + s], regs[i][6 + (s + 1) % 4]}
+        shared += any({regs[n][6 + t], regs[n][6 + (t + 1) % 4]} == edge for t in range(4))
+    return dict(vertices=nv, regions=nr, links=len(links), reciprocal=recip, shared=shared, bad=bad_v + bad_n,
+                walls=sum(1 for r in regs for s in range(4) if r[2 + s] == 0xFFFF),
+                slope_floor=sum(1 for r in regs if r[14] & 4), slope_ceiling=sum(1 for r in regs if r[14] & 8))
+
+
 def level_files(data_dir):
     out = []
     for f in lol2_cli.mix_files(data_dir):
@@ -78,7 +100,7 @@ def read_level(data_dir, stem):
     path = Path(data_dir) / f"{stem}.MIX"
     b = path.read_bytes()
     rows = S.parse_mix(b)
-    geo, _ = S.level_geometry(b)
+    geo, geo_raw = S.level_geometry(b)
     tex = {}
     for n, key in texture_key(stem):
         for r in rows:
@@ -103,7 +125,7 @@ def read_level(data_dir, stem):
             e = cb[r["offset"]:r["offset"] + r["size"]]
             kinds["AUD sound" if is_aud(e) else "VQA movie" if e[:4] == b"FORM" and e[8:12] == b"WVQA" else "other"] += 1
         comp = (companion.name, len(cb), kinds)
-    return dict(stem=stem, size=len(b), rows=rows, geo=geo, tex=tex, ent_entry=ent_entry, records=records,
+    return dict(stem=stem, size=len(b), rows=rows, geo=geo, geom=geometry_stats(geo_raw), tex=tex, ent_entry=ent_entry, records=records,
                 scripts=scripts, comp=comp)
 
 
@@ -137,6 +159,14 @@ def sheet(L, names, items):
         lines.append(f"| {k}s | {t.get(k, 0):,} |")
     lines += [f"| region descriptors | {c['region_descriptors']:,} |",
               f"| objects with an event list | {c['objects']:,} |", ""]
+    G = L["geom"]
+    lines += ["## Regions and portals", "",
+              "From the vertex and region tables ([geometry](../formats/geometry.md)). A link is a region side whose "
+              "neighbour word names another region (a portal); a side without one is a wall.", "",
+              "| Vertices | Regions | Portal links | Reciprocal | Sharing the side's two vertices | Wall sides | Sloped floors | Sloped ceilings |",
+              "|---:|---:|---:|---:|---:|---:|---:|---:|",
+              f"| {G['vertices']:,} | {G['regions']:,} | {G['links']:,} | {G['reciprocal']:,} | {G['shared']:,} | "
+              f"{G['walls']:,} | {G['slope_floor']:,} | {G['slope_ceiling']:,} |", ""]
     lines += ["## Scripts", "",
               "| Stream | Commands | Groups | Bytes |", "|---:|---:|---:|---:|"]
     for st in sc["streams"]:
@@ -246,11 +276,15 @@ def main():
         items = item_identities(a.data)
         tests = [k for L in levels for k, v in item_tests(L["scripts"]).items() for _ in v]
         unknown = sum(1 for k in tests if k not in items)
+        gl = sum(L["geom"]["links"] for L in levels); gr = sum(L["geom"]["reciprocal"] for L in levels)
+        gs = sum(L["geom"]["shared"] for L in levels); gb = sum(L["geom"]["bad"] for L in levels)
         print(f"CHECK level_report: {len(levels)}/{len(stems)} level archives read (level data entry, scripts framed, "
               f"{uns} commands outside the size table); texture container found by name hash in {tex}; entity records in "
-              f"{ent}; {exits} level-transition commands; held-item tests (kind 4 mode 3) {len(tests)}, identity not in the item table: "
+              f"{ent}; {exits} level-transition commands; regions {sum(L['geom']['regions'] for L in levels):,}, "
+              f"out-of-range vertex/neighbour indices {gb}, portal links {gl:,} (reciprocal {gr:,}, sharing the side's vertices "
+              f"{gs:,}); held-item tests (kind 4 mode 3) {len(tests)}, identity not in the item table: "
               f"{unknown}; bad={bad or 'none'}")
-        return 0 if not bad and not uns and not unknown else 1
+        return 0 if not bad and not uns and not unknown and not gb else 1
     items = item_identities(a.data)
     out = Path(a.out)
     out.mkdir(parents=True, exist_ok=True)
