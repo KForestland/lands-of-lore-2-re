@@ -23,13 +23,13 @@ The tools below follow one set of rules: `--help` changes nothing; the game's `D
 
 ### `check_all.py`
 
-Run every `--check` (12) and print one line each, then a summary.
+Run every `--check` (13) and print one line each, then a summary.
 
 ```
-$ python3 tools/check_all.py | sed -n "1,2p;13p"
-CHECK repo_guard: 189 tracked files; game files, media, stray images, files over 1 MiB, machine paths or lane/agent names: none (0)
+$ python3 tools/check_all.py | sed -n "1,2p;14p"
+CHECK repo_guard: 190 tracked files; game files, media, stray images, files over 1 MiB, machine paths or lane/agent names: none (0)
 CHECK mix: 81 MIX files, 2905 entries; this reader and lol2_source_format.parse_mix agree and every entry lies inside its file: 81/81; index sorted by signed key: 81/81; bad=none
-ALL 12 CHECKS PASSED
+ALL 13 CHECKS PASSED
 ```
 
 ### `lol2_mix_parser.py`
@@ -150,6 +150,8 @@ CHECK repo_guard: 194 tracked files; game files, media, stray images or files ov
 - `lol2_sound_bank.py` — list or extract the named AUD sound bank in `LOCALLNG.MIX` (1008 clips)
 - `lol2_texture_container.py` — decode level `.TE_` texture containers (LZO1X; needs system liblzo2)
 - `lol2_source_format.py` + `lol2_export_scripts.py` — export a level's header tables and command streams to JSON (stdlib only)
+- `lol2_level_report.py` — one Markdown sheet per level (entries, counts, opcode use, exits, entity records); writes `docs/levels/`
+  - example: `python3 tools/lol2_level_report.py --data DAT --out levels/`
 - `lol2_vqa_v2_decode.py` — VQA v2 decoder with partial-codebook support (needs NumPy; Pillow for `--out`)
 
 ### Container Utilities

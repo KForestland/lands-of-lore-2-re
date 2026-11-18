@@ -1,0 +1,60 @@
+# L19_BC
+
+Made by `tools/lol2_level_report.py` from `DAT/L19_BC.MIX` and `DAT/L19_BCI.MIX`. Formats: [MIX](../formats/mix.md), [level data](../formats/level-data.md), [texture container](../formats/texture-container.md), [entity records](../formats/entity-records.md). How to read it: [README](README.md).
+
+## Archive entries
+
+`L19_BC.MIX` is 6,329,528 bytes with 3 entries.
+
+| Entry | Key | File offset | Size | What it is |
+|---:|---|---:|---:|---|
+| 0 | 0xBB092F80 | 5,955,117 | 361,922 | level data (header dword 0 = 18, dword 4 = 5300) |
+| 1 | 0xC10D2F76 | 6,317,039 | 12,489 | holds the entity records from entry byte 8,571 |
+| 2 | 0xC3172F8F | 42 | 5,955,075 | texture container: key = `ww_hash_v1("SPHERE3\L19_BC\L19_BC.TE_")` |
+
+## Geometry and objects
+
+Counts from the level data entry header ([field table](../formats/level-data.md#header-tables)).
+
+| Table | Count |
+|---|---:|
+| actors | 68 |
+| props | 270 |
+| controls | 153 |
+| movables | 78 |
+| region descriptors | 222 |
+| objects with an event list | 308 |
+
+## Scripts
+
+| Stream | Commands | Groups | Bytes |
+|---:|---:|---:|---:|
+| 0 | 1,892 | 312 | 15,796 |
+| 1 | 898 | 184 | 8,636 |
+
+2,790 commands in 496 groups use 22 distinct opcodes (meanings: [script format](../lol2-level-script-format.md)). Predicate table: 255 entries of 5 bytes. Commands outside the opcode size table: 0.
+
+Opcode use: 14 ×1074, 198 ×389, 15 ×364, 196 ×265, 1 ×119, 16 ×106, 9 ×86, 197 ×78, 20 ×68, 204 ×60, 8 ×36, 3 ×32, 18 ×23, 2 ×22, 5 ×22, 6 ×16, 207 ×10, 13 ×7, 21 ×5, 210 ×5, 7 ×2, 206 ×1.
+
+## Exits
+
+Level-transition commands (bytes `02 01 00 00 1c`, then level in the low 5 bits and entry in the high 3 bits of byte 5). "Started by" lists the objects whose event list names the command's group directly; a dash means the group is reached another way (not traced here).
+
+| To level | Entry | Stream | Group | Started by |
+|---|---:|---:|---:|---|
+| L17_HC | 2 | 0 | 0 | region:22 |
+| L20_BB | 1 | 0 | 15784 | region:2369 |
+| L20_BB | 2 | 0 | 15790 | region:2369 |
+
+## Entity records
+
+7 records of 147 bytes, by name tag: `B_HUMAN` ×2, `BELSTAT` ×1, `DAWNL19` ×1, `IMP_BEL` ×1, `SEWER` ×1, `SWARMER` ×1.
+
+## Companion archive
+
+`L19_BCI.MIX`, 46,269,474 bytes: 7 VQA movie.
+
+## Open
+
+- Which entries marked "not identified" hold what ([Q19](../OPEN_QUESTIONS.md) for the entity records).
+- Opcode meanings and record kinds ([Q4](../OPEN_QUESTIONS.md), [Q5](../OPEN_QUESTIONS.md)); per-level puzzle logic ([Q18](../OPEN_QUESTIONS.md)).
