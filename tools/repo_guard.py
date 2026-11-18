@@ -129,7 +129,7 @@ def main():
         p = os.path.join(root, f)
         if ext in GAME:
             bad.append(f"{f} (game file type)")
-        elif ext in (".png", ".jpg", ".gif", ".bmp") and not f.startswith(PNG_OK):
+        elif ext in (".png", ".jpg", ".gif", ".bmp", ".svg") and not f.startswith(PNG_OK):
             bad.append(f"{f} (image outside examples/ and docs/images/)")
         elif f.endswith(LISTING_SUFFIXES) or ".group-notes-" in f or (".events-" in f and f.endswith(".jsonl")) or (".groups-" in f and f.endswith(".jsonl")):
             bad.append(f"{f} (full script listing: tool output, not tracked)")
