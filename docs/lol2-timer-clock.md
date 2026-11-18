@@ -83,11 +83,14 @@ This identifies which clock and dispatch paths were inspected.
 **CONFIRMED.** The program registers the frame clock at 480 Hz: `0xE00D0` pushes `0x1E0` and `0xE00E8` calls the registration routine `0x14F9BC`; a 60 Hz registration follows at `0xE00F0–0xE00F8`.
 
 **CONFIRMED.** A fresh L1_DC run of DOS 1.30 (`LOLG.DAT` SHA-256 prefix
-`b27a3534`) under DOSBox 0.74-3 reached the timer service after the
+`b27a3534`) under DOSBox 0.74-3 (a build instrumented to log guest
+linear-address writes, normal CPU core, with GDB attached to the emulator
+as a host debugger; 140,000 fixed cycles, later lowered to 46,884 for the
+slow-frame samples) reached the timer service after the
 restart at `0xA0457`. Guest write watches saw `0xE0C5C`, `0xE0C82` and
 `0xE0CD2` write the three cells before the call at `0xA055B`. The
 stores address `EBX+0x4B0/+0x4B4/+0x4B6`. `EBX` was object-5 `+0x227A4`,
-which explains why a scan for absolute operands missed these stores.
+which explains why a scan for absolute operands missed these stores. In that run the object-2 base was `0x10068000` (found from a code signature and the page tables) and the relocated operand at `0xB8C0D` was `0x101D0C58`, so the object-5 base was `0x101AE000`; these bases differ between runs.
 The same base gives the timer at `EBX+0x4A0` (object-5 `+0x22C44`).
 Its counter pointer at +8 matched row 1 of the live `0x1962C` frequency
 table. That row's frequency was 480, while rows 0 and 2 held 60 and
