@@ -24,9 +24,7 @@ stream is then listed under `unsupported` and nothing is guessed.
 
 Verified by running (2026-10-31, retail files, all 15 level archives): every stream frames exactly with the
 37-opcode table (0 unsupported), every object and region list ends with a terminator inside its section,
-and every group reference resolves. The totals are 42,594 commands using 32 distinct opcodes. The output
-matched the private Godot-port producer it was ported from on every level (groups, objects, region lists,
-streams, predicate table and counts).
+and every group reference resolves. The totals are 42,594 commands using 32 distinct opcodes.
 
 ## Finding the geometry entry
 

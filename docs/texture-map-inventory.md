@@ -32,7 +32,7 @@ These include:
 Practical read:
 
 - there is already a meaningful cross-level wall-map output surface
-- it is strong enough to inventory publicly even though the final renderer lane is not closed
+- it is strong enough to inventory publicly even though the final renderer path is not closed
 
 ### Cave / Geometry JSON Surface
 

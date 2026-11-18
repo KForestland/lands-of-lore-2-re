@@ -16,9 +16,3 @@ The hash-pinned bounded instruction replay checks all 256 flag values on
 two unclipped screen rectangles: 512 cases, zero mismatches. Its scope is
 destination start and row pitch; full clipping, sampling, shading and
 framebuffer rendering are not replayed. No new live capture is claimed.
-
-Godot applies these flags with material UV scale/offset, caching by both
-descriptor and flags so shared sprites can have different orientations.
-Current cave preview: 142 horizontal flips among 442 original placements,
-zero vertical flips. Rendered stalagmite record365 and headless loading
-passed. Alpha and fixed-Y billboarding remain provisional.

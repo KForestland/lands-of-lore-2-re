@@ -36,7 +36,7 @@ def main():
                 else:raise ValueError('Instruction budget')
                 expected=background if source==0 else (background*5+7)&255 if source==1 else (source*3+11)&255
                 require(m.readmem(0x610000,1)==expected,'Special pixel mismatch');cases+=1
-    report=dict(cases=cases,mismatches=0,scope='Both native first-pixel orientations replayed for all256 source and256 destination indices with supplied distinct synthetic lookup tables. Index0 preserves destination; index1 remaps destination via table4000; other indices use source shade table. Does not recover runtime table contents, full clipping or Godot framebuffer parity.')
+    report=dict(cases=cases,mismatches=0,scope='Both native first-pixel orientations replayed for all256 source and256 destination indices with supplied distinct synthetic lookup tables. Index0 preserves destination; index1 remaps destination via table4000; other indices use source shade table. Does not recover runtime table contents, full clipping or framebuffer parity.')
     a.out.mkdir(parents=True,exist_ok=True);(a.out/'special_pixels.json').write_text(json.dumps(report,indent=2)+'\n');print(report)
 
 

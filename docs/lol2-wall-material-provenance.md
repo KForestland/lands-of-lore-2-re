@@ -75,7 +75,7 @@ not be used for this material.
 
 ## Effect On The LOCAL.MIX Entry 1 Hypothesis
 
-The older lane treated `LOCAL.MIX` entry `1` (39 records) as a wall texture
+Earlier analysis treated `LOCAL.MIX` entry `1` (39 records) as a wall texture
 atlas. The [Entry 1 verdict](../examples/atlas_candidate_verify/ENTRY1_MODEL_VERDICT.md)
 had already demoted records `1..38` to Sphere room-section data and found
 no runtime buffer match for record `0`. This trace shows where a drawn wall's

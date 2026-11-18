@@ -33,7 +33,7 @@ def main():
    assert all(math.isfinite(v) and v>=-1e-7 for pair in uv for v in pair)
    im=next(x for x in mat['images'] if x['level']==0 and x['variant']==0);w,h=im['width'],im['height']
    # Preserve pre-wrap values: wrapping vertex UVs would destroy interpolation.
-   result=dict(record=k,region=row['region'],descriptor=mat['descriptor'],variant_count=mat["variant_count"],preview_layout=im.get("preview_layout","unverified"),sloped=sloped,orientation=mode,addressing=addressing,texels_per_unit=[uscale,vscale],points_godot=[[p[0],p[1],-p[2]] for p in pts],uv_unwrapped=[[(max(u,0)+uoffset)/w,(max(v,0)+voffset)/h] for u,v in uv],dimensions=[w,h],offset_bytes=list(d[2:4]))
+   result=dict(record=k,region=row['region'],descriptor=mat['descriptor'],variant_count=mat["variant_count"],preview_layout=im.get("preview_layout","unverified"),sloped=sloped,orientation=mode,addressing=addressing,texels_per_unit=[uscale,vscale],points_z_flipped=[[p[0],p[1],-p[2]] for p in pts],uv_unwrapped=[[(max(u,0)+uoffset)/w,(max(v,0)+voffset)/h] for u,v in uv],dimensions=[w,h],offset_bytes=list(d[2:4]))
    results.append(result);key=(mat['descriptor'],mode)
    if key in shown or len(cards)>=16:continue
    shown.add(key)

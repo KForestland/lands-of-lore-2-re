@@ -27,12 +27,7 @@ What it enabled:
 - proving pre/post state at `[+80] + 0xB4`
 - proving the fast-versus-alternate branch split
 
-Typical local wrappers used in the workspace:
-
-- `./lol2_dosbox_guest_trace.sh`
-- `./run_lol2_l9_watch.sh`
-
-These wrappers are not yet copied into this repo because they still need cleanup before publication.
+The DOSBox guest-trace wrappers used to capture traces are not included.
 
 ### 2. Local Trace Inspection
 

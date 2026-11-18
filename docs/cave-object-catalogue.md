@@ -1,8 +1,7 @@
 # Cave object catalogue
 
-Run `python3 tools/draracle/catalogue_cave_objects.py --game-root GAME
---walk GODOT/assets/lol2/generated/original_floors/full_walk.json --out OUT`
-(on one line). Output includes grouped Markdown, placement CSV and JSON.
+Run `python3 tools/draracle/catalogue_cave_objects.py --game-root GAME --out OUT`
+(its `--walk` option takes an optional floor list from your own extraction). Output includes grouped Markdown, placement CSV and JSON.
 
 The pinned cave has 1,559 spatial placements using 94 template IDs. Positions,
 template, selector, state and flags follow the existing native constructor
@@ -52,8 +51,8 @@ consumers before integrating repeated instances.
 source positions, state14/15 dimensions and frame5..8 trims supported by
 F1DC9/F1E09 and renderer129300..129377 disassembly. Callback1292C0 resolves
 from LE table5D18 slot34. Full renderer replay remains open. Column28 uses
-region-height flag2 and is excluded. Godot uses provisional alpha and
-fixed-Y billboards; frame flags remain stored but unimplemented.
+region-height flag2 and is excluded. How the original applies the frame flags
+is not traced.
 
 ## Column height verification
 

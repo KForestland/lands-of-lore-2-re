@@ -35,15 +35,13 @@ The atlas verifier reproduces the repo example exactly:
 - raw texture count: `1`
 - compressed record count: `38`
 - texture `0`: `128x128`
-- setup-palette render matches:
-  [L1_wall_texture_000.png](../../examples/L1_wall_texture_000.png)
+- the setup-palette render matches the level's wall texture 0 (the pictures are not
+  included because they show game pixels; the tool below makes them from your own files)
 
 Artifacts:
 
 - [lol2_verify_wall_atlas_candidate.py](../../tools/lol2_verify_wall_atlas_candidate.py)
 - [report.json](../../examples/atlas_candidate_verify/report.json)
-- [tex0_setup.png](../../examples/atlas_candidate_verify/tex0_setup.png)
-- [tex0_local.png](../../examples/atlas_candidate_verify/tex0_local.png)
 - [ENTRY1_RUNTIME_BUFFER_CHECK_2026-04-02.md](../../examples/atlas_candidate_verify/ENTRY1_RUNTIME_BUFFER_CHECK_2026-04-02.md)
 - [entry1_runtime_witness_check.json](../../examples/atlas_candidate_verify/entry1_runtime_witness_check.json)
 

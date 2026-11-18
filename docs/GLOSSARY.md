@@ -5,7 +5,7 @@ Words used across these pages, in plain terms.
 | Term | Meaning |
 |------|---------|
 | LoL2 | *Lands of Lore: Guardians of Destiny* (Westwood Studios, 1997, DOS/Windows). |
-| Original | The released game's own files and program. Every fact in this repository is about the original; nothing here describes a remake. |
+| Original | The released game's own files and program. Every fact in this repository is about the original game. |
 | CONFIRMED / UNCONFIRMED | CONFIRMED: checked on the game files or in the original program's code. UNCONFIRMED: inferred, not yet checked. |
 | Native | In or from the original program (`LOLG.DAT` and its loader), as opposed to a reimplementation. |
 | Q1 … Q18 | Numbered open questions, see [OPEN_QUESTIONS.md](OPEN_QUESTIONS.md). |

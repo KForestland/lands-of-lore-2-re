@@ -3,7 +3,7 @@
 Generate 3D wall meshes (OBJ format) from LoL2 level geometry.
 Reads the 18-sub-entry geometry block from a level MIX file, extracts
 wall tiles and wall segments, and outputs a Wavefront OBJ file suitable
-for viewing in any 3D viewer or importing into Godot.
+for viewing in any 3D viewer.
 
 Wall tile structure:
   Position: [1]=X, [2]=Z (world coordinates)

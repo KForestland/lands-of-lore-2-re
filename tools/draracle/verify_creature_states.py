@@ -132,7 +132,7 @@ def verify(game_root, out):
         require(m.readmem(states+s['record']*16, 4) == views+s['view_first']*12, 'Native state view pointer mismatch')
     require(m.regs['eax'] == views+source['view_count']*12, 'Native view partition end')
     # F2C89 starts AFTER the bearing helper. Its result is a fixture input,
-    # not a replay of coordinates -> bearing or proof of Godot heading convention.
+    # not a replay of coordinates -> bearing or proof of a heading convention.
     cases = 0
     headings = [0, 1, 255, 256, 4095, 4096, 8191, 8192, 16383, 16384, 32767, 32768, 65534, 65535]
     for count in (8, 16):

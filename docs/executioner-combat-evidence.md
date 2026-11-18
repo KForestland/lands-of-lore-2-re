@@ -57,6 +57,4 @@ No generated game-derived fixtures are committed.
 
 Live A3/AI producers, subsequent stat recomputation, native clock conversion,
 mitigation/health composition, lethal continuation and event-queue effects remain
-before scene integration. The companion Godot combat component is detached from the
-live encounter. Functionality remains ahead of UI polish; Classic Edition precedes
-LoL3 work.
+open.

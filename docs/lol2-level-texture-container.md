@@ -28,9 +28,6 @@ running the tool on a GOG install:
 | `L9_DR.MIX` | `SPHERE2\L9_DR\L9_DR.TE_` | `3512559939` | 4360 |
 | `L20_BB.MIX` | `SPHERE3\L20_BB\L20_BB.TE_` | `3263632273` | 4654 |
 
-The four `SPHERE1` keys are the same keys the Godot port's level-texture
-producer pins for those areas.
-
 ## LZO1X block layout (PROVEN)
 
 ```
@@ -80,7 +77,7 @@ Other sections are not interpreted in this note.
 | `+0x04` | u16 | Height | PROVEN |
 | `+0x06` | u16 | Encoding flags | PROVEN (selects format) |
 | `+0x08` | u16 | Unknown (`1` in descriptor 556) | OPEN |
-| `+0x0A` | u16 | Low byte = active mip count when fewer than five | LIKELY (asserted by the port's producer) |
+| `+0x0A` | u16 | Low byte = active mip count when fewer than five | LIKELY (not traced in the program) |
 | `+0x0C` | u32 | Name/hash candidate | OPEN |
 | `+0x10` | 5 x u32 | Mip record offsets, relative to section 3 | PROVEN |
 | `+0x24` | 5 x u32 | Mip record lengths | PROVEN |
@@ -104,15 +101,15 @@ Record length is always `8 + width * height`. Example, L20_BB descriptor
 556 (id `2682`, 256 x 256): mip records at blob `0x113E883`, `0x114E88B`,
 `0x1152893`, `0x115389B`, `0x1153CA3`, lengths `0x10008` to `0x108`.
 
-Pixel order: the port's tools convert the bytes as column-major
-(`index = x * height + y`) and that matches the reviewed cave-wall images.
+Pixel order: reading the bytes as column-major
+(`index = x * height + y`) gives coherent cave-wall images.
 That is a presentation convention; native world-space orientation is OPEN.
 
 Colour: index -> shade row byte -> palette. The runtime witness for
 descriptor 556 used shade row `0x2D`; see
 [lol2-wall-material-provenance.md](lol2-wall-material-provenance.md).
-The port uses row 64 (`section 4 + 64 * 256`) as its initial remap row; that
-choice is a producer convention, not a traced runtime selection.
+Row 64 (`section 4 + 64 * 256`) gives plausible colours as a remap row; the
+row the game selects at run time is not traced.
 
 ## Other flags (not decoded here)
 
@@ -125,8 +122,8 @@ in L20_BB). Flag values seen in those two levels:
 
 The tool refuses all of them except `0xA9`, including `0x80A9` (bit `0x8000`
 set on the same low byte). Their payload layouts are OPEN in this repo.
-The port has separate readers for some (row-span sprites, column wall
-payloads), but those are not part of this note.
+Some of them (row-span sprites, column wall payloads) have other readers
+that are not part of this note.
 
 ## Usage
 

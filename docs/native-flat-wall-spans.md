@@ -23,4 +23,3 @@ The geometry pipeline runs this check too. Outputs contain per-record fixed-poin
 corners, active flags and original code excerpts, generated from local files.
 This is host interpretation of a call-free subset of the original routine, not
 live gameplay execution. The 1,988 deferred records still need their own checks.
-The existing Godot map is unchanged by this evidence update.

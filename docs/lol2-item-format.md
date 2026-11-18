@@ -12,8 +12,8 @@ INTERPRETATION (a reading of proven calls), UNKNOWN.
 - Archive `GLOBAL.MIX` (retail sha256 prefix `1e3e2a46`), entry key **3984507021** (0xED7EC08D).
 - Entry header: dword +4 = offset of the definition table (496 in retail), dword +0x34 = count (**170**).
 - Records are **91 bytes**, back to back. After the table comes a u32 count and a table of 16-byte selector
-  rows, then a u32 count and 12-byte view rows, then 30-byte name rows (24-byte name field). The selector
-  and view walk is the one the port's icon producer uses; it yields 165 decodable icons with matching sizes.
+  rows, then a u32 count and 12-byte view rows, then 30-byte name rows (24-byte name field). Walking the selector
+  and view rows yields 165 decodable icons with matching sizes.
 
 Verified by running on retail files (2026-10-31): count 170 at +0x34, base 496, the selector-table count
 after the last record, 47 records with handler index 0, highest handler index 107, and 37 records with
@@ -29,7 +29,7 @@ class byte 0x44 or 0x48.
 | +0x3B | u16 | mask word, copied to hit context +0 (matched by kind-9 word +4) | PROVEN |
 | +0x3D | u16 | flags word, copied to hit context +2 (matched by kind-9 word +6) | PROVEN |
 | +0x3F | u8 | class byte; kind-4 tests its bits | PROVEN read; slot meaning below is INTERPRETATION |
-| +0x41 | s8 | read as a defence value by the Godot port | native reader not traced (UNKNOWN) |
+| +0x41 | s8 | possibly a defence value | native reader not traced (UNKNOWN) |
 | +0x42 | u8 | handler index into the item-use table (0 = no handler) | PROVEN |
 | +0x43 | u8 | bit 0 = "magic" class, bit 1 tested by kind-4 matcher 0xADCDB | PROVEN reads; names INTERPRETATION |
 | +0x44 | u8 | post-hit addend: after a strike, `[0x22C5A] + addend` is returned (halved when `[0x2270E] & 0x400`) | PROVEN value; meaning (speed/recovery) UNKNOWN |
@@ -65,7 +65,7 @@ the class byte as an equipment slot is not traced).
 | 1 | interface click handler 0x7DB54; inventory-slot routine 0x8AA60 | use / consume (PROVEN for handlers 2, 6, 8, 9, 10, 11, 12, 16) |
 | 5 | melee strike 0x88D2C, with the equipped weapon | on-strike hook; a nonzero return skips the ordinary hit (PROVEN) |
 | 6 / 13 | same strike function; 13 when a poison-coat counter is nonzero | swing notification, plain or coated (INTERPRETATION) |
-| 8 | 0x797A4 | timer maintenance for one handler (PORT-documented) |
+| 8 | 0x797A4 | timer maintenance for one handler (INTERPRETATION) |
 | 10 / 11 | equipment slot routines | slot in / slot out for passive items (INTERPRETATION) |
 | 12 | 0x7DB54, after the weapon-ring hit test | item dropped on the weapon circle (PROVEN for the coat handlers) |
 | 16 | several world-interaction routines, always with the hand item | hand item applied to a world object (INTERPRETATION) |
@@ -74,7 +74,7 @@ the class byte as an equipment slot is not traced).
 
 Handlers read by hand so far: the two poison-coat handlers (mode 12 adds one coat, up to 9; mode 1 hits
 the player with the coat flag), the on-strike handlers for two weapons (modes 5), the passive slot
-handlers (modes 10/11, writing player flag words 0x2270E / 0x22712), and the consumables the port hosts.
+handlers (modes 10/11, writing player flag words 0x2270E / 0x22712), and the consumables.
 The other handlers are listed only by their head compares and calls. (Source: an automated per-handler scan
 plus hand reads; effects not read stay UNKNOWN.)
 

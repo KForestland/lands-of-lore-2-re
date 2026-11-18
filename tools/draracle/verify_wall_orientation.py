@@ -57,6 +57,6 @@ def main():
     actual=m.orientation(points,mode);assert actual==expected,(index,mode,actual,expected);values.append(actual);cases+=1
    source_flags=raw[30093+index*8+6];mode=(source_flags>>5)&3
    results.append(dict(record=index,source_orientation=mode,basis=values[mode]))
- a.out.mkdir(parents=True,exist_ok=True);report=dict(cases=cases,records=len(results),mismatches=0,results=results,scope='Original orientation block instruction order with host doubles and float32 stores. Four modes tested per verified wall. Original world vertices supplied as synthetic transformed inputs; camera transform, clipping, source flag constructor replay and final Godot UV parity remain open.')
+ a.out.mkdir(parents=True,exist_ok=True);report=dict(cases=cases,records=len(results),mismatches=0,results=results,scope='Original orientation block instruction order with host doubles and float32 stores. Four modes tested per verified wall. Original world vertices supplied as synthetic transformed inputs; camera transform, clipping, source flag constructor replay and final UV parity remain open.')
  (a.out/'wall_orientation.json').write_text(json.dumps(report,indent=2));print({k:v for k,v in report.items() if k!='results'})
 if __name__=='__main__':main()

@@ -29,7 +29,7 @@ def load_events(path):
                     events.append(json.loads(line))
     except FileNotFoundError:
         print(f"Trace file not found: {path}")
-        print("Run the trace first: bash ./run_lol2_disarm_rearm_trace.sh")
+        print("Pass a guest_trace.jsonl from a patched DOSBox guest tracer (none is included).")
         sys.exit(1)
     return events
 

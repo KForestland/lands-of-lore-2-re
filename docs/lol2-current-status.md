@@ -31,7 +31,7 @@ op196's remaining stores, and the control/prop event caller paths.
 Read [Draracle restoration findings](draracle-restoration.md) for current evidence,
 reproduction commands, supported source hashes and the remaining work.
 
-The original cave's static geometry can now be extracted and reviewed in Godot.
+The original cave's static geometry can now be extracted with the packaged pipeline.
 Native instruction checks support slope corners, connector endpoints and wall
 record indexing. Material extraction and binding have advanced beyond the earlier
 LOCAL.MIX atlas hypothesis, but wall-span geometry, UVs, special openings,
@@ -43,6 +43,3 @@ original scoped proof levels. They do not establish complete game RE. See
 [lol2-entity-object-map.md](lol2-entity-object-map.md), and
 [lol2-runtime-to-renderer-bridge.md](lol2-runtime-to-renderer-bridge.md).
 
-[Godot implementation](https://github.com/KForestland/lands-of-lore-unified-godot)
-is a separate repository. Its full-map walk view is experimental, and generated
-game assets are not distributed with either source repository.

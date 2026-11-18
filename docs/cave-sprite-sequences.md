@@ -21,19 +21,8 @@ Visual inspection shows environmental effects, including dripping stalactites
 (862–897), flame (907), and cloud/water-like forms. These are not verified
 enemy resources. Stored sequence order does not establish timing, animation
 state or viewing direction. Index-zero alpha and lighting remain provisional.
-No new entities or effects were placed in the cave from this extraction.
 
 The next enemy investigation should follow the previously recorded 147-byte
 named entity definitions for Roach, ROACH, WORM and guards, separately from
 the 55-byte scenery templates. This pass does not verify that entity-to-sprite
 binding or any live spawn position.
-
-## Walkthrough stand-in export
-
-`export_dummy_creatures.py` selects original block frames408 (ordinary guard)
-and733 (roach-like insect), crops transparent borders and emits indices plus
-provisional display metadata. Kevin314–407 is excluded. No original spawn,
-scale, animation or AI binding is claimed. The Godot walkthrough places two
-of each as static, non-colliding visual dummies; see docs/dummy-creatures.md
-in that repository. Reinspection of966 shows a fallen guard-like image,
-so any earlier roach speculation for966 should not be used as identification.

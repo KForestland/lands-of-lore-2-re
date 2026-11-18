@@ -22,8 +22,8 @@ python3 tools/lol2_vqa_v2_decode.py ./lol2_game/DAT/L3_DHI.MIX --entry 0 --out f
 - `VPTZ` decodes to two planes of `blocks` bytes: low bytes, then high bytes. High byte 0xFF means a solid
   4x4 block of colour `low`; otherwise the vector index is `high * 256 + low`.
 - Palette expansion is `(v << 2) | (v >> 4)`.
-- Some movies are stored rotated (the Godot port rotates them clockwise) with a cyan key colour; the decoder
-  writes frames as stored.
+- Some movies are stored rotated (they display correctly when turned clockwise) with a cyan key colour; the
+  decoder writes frames as stored.
 
 ### Partial codebooks
 
@@ -44,7 +44,7 @@ decoder keeps only the last `CBPZ` per packet. The snapshot's last part then rep
 and the next codebook group is assembled from the wrong data. The result is block corruption in the frames
 after each snapshot.
 
-Evidence from the Godot rebuild (2026-10, local media, not redistributed): removing only the `VQFL` chunks
+Evidence (2026-10, local media, not redistributed): removing only the `VQFL` chunks
 from an affected movie and decoding it with stock FFmpeg gave frames identical to this decoder on the
 untouched file (2,021 of 2,021 frames). Decoding from every `VQFL` snapshot reproduced the linear state at
 58 seek points in 12 clips. A model of FFmpeg's behaviour reproduced FFmpeg's damaged frames apart from 11

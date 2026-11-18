@@ -24,5 +24,5 @@ image and source definition table. Original data remains outside Git.
 
 Validation:11 definitions,85 entries,340 table bytes,5 image mips;37 unit
 tests pass, including overlap/tail rejection and byte47 separation. No live
-capture or Godot enemy integration is claimed. Next trace the native table
+capture is claimed. Next trace the native table
 consumer and1246 decoder before restoring creature animation and placement.

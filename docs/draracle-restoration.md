@@ -1,8 +1,7 @@
 # Draracle cave restoration findings
 
-Updated 2026-09-11. The project is active; RE and full-game restoration are not
-complete. Original instruction replay, runtime evidence and Godot experiments
-are different proof levels and must remain distinguishable.
+Updated 2026-09-11. Original instruction replay and runtime evidence are
+different proof levels and are kept apart below.
 
 ## Reproducible geometry and wall records
 
@@ -27,7 +26,6 @@ captures or proof of native walkability.
 
 [Native wall checks](native-wall-verification.md) now cover 2,139 distinct
 records across flat middle, flat upper/lower and sloped middle classes.
-The earlier flat subset matches 1,044 existing Godot boundary corner sets.
 Special connections and other deferred combinations remain open.
 
 ## Material findings from the local research workspace
@@ -43,18 +41,7 @@ word of each wall record; 0x114951..0x11495E maps nonnegative values into the
 12-byte compact descriptor table. Local host replay passes 3,052 records mapping
 to 30 descriptor ordinals. This consumer check does not close the supplied
 wall-table pointer provenance, class-specific geometry, UVs or live color parity.
-The floor cache/material extraction chain is now packaged in
-[build_cave_assets.py](build-cave-assets.md), separately from the smaller geometry
-pipeline below. The wall consumer binding check remains a reported local result.
-
-## Godot integration
-
-[The Godot repository](https://github.com/KForestland/lands-of-lore-unified-godot)
-contains a full recovered static cave walk view: 1,953 floors, 1,939 ceilings,
-1,338 boundary quads and 955 provisional interior spans. The local full-world
-79-waypoint tour and 119 checkpoint routes pass. Capsule dimensions, movement,
-lighting, floor UVs and wall spans remain experimental. Fly mode is inspection
-assistance, not original gameplay. Original game assets are excluded from Git.
+The wall consumer binding check remains a reported local result.
 
 ## Run the packaged pipeline
 
@@ -66,7 +53,7 @@ python3 -m unittest discover -s tools/draracle -p 'test_*.py'
 ```
 
 The game root must contain `DAT/L1_DC.MIX` and `LOLG.DAT`. Paths are configurable;
-no machine-specific path or precomputed evidence directory is required. Supported
+no precomputed evidence directory is required. Supported
 files are pinned to these SHA-256 hashes; other editions fail explicitly:
 
 - L1_DC.MIX: `6384ec4d4d78f1aadfc1f154d924e1e20636af037cf5af68fe35af8478854345`
@@ -74,15 +61,10 @@ files are pinned to these SHA-256 hashes; other editions fail explicitly:
 
 Outputs include corrected geometry JSON/OBJ, connector and slope checks, lossless
 wall records, and original code excerpts. Generate them locally; do not commit
-asset dumps. This command covers geometry/wall records. Use the separate
-[asset builder](build-cave-assets.md) to generate diagnostic full-cave Godot assets
-from the matching populated cache.
+asset dumps. This command covers geometry/wall records.
 
 ## Next work
 
 1. Close wall table loading, native span classes and wall UV/material integration.
-2. Extend the packaged asset builder beyond the matching populated cache: recover
-   cache construction from retail archives and support additional editions.
-3. Restore special openings, moving objects, action dispatch and hazards.
-4. Validate a faithful playable cave before claiming full-game restoration or
-   native patch compatibility. Audio remains a later task.
+2. Recover the cache construction from the retail archives and support additional editions.
+3. Decode special openings, moving objects, action dispatch and hazards.

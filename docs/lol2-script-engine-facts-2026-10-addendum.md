@@ -7,7 +7,7 @@ conventions: `LOLG.DAT` 1.30 (sha256 `b27a3534...`), VA = file offset - 0x37000,
 decoded from LE fixup records (an object-2 target offset + 0x59024 is the handler VA). The data layout is in
 [`lol2-level-script-format.md`](lol2-level-script-format.md).
 
-Sources: static disassembly checkpoints written during the Godot rebuild (byte-cited, read-only), checked
+Sources: static disassembly notes (byte-cited, read-only), checked
 against the retail level archives. Labels are kept as the sources give them: PROVEN (bytes read),
 LIKELY / INTERPRETATION (a reading of proven calls), UNKNOWN.
 

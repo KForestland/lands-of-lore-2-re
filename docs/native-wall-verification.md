@@ -15,7 +15,7 @@ branch is exercised by synthetic cases rather than claimed as an observed cave e
 
 The interpreter's approved helper calls are F4504, F4590 and F49FC; unknown calls
 or instructions fail explicitly. The new sloped middle cases compare native
-helper execution with the earlier independent slope port. Loader/global pointers
+helper execution with an earlier independent re-implementation of the slope formula. Loader/global pointers
 are still supplied by the host fixture. These checks are not live runtime captures
 and do not prove native rendering, UVs, material visibility or collision semantics.
 
@@ -26,7 +26,6 @@ must not be described as overall cave readiness percentages.
 Run the existing configurable `run_geometry_pipeline.py` to reproduce all six
 wall groups, or run their individual tools with `--game-root` and `--out`.
 The extended pipeline and all 25 existing geometry/cache/material unit tests pass.
-No Godot wall replacement is made by this evidence-only update.
 
 For sloped upper/lower walls, the neighbor helper maps the edge start vertex to
 neighbor corner k and uses corner (k+3)&3 for the other endpoint. The verifier
@@ -103,7 +102,7 @@ The observer inputs originate at offsets 19/1D of the object referenced by
 global B8668 (F5C22..F5C4A); equivalence to renderer camera globals remains
 open. Helper 1338B0 contains a separate coordinate transform and clipping
 path, still to be replayed. This check is included in the portable build,
-but does not enable live culling in Godot.
+as a static replay.
 
 ## Horizontal camera transform and camera-plane clipping
 

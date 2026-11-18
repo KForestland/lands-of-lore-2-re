@@ -1,8 +1,7 @@
 # LoL2 music: DMUSIC.MIX is decodable (November 2026)
 
-Research by the decode agent (Grok), reviewed by the lead agent (Opus), for the LoL2 Classic remake. Offsets are from the
-GOG release (`LOLG.DAT` sha256 `b27a3534…5766775`; `DMUSIC.MIX` size 81,208,196). No audio is included here: a remake
-converts the music from the player's own copy.
+Offsets are from the GOG release (`LOLG.DAT` sha256 `b27a3534…5766775`; `DMUSIC.MIX` size 81,208,196). No audio is
+included here; convert the music from your own copy.
 
 ## Verdict
 

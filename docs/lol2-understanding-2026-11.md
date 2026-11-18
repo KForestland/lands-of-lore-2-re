@@ -1,20 +1,15 @@
 # LoL2 understanding — November 2026
 
-Updated 2026-11-06. **Almost fully understood.** The whole game can now be followed from the first cave to the final
-scene in terms of its own data: every level, every story step, the script opcodes behind them, and the engine rules that
-make the world look and behave the way it does. A short list of things is still open (end of this page); those are
-covered by small, documented adapters in the Godot rebuild instead of guesses.
-
-This page summarizes what the Godot rebuild ([lands-of-lore-unified-godot](https://github.com/KForestland/lands-of-lore-unified-godot))
-learned since the [October update](lol2-current-status.md). The rebuild is where the reverse engineering is tested: a
-fact counts as understood when the rebuilt game plays that part from the original data and a test proves it.
+Updated 2026-11-06, kept as history; the current state with evidence is in [STATUS.md](STATUS.md). This page
+summarizes what was learned about the original game since the [October update](lol2-current-status.md): the levels and
+story steps in terms of the game's own data, the script opcodes behind them, and engine rules. A list of open points is
+at the end of this page.
 
 ## Proof levels used here
 
 - **Native**: read from the original files or the original code (Ghidra), reproduced byte-for-byte or behaviour-for-behaviour.
 - **Observed**: matches the original game in a full longplay (5 h 10 min, frame index every 5 s for Act 1, every 30 s after).
-- **Adapter**: the original mechanism is not decoded yet; the rebuild does the same visible thing in a modern way, and
-  the gap is logged. Adapters are named as adapters everywhere; they are never presented as decoded.
+- **Open**: the original mechanism is not decoded yet; such points are listed as open, never presented as decoded.
 
 ## What is understood
 
@@ -44,8 +39,8 @@ fact counts as understood when the rebuilt game plays that part from the origina
 ### Engine rules
 - **What is drawn**: the original engine draws only the regions it reaches through region edges (portals) inside the
   view; rooms that overlap or lie beyond solid walls are never drawn. Treating every shared polygon edge as a portal,
-  including low walls, parapets, drops and windows, matches the longplay. The rebuild's earlier "draw everything"
-  approach is what made stacked levels (the Huline Temple, the Hive) look like a tangle.
+  including low walls, parapets, drops and windows, matches the longplay; drawing every region instead makes
+  stacked levels (the Huline Temple, the Hive) look like a tangle.
 - **Water**: regions without their own bank level take the most common bank level of the connected bed; with that,
   every water region has a surface. Drowning takes about 15 s under water (measured in the original with DOSBox).
 - **Collision**: native solid boxes (placement flag 0x80 plus a box template), region blockers (region bit 0) and
@@ -70,5 +65,5 @@ understanding.
   geometry is understood well enough to draw, but not yet well enough to look right everywhere.
 
 ## What this means
-Lands of Lore II is close to fully understood as a game: its content, its story order, its scripts and its engine rules.
-What remains is a handful of opcode arms and media formats, each already covered in the rebuild by a logged adapter.
+Much of the game's content, story order, scripts and engine rules is understood; the open points above, and those in
+[OPEN_QUESTIONS.md](OPEN_QUESTIONS.md), remain.

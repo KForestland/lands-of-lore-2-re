@@ -90,7 +90,7 @@ intermediate values X,Y,Z,U,V for the source-selected orientation.
 
 This interprets original instruction order with host doubles and float32 stores.
 World vertices are supplied as synthetic transformed inputs; it does not replay
-camera transformation or clipping. Constructor flag transfer and final Godot UV
+camera transformation or clipping. Constructor flag transfer and final UV
 parity are not established by this test. The export is an intermediate basis,
 not ready-to-use normalized texture coordinates.
 
@@ -100,18 +100,18 @@ mip's width/height in16.16 units. `verify_wall_uv_wrap.py` checks870 cases acros
 58 extracted mip layouts, including negative coordinates, boundaries and offsets.
 Use `--game-root`, `--textures` pointing to wall_textures.json, and `--out`.
 No-overflow test inputs are used; arbitrary32-bit overflow is not modeled by the
-independent formula. Other flag branches and final Godot UV parity remain open.
+independent formula. Other flag branches and final UV parity remain open.
 
 Addressing follow-up: the verifier now starts at12D4D1 and covers all three
 branches, including flags8+16 together (bit8 wins).3480 cases across58 mip
-layouts pass against the independent `wall_uv_addressing.address_uv` port.
+layouts pass against the independent `wall_uv_addressing.address_uv` re-implementation.
 Without either bit, both coordinates shift arithmetically and clamp; offsets
 are ignored. Bit16 alone repeats U with its offset but clamps V without its
 offset. Bit8 repeats both with offsets. Clamp upper limits are dimension<<16
 minus1. The portable function rejects unverified overflow inputs.
 
 This reusable function accepts pre-addressing renderer16.16 coordinates. It is
-not yet a world-space-to-Godot UV converter; projection integration, filtering,
+not yet a world-space UV converter; projection integration, filtering,
 transparency and live visual comparisons remain outstanding.
 
 `export_wall_uv_fixture.py` accepts `--game-root`, `--geometry-evidence`,
@@ -121,11 +121,11 @@ wall_preview.png. The pinned selection is record2168, region6:222.800359 by228
 original units, one texel/unit, zero offsets.15 synthetic camera samples agree
 with the recovered projection coefficient ratios. This is a geometric UV
 inference, not live renderer parity. The512x256 preview is a rescaled sampling
-panel, not an aspect-correct in-game screenshot. No scene replacement occurs.
+panel, not an aspect-correct in-game screenshot.
 
 `export_flat_wall_uvs.py` uses the same four arguments as the single fixture.
 The pinned export contains946 rectangular repeating static-material walls,
-Godot-coordinate vertices and unwrapped normalized UVs. Do not wrap vertex UVs:
+vertices and unwrapped normalized UVs. Do not wrap vertex UVs:
 that loses repeats during interpolation. A16-panel local gallery accompanies
 flat_wall_uvs.json. Among3044 checked records, exclusions are664 inactive,
 1304 other addressing modes,50 unsupported/multi-variant materials and80
@@ -133,39 +133,26 @@ nonrectangular spans; eight additional geometry records remain unresolved.
 
 These are diagnostic inferred UVs. Pixel previews are file-palette samples,
 not validated lighting/transparency. Texture dimensions are original. Camera
-parity, source material semantics and scene integration remain outstanding.
+parity and source material semantics remain outstanding.
 
-User-reported preview correction: walls0,131,1933,1961 exposed an incorrect
+Preview correction: walls0,131,1933,1961 exposed an incorrect
 row-major assumption. A9/80A9 PNG previews now reorder source pixels from
 index=x*height+y into PNG rows. Original .indices bytes and source hashes remain
 unchanged. Rectangular and square ordering tests added. This corrects the wall
-review extractor only; other extraction lanes and non-A9 layouts need auditing.
+review extractor only; other extractions and non-A9 layouts need auditing.
 Descriptor3 resolves visually to a dog/photo test image; wall0 is labelled as
 unresolved cave use, not silently replaced with rock. Header/extent checks alone
 did not establish image layout. The correction is visually supported, not a
 new claim of complete native sampling parity.
 
-Layout audit follow-up: column_major_to_rows now lives in lol2_pixel_layout.py
-and is shared by the wall review, cave A9 exporter (PNG and shaded canvas), and
-80A9 floor variant preview. Non-A9 variant layouts remain explicitly unverified.
-127 A9 mip previews and five80A9 variant/mip previews are corrected. All207
-original indexed payload files across the cave/variant exports remain byte-identical.
-The complete portable asset build passes into a separate output directory;
-existing playable demo assets are not replaced by this audit.
-
-Demo refresh audit: the remaining floor E1 descriptors156/161/285 are square,
+Square floor descriptors: the floor E1 descriptors156/161/285 are square,
 so row/column candidates are simple transposes and both look coherent. Visual
-inspection cannot settle their orientation; they remain unchanged/unverified.
-The corrected A9/80A9 pipeline was exported to the working demo with a prior
-asset backup. Exactly nine PNGs changed; geometry/traversal files are unchanged.
-Godot's full-map sprint checkpoint smoke passed119 routes with zero resets.
-This tests loading/traversal, not live-game texture-orientation parity.
+inspection cannot settle their orientation; they remain unverified.
 
 Expanded rectangular export:2035 walls/22 static textures, including clamped
 and horizontal-repeat modes. For rectangular spans, clamped axes use descriptor
 size divided by span extent; repeating axes use recovered world scale. Offsets
-apply only to repeating axes. Existing946 repeat-both entries retain their UVs.
-The diagnostic Godot review uses per-axis clamp/repeat fragment sampling. Native
+apply only to repeating axes. Existing946 repeat-both entries retain their UVs. Native
 mip rounding, transparency and camera parity remain unverified. Exclusions now:
 664 inactive,50 unsupported/multi-variant,295 nonrectangular, eight unresolved.
 
@@ -182,16 +169,14 @@ top modes and minimum lower height for bottom modes, matching the inverted-heigh
 renderer frame.1168 original orientation-block checks pass for these292 spans
 across four modes. All2035 previous rectangular UV sets are unchanged. Three
 crossing-boundary spans remain deferred;50 materials and664 inactive records
-remain excluded, plus eight unresolved geometry records. Godot review loads2327
-meshes/23 textures. Native camera/clipping and material visibility parity remain open.
+remain excluded, plus eight unresolved geometry records.  Native camera/clipping and material visibility parity remain open.
 
 Manual variant review:2373 walls/27 material descriptors,46 additional walls.
 Exporter includes raw-supported multi-image materials and records variant_count
 and preview_layout. Variant order is storage order only; no playback semantics.
-Godot V cycles manually and smoke constructs every wall/variant combination.
 Six crossing spans,one unsupported material record,664 inactive and eight
 unresolved geometry records remain excluded. Possible upside-down textures are
-an owner-deferred visual pass; existing mappings are not corrected speculatively.
+not corrected speculatively.
 
 Native draw eligibility: verify_wall_visibility.py accepts --game-root,
 --geometry-evidence and --out. It replays114806..11484A over3044 verified records

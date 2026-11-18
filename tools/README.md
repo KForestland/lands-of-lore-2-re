@@ -7,8 +7,7 @@ Curated analysis and extraction tools for LoL2 reverse engineering.
 See [Draracle findings](../docs/draracle-restoration.md). Run
 `python3 tools/draracle/run_geometry_pipeline.py --game-root /path/to/lol2 --out /path/to/output`.
 This requires Python 3.10+ and Capstone 5, and produces corrected geometry and
-wall-record evidence from pinned original files. The separate [full asset builder](../docs/build-cave-assets.md) now packages
-texture/Godot generation for the supported populated cache.
+wall-record evidence from pinned original files.
 
 ## Setup
 
@@ -39,7 +38,7 @@ List a MIX archive, or extract one entry with `--out`. `--check`: agrees with `l
 
 ```
 $ python3 tools/lol2_mix_parser.py L1_DC.MIX
-MIX file: /media/bob/Arikv/REFERENCE/game_files/lol2/DAT/L1_DC.MIX
+MIX file: /path/to/your/LOL2/DAT/L1_DC.MIX
 Entries: 3
   [  0] key=0xB1162802  offset=  7389520  size=    35028
   [  1] key=0xB1202500  offset=  7091978  size=   297542
@@ -195,6 +194,3 @@ CHECK repo_guard: 194 tracked files; game files, media, stray images or files ov
 - `lol2_entity_field_analyzer.py` — cross-level entity descriptor field analysis (62 types, 15 levels)
   - example: `python3 tools/lol2_entity_field_analyzer.py --help`
 
-### Trace Configuration
-- `run_lol2_l9_watch.sh` — baked wrapper for L9_DR.MIX watch configuration
-  - example: `bash tools/run_lol2_l9_watch.sh`

@@ -362,8 +362,7 @@
     }
   },
   "shell_wrappers": [
-    "run_lol2_l1_offset_watch.sh",
-    "run_lol2_l9_watch.sh"
+    "run_lol2_l1_offset_watch.sh"
   ],
   "native_helpers": [
     "lol2_fd_trace.c",

@@ -11,7 +11,7 @@ Read order:
 - `final-closure-memo.md`
   - Short final handoff memo for the current public repo state.
 - `lol2-current-status.md`
-  - Short state of the lane, strongest proven results, and remaining open items.
+  - Short state of the work, strongest proven results, and remaining open items.
 - `lol2-compact-path-branch-steering.md`
   - Main closure note for the compact `L1` control path and the fast-vs-alternate loading-phase branch split.
 - `lol2-object-state-word.md`

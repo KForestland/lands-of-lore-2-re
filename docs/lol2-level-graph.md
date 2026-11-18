@@ -35,7 +35,7 @@ from the geometry header, commands from both streams).
 | L19_BC | - | 68 | 270 | 2870 | 2790 | UNKNOWN binding |
 | L20_BB | - | 79 | 286 | 1853 | 3834 | UNKNOWN binding |
 
-The first five are Act 1. Short names for L1-L8 come from the Godot rebuild's playtested levels. For the
+The first five are Act 1. Short names for L1-L8 are descriptive labels, not names stored in the files. For the
 later levels the longplay shows a dragon lair, a stone dungeon, a statue hall, a lava cave, a snow level, a
 large Ruloi cavern, a city with a lava moat and "Subterranean Caverns", but which archive each segment uses
 has not been traced (UNKNOWN; matching by archive name or content is only a guess).

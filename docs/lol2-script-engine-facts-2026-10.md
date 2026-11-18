@@ -2,8 +2,7 @@
 
 Date: 2026-10-31
 
-These facts came out of the Godot rebuild work (September-October 2026), where the
-game's own script records are executed by a host that follows the original code.
+These facts were collected in September-October 2026.
 Each was settled by disassembly of `LOLG.DAT` (sha256 prefix `b27a3534`, version 1.30),
 and most were also checked by running the original routine in a small native harness.
 They are published here because they answer open questions from the March closure

@@ -9,6 +9,8 @@ files git tracks and fails on:
     .EXE .DLL .BIN, and converted media .WAV .OGG .MP3 .MID .HMI .XMI
   - PNG files outside examples/ and docs/images/
   - any file larger than 1 MiB
+  - in text files: machine paths (/home/, /media/, /mnt/, C:\\Users\\) and
+    lane, agent or private names (list in NAMES below)
 
 It cannot tell whether a PNG in the allowed folders shows game pixels; that
 stays a review point. Needs no game data (--data is accepted and ignored).
@@ -17,12 +19,39 @@ stays a review point. Needs no game data (--data is accepted and ignored).
 """
 import argparse
 import os
+import re
 import subprocess
 import sys
 
 GAME = {".mix", ".vqa", ".aud", ".tex", ".te_", ".wom", ".pcx", ".smf", ".lst", ".trr", ".dat", ".exe",
         ".dll", ".bin", ".wav", ".ogg", ".mp3", ".mid", ".midi", ".hmi", ".xmi", ".flac"}
 PNG_OK = ("examples/", "docs/images/")
+
+
+# Text rules: no machine paths and no lane, agent or private names in tracked files.
+# This file is exempt because it holds the lists.
+MACHINE_PATH = re.compile(r"/home/[a-z]|/media/[a-z]|/mnt/[a-z]|[A-Za-z]:\\Users\\")
+NAMES = re.compile(r"\b(Grok|Sol|Opus|Fable|Codex|Gemini|Kimi|Astra|Claude)\b")
+
+
+def text_findings(root, f):
+    if f.endswith("tools/repo_guard.py") or f == "tools/repo_guard.py":
+        return []
+    try:
+        with open(os.path.join(root, f), encoding="utf-8") as fh:
+            lines = fh.read().split("\n")
+    except (UnicodeDecodeError, OSError):
+        return []
+    out = []
+    for n, line in enumerate(lines, 1):
+        if MACHINE_PATH.search(line):
+            out.append(f"{f}:{n} (machine path)")
+        for m in NAMES.finditer(line):
+            if line[m.start() - 1:m.start()] == '"' and line[m.end():m.end() + 1] == '"':
+                continue  # a quoted name is game text, e.g. the bow "Gemini"
+            out.append(f"{f}:{n} (name {m.group(1)!r})")
+            break
+    return out
 
 
 def main():
@@ -45,7 +74,9 @@ def main():
             bad.append(f"{f} (image outside examples/ and docs/images/)")
         elif os.path.isfile(p) and os.path.getsize(p) > 1 << 20:
             bad.append(f"{f} (larger than 1 MiB)")
-    print(f"CHECK repo_guard: {len(files)} tracked files; game files, media, stray images or files over 1 MiB: "
+        if os.path.isfile(p):
+            bad.extend(text_findings(root, f))
+    print(f"CHECK repo_guard: {len(files)} tracked files; game files, media, stray images, files over 1 MiB, machine paths or lane/agent names: "
           f"{bad[:5] or 'none'}{' ...' if len(bad) > 5 else ''} ({len(bad)})")
     return 0 if not bad else 1
 

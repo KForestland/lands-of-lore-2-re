@@ -66,8 +66,7 @@ concatenated AUD dialogue clips". The entry is in fact an indexed, named bank.
 - `808` bytes after the row table are not interpreted.
 - The old "1008 clips" count was the number of real clips; the "first clip 1.24 s" is row 0, `zombie1.aud`.
 
-Evidence: the game-side creature-audio staging tool used by the Godot port
-selects this entry by key, asserts `count == 1179` and the table offset,
+Evidence: a reader that selects this entry by key asserts `count == 1179` and the table offset,
 reads rows as above, and checks rate, codec, flags and the `0xDEAF` chunk
 walk for every clip it stages. `tools/lol2_sound_bank.py` re-runs the same
 checks over all rows; run against a GOG install it reports `1179` rows,
@@ -76,8 +75,8 @@ Row 0 decodes with `tools/lol2_aud_decode.py --raw` to the same PCM length
 as ffmpeg (54664 bytes).
 
 So the named LoL2 sound effects live here, in one bank. Whether level MIX
-files carry further sound data was not checked. Which game event plays which row is only traced for the
-cues the Godot port has staged; a full cue map is OPEN.
+files carry further sound data was not checked. Which game event plays which row is traced for only a few
+cues; a full cue map is OPEN.
 
 ```bash
 python3 tools/lol2_sound_bank.py ./lol2_game/LOCALLNG.MIX            # list

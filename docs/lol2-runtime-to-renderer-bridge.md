@@ -8,9 +8,9 @@ Date: 2026-03-24
 
 This note reconnects the stronger compact-path runtime model to the older renderer/texture question. It is not a full renderer solution. It states what the compact-path work now changes about that problem.
 
-## What The Renderer Lane Already Proved
+## What The Renderer Analysis Already Proved
 
-The older renderer lane remains real:
+The older renderer analysis remains valid:
 
 - the loader has a proven `.tex` / `.odf` branch in disassembly
 - shipped runtime map load is MIX-heavy in practice

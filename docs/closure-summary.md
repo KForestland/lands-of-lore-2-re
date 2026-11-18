@@ -72,7 +72,7 @@ This matters because it proves the object-side runtime lane contains real branch
 - HMI-MIDI to standard MIDI converter
 - sound effects container location
 
-## Best Read Of The Lane Now
+## Best Read Now
 
 LoL2 is no longer blocked on final render-format identification. The texture pipeline has a few competing or partial provenance clues, but lacks one fully runtime-confirmed source-path story. Audio decode is sample-verified on 1 music track and 1 dialogue clip. Entity fields are classified by statistical analysis with mixed proof levels. The remaining work is mainly provenance closure, confirmation, and tooling.
 

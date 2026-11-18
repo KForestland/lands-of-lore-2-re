@@ -13,5 +13,5 @@ def main():
     steps=[('lol2_draracle_openings.py','geometry'),('lol2_verify_draracle_slopes.py','slopes'),('lol2_verify_draracle_connectors.py','connectors'),('lol2_extract_wall_records.py','walls'),('lol2_verify_flat_wall_spans.py','flat_walls'),('lol2_verify_upper_lower_walls.py','upper_lower_walls'),('lol2_verify_sloped_middle_walls.py','sloped_middle_walls'),('lol2_verify_sloped_upper_lower_walls.py','sloped_upper_lower_walls'),('lol2_verify_connector_middle_walls.py','connector_middle_walls'),('lol2_verify_special_upper_lower_walls.py','special_upper_lower_walls'),('audit_wall_coverage.py','coverage')]
     for script,folder in steps:
         subprocess.run([sys.executable,str(Path(__file__).with_name(script)),'--game-root',str(a.game_root.resolve()),'--out',str((a.out/folder).resolve())],check=True)
-    print('Geometry and wall-record checks complete. Use build_cave_assets.py for texture/Godot generation.')
+    print('Geometry and wall-record checks complete.')
 if __name__=='__main__':main()

@@ -22,7 +22,7 @@ def main():
             Image.frombytes('RGBA',(w,h),bytes(c for x in pix for c in [*pal[x*3:x*3+3],255 if x>1 else 0])).save(a.out/f'{stem}_colour.png')
             Image.frombytes('L',(w,h),bytes(255 if x==1 else 0 for x in pix)).save(a.out/f'{stem}_remap_mask.png')
             rows.append(dict(descriptor=d,level=level,width=w,height=h,special_pixels=pix.count(1),source_sha256=sha(data),stem=stem))
-    (a.out/'masks.json').write_text(json.dumps(dict(results=rows,scope='White mask pixels remap the destination in the native renderer; colour PNG omits those pixels. Separate diagnostic layers, not final appearance. No Godot integration.'),indent=2)+'\n')
+    (a.out/'masks.json').write_text(json.dumps(dict(results=rows,scope='White mask pixels remap the destination in the native renderer; colour PNG omits those pixels. Separate diagnostic layers, not final appearance.'),indent=2)+'\n')
     cards=''.join(f'<article><h2>Resource {r["descriptor"]}</h2><img src="{r["stem"]}_colour.png"><img src="{r["stem"]}_remap_mask.png"></article>' for r in rows if r['level']==0)
     (a.out/'review.html').write_text('<!doctype html><meta charset="utf-8"><title>Sprite remap masks</title><style>body{background:#333;color:white;font:18px sans-serif}img{background:#555;image-rendering:pixelated;max-width:400px}article{margin:24px}</style><h1>Sprite colour and background-remap masks</h1><p>Left: colour pixels only. Right: white marks pixels that transform the background. This is not the final composite.</p>'+cards)
     print(dict(mips=len(rows),special_pixels=sum(r['special_pixels'] for r in rows)))

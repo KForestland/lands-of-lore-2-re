@@ -28,5 +28,4 @@ Sampled output visually shows guards and roaches in different poses and
 directions. Resource967 is a guard despite being adjacent to roach-like966;
 resource adjacency is not a valid creature binding. The generated review.html
 provides a manual resource slider. Original palette, provisional index-zero
-alpha; no animation timing, native shade, named-state binding, spawn or
-Godot creature integration is claimed. No new live capture was performed.
+alpha; no animation timing, native shade, named-state binding, or spawn binding is claimed. No new live capture was performed.

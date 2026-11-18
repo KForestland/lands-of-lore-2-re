@@ -40,6 +40,6 @@ def main():
      actual=execute(m,u,v,uo,vo,level,w,h,flags)
      expected=(*address_uv(u,v,uo,vo,level,w,h,flags),(-131072>>level)&0xffffffff)
      assert actual==expected,(flags,level,w,h,actual,expected);cases+=1
- a.out.mkdir(parents=True,exist_ok=True);report=dict(cases=cases,layouts=len(layouts),mismatches=0,scope='Original dispatch and three addressing branches replayed, including bit8 precedence over bit16. Synthetic non-overflow coordinates across extracted mip dimensions. Independent addressing port verified; projection, filtering and complete Godot UV parity remain open.')
+ a.out.mkdir(parents=True,exist_ok=True);report=dict(cases=cases,layouts=len(layouts),mismatches=0,scope='Original dispatch and three addressing branches replayed, including bit8 precedence over bit16. Synthetic non-overflow coordinates across extracted mip dimensions. Independent addressing re-implementation verified; projection, filtering and complete UV parity remain open.')
  (a.out/'wall_uv_wrap.json').write_text(json.dumps(report,indent=2));print(report)
 if __name__=='__main__':main()

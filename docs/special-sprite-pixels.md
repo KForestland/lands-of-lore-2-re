@@ -21,9 +21,6 @@ both layers, not a final composite.47 unit tests pass, including opt-in
 and hint rejection. Original game assets remain outside Git.
 
 Run either tool with --game-root /path/to/lol2 --out /path/to/output.
-The separate Godot indexed compositor matches all 256000 pixels of its
-640×400 CPU reference. The playable cave still has 1183 static props;
-its RGB buffer does not retain exact palette indices.
 
 ## Initial table binding recovered
 
@@ -57,11 +54,7 @@ runtime table changes remain separate research questions.
 ## In-cave overlap diagnostic
 
 `export_special_sprite_indices.py` exports resource474 and the verified initial
-remap for the Godot special_cave_review scene. It checks the pinned inputs and
-records650 special pixels in the138×83 source. Two diagnostic copies composite
-in sequence over the cave with verified intermediate index/RGB results and
-controlled depth blockers. These are not original placements or native draw
-order evidence. See Godot docs/special-cave-review.md for validation and scope.
+remap. It checks the pinned inputs and records650 special pixels in the138×83 source.
 
 ## Three native placement bindings
 
@@ -69,6 +62,5 @@ order evidence. See Godot docs/special-cave-review.md for validation and scope.
 1058/1057/1051, binding474/475/476. All are one-state/one-frame with height
 flags0 and selector0. Original position, dimensions, trims and frame flip
 are exported alongside source offsets/hex and pinned hashes. Arguments:
---game-root and --out. Original image/remap assets stay local. Godot's
-recovered-special-props.md describes the three verified inspection views.
+--game-root and --out. Original image/remap assets stay local.
 Flag1 templates86/87 and multi-state82 remain outside this export.

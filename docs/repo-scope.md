@@ -1,6 +1,6 @@
 # Repository Scope
 
-This repository documents the current reverse-engineering state of *Lands of Lore II* and publishes the cleaned closure notes needed to review the LoL2 lane without the full private working ledger.
+This repository documents the current reverse-engineering state of *Lands of Lore II* and publishes the cleaned closure notes needed to review the LoL2 reverse engineering.
 
 Included:
 
