@@ -4,9 +4,9 @@
 
 | Data | Where | Pages |
 |---|---|---|
-| Sound effects and voice | `LOCALLNG.MIX` entry 4 (key 1570429112): one bank of named AUD files | [audio-inventory.md](../audio-inventory.md) |
-| Music (digital) | `DMUSIC.MIX`: AUD IMA tracks; opcode 210 selects the track | [lol2-music-2026-11.md](../lol2-music-2026-11.md) |
-| Music (MIDI) | `LOCAL.MIX` entry 0 is an XMIDI file (`FORM … XDIR`, then `CAT … XMID`); HMI music is not decoded ([Q15](../OPEN_QUESTIONS.md)) | — |
+| Sound effects and voice | `LOCALLNG.MIX` entry 4 (key 1570429112): one bank of named AUD files; opcode 20 passes a 16-bit cue id | [audio-inventory.md](../audio-inventory.md), [sound cues](../lol2-sound-cues.md) |
+| Music (digital) | `DMUSIC.MIX`: 33 AUD IMA tracks, 32 of them `MUSIC\<stem>.AUD`; opcode 210 selects the stem | [lol2-music-2026-11.md](../lol2-music-2026-11.md), [music selection](../lol2-music-selection.md) |
+| Music (MIDI) | `LOCAL.MIX` (104 entries) holds 33 `HMI-MIDISONG` files, 32 of them `MUSIC\<stem>.HMI` (a flag byte chooses `.AUD` or `.HMI`, see music selection); and 33 IFF `FORM` entries, entry 0 an XMIDI file (`FORM … XDIR`). Neither is decoded here ([Q15](../OPEN_QUESTIONS.md)) | [music selection](../lol2-music-selection.md) |
 | Movies | VQA version 2 in room and level archives | [lol2-vqa-v2.md](../lol2-vqa-v2.md) |
 
 ## Sound bank layout

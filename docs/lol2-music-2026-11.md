@@ -17,9 +17,8 @@ low-nibble-first IMA decoder already used for LoL2 speech (predictor and step in
 | One global byte picks digital (AUD) or MIDI (HMI) for the whole game; the GOG install is set to digital | proven |
 | `MELODIC.BNK` / `DRUM.BNK` are AdLib FM banks for the HMI MIDI path; the MIDI scores are LIKELY the 33 `HMI-MIDI` entries in `LOCAL.MIX` | banks proven, scores likely |
 | The GOG copy has no CD audio tracks | proven for this copy; retail discs likely the same |
-| Which MIX entry belongs to which stem (the MIX ids are hashes; common hash functions did not match) | **open** |
+| Which MIX entry belongs to which stem | closed in [the selection note](lol2-music-selection.md): both hashes of `MUSIC\stem.AUD` hit 32 of the 33 entries |
 
 ## What is still open
 
-- The stem-to-entry mapping (help welcome: a list of which soundtrack piece plays in which level or scene).
-- What the volume-like words stored by opcode 210 arms 4 to 9 mean.
+- What the scaled words stored by opcode 210 arms 4 to 9 change in playback. The stores themselves are in [the selection note](lol2-music-selection.md).

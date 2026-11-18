@@ -4,7 +4,7 @@ You need Python 3.8+, Pillow (`pip install -r requirements.txt`) and your own co
 
 ```bash
 export LOL2_DAT=/path/to/your/LOL2/DAT
-python3 tools/check_all.py         # the last line should read ALL 16 CHECKS PASSED
+python3 tools/check_all.py         # the last line should read ALL 17 CHECKS PASSED
 ```
 
 Words you do not know are in the [glossary](GLOSSARY.md); what is known and checked is in [STATUS.md](STATUS.md).

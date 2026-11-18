@@ -15,10 +15,10 @@ Numbered so the pages and [`STATUS.md`](STATUS.md) can point at them. Each is so
 | Q9 | What are the remaining spell effects and lesson conditions? | [Native spell tables](lol2-spells.md) |
 | Q10 | What drives the remaining AI transitions and descriptor flags? | [Combat and creature decisions](lol2-combat-ai.md) |
 | Q11 | What are the remaining global and level save sections, including taken-item state? | [Native save slots](lol2-save-format.md) |
-| Q12 | Movies: the control table that maps scenes to VQA files; full codebooks for every movie | [lol2-vqa-v2.md](lol2-vqa-v2.md) |
-| Q13 | Text: the TEXT/TCEL container and the dialogue tables | — |
+| Q12 | Movies: full codebooks for every movie, and the 14 partial-codebook movies the decoder does not handle. **Partly answered:** scripts pick a movie by scene id through an 86-name table ([lol2-movie-scenes.md](lol2-movie-scenes.md)) | [lol2-vqa-v2.md](lol2-vqa-v2.md), [formats/vqa.md](formats/vqa.md) |
+| Q13 | Text: where the dialogue and message tables are stored, and their format. `TEXT.MIX` and `TCEL.MIX` are not text containers: they are 2 of the 46 room archives ([lol2-room-archives.md](lol2-room-archives.md)) | — |
 | Q14 | Texture flags other than 0xA9 (including 0x80A9) | [lol2-level-texture-container.md](lol2-level-texture-container.md) |
-| Q15 | HMI-MIDI music: format and conversion | [lol2-music-2026-11.md](lol2-music-2026-11.md) |
+| Q15 | HMI-MIDI music: format and conversion of the 33 `HMI-MIDISONG` entries in `LOCAL.MIX` (32 are the `MUSIC\<stem>.HMI` files, [lol2-music-selection.md](lol2-music-selection.md)) | [lol2-music-2026-11.md](lol2-music-2026-11.md) |
 | Q16 | Wall-span geometry, UVs and special openings beyond the traced span; the Huline Temple interior portals | [lol2-wall-material-provenance.md](lol2-wall-material-provenance.md), [draracle-restoration.md](draracle-restoration.md) |
 | Q17 | The L8 control records for the cache ladder (control 69) and the tree bridge (control 114) | — |
 | Q18 | Per-level puzzle records: what each level's scripts and object records do, level by level | — |
