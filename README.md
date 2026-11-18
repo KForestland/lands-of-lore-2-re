@@ -10,7 +10,7 @@ It contains documentation, tools and small tables of numbers. It contains no gam
 
 ## What you get
 
-- **Format and engine pages** in [`docs/`](docs): archives, level scripts, level geometry, walls and textures, items, sound, music and movies. One page per format with worked examples is being written (see [STATUS](docs/STATUS.md)).
+- **Format and engine pages** in [`docs/`](docs): archives, level scripts, level geometry, walls and textures, items, sound, music and movies. Short pages, one per format with worked examples: [`docs/formats/`](docs/formats/README.md).
 - **Tools** in [`tools/`](tools/README.md): archive reader, name hashing, decompressors, entity and level analysers, audio and video decoders, and the wall/geometry pipeline in `tools/draracle/`.
 - **[Start here, by goal](docs/START_HERE.md)**, a **[glossary](docs/GLOSSARY.md)** and the **[open questions](docs/OPEN_QUESTIONS.md)**.
 
@@ -34,7 +34,7 @@ Full table with evidence: [`docs/STATUS.md`](docs/STATUS.md).
 
 | Area | State |
 |------|-------|
-| Archives (MIX), entry names, compression | Documented in part; readers check all 81 archives |
+| Archives (MIX), entry names, compression | [Format page](docs/formats/mix.md); readers check all 81 archives in `DAT/` and 6 of the 7 in the game folder (Q20) |
 | Levels, geometry, walls, textures | Documented for the traced parts; geometry entry found in all 15 levels; wall spans and UVs partly open (Q16) |
 | Level scripts | Format and many opcodes documented; full opcode table open (Q4) |
 | Entities, items, combat | Record layouts documented; item grants and effects, combat beyond one encounter open (Q8, Q10) |

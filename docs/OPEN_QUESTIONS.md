@@ -22,3 +22,5 @@ Numbered so the pages and [`STATUS.md`](STATUS.md) can point at them. Each is so
 | Q16 | Wall-span geometry, UVs and special openings beyond the traced span; the Huline Temple interior portals | [lol2-wall-material-provenance.md](lol2-wall-material-provenance.md), [draracle-restoration.md](draracle-restoration.md) |
 | Q17 | The L8 control records for the cache ladder (control 69) and the tree bridge (control 114) | — |
 | Q18 | Per-level puzzle records: what each level's scripts and object records do, level by level | — |
+| Q19 | The 147-byte entity records: which structure in the level archive holds them (the tools find them by searching for name tags) | [formats/entity-records.md](formats/entity-records.md) |
+| Q20 | `CDCACHE.MIX` in the game folder: its index (5 entries, 65 data bytes) matches `CACHEBAK.MIX`, but the file is about 90 MB; the bytes after it include decoded level texture blobs (L1_DC at file offset 5,070, L20_BB at 13,045,474, byte-identical); how they are indexed, and when the game writes them | [formats/mix.md](formats/mix.md) |

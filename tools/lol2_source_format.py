@@ -96,7 +96,8 @@ def main():
                 geo += 1
             except ValueError as ex:
                 bad.append(f"{f}:{ex}")
-    print(f"CHECK source_format: {len(mixes)} MIX files pass the strict reader (sizes, bounds, no overlap); "
+    strict_bad = sum(1 for x in bad if "geometry" not in x)
+    print(f"CHECK source_format: {len(mixes) - strict_bad}/{len(mixes)} MIX files pass the strict reader (sizes, bounds, no overlap); "
           f"one geometry entry (dword 0 = 18, dword 4 = 5300) in {geo}/{levels} level archives; bad={bad or 'none'}")
     return 0 if not bad else 1
 

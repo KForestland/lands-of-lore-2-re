@@ -4,11 +4,13 @@
 
 Run the checks: `python3 tools/check_all.py --data <DAT>` (11 checks; all pass on the copy read).
 
+**Short format pages** (one per format, with a worked example from the game files): [formats/](formats/README.md) — MIX, level data, texture container, room sections, entity records, items, sound.
+
 **Columns**: *Pages*: where it is described. *Tool check*: what `--check` measures on the game files. *Open*: numbered in [OPEN_QUESTIONS.md](OPEN_QUESTIONS.md).
 
 | Area | Pages | Tool check | Open |
 |------|-------|-----------|------|
-| MIX archives | [glossary](GLOSSARY.md), [texture container](lol2-level-texture-container.md) | `lol2_mix_parser` and `lol2_source_format` agree on all 81 MIX files (2905 entries; sizes, bounds, no overlap) | one page per format to write |
+| MIX archives | [format page](formats/mix.md), [glossary](GLOSSARY.md), [texture container](lol2-level-texture-container.md) | `lol2_mix_parser` and `lol2_source_format` agree on all 81 MIX files in `DAT/` (2905 entries; sizes, bounds, no overlap; signed key order 81/81); game folder 6/7 | Q20 |
 | Entry names and keys | [texture container](lol2-level-texture-container.md#entry-name-and-key-proven) | `lol2_westwood_hash`: the texture entry name is a key in 15/15 level archives, the room module name in 47 room archives | Q3 |
 | Compression | tool docstrings | LCW sections of `LOCAL.MIX` entry 1: 37/37 decode (`lol2_decompress_sphere`); Westwood mode-byte variant: decoder self-test only | Q1, Q2 |
 | Level geometry | [draracle-restoration](draracle-restoration.md), [native wall verification](native-wall-verification.md) | one geometry entry per level archive, 15/15 (`lol2_source_format`) | Q16 |

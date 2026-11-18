@@ -71,20 +71,28 @@ def main():
     ap.add_argument("index", nargs="?", type=int)
     a = ap.parse_args()
     if a.check:
-        n = rows = 0
+        n = rows = signed = 0
         bad = []
         for f in lol2_cli.mix_files(a.data):
             path = os.path.join(a.data, f)
             data, entries, base = read_mix_with_hashes(path)
-            other = strict.parse_mix(data)
             n += 1
+            try:
+                other = strict.parse_mix(data)
+            except ValueError as ex:
+                bad.append(f"{f}: {ex}")
+                continue
             rows += len(entries)
             same = [(h, base + o, s) for h, o, s in entries] == [(r["key"], r["offset"], r["size"]) for r in other]
             inside = all(base + o + s <= len(data) for h, o, s in entries)
+            keys = [h - (1 << 32) if h >= 1 << 31 else h for h, o, s in entries]
+            signed += keys == sorted(keys)
             if not (same and inside):
                 bad.append(f)
+        good = n - len(bad)
         print(f"CHECK mix: {n} MIX files, {rows} entries; this reader and lol2_source_format.parse_mix agree "
-              f"and every entry lies inside its file: {n - len(bad)}/{n}, bad={bad or 'none'}")
+              f"and every entry lies inside its file: {good}/{n}; index sorted by signed key: {signed}/{good}; "
+              f"bad={bad or 'none'}")
         return 0 if not bad else 1
     if not a.mix:
         ap.print_help(); return 2
