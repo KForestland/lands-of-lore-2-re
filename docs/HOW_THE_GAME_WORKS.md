@@ -4,17 +4,17 @@ This guide follows the original DOS game from finding its files to saving your p
 
 ## Starting up and finding files
 
-The game keeps most of its files in MIX archives. Think of a MIX as a box with a directory at the front. Each directory entry gives a short numeric key, a position and a size. Each entry is found by a key computed from its name; the keys match the names the game uses (how the program searches the directory is still open).
+The game keeps most of its files in MIX archives. Think of a MIX as a box with a directory at the front. Each directory entry gives a short numeric key, a position and a size. The key comes from the entry name. Known texture and room names reproduce the keys in the shipped archives; how the program searches the directory is still open.
 
 The game uses separate archives for shared data, levels, rooms and media. When opening a room archive, it builds the filename from the selected room name. For instance, the room name `text_` becomes `text.mix`: the game cuts the name at the underscore and adds `.mix`.
 
-Details and evidence. [MIX archives](formats/mix.md#layout) · [Room archive selection](lol2-room-archives.md)
+Details and evidence. [MIX archives](formats/mix.md#keys) · [Room archive selection](lol2-room-archives.md)
 
 ## Loading a level
 
 A level archive contains a map, a set of textures and records for things the player can encounter. The map gives the game points and regions bounded by those points. A region describes its floor and ceiling. An edge can link to another region through a portal, which is an opening the renderer can follow to draw what lies beyond it.
 
-The texture bank supplies pictures for the level. The bank is stored in compressed blocks; once unpacked, it holds a palette and a list of images with their sizes. The map also places objects such as props, controls and creatures. Those placements tell the engine where it can find each object's event records.
+The texture bank supplies pictures for the level. The bank is stored in compressed blocks; once unpacked, it holds a palette and a list of images with their sizes. The map also places objects such as props, controls and creatures. Each placement record holds the offset of its event list.
 
 Details and evidence. [Level header and object tables](lol2-level-script-format.md#header-fields-proven-by-consistent-reading-on-all-15-levels) · [Geometry and portals](formats/geometry.md#portals) · [Texture bank](lol2-level-texture-container.md#lzo1x-block-layout-proven)
 
@@ -28,7 +28,7 @@ Details and evidence. [Events and timers](lol2-script-events.md) · [Shared stat
 
 ## Picking up and using items
 
-An item definition describes a kind of item. A live item points to its definition and carries its own changing data, such as the charges on certain items. A script can grant an item by ID and set the starting value of its instance byte.
+An item definition describes a kind of item. A live item points to its definition and has bytes of its own. Some item-use handlers change a byte as charges are spent. A script can grant an item by ID and set the starting value of its instance byte.
 
 When an item is used, its definition selects a handler, a small routine in the executable. The handler also sees what kind of action prompted the request. Swinging a weapon, using an item in the hand, and being told it was equipped or taken off each have their own action number. The same item can therefore behave differently depending on the action.
 
@@ -46,7 +46,7 @@ Details and evidence. [Acquisition and cost](lol2-spells.md) · [Player effect r
 
 A creature has a current behavior, which selects the part of its update routine that runs. That code can check observations and other conditions, update the behavior and choose an animation. Tracing these changes shows which behaviors can follow one another.
 
-An attack packages the attacker, target and starting amount into a hit request. The receiver applies the original difficulty rules and damage modifiers, then updates health. A hit can also match an object's script record. That lets an object's script react to damage as well as to ordinary interactions.
+An attack packages the attacker, target and starting amount into a hit request. The hit routine computes a result from the difficulty and damage modifiers. The creature receiver uses that result to update its health. A hit can also match an object's script record. That lets an object's script react to damage as well as to ordinary interactions.
 
 Details and evidence. [Creature decisions](lol2-creature-transitions.md) · [Observations](lol2-creature-observation.md) · [Hit processing and scripted reactions](lol2-combat-ai.md)
 

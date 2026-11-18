@@ -1,7 +1,7 @@
 # Follow one interaction in level 1
 
-This example follows the empty-hand interaction on prop 1050 in the
-original DOS level L1_DC. A prop is a placed object. A predicate is a
+This example follows a level-1 command group for an empty-hand
+interaction on prop 1050 in the original DOS level L1_DC. A prop is a placed object. A predicate is a
 test the engine applies before it runs a command. File offsets below are
 absolute within the named archive. Code addresses use the
 [executable's address convention](lol2-executable-tables.md).
@@ -30,7 +30,8 @@ absolute within the named archive. Code addresses use the
    right literal 0 and operation 0 (equality). Type 5 reads the byte
    at +0x25 of the object bound in `[0xB7D80]`
    (`0x66B3B–0x66B45`, `0x66B77`, `0x66C43–0x66C4F`).
-   The prop virtual at `LOLG.DAT+0x1C6560` binds its object at
+   The binding slot in the candidate vtable at `LOLG.DAT+0x1C6560`
+   points to a routine that binds its object at
    `0xB71B2` when prop +0x15 bit 0x10 is clear. With prop 1050
    bound and its byte still zero, `0xADD80–0xADDB0` admits the
    event and runs the group at `L1_DC.MIX+0x6E7FF5`.
@@ -55,7 +56,7 @@ count of three. The native runner (entry `0x646EC`) reads that count at `0x64715
 | `+0x6E8001` | 3, player, identity `0xE0649CBA`, instance byte 1 | Resolves definition 68 at `GLOBAL.MIX+0x5B9115`. The player grant at `0xD78B8–0xD78D9` calls `0x95B68`. The constructor puts 1 in instance +4 and hands the instance to the player through vtable +0x6C (`0x95B8A–0x95BC5`, `0x95BF9–0x95C08`). |
 | `+0x6E800D` | 16, prop 1050, state 1 | Writes 1 to prop +0x25 at `0xB5A44`. On a later empty-hand request with the same prop bound, predicate 4 now fails unless another action has reset the byte. |
 
-**CONFIRMED.** The visible result is an item on the cursor: `0xD78C4` passes 1
+**CONFIRMED.** The grant stores an item in the cursor slot. `0xD78C4` passes 1
 as the fourth argument, so `0xD259C` takes mode 1 and skips the first
 swap; when `[0x23C46]` bit 0 is set, `0x8FD40` runs again afterwards
 (effect UNCONFIRMED). The player receive routine calls `0x77ACC` at
@@ -65,6 +66,12 @@ swap; when `[0x23C46]` bit 0 is set, `0x8FD40` runs again afterwards
 and submits it with hotspot 12,12 to `0xACA44` on object `0x22518`
 (INTERPRETATION: the mouse cursor). That ID is 310 in the word
 at `GLOBAL.MIX+0x5B914E`.
+
+The expected visible result is sprite 310 appearing at the pointer.
+Neither the click nor the cursor change has been observed in a running
+game; the [runtime procedure](NEEDS_A_RUNNING_GAME.md) covers the click.
+[Item grant](lol2-item-effects.md#script-grants) ·
+[Definition fields](lol2-item-format.md)
 
 To find the record and group in your own installation, give the
 [disassembler](lol2-script-opcodes.md) the original installation's
