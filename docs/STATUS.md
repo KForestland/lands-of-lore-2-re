@@ -23,7 +23,7 @@ Run the checks: `python3 tools/check_all.py --data <DAT>` (20 checks; all pass o
 | Sound and music | [format page](formats/sound.md), [audio inventory](audio-inventory.md), [music](lol2-music-2026-11.md) | `lol2_aud_decode`: 453 AUD entries in 29 `DAT/` archives decode (437 exactly, 16 one sample short). `lol2_hmi_midi`: 33 songs, 438 tracks, standard MIDI in memory | the 33 `FORM` entries in `LOCAL.MIX` |
 | Movies | [VQA format page](formats/vqa.md), [VQA v2](lol2-vqa-v2.md), [movie scenes](lol2-movie-scenes.md) | `lol2_vqa_v2_decode`: 1,948 movie headers valid, 948 decoded by the tool; `lol2_media_check`: scene table and two worked movies | Q12 |
 | Combat | [Combat and creature decisions](lol2-combat-ai.md), [creature transitions](lol2-creature-transitions.md), [executioner combat evidence](executioner-combat-evidence.md) | Bounded arithmetic replay in `tools/draracle/` | Q10 |
-| Spells | [Costs, acquisition and rewards](lol2-spells.md) | — | Q9 |
+| Spells | [Costs, acquisition and rewards](lol2-spells.md), [spell dispatch](lol2-spell-dispatch.md) | — | Q9 |
 | Saves | [Native save format](lol2-save-format.md), [save sections](lol2-save-sections.md) | 27 slots from the reference `SAVEGAME` folder (written by the original game during one player's play, not shipped) and 149 nonempty level blocks checked; 6,765 nonempty level spans decode to their stated lengths | Q11 |
 | Executable | [Addresses and tables](lol2-executable-tables.md) | — | |
 | Text | [Message tables](lol2-text-tables.md) | `lol2_text_tables.py` re-reads the five named TRR tables | Q13 |

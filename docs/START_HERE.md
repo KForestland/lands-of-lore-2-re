@@ -9,6 +9,8 @@ python3 tools/check_all.py         # the last line should read ALL 20 CHECKS PAS
 
 Words you do not know are in the [glossary](GLOSSARY.md); what is known and checked is in [STATUS.md](STATUS.md).
 
+Follow the engine from startup to saving in [How Lands of Lore II works](HOW_THE_GAME_WORKS.md).
+
 ## I want to look inside the archives
 
 - List a MIX file: `python3 tools/lol2_mix_parser.py L1_DC.MIX`; extract an entry with `--out`.

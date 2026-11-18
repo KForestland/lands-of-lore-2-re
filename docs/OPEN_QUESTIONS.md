@@ -15,8 +15,8 @@ One line per question: its state and what would settle what is left.
 | Q5 | Partly | Trace the remaining event producers and render-parameter readers |
 | Q6 | Partly | Map which shared-array indexes gate each remaining plot branch |
 | Q7 | Partly | Capture the first store to each elapsed cell after the main update restarts |
-| Q8 | Partly | Trace the remaining item-use handlers |
-| Q9 | Partly | Trace downstream spell effects and the quest inputs of each lesson |
+| Q8 | Mostly | Trace the 0xF7030 projectile variants to their target receivers, and resolve the definitions that handlers 2, 8, 83 and 91–93 swap in |
+| Q9 | Mostly | Trace the effect-15 receiver, effect-17 collision and effect-32/33 writebacks; find the producer of timed message 0x26 and how unlinked groups such as L1 group 13584 are entered |
 | Q10 | Partly | Trace the remaining AI mode branches and descriptor flags |
 | Q11 | Partly | Compare an original save pair written before and after one known pickup |
 | Q12 | Partly | Decode the remaining codebook layouts (see the page) |
@@ -40,8 +40,8 @@ One line per question: its state and what would settle what is left.
 | Q5 | What are the remaining event producers and render-parameter roles? Object kind 1 is traced to its native consumer. | [Event producers](lol2-event-producers.md) |
 | Q6 | Which shared-array indexes and values gate the remaining plot branches? Type 7 is mapped and has zero predicate rows in the DOS corpus. | [Shared predicates](lol2-shared-predicates.md) |
 | Q7 | What writes each live elapsed cell from the registered clock? Reload units, PIT divisor and a saved elapsed-cell witness are mapped. | [Timer clocks](lol2-timer-clock.md) |
-| Q8 | What do the remaining item-use handlers do, and how do they interpret the instance fields? | [Native item handlers](lol2-item-handlers.md) |
-| Q9 | What are the downstream spell effects and quest inputs to each lesson? The player dispatch and native message conditions are mapped. | [Player spell dispatch](lol2-spell-dispatch.md) |
+| Q8 | What do the remaining item-use handlers do? **Mostly answered:** all 108 indexes have a native mode and effect ([handlers](lol2-item-handlers.md#remaining-modes-and-effects)), including the twelve movie items. **Still open:** the `0xF7030` variant receivers, the replacement definitions (2, 8, 83, 91–93), what instance +5 means in play, and game-facing names of several player flags | [Native item handlers](lol2-item-handlers.md) |
+| Q9 | What are the downstream spell effects and quest inputs to each lesson? **Mostly answered:** one downstream payload for each of the 35 player-dispatch IDs, and the level grants that feed each lesson item ([spell dispatch](lol2-spell-dispatch.md#payloads-of-the-35-player-slots)). **Still open:** the effect-15 receiver, effect-17 collision, effect-32/33 writebacks, the controller-channel names, the message-0x26 producer, and the entry route of unlinked stream-1 groups | [Player spell dispatch](lol2-spell-dispatch.md) |
 | Q10 | What drives the remaining AI transitions and descriptor flags? The paired observation fields, several deeper mode branches and two hit paths that set +0xA3 are mapped. | [Creature observation](lol2-creature-observation.md) |
 | Q11 | What are the gameplay roles of the remaining save sections and header fields? The placed-item row and recipient-pool write paths are mapped. A controlled before/after pickup pair remains open. | [Native save section descriptors](lol2-save-sections.md), [field witnesses](lol2-save-field-witnesses.md) |
 | Q12 | Movies: full codebooks for every movie, and the 14 partial-codebook movies the decoder does not handle. **Partly answered:** scripts pick a movie by scene id through an 86-name table ([lol2-movie-scenes.md](lol2-movie-scenes.md)) | [lol2-vqa-v2.md](lol2-vqa-v2.md), [formats/vqa.md](formats/vqa.md) |

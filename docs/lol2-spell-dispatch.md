@@ -148,3 +148,108 @@ among 113 rows at `LOLG.DAT+0x1CC980+4*i`. The direct LE references to
 trace of every derived pointer is needed to name byte +2. The cast-school
 row +1 is read at `0xFB91F` for the row-0 exclusive upper bound. The
 non-advancing pointer in that loop leaves general per-school use open.
+
+## Payloads of the 35 player slots
+
+**CONFIRMED.** These are downstream native results for the 35
+player-dispatch switch slots at `0xD24B1`. Some results are
+conditional on target, form, animation phase or template availability.
+The listed hit amounts are inputs to the receiver, and are reduced
+by the [combat rules](lol2-combat-ai.md#hit-context-and-reduction).
+Each four-byte source row starts at `LOLG.DAT+0x1CC980+4*effect`.
+The 35 dispatch slots cover IDs 0–34. The data table extends to 112.
+
+The first spell helper uses a second five-slot jump table at
+VA `0x10C6A8` (disk `LOLG.DAT+0x1436A8`), dispatched at `0x10C82F`. It performs the
+target search at `0x10C6D1`. With no target and `[0xEDD4]`
+clear it sets `[0x22713]&1` and can play failure feedback.
+Its index-2 entry returns based on target presence. The player
+effect switch calls the independent constructor described in
+row 2 for that ID (`0x10C6D1–0x10C738`,
+`0x10C761–0x10C772`, `0xD1453`).
+
+| ID | Confirmed downstream payload |
+|---:|---|
+| 0 | Template 0x7A selects constructor `0x10CF60`. It initializes effect byte +0x58 to 0x1F and a base `300<<16` at +0x6A on its nonzero-duration branch. The +0x38 update at `0x10D174` can set +0x66, clear the linked object's +0x38, and modify its +0xB6 and +0x59 (`0x10C739–0x10C75E`, `0x10CF87–0x10D008`, `0x10D199–0x10D1FA`). |
+| 1 | Template 0x7A selects `0x10DA10`, with +0x58 = 0x20 and base `360<<16` at +0x6A. Its +0x38 update at `0x10DC68` has the corresponding linked-object writes (`0x10C773–0x10C794`, `0x10DA36–0x10DAA8`, `0x10DC8D–0x10DCF4`). |
+| 2 | `0x10F660` creates the effect only when `[0xEDD4]` and `[0xDF6B4]` admit it. It uses vtable 0x9908, selects target +0x42, sets animation byte +0x58 to 0x17 and resets +0x56. Its update picks +0x58 values 0x1D, 0x1E or 0x19 on separate paths (`0x10F660–0x10F6AB`, `0x10F6D8–0x10F794`, `0x10FD44–0x10FD97`). |
+| 3 | Template 0x7E selects `0x10E8C0`, +0x58 = 0x2B and base `420<<16` at +0x6A. The update at `0x10EDD0` can write +0x66 and modify the linked object's +0x38, +0xB6 and +0x59 (`0x10C7E9–0x10C808`, `0x10E8E5–0x10E963`, `0x10EDF5–0x10EE56`). |
+| 4 | With a target, the secondary switch selects template 0x7A and `0x10E2F8`, setting +0x58 to 0x2A. The constructor can use `0x1028A4`. It also has a target-hit path at `0x10E414` followed by `0xAB948` and timer +0x6E = `10<<16` (`0x10C7A9–0x10C7D8`, `0x10E31A–0x10E37C`, `0x10E3B7–0x10E436`). |
+| 5 | The normal targeted branch uses the `0x109898` object. Its shared update's +0xFC callback submits hit words 1/1, kind 2, ID 5 and magnitude 5 to target +0x80 (`0x1098BB`, `0x109718–0x10975B`, `0x109956–0x1099AC`). |
+| 6 | Corresponding `0x10A330` object, hit words 1/1, kind 2, ID 6 and magnitude 15 (`0x10A353`, `0x10A3EE–0x10A444`). |
+| 7 | Template 0xC2 constructs vtable 0x6478 with +0x58 = 4 and +0x66/+0x68 zero. Update `0x10B044` has an animation reset and cleanup at `0x10B09E–0x10B0B9` (`0xD172C–0xD1746`, `0x10A9FE–0x10AA3F`, fixup `LOLG.DAT+0x8064D`). |
+| 8 | Vtable 0x637C update submits two kind-2 ID-8 hits: mask/flags 1/1 magnitude 40, then 0x100/4 magnitude 20 (`0x10A4ED`, `0x10A89A–0x10A923`, fixup `LOLG.DAT+0x80484`). |
+| 9 | `0x10B4C4` can select the vtable-0x6280 object. Its update submits two kind-2 ID-9 hits with flags 0x12 both times. Mask 1 has magnitude 5 on the player or 10 on another target. Mask 0x100 has magnitude 1 on the player or 3 on another target (`0x10B558–0x10B569`, `0x10B5F0`, `0x10BA2F–0x10BAF2`). |
+| 10 | The `0x7EB40` arm sets controller +0x29C bit 0 and advances a shared byte. The player skill helper changes dword +0x15D and can increase skill byte +0x162 and rebuild resource values (`0xD111C–0xD112C`, `0x7EB54–0x7EB8B`, `0xD8BAF–0xD8C59`). |
+| 11 | Arms player +0x179 with `3600<<16`, changes +0x228 and calls `0x7F200` (`0xD121A–0xD1233`). |
+| 12 | Clears player +0x1B5, arms +0x175 with `3600<<16`, changes +0x228 and calls `0x7C7DC`. One continuation calls `0x7EFB0` (`0xD11C9–0xD1200`). |
+| 13 | Controller effect through `0x7EB40`. It sets +0x29C bit 0, selects +0x427 according to whether the argument is at least 11, and can set +0x298 and issue feedback (`0xD124D`, `0x7EB54–0x7EB8B`, `0x7EC28–0x7EC5C`). |
+| 14 | Combines player +0x171 = `600<<16` and +0x175 = `3600<<16`, changes +0x227/+0x228, clears +0x1B5 and uses refresh paths `0x7F444` and `0x7C7DC` (`0xD1281–0xD12CD`). |
+| 15 | Constructor `0x107498` sets vtable 0x7278 and places the effect. Update +0x38 is `0x107A84` and can remove it through `0xFBC54` (`0x1074BC–0x10756B`, `0x107A84–0x107AAA`, fixup `LOLG.DAT+0x8268D`). |
+| 16 | Returned object from `0x79310` receives +0x1D2 = `1800<<16`; player updates byte +0x228 (`0xD1971–0xD1998`). |
+| 17 | Vtable 0x7080 effect initializes +0x5E = `1800<<16`, +0x62 and +0x58 to zero, and tries placement. Update +0x38 goes to `0x1082C4` (`0x10810E–0x1081AE`, fixup `LOLG.DAT+0x822FD`). |
+| 18 | Vtable 0x717C update dispatches mask/flags 0x40/1, kind 2, ID 18 and magnitude 1 to the live +0x5E target (`0x107C6A`, `0x107FCB–0x108026`, fixup `LOLG.DAT+0x824C4`). |
+| 19 | Clears player +0x217 and changes +0x19E after the `0x7C5DC` and `0x7C528` feedback calls (`0xD1A6E–0xD1AAE`). |
+| 20 | Constructor `0x104850` submits magnitude inputs 10/20 (`0x10495A/0x104985`). |
+| 21 | Constructor `0x1049A4` submits 20/30 (`0x104AAE/0x104AD9`). |
+| 22 | Constructor `0x104AF8` submits 40/35 (`0x104C02/0x104C2D`). |
+| 23 | Constructor `0x104C4C` submits 40/60 (`0x104D56/0x104D81`). |
+| 24 | Template 0x5E constructs vtable 0x7A58 and selects its context via `0x104DD4`. The constructor uses the target's +0x88 virtual operation and range checks. Update at `0x104FA0` tests `[0x226F1]` (`0xD1CC3–0xD1CD1`, `0x104DBE–0x104E7A`, fixup `LOLG.DAT+0x838C5`). |
+| 25 | When +0x195 is set, +0x228 bit 5 set and +0x1F2 zero, it uses controller `0x7FE0C`, changes `[0x23AB6]` and stores the local value in +0x195. Otherwise updates player +0x19F (`0xD1D8D–0xD1DF7`). |
+| 26 | With nonzero form and +0x228 bit 4 set, passes zero mode to `0xD6B20` and enables controller state through `0x7FE0C(1)`. Otherwise calls `0x7FF34(1)` and `0x80064(1)` (`0xD1E3D–0xD1EA2`). |
+| 27 | Same condition, but calls `0xD6B20(player, 2, 60)`; same alternate controller state as 26 (`0xD1EC8–0xD1F33`). |
+| 28 | Admitted path uses `0x7FE0C(1)` and `0xD6B20(player, 1, 60)` (`0xD1F59–0xD1FA9`). |
+| 29 | Template 0x66 constructor `0xF9E88` installs vtable 0xA4D8 and starts +0x58 at 1. Update `0xFA148` can reset +0x56 and call the effect removal and follow-up helpers `0xFBC54` and `0xFBAF0` (`0xF9EB8–0xF9F1F`, `0xFA1C9–0xFA1E4`, fixup `LOLG.DAT+0x8A7A9`). |
+| 30 | Primary hit mask/flags 0x10/5, kind 2, ID 30 and magnitude 5. See the primary and nearby-target arms above (`0x109B42–0x109B9D`). |
+| 31 | Its vtable-0x6574 object can create one effect-30 object immediately and another at +0x56 = 3 (`0x109CC4–0x109CDC`, `0x109CFD–0x109D09`, `0x109E8B–0x109EA4`). |
+| 32, 33 | Share the vtable-0x8734 projectile. Collision at `0x102718` tests byte +0x6A, conditionally clears it and calls `0xFB9A0`. The other path temporarily changes the animation byte +0x58 around that call (`0x10271D–0x10274F`, fixup `LOLG.DAT+0x8578A`). |
+| 34 | Vtable-0x8344 update submits kind-2 ID-34 hits with mask/flags 0x10/2 and 0x100/4. With effect byte +0x5E nonzero the amounts are 20/20, otherwise 50/30 (`0x102EDC`, `0x103753–0x103820`, fixup `LOLG.DAT+0x84C7E`). |
+
+The two controller helpers in 26 and 27 set up distinct controller
+dwords. `0x7FF34` writes +0x3B8 and +0x2E8, with the latter's
+initial value `6<<16` (`0x7FF4C–0x7FF8E`).
+`0x80064` writes +0x3BC at `0x80080`. The `0x7FE0C`
+path similarly writes +0x3B4 and +0x2E4, initially `4<<16`
+(`0x7FE24–0x7FE61`). The game-facing names of those
+controller channels are **UNCONFIRMED**.
+
+### Original level inputs to lesson items
+
+**CONFIRMED.** The following file offsets are native opcode-3,
+selector-1 grants. The command's identity dword +4 matches
+definition +0x18, then the definition byte +0x42 selects the
+item-use handler. It is use of the item that calls the lesson
+helper, after the grant has created an instance
+(`0xD78D9`, `0x9585B–0x95865`). The census used both framed
+command streams of each of the 15 original level archives.
+
+| Lesson input | Original producer evidence |
+|---|---|
+| School 0, definition 149 | `L4_HJ.MIX+0xC276F0` from prop 1913, kind 5 value 19, predicate 206 at event `+0xC2CBD0`. Also `L7_DH.MIX+0x4A5A41` from control 976 with predicate 207 at event `+0x4A7F01`. |
+| School 1, definition 75 | `L7_DH.MIX+0x4A59D5` from control 974, kind 4 value 0, predicate 207, event `+0x4A7EC5`. The acquired list also treats stored 6 as satisfying requested 1 (`0x861D3–0x861E1`). |
+| School 2, definition 148 | Three grants in `L7_DH.MIX` at `+0x4A592F`, `+0x4A5947`, `+0x4A5A29`. Control 968 uses predicate 206 or 207 at `+0x4A7E73/81`; control 976 also uses predicate 206 at `+0x4A7EF3`. |
+| School 3, definition 151 | `L7_DH.MIX+0x4A595F/0x4A59ED/0x4A5A0B`, from controls 971 and 975 with original events `+0x4A7E91/0x4A7ED5/0x4A7EE3`. |
+| School 4, definition 150 | `L20_BB.MIX+0xEC7C11` from prop 241, kind 5 value 19, event `+0xECE269`. |
+| School 5, definition 76 | `L8_SJ.MIX+0xCD1D02` and `+0xCD26E2` from props 2 and 102, kind 6 value 20, predicate 207 (event `+0xCD6D04/0xCD71F2`). Definition 76 sets bit 1 of `[0x23ABD]` when used. Definitions 72, 79 and 80 supply the other three bits. A shared stream-1 group in `L1_DC.MIX` contains original grant offsets `+0x6E927D/0x6E9289/0x6E9295/0x6E92A1`. |
+| Message 0x25, definition 132 | `L1_DC.MIX+0x6E6843` and `L3_DH.MIX+0x590C7A` from props 343 and 93, kind 5 value 19, events `+0x6E9E69` and `+0x593C64`. The mode-1 use producer is `0x998A7`. |
+
+The state-test witnesses for predicates 206 and 207 in L7 are
+`L7_DH.MIX+0x4C239C/0x4C23A1`, whose entries compare the
+bound object's state with 0 and 1, respectively. The level with
+the L8 grants uses predicate 207 at `L8_SJ.MIX+0xD11284`.
+Some stream-1 groups, including L1 group 13584, had no incoming
+object or region event in the exported tables. Their call route
+is **UNCONFIRMED**.
+
+**UNCONFIRMED.** The numeric payload table establishes one
+downstream path for all 35 effect IDs. The effect-15 receiver,
+effect-17 collision and remaining effect-32/33 target writebacks
+need deeper traces. At `0x107B77–0x107B9E`, `0x108418`
+and `0x102718`, compare the dynamic target and request words
+for one original cast of each ID. For the timed message 0x26,
+the direct +0x185 store scan found player initialization at
+`0xCFB8B` and the expiration zero-store at `0xD2E57`.
+An original playthrough trace filtered to its first nonzero
+write would identify the producer and its quest or item input.
+For an unlinked grant such as L1 group 13584, capture the
+original return address when its stream-1 group is entered.

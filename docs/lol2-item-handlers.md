@@ -221,16 +221,112 @@ left column.
 | 106 | `0x9B7AC` | `+0x8BBB0` | 130 |
 | 107 | `0x9B8B0` | `+0x8BBB9` | 12 |
 
-## What is still open
+## Remaining modes and effects
 
-**UNCONFIRMED.** The catalog establishes every handler entry and its
-definition owners. The direct effects above and in the [grant
-reference](lol2-item-effects.md) were checked through their branches and
-first called routines where stated. Most other handlers still need
-their complete mode and effect semantics. The projectile paths beneath
-`0x1050AC` and `0xFC0D8` need their target writebacks traced.
-Handler 102 provides one native instance +5 producer. Start from
-the handler entry for a selected definition and compare calls and
-stores for the admitted request values. A before/after view of live
-instance +4 and +5, the definition pointer and any changed target
-fields would settle cases where the return depends on a runtime lookup.
+**CONFIRMED.** The preceding sections and the [item grant reference](lol2-item-effects.md#selected-item-use-handlers)
+describe 24 of the 108 indexes. This pass adds a native mode and effect
+description for the other 84, in index order. Effects are reported at
+the first concrete state change, hit, movie, or constructor input.
+The destination table above gives the original definition and fixup
+for each row. Unless a row gives another result, its mode column lists
+the paths described here.
+
+| Index | Mode | Native effect and evidence |
+|---:|---|---|
+| 3 | 1, 15 | Runs movie selector 1 and returns 1. Mode 15 returns 1 before opening a resource. See the family below (`0x99C70–0x99D38`). |
+| 4 | 1, 8 | Clears the hand. If player flag `[0x2270E]&0x10` is clear, stores the returned `0x9B994` item link, adds 20 to `[0x236E4]`, and sets the bit. Mode 8 updates the timer at `0x23AC1` with frame elapsed and can remove the bonus (`0x96188–0x961DE`, `0x96260–0x96358`). |
+| 5 | 6, 7, 13 | Effect creation through `0xF7B94`. Mode 7 checks `[0x2271F]`; 6/13 can detach an item and try the target route. The constructor sets a type-0x5A object and adds a variant for the nonzero option (`0x96368–0x964F6`, `0xF7BA0–0xF7BD9`). |
+| 6 | 1, 9 | Requires `[0x23C3F] <= 8`, calls `0x7C5DC` with 1, and removes the held item (`0x9651F–0x965C9`). |
+| 7 | 5 | Uses pose and attack-region checks, resolves an effect template and calls `0x107498` with the attacker and target context (`0x965F2–0x966AC`). |
+| 9 | 1 | Clears the hand and adds 5 to dword `[0x2271A]` before the feedback request (`0x967F2–0x9686E`). |
+| 13 | 10, 11 | Equip sets `[0x2279B]&0x80` and one of `[0x2270E]&1` or `[0x22711]&8`. Removal clears the selected flag and can clear the first bit when neither flag nor `[0x226E5]` remains (`0x9703A–0x970AD`). |
+| 14 | 10, 11 | Equip sets `[0x2270E]&2` and `[0x22712]&4`. Removal clears the former bit (`0x970CB–0x970F3`). |
+| 15 | 1 | Requires target type 2, then clears the held item and submits the target to `0xF8324` on template lookup success (`0x9711D–0x971DE`). |
+| 20 | 1 | Clears the held object, zeroes `[0x22729]` and invokes `0x7C7DC` and feedback `0x7C528(4, 30)` with controller `0x23819` (`0x97376–0x973F3`). |
+| 21 | 5, 10, 11 | Mode 5 builds a hit on the current target and calls its +0x80 virtual receiver. Equip sets `[0x2270E]&0x40`. Removal can clear it on a zero `0x91868` result (`0x97426–0x97452`, `0x9746D–0x97534`). |
+| 22 | 1, 17 | Mode 1 clears the held object and can launch three `0xF8EA8` effects, one at the player and two displaced by 40 units before restoring XY. Mode 17 calls `0xABB2C` on a type-2 target (`0x97579–0x97795`, `0x97821–0x97847`). |
+| 24 | 10, 11 | Sets `[0x2270F]&1` and clears it on removal if the index-0x20 count test returns zero (`0x9789E–0x978E6`). |
+| 25 | 10, 11 | Same family with `[0x2270F]&2` and count index 0x21 (`0x978E7–0x9792F`). |
+| 26 | 6, 13 | Compares range with 0x800000 and can submit a template to `0x101F74` (`0x9794B–0x97995`). |
+| 27–30 | 1 | Remove held instance, OR masks 1, 2, 4 and 8 respectively into `[0x23ABD]`, and request lesson ID 5 (`0x97A36/0x97AEE/0x97BA6/0x97C5E`, with the lesson calls 0x16 bytes later). |
+| 34 | 1 | Clears held item and asks for school ID 4. If already available, starts the template-0x6A path through `0x1049A4` (`0x96F7A–0x97028`). |
+| 35 | 6, 13 | Range comparison against 0x800000, then optional template effect `0x10275C` (`0x97CA4–0x97CF4`). |
+| 37 | 10, 11 | Queries ID 0x103, changes player flags at `0x22710` or saved link at `0x22701` and invokes the recomputation at `0xDA72C` or `0xD6A08` (`0x97DBD–0x97E79`). |
+| 38 | 1 | Clears held item and can call player-state helper `0xD6B20` with byte 1 (`0x97EEB–0x97F74`). |
+| 39 | 1 | Clears held item and adds 5 to player +0x145, clamped by `0xD6A88` (`0x97FA4–0x9803E`). |
+| 40 | 1 | Clears held item and can call `0xD6B20` with byte 2 (`0x9806C–0x98142`). |
+| 41 | 1 | Clears held item and adds 20 to dword `[0x2271A]` before feedback (`0x9819D–0x9821A`). |
+| 42 | 1 | Clears held item, then the `0x12415C` return determines whether it submits a self-hit with mask 0x80, flag 0x40 or 0x20, and subtype 0x45 or 0x44 (`0x9827F–0x983A0`). |
+| 44 | 10, 11 | Sets `[0x2270F]&4`; removal can clear it if the index-0x1D count test returns zero (`0x98480–0x984C8`). |
+| 45 | 1 | Clears held item. Can submit one `0xF9920` effect at the player and two at displaced XY, restoring player XY after each (`0x984EE–0x9878E`). |
+| 46 | 1 | Clears held item and calls the player update helper `0xDA7BC` (`0x987C0–0x98858`). |
+| 47 | 10, 11, 16 | Sets/clears `[0x2270F]&8`. Mode 16 gives category 2 (`0x9886A–0x988AD`). |
+| 48 | 5 | Builds a hit on the player from the running attack context and submits it to `0xD03B8` (`0x988C5–0x98940`). |
+| 49 | 10, 11 | Sets `[0x2270F]&0x10`; removal can clear it if the index-0x23 count test returns zero (`0x9894F–0x98995`). |
+| 50 | 6, 13 | Target and range branches select template 0x5E, 0x6E, 0x6A or 0x72. Downstream options include `0x1028A4`, `0x101F74`, `0x10BB28` and `0xF7030` with variant 2 (`0x989BB–0x98C27`). |
+| 51 | 10, 11 | Sets/clears `[0x2270F]&0x20` (`0x98CA3–0x98CD8`). |
+| 52 | 10, 11, 16 | Sets/clears `[0x2270F]&0x40`. Mode 16 gives category 1 (`0x98CDB–0x98D16`). |
+| 53 | 10, 11, 16 | Sets/clears `[0x2270F]&0x80`. Mode 16 gives category 2 (`0x98D1A–0x98D5D`). |
+| 54 | 6, 13 | Range and coating branches select template 0x72 and call `0xF7030` with variants 8, 9 or 10 (`0x98D7F–0x98E70`). |
+| 55 | 6, 13 | Uses template 0x72 and submits variant 1 to `0xF7030` (`0x98EA5–0x98FB5`, `0x99073–0x99092`). |
+| 56 | 6, 13 | Range and target branches use template 0x72 and submit variant 4 to `0xF7030` (`0x990E1–0x99163`, `0x99222–0x992AF`). |
+| 57 | 5 | Reads attack target type, checks pose and target health via virtual calls, then can submit template 0x7A through `0x1000C4` (`0x9932C–0x993A8`). |
+| 58 | 6, 13 | Range-checks the request and can send its template into `0xF7030` (`0x993F3–0x9943A`). |
+| 59 | 5 | Tests the target's virtual type and current versus upper quantity, then can pass the target to `0x101214` (`0x9945D–0x994B5`). |
+| 60 | 5, 10, 11 | Mode 5 selects a template and `0x10B5C0` or `0x1028A4`. Equip and removal toggle `[0x22710]&1` (`0x994EA–0x9958F`). |
+| 61 | 10, 11 | Sets/clears `[0x22710]&2` (`0x995A6–0x995DB`). |
+| 62 | 6, 13 | Compares range with 0x800000, resolves template 0x6E and calls `0x102874` (`0x995F7–0x99670`). |
+| 63 | 6, 7, 13 | Variant branches find a target and can launch template 0x6A through `0x10BB28`, setting `[0x22712]&0x80`. A mode-7 branch temporarily sets `[0x23C46]&1` for its target search (`0x996A3–0x9976F`). |
+| 64 | 1 | Clears held item and requests message 0x25 directly (`0x99835–0x998A7`). |
+| 65 | 10, 11 | Sets `[0x22710]&4`, calls school substitution with 6, and calls substitution with 1 on removal. That path can clear the equip bit after count test 0x14 (`0x998CD–0x99912`). |
+| 66 | 10, 11 | Calls `0xDB4B0` or `0xDB4EC`. The former sets player +0x19C bit 3, and can set +0x228 bit 6. The latter tests player +0x1D2 and +0x1AB before requesting a replacement state (`0x99933–0x9996F`, `0xDB4B0–0xDB524`). |
+| 67 | 1 | Clears held item and writes `0x02B20000` to player +0x1D6 through `0xDAEA0` (`0x999BE–0x99A3A`, `0xDAEA0–0xDAEB5`). |
+| 69 | 1 | Clears held item and adds 0xE10 to word `[0x22750]` (`0x99B12–0x99B88`). |
+| 70 | 14, 16, 18 | Mode 14 clears shared-array entry `[u8(0x2333F)]` when present and returns zero. Mode 18 stores 1 there and returns 1. Mode 16 returns category 2 (`0x99B94–0x99BEA`). |
+| 71 | 6, 13 | Range check and optional template effect via `0xF7030` (`0x99C07–0x99C4E`). |
+| 72–82 | 1, 15 | Movie selectors 2 through 12, one per slot. Each has the mode-15 short return. See the family below (`0x99D3C + 0xDC*(h-72)`). |
+| 83 | 1 | Finds a target; type selects between two template-0x5E effects. Afterward it replaces the held definition using the loaded index at `[[0x96904]]+0xB4` (`0x9A6C4–0x9A741`, `0x9A749–0x9A781`). |
+| 84 | 5 | On its draw and template-0x62 lookup path, calls `0xFF964` (`0x9A7AA–0x9A7F1`). |
+| 85 | 6, 7, 13 | Shares the `0xF7B94` projectile constructor with index 5. Mode 7 checks `[0x2271F]`; 6/13 can clear a held item before the target-side request (`0x9A82C–0x9A993`). |
+| 86 | 1 | Clears held item and extends player word +0x1F8 by 0xE10. If +0x1F6 was zero, the helper also sets `[0x23AB6]&0x10`, increments `[0x22798]` and clears `[0x23BD9]` (`0x9AA67`, `0xDB818–0xDB859`). |
+| 87 | 1 | Clears held item, sets `[0x23AB7]&0x20`, calls `0xD6B20` with byte 1 and adds 0x780 to word `[0x22768]` (`0x9AAD6–0x9ABBE`). |
+| 88 | 10, 11 | Sets `[0x22710]&0x10` and calls `0xDB85C`. Removal may clear the bit if the index-0x26 count test returns zero (`0x9ABCF–0x9AC26`). |
+| 89 | 1 | Plays the admitted sounds, draws a value, clears held item and requests feedback through `0x7C528` (`0x9AC3D–0x9ACEE`). |
+| 90 | 10, 11 | Sets or clears one of two equip flags at 0x22710/11. Adds 5 on equip and subtracts 5 on removal, to both player +0x141 and +0x145, with the native clamps (`0x9AD00–0x9AD94`, `0xDA780–0xDA7A5`, `0xD6A93–0xD6ABD`). |
+| 91–93 | 1 | Replace the held definition via the loaded index at `[[0x96904]]+0x12C`. With successful template-0x6A lookup, 91 calls `0x104C4C`, 92 calls `0x107C44` and sets `[0x22712]&2`, and 93 calls `0x10BB28` and updates `[0x22712]` (`0x9ADAA–0x9AE76`, `0x9AE97–0x9AEF9`, `0x9AF17–0x9AFAE`). |
+| 94 | 1 | Selects between sound paths, clears the hand and requests feedback through `0x7C528` (`0x9AFD3–0x9B0EF`). |
+| 95 | 1 | Clears the held item and updates `[0x2279D]`. Writes `0x02760000` to player +0x1D6 through `0xDAEA0` (`0x9B14E–0x9B1CF`). |
+| 96 | 1, 15 | Mode 1 can play definition word +0x37 from the held item and returns 1. Mode 15 returns 2 immediately (`0x9B1FF–0x9B256`). |
+| 98 | 1 | Plays the admitted sound, clears the held item and releases the returned allocation (`0x9B2B5–0x9B347`). |
+| 99 | 10, 11, 16 | Sets/clears `[0x22711]&4`. Mode 16 returns 1 (`0x9B358–0x9B395`). |
+| 100 | 6, 7, 13 | Uses template 0x72 through `0xF7030` with variant 12. Mode 7 tests `[0x2271F]`; 6/13 can move the held item into the world and compare distance with 0x800000 (`0x9B3B4–0x9B516`). |
+| 104 | 17 | Requires a type-2 target, resolves template 0x7A and calls `0x10E2F8` (`0x9B72B–0x9B761`). |
+| 105 | 17 | Requires a type-2 target and passes it to `0xABC08` (`0x9B783–0x9B79D`). |
+
+### The twelve movie items
+
+**CONFIRMED.** Handler 3 and handlers 72–82 follow the same
+two-format path. The string formats are `SPKSTON%d.MIX` and
+`ss-%de.vqa` at file `LOLG.DAT+0x1C1BD4` and `+0x1C1BE2`.
+The first filename's selector comes from object-5 +0xCA11
+through +0xCA1C (file +0x1CDA35), yielding
+`1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 4` in that handler order.
+The second filename's selector is 1 through 12. Handler 3's
+witness is `0x99C88–0x99CF5`, handler 72's is
+`0x99D64–0x99DD1` and handler 82's is `0x9A5FC–0x9A669`.
+With the original gate at `[0xB860]` set, it opens the optional
+MIX and saves the returned handle in `[0x96914]`. It runs the
+VQA path through `0xCF3C0`, then closes that handle and
+clears the cell. Mode 15 takes the return-1 arm without
+running those paths (`0x99C76–0x99C78` → `0x99D2C–0x99D38`;
+the run path is `0x99CC8–0x99D38`).
+
+**UNCONFIRMED.** The full downstream collision behavior and
+runtime names of several native flags remain open. For the
+original projectile family at `0xF7030`, follow the vtable
+written at +0x28 to its target receiver for each variant. Use
+definition 28 and compare mode 6 with 13 to distinguish
+variants 8, 9 and 10. For the replacement cases 2, 8, 83 and
+91–93, capture the loaded indexes before `0x9EB5C`, then
+resolve the original definition identity and compare the held
+pointer and bytes +4/+5 after the call.
