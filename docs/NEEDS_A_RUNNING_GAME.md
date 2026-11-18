@@ -68,6 +68,12 @@ with mask 0x05 clear and mask 0x0A set, prior +0xB9 mask 0x02
 chooses between action 1 and action 9
 (`0xA32DB–0xA3392`). [Creature observation trace](lol2-creature-observation.md#mode-2-branch-conditions)
 
+**CONFIRMED, partial runtime result.** One L8_SJ actor with +0xB4=`0x04`
+used the alternate distance path. It reached the farther helper at
+`0xA3586`, then the near action-9 store at `0xA3503` when its distance
+fell below the 190-unit threshold.
+[Live mode-2 samples](lol2-creature-observation.md#live-mode-2-distance-branch)
+
 **UNCONFIRMED.** Which state is reached as the player approaches
 and breaks contact in a particular encounter. Break at
 `0xA32B4` and retain one actor whose target +0x34 is the player.

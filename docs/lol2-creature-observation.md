@@ -53,6 +53,29 @@ horizontal difference check `0x1365C4` against definition u16 +0x4D in
 16.16 units (`0xA34C7–0xA34F9`). The near branch selects secondary action
 9 (`0xA3503`). The other branch at `0xA3586` calls `0xA9720(actor, 2, 0)`.
 
+### Live mode-2 distance branch
+
+**CONFIRMED.** In DOS 1.30, a run loaded a player save written by the game
+(not shipped; SHA-256 prefix `9a46a2bdecb4`) in L8_SJ and used the forward key. A bounded trace in the instrumented DOSBox build (see the [timer clock](lol2-timer-clock.md#live-write-and-conversion) setup)
+followed one creature at guest pointer `0x1130680C` for that run.
+Its target +0x34 was the live player `0x101D0574`, +0xA8/+0xA9 both held 2,
+and +0x9D/+0xB4/+0xB9 held `00/04/04`. The actor used `0xA34B8`.
+
+| Same actor sample | Horizontal difference in EAX | Threshold in EDX | Native instruction reached |
+|---|---:|---:|---|
+| Farther | `0x017E27E5` | `0x00BE0000` (190) | `0xA3586`, starts `0xA9720(actor, 2, 0)` |
+| Nearer | `0x00B8E254` | `0x00BE0000` (190) | `0xA3503`, stores action 9 at +0xAA |
+
+At entry to `0xA3503` the previous action was 1. In the same trial
+another actor at `0x11306A40` took the farther branch with observation
+`0x4C`, +0xB4=`0x04`, and +0xB9=`0x04`.
+
+**UNCONFIRMED.** The portal crossing and the branch with +0xB4 mask
+0x20 set remain open. The live witness followed the distance branch
+with that bit clear. Set breakpoints on `0xA32B4`, `0xA3362` and
+`0xA337D` to capture a qualifying actor with the same target on both
+sides of a portal.
+
 ## Other mode branches
 
 **CONFIRMED.** Mode 3 jumps to the waypoint path when +0xB5 bit 0x10
