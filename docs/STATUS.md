@@ -4,6 +4,8 @@
 
 Run the checks: `python3 tools/check_all.py` (with `$LOL2_DAT` set) (20 checks; all pass on the copy read).
 
+**Running-game results** (original program under a debugger, one run each; [procedures and results](NEEDS_A_RUNNING_GAME.md)): the frame-clock writer (Q7) and the save changes of one pickup (Q11) are answered; a creature distance branch (Q10) and the level-8 controls (Q17) are partly answered; the timed message (Q9) and two movie frames (Q12) were not reached.
+
 **Short format pages** (one per format, with a worked example from the game files): [formats/](formats/README.md), 12 pages; **level sheets**: [levels/](levels/README.md).
 
 **Columns**: *Pages*: where it is described. *Tool check*: what `--check` measures on the game files. *Open*: numbered in [OPEN_QUESTIONS.md](OPEN_QUESTIONS.md).
@@ -24,7 +26,7 @@ Run the checks: `python3 tools/check_all.py` (with `$LOL2_DAT` set) (20 checks; 
 | Movies | [VQA format page](formats/vqa.md), [VQA v2](lol2-vqa-v2.md), [movie scenes](lol2-movie-scenes.md) | `lol2_vqa_v2_decode --check`: census and one sample of each layout. `--full`: 1,109 pointer tables pass; 837 pointer-stream codebooks, pixels not expanded; 2 relative-reference frames. `lol2_media_check`: scene table and two worked movies | Q12 pointer stream, two frames in pointer-table movies (absolute-mode LCW) |
 | Combat | [Combat and creature decisions](lol2-combat-ai.md), [creature transitions](lol2-creature-transitions.md), [executioner combat evidence](executioner-combat-evidence.md) | Bounded arithmetic replay in `tools/draracle/` | Q10 |
 | Spells | [Costs, acquisition and rewards](lol2-spells.md), [spell dispatch](lol2-spell-dispatch.md) | — | Q9 |
-| Saves | [Native save format](lol2-save-format.md), [save sections](lol2-save-sections.md) | 27 slots from the reference `SAVEGAME` folder (written by the original game during one player's play, not shipped) and 149 nonempty level blocks checked; 6,765 nonempty level spans decode to their stated lengths | Q11 |
+| Saves | [Native save format](lol2-save-format.md), [save sections](lol2-save-sections.md) | 27 slots from the reference `SAVEGAME` folder (written by the original game during one player's play, not shipped) and 149 nonempty level blocks checked; 6,765 nonempty level spans decode to their stated lengths; one pickup compared in a running game ([save sections](lol2-save-sections.md#controlled-pickup-in-l20_bb)) | Q11 |
 | Executable | [Addresses and tables](lol2-executable-tables.md) | — | |
 | Text | [Message tables](lol2-text-tables.md), [spoken lines](lol2-speech.md) | `lol2_text_tables.py` re-reads the five named TRR tables. `lol2_speech_names.py` re-reads the name format, the category switch, and two `MCEL.MIX` keys (not one of the 20) | Q13 |
 
