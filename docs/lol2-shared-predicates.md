@@ -72,6 +72,8 @@ Use `0x66C43` for the equality arms above, `0x66C7F` for >=,
 `0x64B1C` for the named array writes. The per-level indexes retain each
 root predicate offset and linked command site.
 
+**CONFIRMED.** Opcode-2 subcommand 0x26 (`cmp ah,0x26` at `0xD869C`, then `0xD7A9B–0xD7B0B`) sets the receiving object's +0x228 bit 0x80 and clears bit 0x10, clears byte +5 of the objects at +0x97 and +0x9B(+0x2C) and the pointers to them, and clears +0x9F, +0x21E and bit 0x08 of +0x19F. Its plot meaning is open.
+
 **UNCONFIRMED.** The full branch catalog and native producers for the
 other shared indexes remain open. The census followed shared readers through
 recursive type-4 edges and the original opcode 199/206 write sites.

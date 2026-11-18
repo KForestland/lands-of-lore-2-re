@@ -35,7 +35,21 @@ The reader opens the name through VA `0x118730`. It reads one dword, the count, 
 
 Those nine source bytes are `CF E1 E6 EF F5 F8 F9 FC FD`. The nine stored in their place are `B0 B1 B2 B3 B4 B5 B6 B7 B8`. None of the eight tables above contains a source byte, so the records on disk are the records the reader keeps.
 
-Which directory VA `0x118730` searches first when a loose file and a MIX entry share a name was not re-read. The two copies of `opttext.trr` and of `credits.trr` are different, so the answer matters. The check accepts both copies as this layout and requires them to differ.
+**CONFIRMED.** The TRR reader opens in mode 1
+(`0xCF025–0xCF041`). The ordinary file slot's vtable
+at `LOLG.DAT+0x1CB810` routes +0x1C to `0xF1944` and
++0x20 to `0x118440`. On a fresh file slot the mode-1 path
+tests the loose filename first
+(`0x118454–0x118468 → 0x116340 → 0x124425`).
+The helper tries the DOS open call at `0x154240–0x154246`.
+Success branches to the local open at `0x11846A`. The
+archive lookup `0x11C104` is reached at `0x1184AA` after a
+failed test. A mounted archive and a loose file can therefore
+both exist, and a successful loose open wins in this path.
+For the two options witnesses read above that selects the
+212-record loose copy when the path resolves in the DOS
+working directory. The separate existence probe at
+`0x11839C` uses a different order.
 
 ## Record layout
 
@@ -45,7 +59,7 @@ CONFIRMED on all eight files. Little-endian.
 | --- | --- |
 | 0 | `u32` count `N` |
 | 4 | `N` dwords, the record ids |
-| `4 + 4N` | `N + 1` dwords, absolute file offsets |
+| `4 + 4N` | `N + 1` dwords, offsets relative to file byte 4 |
 | `8N + 8` | the records |
 
 The stored offsets count from file byte 4, just after the count, so the first one is `8N + 4`; that value is also the rebase the reader subtracts. The last stored offset is the file size minus 4. Record `i` is the bytes from file offset `offset[i] + 4` up to `offset[i + 1] + 4`. Each record contains exactly one NUL, and that NUL is its last byte. The next record starts at the next byte. The offsets are strictly increasing.
@@ -70,4 +84,4 @@ No sentence from a record is copied here.
 
 ## What would settle the rest
 
-Show whether VA `0x118730` opens the loose file or the MIX entry when both exist. Show whether the eight callers of VA `0xEE784` reach the `.aud` append at VA `0xEEC42`, and what text, if any, is stored beside those audio names. A second text reader, one that does not call VA `0xCF014`, would be a different container.
+Show whether the eight callers of VA `0xEE784` reach the `.aud` append at VA `0xEEC42`, and what text, if any, is stored beside those audio names. A second text reader, one that does not call VA `0xCF014`, would be a different container.

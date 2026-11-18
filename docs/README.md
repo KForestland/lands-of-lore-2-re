@@ -20,6 +20,7 @@ Start with **[START_HERE.md](START_HERE.md)** (by goal) or **[How Lands of Lore 
   - [sound cues](lol2-sound-cues.md)
   - [music selection](lol2-music-selection.md)
   - [room archives](lol2-room-archives.md)
+- [Native texture cache initializer](lol2-cache-initializer.md)
 - [OPEN_QUESTIONS.md](OPEN_QUESTIONS.md) and [GLOSSARY.md](GLOSSARY.md).
 
 The other pages in this folder are older notes, kept as history. Where they disagree with the pages above, the pages above are current.
