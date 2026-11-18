@@ -28,6 +28,7 @@ class byte 0x44 or 0x48.
 | +0x37 | u16 | strike sound id; read at 0x88F91 and passed to 0xE3924 when nonzero | PROVEN |
 | +0x3B | u16 | mask word, copied to hit context +0 (matched by kind-9 word +4) | PROVEN |
 | +0x3D | u16 | flags word, copied to hit context +2 (matched by kind-9 word +6) | PROVEN |
+| +0x39 | u16 | sprite ID passed by `0x77B12–0x77B1E` when the item is on the cursor ([tutorial](tutorial-one-event.md)) | PROVEN |
 | +0x3F | u8 | class byte; kind-4 tests its bits | PROVEN read; slot meaning below is INTERPRETATION |
 | +0x41 | s8 | possibly a defence value | native reader not traced (UNKNOWN) |
 | +0x42 | u8 | handler index into the item-use table (0 = no handler) | PROVEN |
@@ -35,7 +36,7 @@ class byte 0x44 or 0x48.
 | +0x44 | u8 | post-hit addend: after a strike, `[0x22C5A] + addend` is returned (halved when `[0x2270E] & 0x400`) | PROVEN value; meaning (speed/recovery) UNKNOWN |
 | +0x45 | u8 | compared whole by kind-4 mode 0xADCFB | PROVEN |
 | +0x47 | 4 x 5 | descriptor rows (byte, u16, u16); all zero on the plain swords | layout PROVEN by use; ops UNKNOWN |
-| others | | +0x1C, +0x20, +0x29..+0x2D, +0x39, +0x40, +0x46 and the rest | UNKNOWN |
+| others | | +0x1C, +0x20, +0x29..+0x2D, +0x40, +0x46 and the rest | UNKNOWN |
 
 Class byte values seen: 0x44 hand weapons, 0x48 thrown/ranged, 0x50/0x53 shields and bracers, 0x60 body
 armour, 0x43 rings/amulets/gauntlets, 0x40 other (grouping by item, INTERPRETATION; the native reader of

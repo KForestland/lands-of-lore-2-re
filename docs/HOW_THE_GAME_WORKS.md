@@ -24,7 +24,7 @@ Object and region event records connect something that happens to a list of comm
 
 Some objects have countdown timers. The engine reduces the countdown by the elapsed amount and can run a command list when it expires. Each command starts with an opcode, a number that tells the engine what operation to perform and how to read the remaining bytes. The original command lengths frame all 15 levels' script streams.
 
-Details and evidence. [Events and timers](lol2-script-events.md) · [Shared state tests](lol2-script-events.md#predicates-and-shared-bytes) · [Opcode table and disassembler](lol2-script-opcodes.md)
+Details and evidence. [Events and timers](lol2-script-events.md) · [Shared state tests](lol2-script-events.md#predicates-and-shared-bytes) · [Opcode table and disassembler](lol2-script-opcodes.md) · [Follow one event](tutorial-one-event.md)
 
 ## Picking up and using items
 
