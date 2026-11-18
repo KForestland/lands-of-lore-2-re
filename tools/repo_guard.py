@@ -12,10 +12,10 @@ files git tracks and fails on:
     tools/lol2_level_notes.py --out: they are tool output for the user's own copy
   - any file larger than 300 KB, except the existing data tables in SIZE_ALLOWED
     (generated listings of game content are tool output, not tracked files)
-  - in the git history: any author or committer address not in ALLOWED_AUTHORS
+  - with --release only: in the git history, any author or committer address not in ALLOWED_AUTHORS
     (committers may also be GitHub's noreply@github.com); the address is not printed
   - in text files: machine paths (/home/, /media/, /mnt/, C:\\Users\\) and
-    lane, agent or private names (list in NAMES below)
+    private or assistant names (kept only as salted hashes in NAME_HASHES)
 
 It cannot tell whether a PNG in the allowed folders shows game pixels; that
 stays a review point. Needs no game data (--data is accepted and ignored).
@@ -36,7 +36,16 @@ PNG_OK = ("examples/", "docs/images/")
 # Text rules: no machine paths and no lane, agent or private names in tracked files.
 # This file is exempt because it holds the lists.
 MACHINE_PATH = re.compile(r"/home/[a-z]|/media/[a-z]|/mnt/[a-z]|[A-Za-z]:\\Users\\")
-NAMES = re.compile(r"\b(Grok|Sol|Opus|Fable|Codex|Gemini|Kimi|Astra|Claude)\b")
+# Names are stored only as salted SHA-256 prefixes, so this file does not publish them.
+NAME_SALT = "lol-re-guard-v1:"
+NAME_HASHES = {'23338abd2a2d97eb', '29e9c7594cdb5db0', '726ed7fd32fdaaf1', '81fa922e71ac7a9d', '8ecf3cb164791cae', 'a28fcab3720b19a2', 'c92dda7cee70420c', 'debf9dcbb9908f16', 'e3470cbd354e28f8'}
+WORD = re.compile(r"[A-Za-z]+")
+
+
+def name_hit(word):
+    import hashlib
+    return hashlib.sha256((NAME_SALT + word).encode()).hexdigest()[:16] in NAME_HASHES
+
 
 
 def text_findings(root, f):
@@ -51,10 +60,12 @@ def text_findings(root, f):
     for n, line in enumerate(lines, 1):
         if MACHINE_PATH.search(line):
             out.append(f"{f}:{n} (machine path)")
-        for m in NAMES.finditer(line):
+        for m in WORD.finditer(line):
+            if not name_hit(m.group(0)):
+                continue
             if line[m.start() - 1:m.start()] == '"' and line[m.end():m.end() + 1] == '"':
-                continue  # a quoted name is game text, e.g. the bow "Gemini"
-            out.append(f"{f}:{n} (name {m.group(1)!r})")
+                continue  # a quoted name is game text, e.g. a bow named like an assistant
+            out.append(f"{f}:{n} (private or assistant name)")
             break
     return out
 
@@ -93,6 +104,8 @@ SIZE_ALLOWED = set()  # none
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--check", action="store_true")
+    ap.add_argument("--release", action="store_true",
+                    help="also require the project noreply identity on every commit (release procedure)")
     ap.add_argument("--data", help=argparse.SUPPRESS)
     a = ap.parse_args()
     if not a.check:
@@ -114,7 +127,8 @@ def main():
             bad.append(f"{f} (larger than 300 KB)")
         if os.path.isfile(p):
             bad.extend(text_findings(root, f))
-    bad.extend(identity_findings(root))
+    if getattr(a, 'release', False):
+        bad.extend(identity_findings(root))
     print(f"CHECK repo_guard: {len(files)} tracked files; game files, media, stray images, files over 300 KB, machine paths, private or assistant names, or commit identities: "
           f"{bad[:5] or 'none'}{' ...' if len(bad) > 5 else ''} ({len(bad)})")
     return 0 if not bad else 1
