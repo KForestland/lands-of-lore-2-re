@@ -26,7 +26,7 @@
 
 | Group | First linked event examined | Command MIX offset | Effect | Code VA |
 |---|---|---|---|---|
-| 0:0 | descriptor 1 / kind 12 `0x11EB93D` / pred. 19 | `0x11E9855` | set 1 at shared byte 51 (runtime ceilings 10/2/2 for the three capped indexes) | `0x64A8C` |
+| 0:0 | descriptor 1 / kind 12 `0x11EB93D` / pred. 19 | `0x11E9855` | set 1 at shared byte 51 | `0x64A8C` |
 | 0:0 | descriptor 1 / kind 12 `0x11EB93D` / pred. 19 | `0x11E985B` | set 1 at local byte 12 | `0x64887` |
 | 0:0 | descriptor 1 / kind 12 `0x11EB93D` / pred. 19 | `0x11E986D` | stop for kind-2 timer 0 (argument 0) | `0xB494B` |
 | 0:1714 | descriptor 65 / kind 11 `0x11EBAD3` | `0x11E9F07` | move floor, target height 0, rate operand 8 | `0x64DDC` |
@@ -40,4 +40,4 @@ The table shows **CONFIRMED** static effects at admitted command sites. For a ro
 
 **UNCONFIRMED.** The annotated archive data identify the exact dispatch sites and operands below any unresolved effects. An empty direct-trigger list leaves the producer open. For virtual calls, resolve the target placement’s runtime class and its table slot, then trace that implementation. For unresolved event IDs, trace callers to the matcher addresses listed above.
 
-Opcode sites with effects still open: 1 ×331, 2 ×153, 5 ×1112, 6 ×9, 7 ×687, 8 ×69, 9 ×205, 12 ×1, 13 ×119, 15 ×93, 18 ×77, 197 ×4, 208 ×9, 210 ×5.
+Opcode sites with effects still open: 1 ×331, 2 ×153, 5 ×1112, 6 ×9, 7 ×687, 8 ×69, 9 ×205, 12 ×1, 13 ×119, 15 ×93, 197 ×4, 208 ×6, 210 ×1.

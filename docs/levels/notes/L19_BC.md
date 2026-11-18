@@ -29,7 +29,7 @@
 | 0:486 | descriptor 146 / kind 12 `0x5E95F4` / pred. 2 | `0x5E5840` | set 1 at local byte 1 | `0x64887` |
 | 0:486 | descriptor 146 / kind 12 `0x5E95F4` / pred. 2 | `0x5E5846` | start for kind-2 timer 0 (argument 0) | `0xB485C` |
 | 1:0 | prop 2 / kind 6 `0x5DEB51` / pred. 206 | `0x5DC999` | set object state +0x25 to 1 | `0xB5A3C` |
-| 1:1500 | prop 78 / kind 6 `0x5DEDE3` / pred. 211 | `0x5DCF75` | add -1 at shared byte 0 (saturating at 0–255) (runtime ceilings 10/2/2 for the three capped indexes) | `0x64B1C` |
+| 1:1500 | prop 78 / kind 6 `0x5DEDE3` / pred. 211 | `0x5DCF75` | add -1 at shared byte 0 (clamped to 0–10) | `0x64B1C` |
 | 1:1566 | prop 78 / kind 6 `0x5DEDF7` / pred. 226 | `0x5DCFB7` | grant player item definition 69, instance byte +4 = 0 | `0xD78D9` |
 
 The table shows **CONFIRMED** static effects at admitted command sites. For a row with a predicate, evaluate the trailer before treating the event as eligible. Native match conditions are in the [event reference](../../lol2-script-events.md#event-records).
@@ -38,4 +38,4 @@ The table shows **CONFIRMED** static effects at admitted command sites. For a ro
 
 **UNCONFIRMED.** The annotated archive data identify the exact dispatch sites and operands below any unresolved effects. An empty direct-trigger list leaves the producer open. For virtual calls, resolve the target placement’s runtime class and its table slot, then trace that implementation. For unresolved event IDs, trace callers to the matcher addresses listed above.
 
-Opcode sites with effects still open: 1 ×119, 2 ×19, 5 ×22, 6 ×16, 7 ×2, 8 ×36, 9 ×28, 13 ×7, 15 ×364, 18 ×23, 197 ×3, 210 ×5.
+Opcode sites with effects still open: 1 ×119, 2 ×19, 5 ×22, 6 ×16, 7 ×2, 8 ×36, 9 ×28, 13 ×7, 15 ×364, 197 ×3, 210 ×1.

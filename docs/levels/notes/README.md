@@ -73,6 +73,16 @@ python3 tools/lol2_level_notes.py --data DAT --out /tmp/level-notes L1_DC
 python3 tools/lol2_level_notes.py --data DAT --check
 ```
 
+In the Markdown, the first offset on each line is the group start in the
+MIX. Use the JSON indexes for individual event and command offsets. The
+`When` clause names the selector role for kinds 12 and 15 and for object hosts, and the condition read by the matcher; for kinds 10 and 11 it still prints the raw selector (kind 11's selector is the record's own region index, per `0xF2FC0`).
+For kind 12, the region and event come from +4 and +6 and the gate comes
+from `0xF2DB7–0xF2E16`. Event 2 has a confirmed player-entry caller at
+`0xD39BB` and event 3 has a departure caller at `0xD383C`. Other callers
+may send the same ID. The [shared predicates](../../lol2-shared-predicates.md) page maps the
+shared-array caps to indexes (the [opcode reference](../../lol2-script-opcodes.md) gives them by cell address), and the
+[music settings](../../lol2-music-selection.md) page describes command 210.
+
 The level-sheet tool can group effect rows by target scope, render exits,
 and follow `triggers` through the event and list indexes to the associated
 placement IDs. No runtime state is required for these joins.

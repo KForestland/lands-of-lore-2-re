@@ -30,7 +30,7 @@
 | 0:398 | descriptor 131 / kind 11 `0x967A68` | `0x96717E` | update region bytes +0x20/+0x27 from 4 | `0xF44CC` |
 | 1:6 | prop 4 / kind 4 `0x95F654` / pred. 206 | `0x95DBAC` | set object state +0x25 to 1 | `0xB5A3C` |
 | 1:140 | prop 4 / kind 4 `0x95F694` / pred. 209 | `0x95DC2A` | grant player item definition 81, instance byte +4 = 1 | `0xD78D9` |
-| 1:4336 | actor 30 / kind 9 `0x95FB36` / pred. 30 | `0x95EC98` | add -1 at shared byte 0 (saturating at 0–255) (runtime ceilings 10/2/2 for the three capped indexes) | `0x64B1C` |
+| 1:4336 | actor 30 / kind 9 `0x95FB36` / pred. 30 | `0x95EC98` | add -1 at shared byte 0 (clamped to 0–10) | `0x64B1C` |
 
 The table shows **CONFIRMED** static effects at admitted command sites. For a row with a predicate, evaluate the trailer before treating the event as eligible. Native match conditions are in the [event reference](../../lol2-script-events.md#event-records).
 
@@ -38,4 +38,4 @@ The table shows **CONFIRMED** static effects at admitted command sites. For a ro
 
 **UNCONFIRMED.** The annotated archive data identify the exact dispatch sites and operands below any unresolved effects. An empty direct-trigger list leaves the producer open. For virtual calls, resolve the target placement’s runtime class and its table slot, then trace that implementation. For unresolved event IDs, trace callers to the matcher addresses listed above.
 
-Opcode sites with effects still open: 1 ×8, 2 ×98, 5 ×10, 7 ×29, 8 ×136, 9 ×34, 13 ×79, 18 ×37, 197 ×4, 208 ×3, 210 ×11.
+Opcode sites with effects still open: 1 ×8, 2 ×98, 5 ×10, 7 ×29, 8 ×136, 9 ×34, 13 ×79, 197 ×4, 210 ×7.

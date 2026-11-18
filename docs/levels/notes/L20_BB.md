@@ -29,7 +29,7 @@
 | 0:462 | descriptor 2 / kind 12 `0xED661C` / pred. 12 | `0xED5766` | set 3 at local byte 4 | `0x64887` |
 | 0:3786 | descriptor 88 / kind 12 `0xED6E4A` | `0xED6436` | request level 19, arrival 2 | `0xD8797` |
 | 1:24 | prop 2 / kind 2 `0xECD461` | `0xEC5F07` | add 1 to object state +0x25 (0–255) | `0xB5A76` |
-| 1:304 | prop 15 / kind 6 `0xECD509` / pred. 2 | `0xEC6019` | add 1 at shared byte 0 (saturating at 0–255) (runtime ceilings 10/2/2 for the three capped indexes) | `0x64B1C` |
+| 1:304 | prop 15 / kind 6 `0xECD509` / pred. 2 | `0xEC6019` | add 1 at shared byte 0 (clamped to 0–10) | `0x64B1C` |
 | 1:7410 | prop 241 / kind 5 `0xECE269` | `0xEC7BE1` | grant player item definition 0, instance byte +4 = 1 | `0xD78D9` |
 | 1:28700 | actor 70 / kind 6 `0xECF4CB` / pred. 210 | `0xECCF1F` | set secondary action pair to 1 for admitted actor | `0xA639A` |
 
@@ -39,4 +39,4 @@ The table shows **CONFIRMED** static effects at admitted command sites. For a ro
 
 **UNCONFIRMED.** The annotated archive data identify the exact dispatch sites and operands below any unresolved effects. An empty direct-trigger list leaves the producer open. For virtual calls, resolve the target placement’s runtime class and its table slot, then trace that implementation. For unresolved event IDs, trace callers to the matcher addresses listed above.
 
-Opcode sites with effects still open: 1 ×145, 2 ×305, 3 ×3, 5 ×155, 6 ×9, 7 ×87, 8 ×733, 9 ×185, 13 ×341, 15 ×70, 18 ×68, 22 ×54, 197 ×5, 208 ×1, 210 ×5.
+Opcode sites with effects still open: 1 ×145, 2 ×305, 3 ×3, 5 ×155, 6 ×9, 7 ×87, 8 ×733, 9 ×185, 13 ×341, 15 ×70, 22 ×54, 197 ×5, 210 ×1.

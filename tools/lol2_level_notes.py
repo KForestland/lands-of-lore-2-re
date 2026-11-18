@@ -72,6 +72,7 @@ PROPERTIES = {2: ('unlink object', 0xB50E6), 3: ('link object', 0xB5117),
 ARRAYS = {198: ('local', 'set', 0x64887), 199: ('shared', 'set', 0x64A8C),
           200: ('shared', 'randomize up to', 0x64BB4), 201: ('local', 'randomize up to', 0x64906),
           206: ('shared', 'add', 0x64B1C), 207: ('local', 'add', 0x648AF)}
+SHARED_CAPS = {0: 10, 12: 2, 13: 2}
 REGION_FLAGS = {0: ('+0x1C', 'clear', 1, 0x64D28), 1: ('+0x1C', 'clear', 2, 0x64D33),
                 2: ('+0x1C', 'set', 1, 0x64D3E), 3: ('+0x1C', 'set', 2, 0x64D49),
                 4: ('+0x1C', 'set', 3, 0x64D5F), 5: ('+0x1C', 'clear', 3, 0x64D54),
@@ -117,11 +118,20 @@ def effect(row, items, scenes):
         value = raw[4] if opcode == 16 else signed(raw[4])
         description = f'set object state +0x25 to {value}' if opcode == 16 else f'add {value} to object state +0x25 (0–255)'
         return description, (0xB5A3C if opcode == 16 else 0xB5A76), True, target
+    if opcode in (5, 7):
+        value = raw[4] if opcode == 5 else signed(raw[4])
+        slot, address = (0xB0, 0xB5970) if opcode == 5 else (0xB4, 0xB5997)
+        return f'call the selected object’s slot +0x{slot:X} with {value} and {raw[5]}', address, False, target
+    if opcode == 15:
+        other = OBJECT_SELECTORS.get(raw[5])
+        secondary = f'{other[0].replace("_", " ")} {word(raw, 6)}' if other else f'selector {raw[5]}:{word(raw, 6)}'
+        return (f'copy {secondary} coordinates, offset Z by its height byte and apply action {raw[4]}',
+                0xB5C82, False, target)
     if opcode == 18:
         immediate = bool(word(raw, 0xA) & 0x20)
         description = ('reset sequence progress, clear slot and send kind 6 value 6' if immediate
-                       else 'advance position and orientation through deferred sequence update')
-        return description, 0xB59CE, immediate, target
+                       else 'queue the sequence for the position and orientation update when its slot is vacant')
+        return description, 0xB59CE, True, target
     if opcode == 19:
         return (f'deliver hit with masks 0x{word(raw,4):X}/0x{word(raw,6):X}, magnitude {raw[8]}, mode {raw[9]}',
                 0x66130, True, target)
@@ -132,8 +142,8 @@ def effect(row, items, scenes):
         require(scene < len(scenes), f'out-of-range movie scene {scene}')
         return f'play movie scene {scene} `{scenes[scene]}`', 0xCF2B4, True, ['scene', scene, None]
     if opcode == 24:
-        return (f'request default audio, kind-8 word {word(raw,4)} on early exit',
-                0xE3FED, False, target)
+        return (f'request sound resource 0x3103, send kind-8 value {word(raw, 4)} on early exit',
+                0xE3FED, True, target)
     if opcode == 23:
         return 'store low byte of shifted RNG result in object state +0x25', 0xB5A4C, True, target
     if opcode == 9 and raw[4] in PROPERTIES:
@@ -144,12 +154,12 @@ def effect(row, items, scenes):
     if opcode in ARRAYS:
         scope, operation, address = ARRAYS[opcode]
         value = signed(raw[5]) if opcode in (206, 207) else raw[5]
-        qualifier = ''
+        index = raw[4]
+        cap = SHARED_CAPS.get(index) if scope == 'shared' else None
+        qualifier = f' (cap {cap})' if cap is not None else ''
         if opcode in (206, 207):
-            qualifier = ' (saturating at 0–255)'
-        if scope == 'shared':
-            qualifier += ' (runtime ceilings 10/2/2 for the three capped indexes)'
-        return f'{operation} {value} at {scope} byte {raw[4]}{qualifier}', address, True, [scope, raw[4], None]
+            qualifier = f' (clamped to 0–{cap if cap is not None else 255})'
+        return f'{operation} {value} at {scope} byte {index}{qualifier}', address, True, [scope, index, None]
     if opcode == 196:
         surface = 'ceiling' if raw[6] & 1 else 'floor'
         height = 'delta' if raw[6] & 8 else 'target height'
@@ -165,9 +175,20 @@ def effect(row, items, scenes):
         if selector == -2:
             return f'set region byte +0x22 to {raw[6]}', 0x647B3, True, ['region', index, None]
         return f'set auxiliary row {selector} value to {value} and mark bit 0x40', 0x647B3, True, None
+    if opcode == 208 and raw[4] == 0:
+        return (f'update duration cells 0x26B4E/0x26B52 with mode {raw[5]} and {raw[6]} × 60 elapsed units',
+                0x65518, True, ['duration_cells', None, None])
     if opcode == 209:
         deltas = struct.unpack_from('<hhh', raw, 4)
         return f'move eligible objects in region group by {deltas}', 0x6583C, True, target
+    if opcode == 210:
+        settings = {
+            0: 'select primary music stem', 1: 'select secondary music stem',
+            4: 'set both primary music values from', 5: 'set both secondary music values from',
+            8: 'set primary music value or pair from', 9: 'set secondary music value or pair from',
+        }
+        if raw[4] in settings:
+            return f'{settings[raw[4]]} {raw[5]}', 0x6596D, True, ['music_settings', None, None]
     if opcode == 9:
         return f'submit object property {raw[4]} with argument {raw[5]}', 0xB50C0, False, target
     description, address = OPCODE_EVIDENCE[opcode]
@@ -254,15 +275,59 @@ def make_index(level, items, scenes):
     return group_rows, source_rows + [records[at] for at in sorted(records)]
 
 
+def trigger_description(event, hosts):
+    """Describe the native comparison at the matched placement or region."""
+    data = event['operands']
+    kind = event['kind']
+    if kind == 11:
+        return f'{hosts} matches selector {data["selector"]} and event {data["event"]}'
+    if kind == 12:
+        region, event_id, value = data['selector'], data['event'], data['value']
+        values = {1: f' and input is at least {value} × 4',
+                  8: f' and input is at least {value}',
+                  9: f' and input is at least {value} × 4'}
+        condition = ' and input is nonzero' if event_id in (2, 3, 4) and value else values.get(event_id, '')
+        return f'region {region} receives event {event_id}{condition} ({hosts})'
+    if kind == 15:
+        return (f'region {data["region"]} passes comparison mode {data["mode"]} against '
+                f'{data["value"]} from operand source {data["operand_source"]}')
+    if kind == 2:
+        return f'{hosts} timer expires (reload {data["reload_a"]}/{data["reload_b"]})'
+    if kind == 3:
+        return f'{hosts} receives event {data["event"]}'
+    if kind == 4:
+        if data['mode'] == 0:
+            condition = 'has an item selected' if data['invert'] else 'has no item selected'
+            return f'{hosts} interaction finds the player {condition}'
+        item = data.get('item_definition')
+        operand = f'item definition {item}' if item is not None else f'operand {data["operand"]}'
+        inversion = ' inverted' if data['invert'] else ''
+        return f'{hosts} passes held-item test {data["mode"]}{inversion} with {operand}'
+    if kind == 5:
+        value = data['value']
+        return f'{hosts} receives event {data["event"]} with ' + ('any value' if value == 255 else f'value {value}')
+    if kind in (6, 8):
+        value = data['value']
+        operand = 'any value' if kind == 8 and value == 65535 else f'value {value}'
+        return f'{hosts} receives kind-{kind} {operand}'
+    if kind == 7:
+        return f'{hosts} meets health threshold {data["threshold"]} in mode {data["mode"]}'
+    if kind == 9:
+        return (f'{hosts} receives a hit matching masks {data["mask_a"]}/{data["mask_b"]}, '
+                f'threshold {data["threshold"]} and flags {data["flags"]}')
+    if kind == 10:
+        return f'{hosts} matches event {data["event"]} with region or object selector {data["selector"]}'
+    return f'{hosts} matches kind {kind} [UNCONFIRMED condition]'
+
+
 def group_description(group, events, event_owners, level_names):
-    """One readable line per group, with the operands and provenance for each arm."""
+    """Describe each group's trigger, effects and targets in stream order."""
     matches = []
     for at in group['triggers']:
         event = events[at]
         hosts = ', '.join(sorted(event_owners[at]))
-        operands = ', '.join(f'{key.replace("_", " ")} {value}' for key, value in event['operands'].items())
-        guard = f', predicate {event["predicate"][0]}' if event['predicate'] else ''
-        matches.append(f'{hosts}, kind {event["kind"]} ({operands}{guard}) at `0x{at:X}`')
+        guard = f' and predicate {event["predicate"][0]} passes' if event['predicate'] else ''
+        matches.append(trigger_description(event, hosts) + guard)
     when = ' or '.join(matches) if matches else 'UNCONFIRMED producer'
     actions, targets = [], []
     for offset, opcode, kind, index, target, description, address, status in group['commands']:
@@ -280,15 +345,15 @@ def group_description(group, events, event_owners, level_names):
         if kind == 2 and opcode == 3:
             targets.append(f'actor {index}')
         state = ' [UNCONFIRMED]' if status == 'UNCONFIRMED' else ''
-        actions.append(f'{description} (op {opcode}, `0x{offset:X}`, VA `0x{address:X}`){state}')
+        actions.append(f'{description} (op {opcode}, code `0x{address:X}`){state}')
     does = ' → '.join(actions) if actions else 'empty command list'
     touches = ', '.join(dict.fromkeys(targets)) or 'no explicit target decoded'
-    return (f'- **{group["stream"]}:{group["group"]}** — *When* {when}. '
+    return (f'- **{group["stream"]}:{group["group"]}** (`0x{group["offset"]:X}`) — *When* {when}. '
             f'*Does* {does}. *Touches* {touches}.')
 
 
 def split_files(stem, extension, lines, heading=''):
-    """Split large indexes at row boundaries to fit the repository size limit."""
+    """Split large local listings at row boundaries."""
     files, part, size = {}, [], len(heading.encode('utf-8'))
     for line in lines:
         length = len(line.encode('utf-8'))
@@ -438,7 +503,7 @@ def render(data, name, items, scenes):
 
 
 def main():
-    parser = lol2_cli.tool_args(__doc__, out_help='notes output directory (default: print Markdown only)')
+    parser = lol2_cli.tool_args(__doc__, out_help='directory outside the repository for full notes')
     parser.add_argument('level', nargs='?')
     parser.add_argument('--summary', help='write the per-level summaries and the worked excerpt here (docs/levels/notes in this repository)')
     args = parser.parse_args()
@@ -478,11 +543,8 @@ def main():
                 for filename, body in render(data, name, items, scenes).items():
                     (output / filename).write_text(body, encoding='utf-8')
             print(f'wrote the full notes to {output}')
-        elif args.level:
-            files = render(data, args.level, items, scenes)
-            print(next(iter(files.values())), end='')
         else:
-            parser.error('give --out DIR (full listings, outside the repository), --summary DIR, a level, or --check')
+            parser.error('give --out DIR (full listings, outside the repository), --summary DIR, or --check')
     except (OSError, SourceError, KeyError, ValueError, struct.error) as error:
         print(f'level_notes: {error}', file=sys.stderr)
         return 1
