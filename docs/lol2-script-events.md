@@ -1,0 +1,140 @@
+# LoL2 script records, timers and predicates
+
+Evidence uses the retail 1.30 executable and the address convention in the
+[opcode reference](lol2-script-opcodes.md). MIX offsets are absolute offsets
+in each archive. A count below is a count of records visited, including reuse
+through multiple object placements. Region lists are counted once per unique
+descriptor-list offset within each archive.
+
+## Event records
+
+**CONFIRMED.** Byte +0 is the record length and +1 is the kind. For example,
+`0xAD8B5–0xAD8D4` stops on zero length or kind and otherwise advances by
+the length. Object group offsets are u16 +2 relative to `[0x2B514]`
+(`0xAD89E–0xAD8AD`). Region group offsets are relative to `[0x2B51C]`
+(`0xF2E98–0xF2EAC`). The common runner is `0x646EC`.
+
+| List and kind | Records | Native interpretation and source |
+|---|---:|---|
+| Object 1 | 1369 | **CONFIRMED** as a 14-byte record in the framed corpus, e.g. `L10_DC.MIX+0xC8296B`. **UNCONFIRMED** native consumer and field meanings. Its u16 +2 matches a framed group at only two sites. |
+| Object 2 | 616 | **CONFIRMED** periodic timer. The 10-byte row is indexed by `0xB47B4` and serviced by `0xB8BA0`; see below. |
+| Object 3 | 715 | **CONFIRMED** six-byte row. `0xAD7F4` compares u8 +4 with its second argument, checks the predicate and runs every matching group. The effective source event depends on the caller. |
+| Object 4 | 1382 | **CONFIRMED** 10-byte held-item test. `0xADC76` dispatches mode +4 in 0–7 using a u32 argument at +6. It reads item identity +0x18 or field tests on +0x3D, +0x3F, +0x43 or +0x45. Zero at +5 leaves the test uninverted. |
+| Object 5 | 403 | **CONFIRMED** `0xAD8E0` matches event u8 +4 and value u8 +5. A value of 0xFF on either side passes the value test. All predicate-qualified matches run. |
+| Object 6 | 5153 | **CONFIRMED** `0xADDE0` compares u8 +4 with the supplied value and checks the predicate. Opcode 18 sends value 6 at `0xB5A0E`; property 21 sends 20 at `0xB5448`. |
+| Object 7 | 49 | **CONFIRMED** `0xAE134` evaluates a health threshold with u8 +4 mode and u8 +5 threshold. The table at object-2 offset `0x55100` maps modes 0–3 to `0xAE162`, `0xAE1B6`, `0xAE1CE`, `0xAE1E6`. See below. |
+| Object 8 | 149 | **CONFIRMED** the six-byte row has a u16 match value +4 and 0xFFFF wildcard in the object-event walker at `0xAE510`. Corpus witness `L10_DC.MIX+0xC82CC5`; engine matcher uses the word comparison and predicate trailer. |
+| Object 9 | 1339 | **CONFIRMED** hit-filter row at `0xAE2C8`. Two u16 masks at +4/+6, threshold +8, and flags +9. The first qualifying match is queued. Combat details are not yet documented in this repository. |
+| Object 10 | 110 | **CONFIRMED** `0xAE608` first compares u8 +4 with the signed low byte of the second argument. On equality it compares `[0x22D0C]+44*u16(+6)` with the third argument. The alternative branch requires event zero, record +4 = 7 and `u16(arg3+0x18) == u16(+6)` (`0xAE6E7–0xAE70F`). |
+| Region 11 | 700 | **CONFIRMED** `0xF2FC0` checks u16 +4 against the supplied selector and u8 +6 against the supplied event, then checks the predicate and invokes stream 0. The descriptor-based entry near `0xF30FA` checks the event and already has its descriptor list. |
+| Region 12 | 3241 | **CONFIRMED** the walker at `0xF2D87` compares region u16 +4 and event u8 +6. Its event-2 arm at `0xF2DFD` requires u8 +7 zero before the predicate. **UNCONFIRMED** the full calling sequences for the numbered events. |
+| Region 15 | 18 | **CONFIRMED** `0xF37C8` matches region u16 +4 and evaluates the predicate. Mode +6 compares values from `0xF5094` to u16 +8 (byte +7 zero) or to a value computed for the region indexed by u16 +8. The eight arms at `0xF38E0–0xF396D` use unsigned >, <, = or ≠ on the callback sum or qualifying-object count. |
+| Object or region 19 | 6009 / 1645 | **CONFIRMED** a four-byte trailer. After a match, e.g. at `0xAD863–0xAD88B`, the walker checks the immediately following record's kind for 0x13 and, if found, calls `0x66AB0(u16(+2))`. |
+
+For kind 7, **CONFIRMED** at `0xAE162–0xAE1F7`: let `before` and
+`after` be the hit-context dwords at +0x22 and +0x26. Mode 0 subtracts
+`before-after` from the nonzero threshold byte, fires when that delta reaches
+the threshold and clears the byte on success. Mode 1 tests
+`after < threshold <= before`. Mode 2 tests
+`before <= threshold < after`. Mode 3 tests `threshold == after`.
+A passing trailer is required if present (`0xAE213–0xAE281)).
+
+## Object timers
+
+**CONFIRMED.** At `0xB8BA0`, the timer service binds each object's pointer
+from the parallel list to `[0xB7D80]` and skips records with +5 bit 0 set.
+Flags are u8 +4, status is u8 +5, reload parameters are u8 +6/+7, and the
+countdown is u16 +8. The service reads an elapsed quantity `D` from dword
+`[0x22C5A]` when flags & 0x90 is nonzero, otherwise from sign-extended
+word `[0x22C58]` (`0xB8BD4–0xB8C1C`). Let `C` be the stored
+countdown. An unsigned `C > D` stores `C-D` without firing. Otherwise the
+service obtains the low word `R` of a reload and stores the low word of
+`C+R-D` when `R > D`, or zero. The predicate then gates dispatch of
+`[0x2B514]+u16(+2)` (`0xB8C25–0xB8CE6)).
+
+**CONFIRMED.** Reload at `0xB8AC4` uses `a=u8(+6)`, `b=u8(+7)`,
+`S=u16([0x223A8])` and `v = a` if flags & 0x20, otherwise a random
+integer in the inclusive interval between `a` and `b` from `0x12415C`.
+Bit 0x10 takes precedence over bit 0x80.
+
+| Flags condition | Reload before low-word store |
+|---|---|
+| Bit 0x10 set | `v * S` |
+| Bit 0x10 clear, bit 0x80 set | `a * S * 60` |
+| Both clear | `v << 8` |
+
+The original writes 60 into `[0x223A8]` at `0x14E7F1`. **CONFIRMED**
+from the 616 kind-2 placement rows, the initial word lies in the range of
+the above formula for `S=60` in all 616, including fixed cases. **UNCONFIRMED**
+the producer of both elapsed cells and the wall-clock conversion along every
+call path. A source trace of writes to those cells would settle that unit.
+The scale constant and elapsed cells play distinct roles.
+
+**CONFIRMED.** The load scan at `0xAEC74` adds enabled timer records to the
+parallel lists at `0xB7DA4` and `0xB7DB0`. Status +5 bit 0 disables, bit
+0x80 tracks membership, and bit 1 makes admission depend on region +0x28 bit
+0x04. The action selector at `0xB47B4` takes the zero-based kind-2 index
+from command +6 and falls back to the last kind-2 record when the index is too
+large (`0xB4808–0xB4815`).
+
+| Action byte +4 | Confirmed effect |
+|---:|---|
+| 0, 1, 2 | Copy command +5 into record +4, +6, +7 respectively (switch after `0xB4815`). |
+| 3 | Start, if disabled. Clears the disabled bit, optionally reloads if command +5 is nonzero, and applies list admission at `0xB485C`. |
+| 4 | Stop, if enabled. Removes the record and its object when registered, disables the timer and optionally reloads if command +5 is nonzero (`0xB494B`). |
+| 5 | Reload with the record's stored operands (`0xB49BA`). |
+| 6 | Temporarily replace record +6 by command +5 for this reload, store the result, then restore record +6 (`0xB49D1 → 0xB8B24`). |
+
+### Worked timer
+
+**CONFIRMED.** `L3_DH.MIX+0x593C70` has the row
+`0A 02 A0 06 30 01 05 00 2C 01`. It targets group 0x06A0. Status 1
+makes it initially disabled. Flags 0x30 and parameter 5 select the fixed
+reload `5*60=300`, matching u16 +8 = 0x012C (`0xB8AC4`).
+
+## Predicates and shared bytes
+
+**CONFIRMED.** The geometry loader `0x669D4` reads 5-byte predicate
+entries using geometry header offset +0xBC and count +0xB8. All 15 levels
+have 255. Runtime pointer/count are at `0x2B548` and `0x2B544`. The
+operator is u8 +0. Each operand is a two-byte type/index pair (+1/+2 left,
++3/+4 right). The evaluator `0x66AB0` resolves both operands before
+dispatching the operator.
+
+| Type | Left VA | Right VA | Confirmed source |
+|---:|---|---|---|
+| 0 | `0x66AE6` | `0x66B77` | Literal argument byte. |
+| 2 | `0x66B2A` | `0x66BAF` | Indexed byte from `[0x26E58]` (slot-wide shared bytes). |
+| 3 | `0x66B15` | `0x66B8C` | Indexed byte from `[0x26E54]` (level-local bytes). |
+| 4 | `0x66B47` | `0x66BEC` | Recursive predicate at the argument index. |
+| 5 | `0x66B3B` | `0x66BD2` | u8 at `[0xB7D80]+0x25`, independent of the index. Opcode 16 writes the same field at `0xB5A44`. |
+| 7 | `0x66B5C` | — | Left has an indirect call via table `0xBBB8` for argument 0. Its result meaning is **UNCONFIRMED**. |
+| 1, 6 (and right 7) | `0x66AEB` | `0x66B7B` | Table falls through to the common continuation without assigning that operand. **UNCONFIRMED** usage. |
+
+Operator IDs 0–7 are equality (`0x66C43`), inequality (`0x66C57`),
+signed ≤ (`0x66C6B`), ≥ (`0x66C7F`), > (`0x66C8F`),
+< (`0x66CA3`), logical AND (`0x66C10`) and OR (`0x66C2B`).
+**CONFIRMED** by the relocated switch and comparison instructions.
+
+**CONFIRMED.** Opcode 198 writes the `0x26E54` buffer at `0x64887`;
+201 and 207 randomize/add at `0x64906` and `0x648AF`. Opcodes
+199, 200 and 206 change the `0x26E58` buffer through `0x64A8C`,
+`0x64BB4` and `0x64B1C`. These are the same pointer cells used by
+the evaluator. The per-level save switch `0xE8914` uses `0x26E54` in
+section 24, and the global save switch `0xE867C` uses `0x26E58` in
+section 1. Object binding is explicit in the timer service at `0xB8BD4`;
+binding at each other dispatch caller needs a separate check.
+
+### Worked predicate
+
+**CONFIRMED.** `L1_DC.MIX+0x70621C` has `06 04 12 04 0F`. Both
+operand types recurse, to predicate 18 on the left and 15 on the right.
+Operator 6 then returns 1 only when both results are nonzero. At
+`L1_DC.MIX+0x7061BD`, the bytes `00 03 1E 00 00` instead compare
+level-local byte 30 to zero.
+
+**UNCONFIRMED.** The full catalog of kind-3, kind-5, kind-6 and kind-12 event
+numbers needs caller-by-caller tracing. The comparison arguments and group
+targets above establish what to log at each native entry to attribute a
+player action. There is likewise an untraced indirect call for predicate
+type 7. Resolving its entry at `0xBBB8` would distinguish its input source.

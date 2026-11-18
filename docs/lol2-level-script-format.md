@@ -9,7 +9,8 @@ Python and read the user's own game files. No game data is in this repository.
 
 Addresses are virtual addresses in the flattened LE image of `LOLG.DAT` 1.30 (sha256 prefix `b27a3534`);
 file offset = VA + 0x37000, as in [`lol2-script-engine-facts-2026-10.md`](lol2-script-engine-facts-2026-10.md).
-Engine facts added since then are in [the addendum](lol2-script-engine-facts-2026-10-addendum.md).
+See the [opcode reference](lol2-script-opcodes.md) for all handlers and the disassembler, and
+[script events](lol2-script-events.md) for timers, predicates and event matchers.
 
 ## Running the exporter
 
@@ -80,9 +81,9 @@ the region event-record blob. Several descriptors can share one list.
 An event-record list is a run of records: byte 0 = length, byte 1 = kind. A zero length or zero kind ends
 the list (native walk, PROVEN). The kinds that name a command group:
 
-- Object lists: kinds 2, 3, 4, 5, 6, 8, 9 and 10 carry a group offset in stream 1 at word +2.
-- Region lists: kind 12 (`0x0C`) carries a stream-0 group at word +2, the region index at word +4, an event
-  byte at +6 and a value byte at +7.
+- Object lists: kinds 2, 3, 4, 5, 6, 7, 8, 9 and 10 carry a group offset in stream 1 at word +2.
+- Region lists: kinds 11, 12 and 15 carry a stream-0 group at word +2 and a region selector at word +4.
+  The fields after +4 depend on the [record kind](lol2-script-events.md#event-records).
 - Kind 19 (`0x13`) is not a group. A 4-byte kind-19 record directly after another record is that record's
   predicate trailer (`04 13 pp pp`, word +2 = predicate index). See the addendum.
 
@@ -120,8 +121,7 @@ confirmed by framing: all 15 levels frame byte-exactly with it, with no unknown 
 25-195 do not occur.
 
 The low dispatcher 0xB6B6E indexes a relocated table by opcode - 1 for opcodes 1-24 and rejects larger
-opcodes. Opcodes 196 and 204 are handled by the high dispatcher 0x64770 (PROVEN; see the addendum). How
-the other high opcodes are reached is not covered here.
+opcodes. Opcodes 196 and 204 are handled by the high dispatcher 0x64770 (PROVEN; see the addendum). The [opcode reference](lol2-script-opcodes.md) covers the entire high dispatch.
 
 ## Level transitions
 
@@ -133,5 +133,5 @@ question; see [`lol2-level-graph.md`](lol2-level-graph.md).
 ## Still open
 
 - Header dwords not listed above, and most placement bytes.
-- The meaning of most opcodes; see the facts doc and addendum for the decoded ones.
+- Remaining effects behind virtual calls and subcommand switches. See the [opcode reference](lol2-script-opcodes.md#opcode-table).
 - Command kind byte (+1) tables beyond the decoded cases.

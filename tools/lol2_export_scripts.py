@@ -47,8 +47,8 @@ REGION_EVENTS = (0x38, 0x80)      # region event-record blob: offset, size
 REGION_DESCRIPTORS = (0xA4, 0xAC, 26)
 PREDICATE_TABLE = (0xBC, 0xB8, 5)
 # Object record kinds whose word +2 names a stream-1 group.
-OBJECT_GROUP_KINDS = (2, 3, 4, 5, 6, 8, 9, 10)
-REGION_GROUP_KIND = 12
+OBJECT_GROUP_KINDS = (2, 3, 4, 5, 6, 7, 8, 9, 10)
+REGION_GROUP_KINDS = (11, 12, 15)
 PREDICATE_KIND = 19
 
 
@@ -200,14 +200,15 @@ def export(archive_path):
         for cursor, body in rows:
             record_counts[('region', body[1])] += 1
             event = dict(offset=cursor, file_offset=base + reg_start + cursor, kind=body[1], raw_hex=body.hex())
-            if body[1] == REGION_GROUP_KIND:
+            if body[1] in REGION_GROUP_KINDS:
                 require(len(body) >= 8, f'region record at {cursor} is too short')
                 target, region, event_byte, value = struct.unpack_from('<HHBB', body, 2)
                 require((0, target) in group_index, f'region record at {cursor} names no stream-0 group {target}')
                 event.update(stream=0, group=target, region=region, event=event_byte, value=value,
                              extra_hex=body[8:].hex(), descriptors=lists[list_offset])
                 event['predicate'] = predicate(reg_blob, base + reg_start, cursor, len(body))
-                regions.setdefault(region, []).append(event)
+                if body[1] == 12:
+                    regions.setdefault(region, []).append(event)
             elif body[1] != PREDICATE_KIND:
                 unlinked[('region', body[1])] += 1
             listed.append(event)
@@ -231,8 +232,12 @@ def export(archive_path):
                   object_tables=table_sizes, region_descriptors=desc_count,
                   region_lists=len(region_lists), groups=len(groups),
                   commands=sum(len(g['commands']) for g in groups),
-                  event_links=sum(1 for o in objects for e in o['events'] if 'group' in e),
-                  predicate_trailers=sum(1 for o in objects for e in o['events'] if e.get('predicate')),
+                  event_links=sum(1 for o in objects if o['table'] != 'region'
+                                  for e in o['events'] if 'group' in e)
+                  + sum(1 for row in region_lists for e in row['records'] if 'group' in e),
+                  predicate_trailers=sum(1 for o in objects if o['table'] != 'region'
+                                          for e in o['events'] if e.get('predicate'))
+                  + sum(1 for row in region_lists for e in row['records'] if e.get('predicate')),
                   predicate_entries=pred_count, transitions=len(transitions),
                   distinct_opcodes=len(opcode_use),
                   opcode_use={str(op): n for op, n in sorted(opcode_use.items(), key=lambda kv: (-kv[1], kv[0]))},
@@ -249,7 +254,7 @@ def export(archive_path):
                 region_lists=region_lists,
                 scope=('Static data: streams framed by the native size table, F0 groups, object and region event '
                        'records with raw bytes and kind-19 trailers, and the 5-byte predicate table. For object '
-                       'records value is byte +4 and extra_hex every later byte; for region kind 12, region is the '
+                       'records value is byte +4 and extra_hex every later byte; for linked region kinds, region is the '
                        'u16 at +4, event byte +6, value byte +7. These are storage labels, not the native matchers '
                        '(the matcher width differs per kind; match on raw_hex). No opcode effect, event meaning, '
                        'execution order or timing is claimed.'))

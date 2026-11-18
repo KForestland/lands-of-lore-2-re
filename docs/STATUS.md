@@ -2,7 +2,7 @@
 
 **As of:** 2026-11-18. What is documented about the original game, which tool reads it, what the tools check on the game files, and what is open. This table replaces the "almost fully understood" summary of earlier pages: those pages ([understanding](lol2-understanding-2026-11.md), [current status](lol2-current-status.md), [closure summary](closure-summary.md), [final closure memo](final-closure-memo.md)) are kept as history.
 
-Run the checks: `python3 tools/check_all.py --data <DAT>` (13 checks; all pass on the copy read).
+Run the checks: `python3 tools/check_all.py --data <DAT>` (14 checks; all pass on the copy read).
 
 **Short format pages** (one per format, with a worked example from the game files): [formats/](formats/README.md) — MIX, level data, texture container, room sections, entity records, items, sound.
 
@@ -15,7 +15,7 @@ Run the checks: `python3 tools/check_all.py --data <DAT>` (13 checks; all pass o
 | Compression | tool docstrings | LCW sections of `LOCAL.MIX` entry 1: 37/37 decode (`lol2_decompress_sphere`); Westwood mode-byte variant: decoder self-test only | Q1, Q2 |
 | Level geometry | [draracle-restoration](draracle-restoration.md), [native wall verification](native-wall-verification.md) | one geometry entry per level archive, 15/15 (`lol2_source_format`) | Q16 |
 | Levels, rooms, exits | [level sheets](levels/README.md), [level graph](lol2-level-graph.md) | `lol2_level_report`: 15/15 level archives read, texture container found by name hash in 15, 72 level-transition commands (same as the level graph's exit table) | Q3, Q18 |
-| Level scripts | [script format](lol2-level-script-format.md), [engine facts](lol2-script-engine-facts-2026-10.md), [addendum](lol2-script-engine-facts-2026-10-addendum.md) | — (opcode lengths from the native routine 0x645E0) | Q4, Q5, Q7, Q17 |
+| Level scripts | [opcode reference](lol2-script-opcodes.md), [events, timers, predicates](lol2-script-events.md), [script format](lol2-level-script-format.md), [engine facts](lol2-script-engine-facts-2026-10.md), [addendum](lol2-script-engine-facts-2026-10-addendum.md) | `lol2_disassemble_scripts`: 15/15 levels, 42,594 commands, 32 observed opcodes, 0 unsupported; handlers of all 37 opcodes located | Q4, Q5, Q7, Q17 |
 | Entities and objects | [entity object map](lol2-entity-object-map.md), [object state word](lol2-object-state-word.md), [cave object catalogue](cave-object-catalogue.md) | 128 entity records of 62 types in 15/15 level archives (`lol2_entity_field_analyzer`); 29 B_HUMAN/WORM records in 12 levels | Q18 |
 | Items | [item format](lol2-item-format.md) | — | Q8 |
 | Walls and textures | [texture container](lol2-level-texture-container.md), [wall material provenance](lol2-wall-material-provenance.md), [texture map inventory](texture-map-inventory.md) | the `tools/draracle/` pipeline has its own tests | Q14, Q16 |

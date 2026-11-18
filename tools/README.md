@@ -23,13 +23,13 @@ The tools below follow one set of rules: `--help` changes nothing; the game's `D
 
 ### `check_all.py`
 
-Run every `--check` (13) and print one line each, then a summary.
+Run every `--check` (14) and print one line each, then a summary.
 
 ```
-$ python3 tools/check_all.py | sed -n "1,2p;14p"
-CHECK repo_guard: 190 tracked files; game files, media, stray images, files over 1 MiB, machine paths or lane/agent names: none (0)
+$ python3 tools/check_all.py | sed -n "1,2p;15p"
+CHECK repo_guard: 212 tracked files; game files, media, stray images, files over 1 MiB, machine paths or lane/agent names: none (0)
 CHECK mix: 81 MIX files, 2905 entries; this reader and lol2_source_format.parse_mix agree and every entry lies inside its file: 81/81; index sorted by signed key: 81/81; bad=none
-ALL 13 CHECKS PASSED
+ALL 14 CHECKS PASSED
 ```
 
 ### `lol2_mix_parser.py`
@@ -51,6 +51,20 @@ Library: strict MIX reader, level geometry entry, opcode lengths. `--check`: all
 ```
 $ python3 tools/lol2_source_format.py --check
 CHECK source_format: 81 MIX files pass the strict reader (sizes, bounds, no overlap); one geometry entry (dword 0 = 18, dword 4 = 5300) in 15/15 le...
+```
+
+### `lol2_disassemble_scripts.py`
+
+Print both command streams, event links and predicate bytes with MIX-relative offsets.
+Use `--out` to write a listing outside the game directory. The
+[opcode reference](../docs/lol2-script-opcodes.md) follows the native handlers.
+
+```
+$ python3 tools/lol2_disassemble_scripts.py --data /path/to/DAT L1_DC
+L1_DC  geometry MIX+0x6C370A
+...
+$ python3 tools/lol2_disassemble_scripts.py --data /path/to/DAT --check
+CHECK scripts: 15/15 levels, 42594 commands, 32 observed opcodes, 0 unsupported
 ```
 
 ### `lol2_westwood_hash.py`
