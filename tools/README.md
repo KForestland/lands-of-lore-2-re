@@ -33,6 +33,10 @@ CHECK mix: 81 MIX files, 2905 entries; this reader and lol2_source_format.parse_
 ALL 20 CHECKS PASSED
 ```
 
+### `lol2_save_header.py`
+
+Reads one save slot you name (a player save, not a game file) and prints its preview, global and level offsets as JSON. Writes nothing. It has no `--check`, so it is not one of the `check_all.py` checks.
+
 ### `lol2_mix_parser.py`
 
 List a MIX archive, or extract one entry with `--out`. `--check`: agrees with `lol2_source_format.parse_mix` on every archive.
