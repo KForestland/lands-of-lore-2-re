@@ -81,21 +81,19 @@ is the player, a kind-5 event chosen by the hit kind: 1 -> event 2 value 0xFF, 2
   mode-4 record is disabled instead of firing. (PROVEN bytes; the pool's identity is UNKNOWN.)
 - The names of context fields beyond those above, and whether kind 9 is a "bash", are UNKNOWN.
 
-## Opcode 196 (PARTIAL)
+## Opcode 196
+
+The [motion page](lol2-script-motion.md#opcode-196) resolves the eight stores and traces the height update.
 
 Length 12. Not in the low table. `0x64770` compares the opcode byte down a branch tree and, for 0xC4, jumps
 to an arm that pushes the dispatcher's second argument and the command pointer and calls `0x64DDC`; the arm
 stores nothing itself and returns the callee's result. (PROVEN)
 
 - `0x64DDC` zero-extends the word at command +2 and computes `word * 44 + [0x22D0C]`: a 44-byte record
-  in a table whose base dword is at 0x22D0C. (PROVEN) No bound check on the word. The table's name is
-  UNKNOWN (44 is also the geometry region stride, but that link is not proven).
+  in a table whose base dword is at 0x22D0C. (PROVEN) No bound check on the word. The selector and stride identify the geometry region table (`0x5FCE6`).
 - It uses command bytes +4 (signed word), +6 (flag bits 0, 2, 3, 4), +7, +8 (word) and +0xA (signed word),
   and the word at record +0x28 (bits 0x40 / 0x80), +0x12..+0x16 and byte +0x27. It also scans other
   queued opcode-196 commands (through 0x664E4 over a list at 0x26E88) with the same record index. (PROVEN)
-- There are 45 memory stores in `0x64DDC`. 37 have a proven condition and value. 8 (S20, S22, S30, S34,
-  S36, S37, S40, S43) take a value after a call that was not entered (0xF2FC0's callees, 0xF3A5C), so they
-  are UNKNOWN. The checkpoint is therefore marked incomplete. (PROVEN count)
 - It returns 1 or 0; every return path is PROVEN (for example, the tail returns 1 when the word at
   command +0xA is 0 and 0 when it is not).
 - The gameplay meaning is not claimed. Names of 0x22D0C, 0x22C54, 0x26E88 and 0x26E6C are UNKNOWN.
@@ -133,6 +131,6 @@ which only calls the object's `vtable+0xAC` (callee UNKNOWN).
 ## Still open
 
 - Remaining predicate operators and operand types; kind-7 mode numbering; kind-9 mode 0/2/3 confirmation.
-- The 8 open stores of opcode 196 and the tail of the opcode 204 -1 arm.
+- The tail of the opcode 204 -1 arm.
 - The names of the 44-byte table at 0x22D0C and of the other unnamed globals above.
 - The `vtable+0xAC` callee shared by opcodes 3 and 13.

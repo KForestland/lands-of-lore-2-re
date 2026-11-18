@@ -16,7 +16,7 @@ the length. Object group offsets are u16 +2 relative to `[0x2B514]`
 
 | List and kind | Records | Native interpretation and source |
 |---|---:|---|
-| Object 1 | 1369 | **CONFIRMED** as a 14-byte record in the framed corpus, e.g. `L10_DC.MIX+0xC8296B`. **UNCONFIRMED** native consumer and field meanings. Its u16 +2 matches a framed group at only two sites. |
+| Object 1 | 1369 | **CONFIRMED** as a 14-byte record in the framed corpus, e.g. `L10_DC.MIX+0xC8296B`. **CONFIRMED** kind-1 lookup and render-parameter update (`0xB4704`, `0xB4712`). See [kind-1 fields and producers](lol2-event-producers.md). |
 | Object 2 | 616 | **CONFIRMED** periodic timer. The 10-byte row is indexed by `0xB47B4` and serviced by `0xB8BA0`. The timer details follow below. |
 | Object 3 | 715 | **CONFIRMED** six-byte row. `0xAD7F4` compares u8 +4 with its second argument, checks the predicate and runs every matching group. The effective source event depends on the caller. |
 | Object 4 | 1382 | **CONFIRMED** 10-byte held-item test. `0xADD36` dispatches mode +4 in 0–7 using a u32 argument at +6. The mode-3 arm compares item identity +0x18 (`0xADC84–0xADC8F`). Other arms test fields on +0x3D, +0x3F, +0x43 or +0x45. Zero at +5 leaves the test uninverted (`0xADC47`). |
@@ -87,7 +87,7 @@ Bit 0x10 takes precedence over bit 0x80.
 The original writes 60 into `[0x223A8]` at `0x14E7F1`. **CONFIRMED**
 from the 616 kind-2 placement rows, the initial word lies in the range of
 the above formula for `S=60` in all 616, including fixed cases. **UNCONFIRMED**
-the producer of both elapsed cells and the wall-clock conversion along every
+the live producer of both elapsed cells and the wall-clock conversion along every
 call path. A source trace of writes to those cells would settle that unit.
 The scale constant and elapsed cells play distinct roles.
 
@@ -105,6 +105,9 @@ large (`0xB4808–0xB4815`).
 | 4 | Stop, if enabled. Removes the record and its object when registered, disables the timer and optionally reloads if command +5 is nonzero (`0xB494B`). |
 | 5 | Reload with the record's stored operands (`0xB49BA`). |
 | 6 | Temporarily replace record +6 by command +5 for this reload, store the result, then restore record +6 (`0xB49D1 → 0xB8B24`). |
+
+See [timer clocks](lol2-timer-clock.md) for the original 60 Hz registration,
+the reload census and an elapsed-cell witness in a native save.
 
 ### Worked timer
 
@@ -129,7 +132,7 @@ dispatching the operator.
 | 3 | `0x66B15` | `0x66B8C` | Indexed byte from `[0x26E54]` (level-local bytes). |
 | 4 | `0x66B47` | `0x66BEC` | Recursive predicate at the argument index. |
 | 5 | `0x66B3B` | `0x66BD2` | u8 at `[0xB7D80]+0x25`, independent of the index. Opcode 16 writes the same field at `0xB5A44`. |
-| 7 | `0x66B5C` | — | Left has an indirect call via table `0xBBB8` for argument 0. Its result meaning is **UNCONFIRMED**. |
+| 7 | `0x66B5C` | — | Left returns false for predicate index ≥ 1. At index 0, entry `0xBBB8` passes inherited ESI through `0x66A48`. [Type 7 evidence](lol2-shared-predicates.md#type-7). |
 | 1, 6 (and right 7) | `0x66AEB` | `0x66B7B` | Table falls through to the common continuation without assigning that operand. **UNCONFIRMED** usage. |
 
 Operator IDs 0–7 are equality (`0x66C43`), inequality (`0x66C57`),
@@ -151,8 +154,7 @@ section 1. Object binding is explicit in the timer service at `0xB8BD4`. Binding
 The first shared name in the retail archive is `GV_LUTHERS_SOUL`
 (`GLOBAL.MIX+0x667C18`, second row starts 41 bytes later).
 The caller at `0x9F17B–0x9F193` looks up the same identifier from
-`LOLG.DAT+0x1C1D0A` and caches the result. The ranges or thresholds
-used by each branch that reads the soul byte are **UNCONFIRMED**.
+`LOLG.DAT+0x1C1D0A` and caches the result. See [shared aliases and guarded branches](lol2-shared-predicates.md#shared-indexes-with-native-names).
 
 ### Worked predicate
 
@@ -162,8 +164,5 @@ Operator 6 then returns 1 only when both results are nonzero. At
 `L1_DC.MIX+0x7061BD`, the bytes `00 03 1E 00 00` instead compare
 level-local byte 30 to zero.
 
-**UNCONFIRMED.** The full catalog of kind-3, kind-5, kind-6 and kind-12 event
-numbers needs caller-by-caller tracing. The comparison arguments and group
-targets above establish what to log at each native entry to attribute a
-player action. There is likewise an untraced indirect call for predicate
-type 7. Resolving its entry at `0xBBB8` would distinguish its input source.
+**UNCONFIRMED.** Some [event producers](lol2-event-producers.md) still need caller-by-caller
+tracing. The [shared predicate page](lol2-shared-predicates.md) maps the type-7 fallback and original branch witnesses.

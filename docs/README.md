@@ -7,7 +7,8 @@ Start with **[START_HERE.md](START_HERE.md)** (by goal), then:
 - [levels/](levels/README.md): one generated sheet per level.
 - Pages on the game's program and rules:
   - [script opcodes](lol2-script-opcodes.md)
-  - [script events](lol2-script-events.md)
+  - [script events](lol2-script-events.md) and [event producers](lol2-event-producers.md)
+  - [sequence and region motion](lol2-script-motion.md), [shared predicates](lol2-shared-predicates.md) and [timer clock](lol2-timer-clock.md)
   - [items](lol2-item-effects.md) and [item handlers](lol2-item-handlers.md)
   - [spells](lol2-spells.md)
   - [combat](lol2-combat-ai.md) and [creature transitions](lol2-creature-transitions.md)
