@@ -60,7 +60,7 @@ understanding.
   opcode 196.
 - The L8 control records for the cache ladder (control 69) and the tree bridge (control 114) are read from the original
   but not yet decoded into the public tools.
-- Non-raw texture payloads (flag `0x1246` and the payload-length flags; layout open). The ten raw flags, including `0x80A9`, and the movie-name records are decoded. Full VQA codebooks for every movie.
+- Non-raw texture payloads (flag `0x1246` and the payload-length flags; layout open). The ten raw flags, including `0x80A9`, and the movie-name records are decoded. VQA pointer tables are decoded; the `VPRZ`/`VPTR` stream and two `VPTZ` frames are not.
 - The Huline Temple's interior: its rooms are reached through doors that act as portals into separate spaces; the
   geometry is understood well enough to draw, but not yet well enough to look right everywhere.
 

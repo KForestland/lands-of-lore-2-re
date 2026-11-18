@@ -20,10 +20,10 @@ Updated 2026-11-06. **Almost fully understood** — see [LoL2 understanding — 
   [addendum](lol2-script-engine-facts-2026-10-addendum.md) (predicate table, record-kind runners,
   op196 PARTIAL, op204 arms).
 - **Items:** [item format](lol2-item-format.md): 170 records of 91 bytes, 107-handler item-use table.
-- **Movies:** [VQA v2 partial-codebook decoder](lol2-vqa-v2.md); tool `tools/lol2_vqa_v2_decode.py`.
+- **Movies:** [VQA v2](lol2-vqa-v2.md) pointer tables, including scheduled codebooks; tool `tools/lol2_vqa_v2_decode.py`. The `VPRZ`/`VPTR` stream is still open.
 - **Levels:** [level graph](lol2-level-graph.md): 15 levels, 48 room archives, the decoded exit graph.
 
-Still open: non-raw texture payloads (flag 0x1246 and the payload-length flags; layout open), full VQA codebooks for every movie,
+Still open: non-raw texture payloads (flag 0x1246 and the payload-length flags; layout open), the VQA VPRZ/VPTR stream and two VPTZ frames,
 op196's remaining stores, and the control/prop event caller paths.
 
 ## September 2026 state
