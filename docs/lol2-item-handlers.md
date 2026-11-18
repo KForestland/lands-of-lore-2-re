@@ -75,6 +75,30 @@ For handler 19, the flag at player +0x19A participates in the
 at `0xD1068–0xD1096`. A mode-16 result alone does not identify an
 item's combat effect.
 
+## Additional admitted modes
+
+**CONFIRMED.** These definitions are indexed from the 91-byte
+table at `GLOBAL.MIX+0x5B78E9`.
+
+| Handler and original definition | Request | Native result |
+|---|---|---|
+| 17, definition 42 at `+0x5B87D7` | 10, 11 | Sets or clears bit 0x04 of player byte `[0x2270E]`, respectively, and returns 1. Other modes return zero (`0x97277–0x972AE`). |
+| 18, definition 17 at `+0x5B7EF4` | 10, 11 | Sets or clears bit 0x08 in the same byte. Other modes return zero (`0x972AF–0x972E6`). |
+| 102, definition 166 at `+0x5BB3EB` | 1 | When the held instance exists, its +5 is zero, `[0x2260F]` is null and `[0x22712]` & 0x800 is clear, write 5 to instance +5, save the pointer in `[0x2260B]` and set bit 0x08 of `[0x22713]` (`0x9B5B5–0x9B5FD`). The success path returns 1; when the guard fails, `0x9B65C` plays the +0x160 sound and returns 0 (also 0 with sound disabled). The two sound paths read the words at `[[0x269CC]+0x156]` and `[[0x269CC]+0x160]` with the global sound-disable bit clear (`0x9B628–0x9B6BA`). The `[0x22712]` & 0x800 test reads the same bit the handler sets in `[0x22713]`, so it is a one-shot guard. |
+| 103, definition 167 at `+0x5BB446` | 10, 11, 16 | Sets and clears bit 0x10 at `[0x22711]` for 10 and 11. Mode 11 clears `[0x22614]` as well. Mode 16 returns 3. All other modes return zero (`0x9B6C4–0x9B715`). |
+| 106, definition 130 at `+0x5BA71F` | 17 | Requires the target pointer in request +0x15. Can create template 0x5E via `0x102D00`, then sends a hit of mask/flags `0x0080/0x0008`, kind 1, subtype 0xFF and magnitude 10 to the target’s vtable +0x80. If the target returns type 2, stores 15 at target +0xA3 (`0x9B7AC–0x9B8AC`). |
+
+**CONFIRMED.** The later player path at `0xD25F2–0xD25FD`
+copies a removed non-null item pointer to `[0x2260B]` only
+when instance +5 is nonzero. Another path stores the returned
+pointer of `0x95894` in `[0x2260F]` and clears `[0x2260B]`
+under the same nonzero-byte test (`0x77A61–0x77A87`).
+The object path at `0x94130–0x9413E` clears `[0x2260F]`
+when removing the object identified there. The complete gameplay
+meaning of instance +5 remains **UNCONFIRMED**. Compare this
+handler’s set-to-5 path with the next consumer of `[0x2260B]`
+through one held-to-world transition.
+
 ## Handler destinations
 
 **CONFIRMED.** Every handler index 0–107 occurs among the 170 definitions
@@ -205,7 +229,7 @@ reference](lol2-item-effects.md) were checked through their branches and
 first called routines where stated. Most other handlers still need
 their complete mode and effect semantics. The projectile paths beneath
 `0x1050AC` and `0xFC0D8` need their target writebacks traced.
-The native instance +5 producers remain to be mapped. Start from
+Handler 102 provides one native instance +5 producer. Start from
 the handler entry for a selected definition and compare calls and
 stores for the admitted request values. A before/after view of live
 instance +4 and +5, the definition pointer and any changed target

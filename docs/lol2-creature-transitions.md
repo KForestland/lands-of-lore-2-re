@@ -121,17 +121,14 @@ values land at actor +0x4E and +0x4F. Those are the inputs in the
 
 ## What is still open
 
-The [observation and mode 2 trace](lol2-creature-observation.md) follows all
-three observation fields and several dispatch consequences.
+The [creature observation page](lol2-creature-observation.md) follows
+the three observation bytes, additional mode branches, and two native
+hit paths that write 15 to actor +0xA3 (`0x94F29`, `0x9B89A`).
+It also documents the decrement and the resulting temporary reduction
+of +0xA6 and +0xA7.
 
-**UNCONFIRMED.** The 15 behavior destinations and the current/requested
-state updates are mapped. The full decisions within modes 3–5 and
-7–10, the semantics of each observation bit and the initial producer
-of actor +0xA3 remain open. The latter was checked by looking for
-direct operand writes to +0xA3 in the actor code range
-`0xA0000–0xADE00`. The verified write is the nonzero decrement
-at `0xAB63F–0xAB64D`. This search can miss writes through a separate
-pointer or a wider copy. A write trace through the first change from
-zero would distinguish such a producer. For unresolved decisions,
-the dispatch and setter addresses above give the inputs and outputs
-to capture for one mode at a time.
+**UNCONFIRMED.** The remaining decisions within modes 3–5 and 7–10,
+and the game-facing meaning of each observation bit, still need
+individual call-path witnesses. Begin with the target type and
+observation tests recorded on the linked page, then follow their
+state to the next animation or movement consumer.

@@ -53,13 +53,67 @@ horizontal difference check `0x1365C4` against definition u16 +0x4D in
 16.16 units (`0xA34C7–0xA34F9`). The near branch selects secondary action
 9 (`0xA3503`). The other branch at `0xA3586` calls `0xA9720(actor, 2, 0)`.
 
-**UNCONFIRMED.** Full producers for actor +0xA3 and the remaining
-mode- and flag-specific semantics are still open. A bounded operand check
-looked for byte and wider stores spanning +0xA3 in the actor code range
-`0xA0000–0xADE00`. It found the decrement at `0xAB64D`, and the nearby
-constructor writes at `0xA213E`, `0xA2145` and `0xA215A` set +0xA0,
-+0xA1 and +0xA2 separately. The first positive value may originate in a
-whole-record initialization or a computed write. Observe the first
-change before the decrement, recording the actor definition and job mode.
-For modes 3–5 and 7–10, trace each tested observation bit through the
-setter above before assigning gameplay names to all branches.
+## Other mode branches
+
+**CONFIRMED.** Mode 3 jumps to the waypoint path when +0xB5 bit 0x10
+is set or +0x34 is null (`0xA26AD–0xA26C5`). Otherwise it tests the
+target’s type (`0xA28FA–0xA291C`). Type 1 is copied from +0x34
+to +0x38 and evaluated through a temporary behavior 4 call. The
+original behavior byte is restored immediately after the call
+(`0xA26CA–0xA26F4`). Type 4 goes to `0xA276A`. Other types
+clear +0x34 and rejoin the waypoint path.
+
+**CONFIRMED.** In modes 4 and 5, zero observation +0x9E with
++B8 bit 0x40 clear enters `0xA3B88–0xA3BA7`, sets +0xB9 bits
+5–6 to binary `10` and calls `0xA9720(actor, 1, 3)`. The
+continuation at `0xA36AB–0xA36FB` refreshes target XYZ and sets
++B8 bits 4–5 to binary `01` if observation & 7 is nonzero or
+that field is not already `01`. Mode 10 uses the same XYZ
+and +B8 writes when +0x9E & 7 is nonzero, then calls
+`0xA9720(actor, 1, 1)` regardless of whether it refreshed the
+target (`0xA3168–0xA31A6`). In that helper, selector 1 uses
+target +0x38 and the actor's own observation byte +0x9E, and also tests
+the third argument (`bl == 1` at `0xA9785`) (`0xA972F–0xA9788`).
+
+**CONFIRMED.** Mode 7 uses mode 6's handler when path byte +0xA4 is
+0xFF (`0xA3BCC–0xA3BD9`, `0xA3DBD–0xA3DC2`). The direct
+path at `0xA3C27–0xA3C67` uses +0xA4 to select a 4-byte row
+from `[0x22D20]`, then adds the absolute value of signed byte +0xA5 (`movsx; jge; neg; movsx`
+at `0xA3C27–0xA3C3D`, so −128 stays −128) to that row’s starting
+word to index the 8-byte point table at `[0x22D1C]`. Mode 9 can
+skip the secondary-action-9 branch when actor +0xB9 bit 0 is
+set, observation +0x9E & 5 is nonzero, actor +0xB4 bit 0x20
+is set and its secondary action differs from 13
+(`0xA2F2A–0xA2F5C`).
+
+## Creature byte +0xA3
+
+**CONFIRMED.** Two hit paths write 15. The area-hit helper at
+`0x94DDC`, called at `0x945BD`, walks candidates returned by
+`0xB23BC` with a 0x200000 radius argument. After the target
+hit call at `0x94F0F`, it writes +0xA3 at `0x94F29` when
+target vtable +0 returns type 2. Item handler 106 repeats this
+for a single mode-17 target at `0x9B87E–0x9B89A`.
+The creature table's type and hit entries at file
+`LOLG.DAT+0x1C68F4` and `+0x1C6974` resolve to
+`0xA6ACC` (returns 2) and `0xA6AE0` via fixups
+`+0x7F03C` and `+0x7F15C`. The update decrements this
+byte whenever it is nonzero at `0xAB63F–0xAB64D`.
+
+**CONFIRMED.** Three consumers treat any nonzero value alike.
+After computing actor +0xA6 and +0xA7 from definition +0x81
+and the inputs to `0xA1F2C`, they replace each byte `v`
+with `v - floor(v/4)`, independently
+(`0xA2351–0xA2399`, `0xAA42D–0xAA478`,
+`0xAB093–0xAB0E1`). This establishes the update count and
+the reduced values. Which visible movement or action is
+modified by each +0xA6/+0xA7 consumer remains
+**UNCONFIRMED**. Trace the next read of each byte after
+`0xAA478`, comparing the same definition with +0xA3=0 and 15.
+
+**UNCONFIRMED.** Other branches in modes 3–5 and 7–10
+remain open. The native paths above establish the fields that
+change. The next witnesses can follow mode 3 target type 4
+from `0xA276A` and mode 8's zero observation path from
+`0xA2DEE`, recording which requested action survives the
+common update at `0xA3DEC`.

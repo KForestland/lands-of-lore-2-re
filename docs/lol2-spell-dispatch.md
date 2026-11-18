@@ -52,6 +52,63 @@ check compares cost byte +0 with actor word +0x8A (`0xA7EBC–0xA7EDD`).
 Bits 6 and 7 are tested as a pair before the `0x5A1F4` call
 (`0xAAC81–0xAACBC`).
 
+## Downstream effects 30–33
+
+**CONFIRMED.** Effect 30's template constructor at `0x109A24`
+installs vtable `0x6670` and sets effect bytes +0x58 to 8
+and +0x56 to zero (`0x109A3D–0x109A51`). With a target,
+it positions effect Z at its target Z plus
+`(u8(target virtual +0xEC) - floor(u8(animation row +0x0F)/2)) << 16`
+(`0x109AB5–0x109AED`). A zero result from slot +0x18
+sets bit 1 in effect +0x59 (`0x109AF0–0x109B00`).
+
+The update slot +0x38 (`LOLG.DAT+0x1C76CC`, fixup
+`+0x80DC5`) is `0x109718`. It requests removal when
++0x59 bit 1 is set or animation state +0x56 has reached +0x57.
+At state 1 it calls slot +0xFC (`0x10975B`), whose fixup
+`+0x80B82` at file `+0x1C7790` resolves to
+`0x109B0C`. That helper requests sound and, if target
+pointer +0x42 exists, dispatches its hit-receiver slot +0x80
+with mask `0x10`, flags 5, kind 2, effect 30 and magnitude 5
+(`0x109B42–0x109B9D`). The same state then calls
+`0x109790`, which checks nearby candidates, rejects the
+primary target/source and requires horizontal distance below
+0x200000 before calling effect slot +0x100
+(`0x1097A1–0x1097F1`, `0x109861–0x109877`).
+These are hit inputs. The [combat receiver](lol2-combat-ai.md#hit-context-and-reduction)
+applies the target's reduction and health rules.
+
+**CONFIRMED.** Effect 31's constructor `0x109C64`
+uses vtable `0x6574`, copies the supplied XYZ and attempts
+the same placement slot (`0x109C80–0x109CB7`). It can
+also construct the effect-30 object with template 0x5E at
+`0x109CC4–0x109CDC`. Its own update slot +0x38 is
+`0x109CF0` (file `LOLG.DAT+0x1C75D0`, fixup
+`+0x80C10`). With state +0x56 = 3 that handler can
+construct another effect-30 object (`0x109CFD–0x109D09`,
+`0x109E8B–0x109EA4`).
+
+**CONFIRMED.** Effects 32 and 33 share `0x101F74` with
+item handler 2’s successful cast path. The constructor
+installs object-5 vtable `0x8734`, copies origin XY,
+writes the caller’s mode byte to +0x68/+0x58, and
+initializes +0x69 to 4 (`0x101F8E–0x101FC0`,
+`0x102027–0x10202A`). A non-null aim argument runs
+`0xAF4A8` with 0xC8 and bit 1 of +0x59 is set on
+failure (`0x102079–0x10209B`). Slot +0x38 is
+`0x10230C` and slot +0xF0 is `0x1021F4` (fixups
+`+0x853A0` and `+0x8553C`). The update calls the
+latter with flag 2 on failed placement or when +0x69 is
+zero (`0x102314–0x102327`, `0x10238F–0x1023A1`).
+
+**UNCONFIRMED.** The visible outcomes of every launch, pulse,
+collision and stalled placement are still open. The constructor
+and update fields give bounded entry points. Start with the effect
+32/33 collision slot +0x30 (`0x102718`) and record writes to
+its target before the +0xF0 exit. For effects 30 and 31, compare
+the primary and nearby hit receiver results under the same target
+definition and difficulty.
+
 ## Lessons from native producers
 
 **CONFIRMED.** Item handlers request the lesson via `0x8619C`. The

@@ -60,17 +60,30 @@ See the [save sections](lol2-save-sections.md). The values are
 
 **UNCONFIRMED.** Treating the first two as 16.16 and 8.8 gives 3.4375 in both cases. The third value is 4. The arithmetic alone leaves the representation, rounding path and relationship among these saved values open.
 
-**UNCONFIRMED.** The live writer linking the two elapsed cells to a
-particular registered 60 Hz counter was not found. Direct LE references
-normalized to object-5 offsets `0x22C58` and `0x22C5A` yielded 13 and 28
-load sites respectively. None was a direct write. The stop/start calls
-on `0x22C44` update the beginning of that clock object. They do not store
-at +0x14 or +0x16, the relative locations of `0x22C58` and `0x22C5A`.
-The save format can restore those bytes in bulk, with no evidence that it
-produces live frame elapsed time. A trace of the first writes after the
-menu clock restarts would settle the link. Capture both cells and the
-previous/current counter values immediately before `0xA055B` in two frames,
-including one long frame or rollover to test fractional carry. Until that
-join is established, the reload scalars and the hardware period are
-confirmed individually. Exact wall-clock delay for a kind-2 timer,
-including pause and frame boundaries, remains open.
+**CONFIRMED.** Two clock operations about 0x110 bytes before the
+main service `0xA055B`, with other calls between them (among them the restart
+`0x14FABD(0x22C44)` at `0xA0457`, which writes object +0/+4 only), belong to separate storage. At `0xA042F–0xA0445`,
+`0x14FA79(0x22C99)` returns the accumulated clock into
+`[0x22CA9]`. The reset of object `0x22C44` at `0xA044A`
+passes two zero arguments. Its helper clears object +0 and
+writes object +4 at `0x14FADE–0x14FAEA`. The alternate
+wrapper at `0xA0D0F → 0x748C4` also calls that reset
+helper. Neither reset writes the frame cells +0x10/+0x14/+0x16
+relative to the second clock object. At `0xA0508–0xA055B`
+the first helper `0x62FC4` returns immediately, and
+two calls before the timer service take the list-pointer pairs
+`0x67460([0x22D44], [0x22D64])` at `0xA053E` and `0x110754([0x22D54], [0x22D74])` at `0xA0553`.
+This identifies which clock and dispatch paths were inspected.
+
+**UNCONFIRMED.** The live frame writer is still open. The
+word and dword loads at `0xB8C0D` and `0xB8BE5`
+identify the countdown inputs. Checking LE references and
+absolute write operands overlapping the three frame cells
+in the retail main code object found no direct store. The
+level save can restore them together (`0xE9123–0xE9137`).
+To distinguish a computed live write from a restore, capture
+the first store to each cell after the main update restarts,
+before `0xA055B`. Record the previous/current value
+from the producing counter and include a long frame to test
+fractional carry. Wall-clock delay across pauses and frame
+boundaries remains open.
