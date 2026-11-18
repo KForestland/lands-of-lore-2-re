@@ -1,5 +1,7 @@
 # LoL2 Inventory Overview
 
+> **History.** A March 2026 note about an earlier working folder, kept as a record. Current pages: [STATUS.md](STATUS.md) and [formats/](formats/README.md).
+
 Date: 2026-03-23
 
 ## Purpose
