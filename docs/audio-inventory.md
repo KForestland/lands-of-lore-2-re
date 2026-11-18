@@ -93,7 +93,7 @@ VQA files contain embedded SND0/SND1/SND2 audio chunks. A VQA decoder exists (`l
 | Subsystem | Source | Format | Decoder status |
 |-----------|--------|--------|---------------|
 | Soundtrack | DMUSIC.MIX | Westwood AUD (22050 Hz, IMA-ADPCM codec 99) | **1 track verified** — tool exists for all 33 tracks (~116 min est.) |
-| MIDI Music | LOCAL.MIX | HMI-MIDI + FORM/IFF instruments | Identified, HMI-MIDI parser needed |
+| MIDI Music | LOCAL.MIX | 33 HMI-MIDISONG scores, plus 33 FORM entries | HMI scores convert (`tools/lol2_hmi_midi.py`). FORM entries are not decoded |
 | Sound effects / voice bank | LOCALLNG.MIX entry 4 (key 1570429112) | Named bank: 1179 rows, 1008 AUD clips (22050 Hz mono, codec 99) + 171 placeholders | **Layout proven**; all 1008 clips pass header/chunk checks (`tools/lol2_sound_bank.py`) |
 | Video Audio | MOVIES.MIX | VQA SND chunks (PCM) | VQA chunk parser exists |
 | AdLib Music | DRUM.BNK + MELODIC.BNK + HMI files | OPL3 instrument banks | BNK parser needed |
@@ -102,11 +102,11 @@ VQA files contain embedded SND0/SND1/SND2 audio chunks. A VQA decoder exists (`l
 
 - **Verified**: 1 music track decoded and verified from DMUSIC.MIX; the LOCALLNG.MIX sound bank layout is proven and all 1008 clips pass header and chunk checks. Bulk extraction of the 33 music tracks has not been run and verified.
 - **Tooling published**: `tools/lol2_aud_decode.py` (Westwood AUD → WAV), `tools/lol2_sound_bank.py` (LOCALLNG.MIX bank list/extract), `tools/lol2_mix_parser.py`, `tools/lol2_vqa_decode.py`
-- **Still needed**: HMI-MIDI to standard MIDI converter, AdLib BNK parser, a full cue-to-row map for the sound bank
+- **Still needed**: AdLib BNK parser, a full cue-to-row map for the sound bank
 
 ## Open Items
 
 - **Music extraction**: sample-verified — 1 track decodes to WAV via `tools/lol2_aud_decode.py`. Previous "type 30/254" claims were caused by misreading the 12-byte header as 8 bytes; actual codec is standard 99 (IMA-ADPCM). Bulk extraction of all 33 tracks has not yet been run and verified.
 - **Sound bank**: layout and clip format proven (see above). Open: the meaning of the 171 size-1 placeholder rows, the unknown row dword at `+8`, the 808-byte trailer, whether the hex-named rows are speech, and what entries 0, 1, 3, 5 index.
-- **HMI-MIDI**: 33 MIDI music scores in LOCAL.MIX need a HMI-to-standard-MIDI converter for modern playback.
+- **HMI-MIDI**: 33 scores in LOCAL.MIX. The event stream and the in-memory standard-MIDI conversion are in [the music note](lol2-music-2026-11.md). The FORM entries beside them are still unread.
 - **AdLib banks**: DRUM.BNK and MELODIC.BNK instrument definitions not yet parsed.
