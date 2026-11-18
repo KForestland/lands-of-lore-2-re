@@ -33,6 +33,8 @@ From the vertex and region tables ([geometry](../formats/geometry.md)). A link i
 |---:|---:|---:|---:|---:|---:|---:|---:|
 | 4,639 | 3,644 | 12,496 | 12,496 | 12,496 | 2,080 | 632 | 134 |
 
+Following the portal links, the regions fall into 14 connected groups: 3,424, 195, 14, 1, 1, 1, 1, 1 … regions ([maps](../formats/maps.md)).
+
 ## Scripts
 
 | Stream | Commands | Groups | Bytes |
@@ -43,6 +45,22 @@ From the vertex and region tables ([geometry](../formats/geometry.md)). A link i
 1,045 commands in 271 groups use 21 distinct opcodes (meanings: [script format](../lol2-level-script-format.md)). Predicate table: 255 entries of 5 bytes. Commands outside the opcode size table: 0.
 
 Opcode use: 9 ×208, 8 ×136, 16 ×103, 2 ×100, 13 ×79, 198 ×56, 196 ×53, 20 ×50, 197 ×47, 14 ×43, 18 ×37, 3 ×36, 7 ×29, 206 ×21, 210 ×11, 5 ×10, 204 ×9, 1 ×8, 21 ×3, 199 ×3, 208 ×3.
+
+Event records by kind ([native matchers](../lol2-script-events.md#event-records)):
+
+| List | Kind | Records | What the game does with it |
+|---|---:|---:|---|
+| object | 1 | 20 | 14-byte record; native consumer open |
+| object | 2 | 19 | periodic timer (0xB47B4 / 0xB8BA0) |
+| object | 4 | 31 | held-item test (0xADD23, mode table VA 0xADBAC) |
+| object | 5 | 14 | event and value match (0xAD8E0) |
+| object | 6 | 96 | value match (0xADDE0) |
+| object | 8 | 2 | word match with 0xFFFF wildcard (0xAE510) |
+| object | 9 | 25 | hit filter (0xAE2C8) |
+| object | 19 | 99 | predicate trailer (0x66AB0) |
+| region | 11 | 12 | region selector and event (0xF2FC0) |
+| region | 12 | 72 | region event (0xF2D87) |
+| region | 19 | 51 | predicate trailer (0x66AB0) |
 
 ## Exits
 

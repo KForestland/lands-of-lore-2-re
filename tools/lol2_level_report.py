@@ -10,6 +10,7 @@ sheet lists, all read from the files:
   - the script streams: command and group counts, opcode use, predicates;
   - exits: every level-transition command (destination level and entry) and
     the objects whose events point straight at that command's group;
+  - event records by kind, with the native matcher of each kind;
   - held-item tests (event kind 4, mode 3) by item record number;
   - entity records by name tag;
   - the companion archive's entries by kind (AUD sound, VQA movie, other).
@@ -81,6 +82,57 @@ def geometry_stats(raw):
                 slope_floor=sum(1 for r in regs if r[14] & 4), slope_ceiling=sum(1 for r in regs if r[14] & 8))
 
 
+# Event record kinds and their native matchers (docs/lol2-script-events.md#event-records).
+EVENT_KINDS = {
+    ("object", 1): "14-byte record; native consumer open",
+    ("object", 2): "periodic timer (0xB47B4 / 0xB8BA0)",
+    ("object", 3): "event byte match (0xAD7F4)",
+    ("object", 4): "held-item test (0xADD23, mode table VA 0xADBAC)",
+    ("object", 5): "event and value match (0xAD8E0)",
+    ("object", 6): "value match (0xADDE0)",
+    ("object", 7): "health threshold (0xAE134)",
+    ("object", 8): "word match with 0xFFFF wildcard (0xAE510)",
+    ("object", 9): "hit filter (0xAE2C8)",
+    ("object", 10): "region-or-object match (0xAE608)",
+    ("object", 19): "predicate trailer (0x66AB0)",
+    ("region", 11): "region selector and event (0xF2FC0)",
+    ("region", 12): "region event (0xF2D87)",
+    ("region", 15): "region comparison (0xF37C8)",
+    ("region", 19): "predicate trailer (0x66AB0)",
+}
+
+
+def event_kinds(scripts):
+    c = Counter()
+    for o in scripts["objects"]:
+        if o["table"] != "region":
+            for ev in o["events"]:
+                c[("object", ev["kind"])] += 1
+    for rl in scripts["region_lists"]:
+        for ev in rl["records"]:
+            c[("region", ev["kind"])] += 1
+    return c
+
+
+def groups(raw):
+    """Sizes of the portal-connected region groups, largest first."""
+    import struct
+    nr = struct.unpack_from("<I", raw, 0x58)[0]
+    ro = struct.unpack_from("<I", raw, 0x0C)[0]
+    parent = list(range(nr))
+
+    def find(x):
+        while parent[x] != x:
+            parent[x] = parent[parent[x]]
+            x = parent[x]
+        return x
+    for i in range(nr):
+        for n in struct.unpack_from("<4H", raw, ro + 44 * i + 4):
+            if n != 0xFFFF and n < nr:
+                parent[find(i)] = find(n)
+    return sorted(Counter(find(i) for i in range(nr)).values(), reverse=True)
+
+
 def level_files(data_dir):
     out = []
     for f in lol2_cli.mix_files(data_dir):
@@ -125,7 +177,9 @@ def read_level(data_dir, stem):
             e = cb[r["offset"]:r["offset"] + r["size"]]
             kinds["AUD sound" if is_aud(e) else "VQA movie" if e[:4] == b"FORM" and e[8:12] == b"WVQA" else "other"] += 1
         comp = (companion.name, len(cb), kinds)
-    return dict(stem=stem, size=len(b), rows=rows, geo=geo, geom=geometry_stats(geo_raw), tex=tex, ent_entry=ent_entry, records=records,
+    gs = geometry_stats(geo_raw)
+    gs["groups"] = groups(geo_raw)
+    return dict(stem=stem, size=len(b), rows=rows, geo=geo, geom=gs, tex=tex, ent_entry=ent_entry, records=records,
                 scripts=scripts, comp=comp)
 
 
@@ -166,7 +220,10 @@ def sheet(L, names, items):
               "| Vertices | Regions | Portal links | Reciprocal | Sharing the side's two vertices | Wall sides | Sloped floors | Sloped ceilings |",
               "|---:|---:|---:|---:|---:|---:|---:|---:|",
               f"| {G['vertices']:,} | {G['regions']:,} | {G['links']:,} | {G['reciprocal']:,} | {G['shared']:,} | "
-              f"{G['walls']:,} | {G['slope_floor']:,} | {G['slope_ceiling']:,} |", ""]
+              f"{G['walls']:,} | {G['slope_floor']:,} | {G['slope_ceiling']:,} |", "",
+              f"Following the portal links, the regions fall into {len(G['groups'])} connected groups: "
+              + ", ".join(f"{n:,}" for n in G["groups"][:8]) + (" …" if len(G["groups"]) > 8 else "")
+              + " regions ([maps](../formats/maps.md)).", ""]
     lines += ["## Scripts", "",
               "| Stream | Commands | Groups | Bytes |", "|---:|---:|---:|---:|"]
     for st in sc["streams"]:
@@ -176,6 +233,12 @@ def sheet(L, names, items):
               f"(meanings: [script format](../lol2-level-script-format.md)). Predicate table: {c['predicate_entries']} "
               f"entries of 5 bytes. Commands outside the opcode size table: {len(sc['unsupported'])}.", "",
               "Opcode use: " + ", ".join(f"{k} ×{v}" for k, v in use) + ".", ""]
+    ek = event_kinds(sc)
+    lines += ["Event records by kind ([native matchers](../lol2-script-events.md#event-records)):", "",
+              "| List | Kind | Records | What the game does with it |", "|---|---:|---:|---|"]
+    for (lst, k), n in sorted(ek.items()):
+        lines.append(f"| {lst} | {k} | {n:,} | {EVENT_KINDS.get((lst, k), 'not in the events page')} |")
+    lines.append("")
     links = defaultdict(list)
     for o in sc["objects"]:
         for ev in o["events"]:
@@ -278,11 +341,16 @@ def main():
         unknown = sum(1 for k in tests if k not in items)
         gl = sum(L["geom"]["links"] for L in levels); gr = sum(L["geom"]["reciprocal"] for L in levels)
         gs = sum(L["geom"]["shared"] for L in levels); gb = sum(L["geom"]["bad"] for L in levels)
+        ev = Counter()
+        for L in levels:
+            ev.update(event_kinds(L["scripts"]))
+        unknown_kinds = sorted(k for k in ev if k not in EVENT_KINDS)
         print(f"CHECK level_report: {len(levels)}/{len(stems)} level archives read (level data entry, scripts framed, "
               f"{uns} commands outside the size table); texture container found by name hash in {tex}; entity records in "
               f"{ent}; {exits} level-transition commands; regions {sum(L['geom']['regions'] for L in levels):,}, "
               f"out-of-range vertex/neighbour indices {gb}, portal links {gl:,} (reciprocal {gr:,}, sharing the side's vertices "
-              f"{gs:,}); held-item tests (kind 4 mode 3) {len(tests)}, identity not in the item table: "
+              f"{gs:,}); event records {sum(ev.values()):,} (kinds without a documented matcher: {unknown_kinds or 'none'}); "
+              f"held-item tests (kind 4 mode 3) {len(tests)}, identity not in the item table: "
               f"{unknown}; bad={bad or 'none'}")
         return 0 if not bad and not uns and not unknown and not gb else 1
     items = item_identities(a.data)
