@@ -1,112 +1,58 @@
-# Lands of Lore II RE
+# Lands of Lore II: file formats and game rules
 
-**November 2026: LoL2 is almost fully understood.** Every story step from the first cave to the final scene, the script
-opcodes behind them and the engine rules are mapped; a short open list remains. Read
-[LoL2 understanding — November 2026](docs/lol2-understanding-2026-11.md).
+*Lands of Lore: Guardians of Destiny* is a first-person role-playing game by Westwood Studios (1997). This repository documents how its original data files and rules work, and gives you Python tools that read them from your own copy of the game.
 
-Earlier update: [Executioner combat evidence and portable native verifier](docs/executioner-combat-evidence.md).
+It contains documentation, tools and small tables of numbers. It contains no game files and no extracted game pictures, sounds, movies or text dumps.
 
-Reverse-engineering and documentation for the DOS version of *Lands of Lore: Guardians of Destiny*.
+![Room section 11 of LOCAL.MIX drawn by tools/lol2_decompress_sphere.py](docs/images/local_mix_room11_tiles.png)
 
-This repository contains:
+*A room layout from `LOCAL.MIX` entry 1, drawn from its tile numbers (`tools/lol2_decompress_sphere.py 11 --png out.png`): one colour per tile number, not the game's graphics.*
 
-- promoted reverse-engineering writeups
-- runtime entity pipeline documentation
-- evidence indexes and witness maps
-- structured inventory summaries
-- curated analysis and extraction tools
+## What you get
 
-It does not aim to redistribute raw game data.
+- **Format and engine pages** in [`docs/`](docs): archives, level scripts, level geometry, walls and textures, items, sound, music and movies. One page per format with worked examples is being written (see [STATUS](docs/STATUS.md)).
+- **Tools** in [`tools/`](tools/README.md): archive reader, name hashing, decompressors, entity and level analysers, audio and video decoders, and the wall/geometry pipeline in `tools/draracle/`.
+- **[Start here, by goal](docs/START_HERE.md)**, a **[glossary](docs/GLOSSARY.md)** and the **[open questions](docs/OPEN_QUESTIONS.md)**.
 
-## Start Here
+## Quick start
 
-If you are new to this repo, read these in order:
-
-0. [`lol2-understanding-2026-11.md`](docs/lol2-understanding-2026-11.md) — November 2026: what is understood (A to Z) and the short open list
-1. [`draracle-restoration.md`](docs/draracle-restoration.md) — current cave findings and reproducible geometry pipeline
-2. [`closure-summary.md`](docs/closure-summary.md) — plain-English summary of what is closed and what is open
-3. [`final-closure-memo.md`](docs/final-closure-memo.md) — short final handoff-style memo for the current public LoL2 state
-4. [`lol2-current-status.md`](docs/lol2-current-status.md) — what is currently proven, what is still open, and where the LoL2 lane stands now
-5. [`lol2-compact-path-branch-steering.md`](docs/lol2-compact-path-branch-steering.md) — the main near-final LoL2 result: the compact `L1` control path and the loading-phase fast-vs-alternate branch split
-6. [`lol2-object-state-word.md`](docs/lol2-object-state-word.md) — the clean breakdown of the bit-field register at `[+80] + 0xB4` and what each bit does
-7. [`lol2-entity-object-map.md`](docs/lol2-entity-object-map.md) — complete proven field layout of the `[+80]` entity object (25+ fields with semantic roles)
-8. [`lol2-runtime-to-renderer-bridge.md`](docs/lol2-runtime-to-renderer-bridge.md) — explains why this runtime work matters for the old texture/renderer question and how the two lanes connect
-9. [`inventory-overview.md`](docs/inventory-overview.md) — explains what LoL2 currently has inventory for, and what is still missing compared to LoL1
-10. [`lol2-witness-map.md`](evidence/lol2-witness-map.md) — short map of the main witnesses and trace variants, so the docs above are easier to follow
-11. [`audio-inventory.md`](docs/audio-inventory.md) — what audio/music assets exist, their formats, and extraction status
-12. [`texture-map-inventory.md`](docs/texture-map-inventory.md) — the first deeper public catalog for LoL2 texture and map outputs
-13. [`lol2-script-engine-facts-2026-10.md`](docs/lol2-script-engine-facts-2026-10.md) — script opcodes, timers, record kinds, curse and collision facts from the 2026 Godot rebuild, plus its [addendum](docs/lol2-script-engine-facts-2026-10-addendum.md)
-14. [`lol2-level-script-format.md`](docs/lol2-level-script-format.md) — level header tables and the two command streams; exporter for all 15 levels
-15. [`lol2-level-graph.md`](docs/lol2-level-graph.md) — the 15 levels, room archives and the decoded exit graph
-16. [`lol2-level-texture-container.md`](docs/lol2-level-texture-container.md) and [`lol2-wall-material-provenance.md`](docs/lol2-wall-material-provenance.md) — level textures and the traced wall-material source
-17. [`lol2-item-format.md`](docs/lol2-item-format.md) — item definition records and the item-use dispatcher
-18. [`lol2-vqa-v2.md`](docs/lol2-vqa-v2.md) — VQA v2 movies with partial codebooks
-
-## Quick Start
+You need Python 3.8+ and your own copy of the game.
 
 ```bash
-git clone https://github.com/KForestland/Lands-of-lore-2-re.git
-cd Lands-of-lore-2-re
-python3 -m venv .venv
-. .venv/bin/activate
+git clone https://github.com/KForestland/lands-of-lore-2-re.git
+cd lands-of-lore-2-re
+python3 -m venv .venv && . .venv/bin/activate
 pip install -r requirements.txt
+export LOL2_DAT=/path/to/your/LOL2/DAT          # the game's DAT folder
+python3 tools/check_all.py                      # 11 checks, ends with ALL 11 CHECKS PASSED
+python3 tools/lol2_mix_parser.py L1_DC.MIX      # list the entries of level 1's archive
 ```
-
-Typical first commands:
-
-```bash
-python3 tools/lol2_mix_parser.py --help
-python3 tools/lol2_wall_texture_extract.py --help
-python3 tools/lol2_geometry_cracker.py --help
-```
-
-Then read:
-
-1. [`docs/closure-summary.md`](docs/closure-summary.md)
-2. [`docs/lol2-current-status.md`](docs/lol2-current-status.md)
-3. [`evidence/lol2-witness-map.md`](evidence/lol2-witness-map.md)
 
 ## Status
 
-Active RE and restoration; not complete. The original cave layout is extracted
-and available in an experimental full-map Godot view. Native slope, connector
-and wall-record checks are reproducible with the packaged geometry pipeline.
-Wall UVs/span semantics, special openings, interactive objects and native gameplay
-remain open. Older closure memos describe scoped historical runtime results.
+Full table with evidence: [`docs/STATUS.md`](docs/STATUS.md).
 
-Start with [Draracle restoration findings](docs/draracle-restoration.md) for
-current evidence, commands and supported game-file hashes. The
-[Godot project](https://github.com/KForestland/lands-of-lore-unified-godot) hosts
-the experimental view; extracted game assets are not included.
+| Area | State |
+|------|-------|
+| Archives (MIX), entry names, compression | Documented in part; readers check all 81 archives |
+| Levels, geometry, walls, textures | Documented for the traced parts; geometry entry found in all 15 levels; wall spans and UVs partly open (Q16) |
+| Level scripts | Format and many opcodes documented; full opcode table open (Q4) |
+| Entities, items, combat | Record layouts documented; item grants and effects, combat beyond one encounter open (Q8, Q10) |
+| Sound, music, movies | AUD bank, music archive and VQA v2 decoded; HMI music and the movie control table open (Q12, Q15) |
+| Globals, timers, spells, text, saves | Not yet documented here (Q6, Q7, Q9, Q11, Q13) |
 
-## Build the experimental cave
+## Repository layout
 
-[Asset generation instructions](docs/build-cave-assets.md) cover the new configurable
-texture-to-Godot pipeline. It requires matching original files and a populated
-cache; arbitrary retail-installation cache generation remains open.
+- [`docs/`](docs): format and engine pages, status, open questions, glossary; older closure notes kept as history
+- [`tools/`](tools/README.md): readers and analysers
+- [`evidence/`](evidence): trace references and evidence indexes from earlier work
+- [`data/`](data): machine-readable inventory summaries
+- [`examples/`](examples/README.md): small images made by the tools
 
-## Repository Layout
+## Asset policy
 
-- [`docs/`](docs) — promoted writeups and closure notes
-- [`evidence/`](evidence) — trace references, witness maps, and evidence indexes
-- [`data/`](data) — machine-readable inventory summaries
-- [`examples/`](examples) — public-safe screenshots and output examples
-- [`tools/`](tools) — curated analysis and extraction tools
-- [`future-patches/`](future-patches) — future patch planning (separate from RE canon)
+No game files and no dumps of extracted game media are included; short byte excerpts appear in the documentation as examples. `tools/check_all.py` includes `repo_guard.py`, which fails if a game file, media file or stray image is committed. To run the tools you need your own copy of the game.
 
-## Asset Policy
+## Sources
 
-This repo intentionally avoids shipping full copyrighted asset dumps.
-
-Included:
-
-- documentation
-- evidence maps
-- workflow/tooling notes
-- structured inventory summaries
-
-Not included in the initial repo:
-
-- raw retail game files
-- full extracted media dumps
-- raw private working ledgers
+Facts are checked against the original files and the original program (`LOLG.DAT`), with addresses or file offsets cited on each page. This is independent documentation.

@@ -1,0 +1,34 @@
+# LoL2 reverse-engineering status
+
+**As of:** 2026-11-18. What is documented about the original game, which tool reads it, what the tools check on the game files, and what is open. This table replaces the "almost fully understood" summary of earlier pages: those pages ([understanding](lol2-understanding-2026-11.md), [current status](lol2-current-status.md), [closure summary](closure-summary.md), [final closure memo](final-closure-memo.md)) are kept as history.
+
+Run the checks: `python3 tools/check_all.py --data <DAT>` (11 checks; all pass on the copy read).
+
+**Columns**: *Pages*: where it is described. *Tool check*: what `--check` measures on the game files. *Open*: numbered in [OPEN_QUESTIONS.md](OPEN_QUESTIONS.md).
+
+| Area | Pages | Tool check | Open |
+|------|-------|-----------|------|
+| MIX archives | [glossary](GLOSSARY.md), [texture container](lol2-level-texture-container.md) | `lol2_mix_parser` and `lol2_source_format` agree on all 81 MIX files (2905 entries; sizes, bounds, no overlap) | one page per format to write |
+| Entry names and keys | [texture container](lol2-level-texture-container.md#entry-name-and-key-proven) | `lol2_westwood_hash`: the texture entry name is a key in 15/15 level archives, the room module name in 47 room archives | Q3 |
+| Compression | tool docstrings | LCW sections of `LOCAL.MIX` entry 1: 37/37 decode (`lol2_decompress_sphere`); Westwood mode-byte variant: decoder self-test only | Q1, Q2 |
+| Level geometry | [draracle-restoration](draracle-restoration.md), [native wall verification](native-wall-verification.md) | one geometry entry per level archive, 15/15 (`lol2_source_format`) | Q16 |
+| Levels, rooms, exits | [level graph](lol2-level-graph.md) | — | Q3, Q18 |
+| Level scripts | [script format](lol2-level-script-format.md), [engine facts](lol2-script-engine-facts-2026-10.md), [addendum](lol2-script-engine-facts-2026-10-addendum.md) | — (opcode lengths from the native routine 0x645E0) | Q4, Q5, Q7, Q17 |
+| Entities and objects | [entity object map](lol2-entity-object-map.md), [object state word](lol2-object-state-word.md), [cave object catalogue](cave-object-catalogue.md) | 128 entity records of 62 types in 15/15 level archives (`lol2_entity_field_analyzer`); 29 B_HUMAN/WORM records in 12 levels | Q18 |
+| Items | [item format](lol2-item-format.md) | — | Q8 |
+| Walls and textures | [texture container](lol2-level-texture-container.md), [wall material provenance](lol2-wall-material-provenance.md), [texture map inventory](texture-map-inventory.md) | the `tools/draracle/` pipeline has its own tests | Q14, Q16 |
+| Sprites | [block sprite decoder](block-sprite-decoder.md), [creature frame groups](creature-frame-groups.md) | — | |
+| Sound and music | [audio inventory](audio-inventory.md), [music](lol2-music-2026-11.md) | — | Q15 |
+| Movies | [VQA v2](lol2-vqa-v2.md) | — | Q12 |
+| Combat | [executioner combat evidence](executioner-combat-evidence.md) | — | Q10 |
+| Globals, timers, spells, text, saves | — | — | Q6, Q7, Q9, Q11, Q13 |
+
+## Tools
+
+All 25 top-level tools answer `--help`. The 10 that had no argument handling now take `--data` (or `$LOL2_DAT`), write only with `--out`, and have a `--check`; `check_all.py` runs them and `repo_guard.py` (no game files, media or stray images may be committed). The other tools and the `tools/draracle/` pipeline still use their own options; giving them `--check` is the next tool step.
+
+## Corrections made in this pass (2026-11-18)
+
+1. The game wall texture and decoded tile images in `examples/` were removed (asset policy); the README picture is now drawn by a tool from tile indices.
+2. `lol2_l9dr_census.py` reads the whole `L9_DR.MIX` as 147-byte records from offset 0; it is marked exploratory (5,861 of 160,622 slots carry a printable tag). Use `lol2_entity_field_analyzer.py` for the real entity records.
+3. The Westwood LZ77 tool's own header convention matches no MIX entry (Q1).
