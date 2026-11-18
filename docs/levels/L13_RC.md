@@ -44,6 +44,16 @@ Level-transition commands (bytes `02 01 00 00 1c`, then level in the low 5 bits 
 |---|---:|---:|---:|---|
 | L12_CM | 2 | 0 | 706 | region:489 |
 
+## Held-item tests
+
+Event records of kind 4 with mode 3: the object's event runs when the held item has this identity ([events](../lol2-script-events.md#event-records); mode table at VA `0xADBAC`, compare at `0xADC84`). Item = record number in the [item table](../formats/items.md). Byte +5 nonzero inverts the test.
+
+| Item | Identity | Objects (inverted marked !) |
+|---:|---|---|
+| 8 | 0x8E6CF237 | prop:325 |
+| 20 | 0x815B1C01 | prop:325 |
+| 136 | 0xCE20AEE3 | prop:326, control:104 |
+
 ## Entity records
 
 4 records of 147 bytes, by name tag: `B_HUMAN` ×2, `HL1` ×1, `RULOI` ×1.

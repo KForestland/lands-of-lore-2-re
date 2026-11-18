@@ -45,6 +45,10 @@ Level-transition commands (bytes `02 01 00 00 1c`, then level in the low 5 bits 
 | L8_SJ | 4 | 0 | 0 | region:734 |
 | L13_RC | 1 | 1 | 2808 | control:74 |
 
+## Held-item tests
+
+None in this level.
+
 ## Entity records
 
 10 records of 147 bytes, by name tag: `B_HUMAN` ×2, `GGUARD` ×2, `STIGER` ×2, `APE` ×1, `BACL12` ×1, `DAWNL12` ×1, `TIG_ROG` ×1.

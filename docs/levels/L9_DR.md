@@ -47,6 +47,28 @@ Level-transition commands (bytes `02 01 00 00 1c`, then level in the low 5 bits 
 | L8_SJ | 7 | 0 | 5582 | region:5340 |
 | L10_DC | 2 | 0 | 548 | region:2299 |
 
+## Held-item tests
+
+Event records of kind 4 with mode 3: the object's event runs when the held item has this identity ([events](../lol2-script-events.md#event-records); mode table at VA `0xADBAC`, compare at `0xADC84`). Item = record number in the [item table](../formats/items.md). Byte +5 nonzero inverts the test.
+
+| Item | Identity | Objects (inverted marked !) |
+|---:|---|---|
+| 70 | 0xA65AA1BF | control:119 |
+| 78 | 0xCFE9BC82 | control:301 |
+| 95 | 0x9EF322DA | movable:115 |
+| 98 | 0xF38DCC87 | prop:1094 |
+| 137 | 0x5A9CB9B5 | control:119 |
+| 138 | 0x7A9FB9B5 | control:119 |
+| 139 | 0x5AA2B9B5 | control:119 |
+| 140 | 0x5AA5B9B5 | control:119 |
+| 141 | 0x5AA8B9B5 | control:119 |
+| 142 | 0x5A97BBB5 | control:119 |
+| 143 | 0x5A9ABBB5 | control:119 |
+| 144 | 0x5A9DBBB5 | control:119 |
+| 145 | 0x8A97BBB5 | control:119 |
+| 146 | 0x8B99BBB5 | control:119 |
+| 147 | 0x8C9BBBB5 | control:119 |
+
 ## Entity records
 
 8 records of 147 bytes, by name tag: `B_HUMAN` ×2, `SSAR` ×2, `BELSTAT` ×1, `SSAR_P` ×1, `StSquid` ×1, `WORM` ×1.

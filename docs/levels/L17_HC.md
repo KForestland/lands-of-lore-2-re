@@ -47,6 +47,10 @@ Level-transition commands (bytes `02 01 00 00 1c`, then level in the low 5 bits 
 | L19_BC | 1 | 0 | 1632 | region:1312 |
 | L19_BC | 1 | 0 | 1638 | region:1313 |
 
+## Held-item tests
+
+None in this level.
+
 ## Entity records
 
 4 records of 147 bytes, by name tag: `B_HUMAN` ×2, `HIVEGRD` ×1, `HIVEW` ×1.

@@ -45,6 +45,27 @@ Level-transition commands (bytes `02 01 00 00 1c`, then level in the low 5 bits 
 | L17_HC | 1 | 1 | 42056 | control:74 |
 | L17_HC | 3 | 0 | 7268 | region:9822 |
 
+## Held-item tests
+
+Event records of kind 4 with mode 3: the object's event runs when the held item has this identity ([events](../lol2-script-events.md#event-records); mode table at VA `0xADBAC`, compare at `0xADC84`). Item = record number in the [item table](../formats/items.md). Byte +5 nonzero inverts the test.
+
+| Item | Identity | Objects (inverted marked !) |
+|---:|---|---|
+| 55 | 0x84D4248D | movable:66 |
+| 57 | 0xE7B89177 | movable:66 |
+| 60 | 0xF40E4E1D | movable:66 |
+| 63 | 0x8B59F903 | prop:1, prop:2, prop:3, prop:4, prop:419, prop:483, prop:484, prop:485 … |
+| 65 | 0x9B5B0719 | movable:66 |
+| 68 | 0xE0649CBA | movable:66 |
+| 94 | 0x178B0A33 | control:62, control:63, control:64, control:65, control:66, control:67, control:68, control:69 … |
+| 107 | 0x042E0C09 | control:0, control:70, control:95, control:173, control:174, control:175, control:176 |
+| 109 | 0xBFDDCCA3 | control:148, control:149, control:150, control:151, control:152, control:153, control:154, control:155 … |
+| 110 | 0xDE73C93C | control:148, control:149, control:150, control:151, control:152, control:153, control:154, control:155 … |
+| 111 | 0x64C08B10 | control:148, control:149, control:150, control:151, control:152, control:153, control:154, control:155 … |
+| 117 | 0x0E347A01 | control:75 |
+| 118 | 0xE320E8D1 | prop:418, control:148, control:149, control:150, control:151, control:152, control:153, control:154 … |
+| 122 | 0xCA4DEBCC | control:148, control:149, control:150, control:151, control:152, control:153, control:154, control:155 … |
+
 ## Entity records
 
 6 records of 147 bytes, by name tag: `B_HUMAN` ×2, `VISC` ×2, `HL3` ×1, `bacl16` ×1.

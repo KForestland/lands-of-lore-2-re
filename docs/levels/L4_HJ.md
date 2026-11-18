@@ -54,6 +54,18 @@ Level-transition commands (bytes `02 01 00 00 1c`, then level in the low 5 bits 
 | L8_SJ | 1 | 0 | 6190 | region:3189 |
 | L8_SJ | 1 | 0 | 6214 | region:3189 |
 
+## Held-item tests
+
+Event records of kind 4 with mode 3: the object's event runs when the held item has this identity ([events](../lol2-script-events.md#event-records); mode table at VA `0xADBAC`, compare at `0xADC84`). Item = record number in the [item table](../formats/items.md). Byte +5 nonzero inverts the test.
+
+| Item | Identity | Objects (inverted marked !) |
+|---:|---|---|
+| 74 | 0xB45B2813 | actor:63 |
+| 85 | 0x87F22ADE | control:0, control:83 |
+| 95 | 0x9EF322DA | movable:64, movable:65, movable:67, movable:68, movable:70 |
+| 111 | 0x64C08B10 | control:0, control:83 |
+| 112 | 0x7F859FB9 | control:0, control:83 |
+
 ## Entity records
 
 13 records of 147 bytes, by name tag: `BACL4` ×1, `B_HUMAN` ×1, `DINO` ×1, `DawnL4` ×1, `GGuard` ×1, `Kelsrick` ×1, `L4WW` ×1, `SSAR` ×1, `TIG_CUB` ×1, `TIG_FEM` ×1, `TIG_MAL` ×1, `TIG_ROG` ×1, `VILLAGER` ×1.

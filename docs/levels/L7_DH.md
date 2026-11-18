@@ -50,6 +50,10 @@ Level-transition commands (bytes `02 01 00 00 1c`, then level in the low 5 bits 
 | L4_HJ | 6 | 0 | 946 | region:1412 |
 | L4_HJ | 6 | 0 | 964 | region:1413 |
 
+## Held-item tests
+
+None in this level.
+
 ## Entity records
 
 5 records of 147 bytes, by name tag: `B_HUMAN` ×2, `RIX` ×1, `Rat` ×1, `SHADE` ×1.

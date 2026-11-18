@@ -46,6 +46,10 @@ Level-transition commands (bytes `02 01 00 00 1c`, then level in the low 5 bits 
 | L20_BB | 1 | 0 | 15784 | region:2369 |
 | L20_BB | 2 | 0 | 15790 | region:2369 |
 
+## Held-item tests
+
+None in this level.
+
 ## Entity records
 
 7 records of 147 bytes, by name tag: `B_HUMAN` ×2, `BELSTAT` ×1, `DAWNL19` ×1, `IMP_BEL` ×1, `SEWER` ×1, `SWARMER` ×1.
