@@ -1,5 +1,7 @@
 # Start here, by goal
 
+[Format quick reference](QUICK_REFERENCE.md) pairs each documented game format with a command and its evidence.
+
 You need Python 3.10+, Pillow (`pip install -r requirements.txt`) and your own copy of *Lands of Lore: Guardians of Destiny*. Point the tools at its `DAT` folder once:
 
 ```bash
