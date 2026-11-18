@@ -11,5 +11,7 @@ Each page: what the file is, its layout, a worked example with real bytes from t
 | [entity-records.md](entity-records.md) | 147-byte records in level archives | `lol2_entity_field_analyzer.py` | records CONFIRMED; containing structure open (Q19) |
 | [items.md](items.md) | `GLOBAL.MIX` item table | `lol2_mix_parser.py` | header and counts CONFIRMED; Q8 |
 | [sound.md](sound.md) | `LOCALLNG.MIX` sound bank, music, movies | `lol2_sound_bank.py`, `lol2_aud_decode.py`, `lol2_vqa_v2_decode.py` | bank and 517 AUD entries CONFIRMED; Q12, Q15 |
+| [compression.md](compression.md) | LZO1X blocks, LCW variant, LZ77 with mode byte | `lol2_texture_container.py`, `lol2_decompress_sphere.py`, `lol2_decompress_westwood.py` | two schemes CONFIRMED; Q1, Q2 |
+| [vqa.md](vqa.md) | `WVQA` movies | `lol2_vqa_v2_decode.py` | 1,948 headers CONFIRMED; 948 decoded; 14 unsupported layouts |
 
-Still to write: level script streams and opcodes, VQA and music detail pages, sprites, text (TEXT/TCEL, Q13).
+Script streams and opcodes: [opcode reference](../lol2-script-opcodes.md). Still to write: geometry (regions and portals), maps, sprites.

@@ -29,6 +29,7 @@ Requires Python 3.10+ and NumPy. Pillow is needed only for --out (PNG frames).
     python3 tools/lol2_vqa_v2_decode.py ./lol2_game/DAT/CHUT.MIX --entry 3 --out frames/
 """
 import argparse
+import os
 import sys
 from pathlib import Path
 
@@ -171,13 +172,64 @@ def _mix_entries(data: bytes):
     return parse_mix(data)
 
 
+def check(folder) -> int:
+    """Read every WVQA entry in the MIX files of folder; decode the shortest partial-codebook movie fully."""
+    if folder is None:
+        print('CHECK vqa: no --data folder given'); return 1
+    total, bad, versions, partial, shortest, unsupported = 0, [], {}, 0, None, {}
+    for mix in sorted(Path(folder).glob('*.[Mm][Ii][Xx]')):
+        data = mix.read_bytes()
+        try:
+            entries = _mix_entries(data)
+        except Exception:
+            continue
+        for e in entries:
+            blob = data[e['offset']:e['offset'] + e['size']]
+            if blob[:4] != b'FORM' or blob[8:12] != b'WVQA':
+                continue
+            total += 1
+            try:
+                _, f = header(blob)
+            except VQAError as error:
+                bad.append(f"{mix.name}#{e['index']}: {error}"); continue
+            try:
+                is_partial = partial_v2(blob)
+            except VQAError:
+                # partial codebooks in a layout this decoder does not handle (4x2 blocks, or 0 parts in VQHD)
+                key = f"{f['block_w']}x{f['block_h']} blocks, {f['parts']} parts"
+                unsupported[key] = unsupported.get(key, 0) + 1
+                is_partial = False
+            versions[f['version']] = versions.get(f['version'], 0) + 1
+            if is_partial:
+                partial += 1
+                if shortest is None or f['frames'] < shortest[2]:
+                    shortest = (mix.name, e['index'], f['frames'], blob)
+    decoded = ''
+    if shortest:
+        n = sum(1 for _ in frames(shortest[3]))
+        decoded = f"; {shortest[0]} entry {shortest[1]} decoded fully: {n}/{shortest[2]} frames"
+        if n != shortest[2]:
+            bad.append('frame count mismatch')
+    print(f"CHECK vqa: {total} WVQA movies, headers and frame counts valid: {total - len(bad)}; versions "
+          f"{dict(sorted(versions.items()))}; partial-codebook decoded by this tool: {partial}{decoded}; partial codebooks in layouts this tool does not decode: "
+          f"{unsupported or 'none'}; bad={bad[:3] or 'none'}")
+    return 0 if not bad else 1
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description='Decode LoL2 partial-codebook VQA v2 movies (see docs/lol2-vqa-v2.md).')
-    ap.add_argument('path', type=Path, help='a .VQA file, or a MIX archive holding VQA entries (read only)')
+    ap.add_argument('path', type=Path, nargs='?', help='a .VQA file, or a MIX archive holding VQA entries (read only)')
     ap.add_argument('--entry', type=int, help='MIX entry index to decode')
     ap.add_argument('--key', type=lambda s: int(s, 0), help='MIX entry key (hash) to decode')
     ap.add_argument('--out', type=Path, help='write PNG frames here (needs Pillow)')
+    ap.add_argument('--check', action='store_true', help='read every movie header in the MIX files of --data and fully '
+                    'decode the shortest partial-codebook movie; one line')
+    ap.add_argument('--data', type=Path, default=os.environ.get('LOL2_DAT'), help='DAT folder (default $LOL2_DAT)')
     a = ap.parse_args(argv)
+    if a.check:
+        return check(a.data)
+    if a.path is None:
+        ap.print_help(); return 2
     data = a.path.read_bytes()
     if data[:4] == b'FORM':
         blobs = [('file', data)]

@@ -23,13 +23,13 @@ The tools below follow one set of rules: `--help` changes nothing; the game's `D
 
 ### `check_all.py`
 
-Run every `--check` (14) and print one line each, then a summary.
+Run every `--check` (15) and print one line each, then a summary.
 
 ```
-$ python3 tools/check_all.py | sed -n "1,2p;15p"
-CHECK repo_guard: 212 tracked files; game files, media, stray images, files over 1 MiB, machine paths or lane/agent names: none (0)
+$ python3 tools/check_all.py | sed -n "1,2p;16p"
+CHECK repo_guard: 215 tracked files; game files, media, stray images, files over 1 MiB, machine paths, lane/agent names or commit identities: none (0)
 CHECK mix: 81 MIX files, 2905 entries; this reader and lol2_source_format.parse_mix agree and every entry lies inside its file: 81/81; index sorted by signed key: 81/81; bad=none
-ALL 14 CHECKS PASSED
+ALL 15 CHECKS PASSED
 ```
 
 ### `lol2_mix_parser.py`
