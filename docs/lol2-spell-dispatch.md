@@ -253,3 +253,26 @@ An original playthrough trace filtered to its first nonzero
 write would identify the producer and its quest or item input.
 For an unlinked grant such as L1 group 13584, capture the
 original return address when its stream-1 group is entered.
+
+### Timed-message runtime control
+
+**CONFIRMED.** In the DOS 1.30 executable (`LOLG.DAT` SHA-256 prefix
+`b27a3534`), a copy of a level-20 autosave written by the original game during play
+(a player save, not shipped; SHA-256 prefix `e2393dbe4d2b`) entered the player update at `0xD2E30` with +0x185
+equal to zero. A spell input reached the effect switch `0xD24B1`
+with effect `0x0A`. The field was zero there and at `0xD1048` in
+the same test window. A write watch on player +0x185 captured the
+zero write at `0xCFB8B` and zero-valued bytes during startup and
+load. Every watched write in the trial was zero, and the expiry
+breakpoint at `0xD2E57` stayed idle.
+
+**CONFIRMED.** In that slot, the live controller at object-5
+`0x23348` had a handler-34 instance (definition identity `0x5BD621C2`)
+at inventory array +0x280, index 6. The native inventory routine
+uses that array at `0x8AA82–0x8AA8B` and the item dispatcher reads
+the handler at `0x9584E`. **UNCONFIRMED.** The click trial left
+handler `0x96F64` unobserved, and player form +0x1AB stayed zero at
+the sampled points. The controlled lesson use and form change remain
+open. Confirm entry at `0x96FEC` for that lesson or a change of
+player +0x1AB while the write watch is armed, then follow any first
+nonzero store through the expiry call at `0xD2E61`.

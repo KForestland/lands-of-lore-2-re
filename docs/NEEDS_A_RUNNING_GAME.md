@@ -41,6 +41,12 @@ Question: [Q9 in OPEN_QUESTIONS](OPEN_QUESTIONS.md).
 that field is nonzero and clears it at `0xD2E57` before
 sending message 0x26. [Spell and timer consumers](lol2-spell-dispatch.md)
 
+**CONFIRMED, partial runtime result.** One level-20 cast reached
+`0xD24B1` with effect `0x0A` and the watched player field stayed zero.
+The copied autosave (a player save written by the game) contains a handler-34 lesson item. The trial
+left its handler unobserved and the recorded player form stayed zero.
+[Runtime control and slot evidence](lol2-spell-dispatch.md#timed-message-runtime-control)
+
 **UNCONFIRMED.** Which gameplay action arms the timer. Arm a
 write watch at player +0x185 after initialization and note the
 player pointer from the executing update at `0xD2E30`. In
