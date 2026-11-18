@@ -34,7 +34,7 @@ Words you do not know are in the [glossary](GLOSSARY.md); what is known and chec
 
 ## I want sound, music or movies
 
-- [audio-inventory.md](audio-inventory.md), [lol2-music-2026-11.md](lol2-music-2026-11.md), [lol2-vqa-v2.md](lol2-vqa-v2.md); tools `lol2_sound_bank.py`, `lol2_aud_decode.py`, `lol2_vqa_v2_decode.py`.
+- [audio-inventory.md](audio-inventory.md), [lol2-music-2026-11.md](lol2-music-2026-11.md), [lol2-vqa-v2.md](lol2-vqa-v2.md); tools `lol2_sound_bank.py` (lists `LOCALLNG.MIX`, found next to `DAT/`), `lol2_aud_decode.py DMUSIC.MIX 0 --info`, `lol2_vqa_v2_decode.py L4_HJI.MIX --entry 67`. Names are looked up in `$LOL2_DAT` and the game folder above it.
 
 ## I want walls and textures
 

@@ -103,13 +103,13 @@
 - identified 6xxx renderer/display consumer family (`6A50`–`6CDA`) reading from the same `[+80]` object
 - confirmed `+0x6C` is deferred to gameplay phase (not read in loading-phase window)
 - mapped `+0x28` as hottest structural pointer (5 consumer sites)
-- precision wording fixes across all promoted docs (qualifier additions, ambiguity resolution)
+- precision wording fixes across all pages (qualifier additions, ambiguity resolution)
 - README cleanup: merged duplicate layout sections, resolved conflicting "Start here" signals
 
 ## 2026-03-23
 
 - initialized the public LoL2 repo structure
-- added the first promoted closure docs
+- added the first closure notes
 - added compact-path branch-steering and object-state-word notes
 - added the runtime-to-renderer bridge note
 - added `Start Here` guidance and public readability polish

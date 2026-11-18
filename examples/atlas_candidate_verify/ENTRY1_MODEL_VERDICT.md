@@ -108,14 +108,14 @@ the records are texture sub-images.
 ## Practical Effect On The Texture Hunt
 
 Do **not** use `LOCAL.MIX` entry `1` records `1..38` as the main texture
-closure lane unless they first beat the Sphere interpretation with
+closure work unless they first beat the Sphere interpretation with
 stronger evidence.
 
 Better current usage:
 
 - keep record `0` as a witness
 - treat records `1..38` as Sphere/room-structure data by default
-- continue texture closure on a lane that is not already better explained
+- continue texture closure on a path that is not already better explained
   by chained room-section decoding
 
 Follow-up on 2026-04-02:

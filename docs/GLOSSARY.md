@@ -9,12 +9,10 @@ Words used across these pages, in plain terms.
 | CONFIRMED / UNCONFIRMED | CONFIRMED: checked on the game files or in the original program's code. UNCONFIRMED: inferred, not yet checked. |
 | Native | In or from the original program (`LOLG.DAT` and its loader), as opposed to a reimplementation. |
 | Q1 … Q20 | Numbered open questions, see [OPEN_QUESTIONS.md](OPEN_QUESTIONS.md). |
-| MIX | Westwood's archive: a 6-byte header (entry count, data size), 12-byte rows (key, offset, size), then the data. Almost all game data lives in the 81 MIX files under `DAT/`; seven more (`LOCAL`, `LOCALLNG`, `DMUSIC`, `SETUP`, `GLOBAL`, `CACHEBAK`, `CDCACHE`) sit next to it ([MIX page](formats/mix.md)). |
+| MIX | Westwood's archive: a 6-byte header (entry count, data size), 12-byte rows (key, offset, size), then the data. Almost all game data lives in the 81 MIX files under `DAT/`; seven more (`LOCAL`, `LOCALLNG`, `DMUSIC`, `SETUP`, `GLOBAL`, `CACHEBAK`, and the game-written `CDCACHE`) sit next to it ([MIX page](formats/mix.md)). |
 | Key | A MIX entry's name is not stored; its key is a hash of the name (`ww_hash_v1`, `tools/lol2_westwood_hash.py`). |
 | Level archive | `DAT/L<n>_<xx>.MIX`, one per level (15), e.g. `L1_DC` = level 1, Draracle's Caverns. |
-| Room archive | `DAT/<ROOM>.MIX` for a self-contained room, with a room module (`WOMS\<ROOM>_.WOM`), movies and sprites. |
 | Geometry entry | The one entry in a level archive whose header starts with 18 and 5300; the level's regions, walls and floors. |
-| Region | A walkable area of a level, joined to others by portals; the engine draws only regions it reaches through portals. |
 | Entity record | A 147-byte object record (135-byte body and a 12-byte name tag such as `B_HUMAN`). |
 | Script, opcode | Levels run Westwood script commands; each command starts with an opcode (the native size table knows 37 opcodes, 32 of them occur in the 15 levels), its length fixed per opcode. |
 | AUD | Westwood's compressed audio (IMA ADPCM). |
@@ -31,3 +29,9 @@ Words used across these pages, in plain terms.
 | Pinned | A tool that checks the SHA-256 of its input and refuses other editions. |
 | `ww_hash_v1`, `v2`, `crc`, `ts` | Variants of Westwood's archive name hash in `tools/lol2_westwood_hash.py`; LoL2 keys use `v1`. |
 | Longplay | A full recorded playthrough of the original game, used only to place levels in story order; it is not published here. |
+| ODF | The level entry that holds the object definitions (147-byte records; [entity records](formats/entity-records.md)). |
+| `.TE_` | A level's texture container inside its MIX, stored as LZO1X blocks ([texture container](formats/texture-container.md)). |
+| TRR | A message-table file (help, options, automap, credits, error text; [text tables](lol2-text-tables.md)). |
+| HMI | Human Machine Interfaces' MIDI-like song format used for the music ([music](lol2-music-2026-11.md)). |
+| LSV | A level save file the game writes; evidence comes only from the reference `SAVEGAME` folder ([saves](lol2-save-format.md)). |
+| Sphere | The game's name for a world area: archive paths begin `SPHERE1\`, `SPHERE2\` ...; `lol2_decompress_sphere.py` is named after it and decodes the room sections of `LOCAL.MIX`. |

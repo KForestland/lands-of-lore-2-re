@@ -22,7 +22,7 @@ One line per question: its state and what would settle what is left.
 | Q12 | Partly | Decode the remaining codebook layouts (see the page) |
 | Q13 | Partly | Find where character dialogue is stored |
 | Q14 | Mostly | Decode the non-raw payloads (`0x1246` and the payload-length flags) |
-| Q15 | Answered | Name the stem of key `0x1305A4F0` |
+| Q15 | Mostly | Name the stem of key `0x1305A4F0`; the `FORM` entries in `LOCAL.MIX` are a different container |
 | Q16 | Partly | Trace wall spans, UVs and openings beyond the traced span |
 | Q17 | Partly | Trace the visible geometry and input conditions of L8 controls 69 and 114 |
 | Q18 | Partly | Trace the gameplay producers of the unresolved events |

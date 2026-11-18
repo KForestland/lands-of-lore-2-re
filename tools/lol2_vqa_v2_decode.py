@@ -35,6 +35,9 @@ from pathlib import Path
 
 import numpy as np
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import lol2_cli  # noqa: E402
+
 
 class VQAError(ValueError):
     """Malformed or unsupported VQA input."""
@@ -230,7 +233,7 @@ def main(argv=None) -> int:
         return check(a.data)
     if a.path is None:
         ap.print_help(); return 2
-    data = a.path.read_bytes()
+    data = Path(lol2_cli.resolve_input(a.path, a.data)).read_bytes()
     if data[:4] == b'FORM':
         blobs = [('file', data)]
     else:

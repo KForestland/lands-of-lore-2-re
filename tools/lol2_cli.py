@@ -32,3 +32,19 @@ def refuse_repo_output(path):
     if target == repo or target.startswith(repo + os.sep):
         sys.exit(f"refusing to write inside the repository ({path}); give an output path outside it")
     return path
+
+
+def resolve_input(name, data_dir=None):
+    """Find a game file given as a path or a bare name: as given, then in the DAT folder
+    (--data or $LOL2_DAT), then in the game folder above it (LOCAL, LOCALLNG, DMUSIC, SETUP, GLOBAL)."""
+    name = str(name)
+    if os.path.isfile(name):
+        return name
+    data_dir = data_dir or os.environ.get("LOL2_DAT")
+    if data_dir:
+        for folder in (data_dir, os.path.dirname(os.path.abspath(str(data_dir)))):
+            for cand in (name, name.upper(), name.lower()):
+                p = os.path.join(folder, cand)
+                if os.path.isfile(p):
+                    return p
+    return name

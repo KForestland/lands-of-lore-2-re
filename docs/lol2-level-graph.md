@@ -104,7 +104,7 @@ note).
 
 Rooms are separate archives `DAT/<ROOM>.MIX`. 45 of them contain a room module at the name hash of
 `WOMS\<ROOM>_.WOM` plus VQA movies and sprites; SPKSTON1, SPKSTON2 and SPKSTON4 hold only movies. Counts
-below were checked against the retail files.
+below were checked against the retail files. A later name-hash check finds the `WOMS\<ROOM>_.WOM` key in 47 archives: the 46 named by the room table at file `0x1CFA90` plus `ARENA` ([Q3](OPEN_QUESTIONS.md), [room archives](lol2-room-archives.md)).
 
 | Room | Entries | VQA movies | | Room | Entries | VQA movies |
 |---|---:|---:|---|---|---:|---:|

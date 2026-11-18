@@ -1,5 +1,7 @@
 # Tooling Catalog
 
+> **History.** A note from an earlier pass, kept as a record. Current pages: [STATUS.md](STATUS.md) and [formats/](formats/README.md); where they differ, the current pages are right.
+
 Date: 2026-03-23
 
 ## Purpose
@@ -61,8 +63,8 @@ Used for:
 
 Rule used during this pass:
 
-- advisory output never became canon by itself
-- only locally confirmed parts were promoted into repo docs
+- review comments never became findings by themselves
+- only parts confirmed against the original files were published
 
 ## How The Workflow Was Used
 
@@ -72,9 +74,9 @@ The working method during the compact-path closure pass was:
 2. design one exact trace or suppression check
 3. confirm locally
 4. reduce dead models
-5. promote only the cleaned result
+5. publish only the checked result
 
-This is why the repo contains promoted notes rather than raw conversational history.
+This is why the repository contains checked notes rather than working logs.
 
 ## Current Gap
 

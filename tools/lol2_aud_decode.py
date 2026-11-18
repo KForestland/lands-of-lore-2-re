@@ -29,6 +29,9 @@ import struct
 import sys
 import wave
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import lol2_cli  # noqa: E402
+
 # ---------------------------------------------------------------------------
 # IMA-ADPCM tables (standard)
 # ---------------------------------------------------------------------------
@@ -315,10 +318,7 @@ def main():
         parser.print_help()
         return 2
 
-    lol2_dat = os.environ.get("LOL2_DAT", ".")
-    mix_path = args.mixfile
-    if not os.path.isabs(mix_path):
-        mix_path = os.path.join(lol2_dat, mix_path)
+    mix_path = lol2_cli.resolve_input(args.mixfile, args.data)
 
     if not os.path.isfile(mix_path):
         print(f"ERROR: file not found: {mix_path}", file=sys.stderr)

@@ -42,8 +42,8 @@ Decoding uses `lzo1x_decompress_safe` from the system `liblzo2` through
 ctypes, so no `python-lzo` package is needed. The reader refuses
 out-of-bounds sizes, short blocks and a non-zero trailer.
 
-The decoded blob is byte-identical to the blob the game caches in
-`CDCACHE.MIX`. For L20, the LZO decode of `L20_BB.MIX` gives `28,451,111`
+The decoded blob is byte-identical to the blob found in one game-written
+`CDCACHE.MIX` (a run-time cache, not shipped; [Q20](OPEN_QUESTIONS.md)). For L20, the LZO decode of `L20_BB.MIX` gives `28,451,111`
 bytes with SHA-256
 `adf44e535d7b890f0f47e28266e480559fa0417094e0b5495f0775e06c41ef21`, the same
 hash recorded for the named cache blob `sphere3\l20_bb\l20_bb.te_` in the

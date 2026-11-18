@@ -17,7 +17,8 @@ texture atlas.
 
 1. **Cache identity.** A wall page read by the renderer in a DOSBox guest
    trace was located in the named cache blob `sphere3\l20_bb\l20_bb.te_`
-   (`CDCACHE.MIX`). All `28,451,111` bytes match the reference copy (SHA-256
+   (`CDCACHE.MIX`, the cache the game writes at run time; one installation's copy,
+   [Q20](OPEN_QUESTIONS.md)). All `28,451,111` bytes match the reference copy (SHA-256
    `adf44e53...6c41ef21`). The same bytes are the LZO1X decode of the
    `.TE_` entry in `DAT/L20_BB.MIX`
    ([lol2-level-texture-container.md](lol2-level-texture-container.md)).
@@ -85,8 +86,6 @@ witness, but nothing links it to rendered walls.
 
 ## Evidence
 
-- 2026-09-11 cache-identity, wall-material and native-material-colour
-  checkpoints in the project's AI coordination notes (private workspace).
 - DOSBox guest trace with the material-context hook; trace SHA-256
   `824365cf90601d38366f5c2065600a1806750ed663d0b94115d67f0d791a5a92`.
 - File-side reproduction: `tools/lol2_texture_container.py export --mix

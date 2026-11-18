@@ -1,5 +1,7 @@
 # Provenance
 
+> **History.** A note from an earlier pass, kept as a record. Current pages: [STATUS.md](STATUS.md) and [formats/](formats/README.md); where they differ, the current pages are right.
+
 This note explains where the current LoL2 repo claims come from.
 
 ## Primary Sources
@@ -42,7 +44,7 @@ Used for:
 
 This is the strongest source type for the entity pipeline, bit-field layout, and renderer format claims.
 
-### 4. Bounded Advisory AI Review
+### 4. Review
 
 Used for:
 
@@ -53,17 +55,15 @@ Used for:
 
 Rule used in this repo:
 
-- advisory output was never promoted directly
-- only locally confirmed parts were folded into public docs
+- review comments were never published as findings by themselves
+- only parts confirmed against the original files were folded into the pages
 
 ## What This Repo Avoids
 
 This repo does not treat the following as public proof by themselves:
 
-- private conversational history
-- unconfirmed AI interpretations
+- unconfirmed interpretations
 - one-off speculative labels
-- broad internal workspace clutter
 
 ## Best Reading Rule
 
@@ -73,4 +73,4 @@ When in doubt, trust:
 2. the inventories in `data/`
 3. the witness/evidence maps in `evidence/`
 
-Do not treat older private working notes outside this repo as cleaner truth than the promoted repo surface.
+Every claim should be checkable against the original files with the tools here.

@@ -30,6 +30,7 @@ from pathlib import Path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from lol2_mix_parser import read_mix_with_hashes  # noqa: E402
 from lol2_aud_decode import parse_aud_header, CHUNK_MAGIC  # noqa: E402
+import lol2_cli  # noqa: E402
 
 BANK_KEY = 1570429112
 COUNT_OFFSET = 0x258
@@ -91,14 +92,16 @@ def parse_rows(bank):
 def main():
     parser = argparse.ArgumentParser(description=__doc__,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("mix", help="path to LOCALLNG.MIX from your own install")
+    parser.add_argument("mix", nargs="?", default="LOCALLNG.MIX",
+                        help="LOCALLNG.MIX from your own install: a path, or found next to the DAT folder (--data or $LOL2_DAT)")
+    parser.add_argument("--data", default=os.environ.get("LOL2_DAT"), help="the game's DAT folder (default $LOL2_DAT)")
     parser.add_argument("--json", action="store_true", help="print rows as JSON")
     parser.add_argument("--extract", metavar="DIR", help="write raw AUD clips to DIR")
     parser.add_argument("--index", type=int, action="append",
                         help="row index to extract (repeatable; default all)")
     args = parser.parse_args()
     try:
-        bank = read_bank(args.mix)
+        bank = read_bank(lol2_cli.resolve_input(args.mix, args.data))
         count, table, rows = parse_rows(bank)
     except (ValueError, OSError, struct.error) as error:
         parser.error(str(error))

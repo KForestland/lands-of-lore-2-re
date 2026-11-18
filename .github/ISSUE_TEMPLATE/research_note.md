@@ -26,4 +26,4 @@ Include only the strongest concrete evidence.
 
 ## Promotion Standard
 
-Explain what must be true before this belongs in promoted public docs.
+Explain what must be true before this belongs in the published pages.

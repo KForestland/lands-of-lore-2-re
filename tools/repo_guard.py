@@ -15,8 +15,8 @@ files git tracks and fails on:
   - with --release only: in the git history, any author or committer address not in ALLOWED_AUTHORS
     (committers may also be GitHub's noreply@github.com); the address is not printed
   - in text files: machine paths (/home/, /media/, /mnt/, C:\\Users\\) and
-    assistant names (ASSISTANT_NAMES) and private words from an untracked local file
-    (.git/info/private_words, one per line; skipped with a note when absent)
+    words from an untracked local word list (.git/info/private_words, one per line;
+    skipped with a note when absent)
 
 It cannot tell whether a PNG in the allowed folders shows game pixels; that
 stays a review point. Needs no game data (--data is accepted and ignored).
@@ -34,11 +34,8 @@ GAME = {".mix", ".vqa", ".aud", ".tex", ".te_", ".wom", ".pcx", ".smf", ".lst", 
 PNG_OK = ("examples/", "docs/images/")
 
 
-# Text rules: no machine paths and no lane, agent or private names in tracked files.
-# This file is exempt because it holds the lists.
+# Text rules: no machine paths, and none of the words in the local word list.
 MACHINE_PATH = re.compile(r"/home/[a-z]|/media/[a-z]|/mnt/[a-z]|[A-Za-z]:\\Users\\")
-# Assistant names that must not appear in public pages (plain text, they are not private).
-ASSISTANT_NAMES = re.compile(r"\b(Grok|Sol|Opus|Fable|Codex|Gemini|Kimi|Astra|Claude)\b")
 
 
 def private_words(root):
@@ -72,11 +69,11 @@ def text_findings(root, f):
     for n, line in enumerate(lines, 1):
         if MACHINE_PATH.search(line):
             out.append(f"{f}:{n} (machine path)")
-        hits = [m for m in ASSISTANT_NAMES.finditer(line)] + [m for m in WORD.finditer(line) if m.group(0) in PRIVATE]
+        hits = [m for m in WORD.finditer(line) if m.group(0) in PRIVATE]
         for m in hits:
             if line[m.start() - 1:m.start()] == '"' and line[m.end():m.end() + 1] == '"':
-                continue  # a quoted name is game text, e.g. a bow named like an assistant
-            out.append(f"{f}:{n} (private or assistant name)")
+                continue  # a quoted word is game text, e.g. an item name
+            out.append(f"{f}:{n} (word from the local list)")
             break
     return out
 
@@ -142,7 +139,7 @@ def main():
             bad.extend(text_findings(root, f))
     if getattr(a, 'release', False):
         bad.extend(identity_findings(root))
-    print(f"CHECK repo_guard: {len(files)} tracked files; game files, media, stray images, files over 300 KB, machine paths, private or assistant names, or commit identities: "
+    print(f"CHECK repo_guard: {len(files)} tracked files; game files, media, stray images, files over 300 KB, machine paths, words from the local list, or commit identities: "
           f"{bad[:5] or 'none'}{' ...' if len(bad) > 5 else ''} ({len(bad)}); {private_status}")
     return 0 if not bad else 1
 

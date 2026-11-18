@@ -2,7 +2,7 @@
 
 Curated analysis and extraction tools for LoL2 reverse engineering.
 
-## Cave restoration pipeline
+## Draracle Caverns geometry checks
 
 See [Draracle findings](../docs/draracle-restoration.md). Run
 `python3 tools/draracle/run_geometry_pipeline.py --game-root /path/to/lol2 --out /path/to/output`.
@@ -11,8 +11,9 @@ wall-record evidence from pinned original files.
 
 ## Setup
 
-- Python 3.8+
-- Pillow (`pip install Pillow`) — required only for visual output tools (sprite decode, geometry cracker, wall mesh)
+- Python 3.10+
+- `pip install -r requirements.txt`: Pillow (picture output), capstone (disassembly checks), numpy (movie decoder)
+- Optional: the system LZO library (`apt install liblzo2-2`) for `lol2_texture_container.py`
 - Set `LOL2_DAT` to your LoL2 `DAT/` directory path, or pass `--data`
 - Older tools may use `OUTPUT_DIR` / `LOL2_OUT`; never point them inside this repository
 
@@ -27,7 +28,7 @@ Run every `--check` (20) and print one line each, then a summary.
 
 ```
 $ python3 tools/check_all.py | sed -n "1,2p;21p"
-CHECK repo_guard: 260 tracked files; game files, media, stray images, files over 300 KB, machine paths, private or assistant names, or commit identities: none (0)
+CHECK repo_guard: 260 tracked files; game files, media, stray images, files over 300 KB, machine paths, words from the local list, or commit identities: none (0); private word list: not present, skipped
 CHECK mix: 81 MIX files, 2905 entries; this reader and lol2_source_format.parse_mix agree and every entry lies inside its file: 81/81; index sorted by signed key: 81/81 (by unsigned key: 20); bad=none
 ALL 20 CHECKS PASSED
 ```
@@ -174,7 +175,7 @@ Fails if a game file, media file or stray image is committed. Needs no game data
 
 ```
 $ python3 tools/repo_guard.py --check
-CHECK repo_guard: 260 tracked files; game files, media, stray images, files over 300 KB, machine paths, private or assistant names, or commit identities: none (0)
+CHECK repo_guard: 260 tracked files; game files, media, stray images, files over 300 KB, machine paths, words from the local list, or commit identities: none (0); private word list: not present, skipped
 ```
 
 ## Tool Index
