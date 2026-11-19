@@ -72,3 +72,18 @@ The tool writes a format-1 file per song. The division is 120, the value of the 
 - What the scaled words stored by opcode 210 arms 4 to 9 change in playback. The stores themselves are in [the selection note](lol2-music-selection.md).
 - The 33 `FORM` entries in `LOCAL.MIX` (entry 0 starts `FORM` / `XDIR`). They are not HMI songs.
 - Whether the game's timer matches the 120-tick division above.
+
+### Writing the original scores
+
+**CONFIRMED.** `python3 tools/lol2_hmi_writer.py --check --data /path/to/DAT`
+rebuilds all 33 HMI scores and 438 tracks from `LOCAL.MIX` byte for byte.
+The song's track offsets are regenerated using +0xE4/+0xE8, and the
+track event stream starts at the offset in track +0x57
+(`0x17A12D`). The writer retains the stored width of every delay and
+duration (`0x17B641`), the original status bytes and omissions
+(`0x16B04E`), controller arguments, and the 33 post-end tails.
+The corpus has 110,725 event records and 6,610 explicit statuses
+when the 438 end-of-track records are counted. Key `0xD9023FF9`
+contains the first-track example above. The writer preserves other
+song and track header fields at their offsets. The standard MIDI
+converter remains available for playback.

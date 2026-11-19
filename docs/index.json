@@ -389,6 +389,8 @@
       "tools": [
         "tools/check_all.py",
         "tools/lol2_export_scripts.py",
+        "tools/lol2_hmi_midi.py",
+        "tools/lol2_hmi_writer.py",
         "tools/lol2_level_writer.py",
         "tools/lol2_mix_writer.py",
         "tools/lol2_progression.py",
@@ -490,6 +492,7 @@
         "tools/example_images.py",
         "tools/lol2_cache_seed.py",
         "tools/lol2_event_browser.py",
+        "tools/lol2_hmi_writer.py",
         "tools/lol2_inspect.py",
         "tools/lol2_instance_field.py",
         "tools/lol2_item_labels.py",
@@ -1368,7 +1371,8 @@
       ],
       "question_references": [],
       "tools": [
-        "tools/lol2_hmi_midi.py"
+        "tools/lol2_hmi_midi.py",
+        "tools/lol2_hmi_writer.py"
       ]
     },
     {
@@ -1826,6 +1830,7 @@
         "tools/lol2_export_scripts.py",
         "tools/lol2_guest_trace_summary.py",
         "tools/lol2_hmi_midi.py",
+        "tools/lol2_hmi_writer.py",
         "tools/lol2_inspect.py",
         "tools/lol2_instance_field.py",
         "tools/lol2_item_labels.py",

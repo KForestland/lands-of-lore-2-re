@@ -1,6 +1,6 @@
 # Round-trip proof for LoL2
 
-Five writers read the original DOS 1.30 files, build a replacement in memory and compare it with the original. Nothing is written to disk. "Byte-identical" means the rebuilt file equals the original file. "Decode-identical" means the rebuilt compressed data reads back to the same bytes as the original, while the compressed bytes themselves may differ.
+Six writers read the original DOS 1.30 files, build a replacement in memory and compare it with the original. Nothing is written to disk. "Byte-identical" means the rebuilt file equals the original file. "Decode-identical" means the rebuilt compressed data reads back to the same bytes as the original, while the compressed bytes themselves may differ.
 
 | Writer | What is rebuilt | Comparison | Counts |
 |---|---|---|---|
@@ -9,6 +9,7 @@ Five writers read the original DOS 1.30 files, build a replacement in memory and
 | `lol2_save_writer.py` | Game-written save slots from their fields | Byte-identical; the stored LZO chunks are copied, so no compressor is tested | 30 saves and 154 level blocks in the working installation, 27 and 149 in the reference copy (your saves give other counts) |
 | `lol2_level_writer.py` | Command streams, event pools and predicate rows of the 15 level MIXes from their parsed fields | Byte-identical archives, but only 559,799 of 164,076,323 bytes (0.34 %) are in rebuilt sections; geometry, placements, textures and the other members are copied, and 66,079 unmapped record bytes plus one unreferenced L12 pair are copied inside the rebuilt sections | 42,594 commands, 9,678 group heads, 22,976 distinct event records (17,372 object, 5,604 region), 5,084 terminators, 3,825 predicate rows |
 | `lol2_text_writer.py` | TRR message tables from their parsed IDs and strings | Byte-identical; count, IDs, offset directory and NUL terminators are regenerated, message bytes come from the parsed strings | All 8 retail tables: 3 loose (`CREDITS`, `ERRTEXT`, `OPTTEXT`), 1 in `MOVIES.MIX`, 4 in `LOCALLNG.MIX`; 988 messages |
+| `lol2_hmi_writer.py` | HMI songs in `LOCAL.MIX` from their parsed tracks and events | Byte-identical; the track directory is regenerated and every event is written from its fields; the song header, the gap after the directory, each track header (up to its event offset at +0x57) and the end-of-track tails are copied | 33 songs, 438 tracks, 110,725 event records (438 of them end-of-track), 6,610 explicit status bytes, 33 tails |
 
 ## MIX
 
@@ -30,6 +31,10 @@ Five writers read the original DOS 1.30 files, build a replacement in memory and
 
 **CONFIRMED.** A TRR is a u32 count, the u32 message IDs, then count + 1 u32 offsets (counted from +4), then the NUL-terminated messages. The writer rebuilds the whole table from (ID, message) rows; IDs may repeat and be sparse. It finds the three loose tables beside `DAT` and the five stored inside MIX archives. `--list` prints each source offset, size and row count. [Writing the stored tables](lol2-text-tables.md#writing-the-stored-tables)
 
+## Music (HMI)
+
+**CONFIRMED.** Each track's events are read into the delay (value and stored width), the status byte and whether it was stored or omitted (running status), the data bytes and, for a note-on, the duration (value and stored width), and written back from those fields; a row marked implicit must match the running status. The track offsets in the directory at song +0xE8 are regenerated from the rebuilt track lengths. Copied: the song header up to the directory, the bytes between the directory and track 0, each track's header up to its event offset (+0x57) and the 16-byte tail after an end-of-track. The 33 songs and 438 tracks are the same set `lol2_hmi_midi.py --check` reads; its event count equals the writer's events plus one note-off per note-on (80,067). Changing one note's key changes that byte only, and `lol2_hmi_midi.py` converts the result to the same MIDI except for that note. [Writing the original scores](lol2-music-2026-11.md#writing-the-original-scores)
+
 ## Run the checks
 
 ```bash
@@ -38,7 +43,8 @@ python3 tools/lol2_westwood_writer.py --data "$LOL2_DAT" --check
 python3 tools/lol2_save_writer.py --data "$LOL2_DAT" --check
 python3 tools/lol2_level_writer.py --data "$LOL2_DAT" --check
 python3 tools/lol2_text_writer.py --data "$LOL2_DAT" --check
-python3 -m unittest tests.test_round_trip tests.test_level_text_write
+python3 tools/lol2_hmi_writer.py --data "$LOL2_DAT" --check
+python3 -m unittest tests.test_round_trip tests.test_level_text_write tests.test_hmi_write
 ```
 
-All five run in `tools/check_all.py`; none has an output option. The save writer reads the `SAVEGAME` folder beside `DAT`, or one slot you name; with no saves there it checks only a synthetic slot. The unit tests use synthetic archives, streams and slots and need no game files.
+All six run in `tools/check_all.py`; none has an output option. The save writer reads the `SAVEGAME` folder beside `DAT`, or one slot you name; with no saves there it checks only a synthetic slot. The unit tests use synthetic archives, streams and slots and need no game files.
