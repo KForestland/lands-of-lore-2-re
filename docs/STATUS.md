@@ -2,7 +2,7 @@
 
 What is documented about the original game, which tool reads it, what the tools check on the game files, and what is open. This table replaces the "almost fully understood" summary of earlier pages: those pages ([understanding (history)](lol2-understanding-2026-11.md), [current status (history)](lol2-current-status.md), [closure summary (history)](closure-summary.md), [final closure memo (history)](final-closure-memo.md)) are kept as history.
 
-Run the checks: `python3 tools/check_all.py` with `$LOL2_DAT` set: 43 checks, all pass on the English DOS 1.30 copy with the listed requirements.
+Run the checks: `python3 tools/check_all.py` with `$LOL2_DAT` set: 44 checks, all pass on the English DOS 1.30 copy with the listed requirements.
 
 **Running-game results.** Answered probes are counted in the rating; which ones and how: [NEEDS_A_RUNNING_GAME](NEEDS_A_RUNNING_GAME.md#answered-probes). Runs on hand-edited copies of a game-written save: [edited saves](EDITED_SAVES.md).
 
@@ -12,7 +12,7 @@ Run the checks: `python3 tools/check_all.py` with `$LOL2_DAT` set: 43 checks, al
 
 <!-- rating:begin -->
 - **Files read:** 83 of 83 files in `DAT` (1,915.6 of 1,915.6 MiB) have their whole layout read by a tool here: every byte belongs to a known header, directory, entry, chunk, segment or resource, or to zero padding between them; the DOS part of `SETUP.EXE` is counted by its length (what is inside an entry may still be only partly understood).
-- **Rules traced:** the pages mark 734 statements CONFIRMED (proved from the program code or the files) and 174 UNCONFIRMED (a reading not yet proved), on 118 current pages; old notes kept as history are not counted.
+- **Rules traced:** the pages mark 734 statements CONFIRMED (proved from the program code or the files) and 174 UNCONFIRMED (a reading not yet proved), on 119 current pages; old notes kept as history are not counted.
 - **Seen in the running game:** 4 of 9 probes that need the original game running are answered (a question can have more than one probe); 0 of them rest on edited saves only.
 - **Open questions:** 20 numbered questions: 5 answered, 14 mostly answered, 1 partly answered.
 <!-- rating:end -->

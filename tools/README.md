@@ -80,7 +80,7 @@ Run each `--check` and print one line each, then a summary.
 $ python3 tools/check_all.py | sed -n '1,2p;$p'
 CHECK repo_guard: N tracked files; game files, media, stray images, files over 300 KB, machine paths, words from the local list, or commit identities: none (0); private word list: not present, skipped
 CHECK mix: 81 MIX files, 2905 entries; this reader and lol2_source_format.parse_mix agree and every entry lies inside its file: 81/81; index sorted by signed key: 81/81 (by unsigned key: 20); bad=none
-ALL 43 CHECKS PASSED
+ALL 44 CHECKS PASSED
 ```
 
 ### `doc_links.py`
@@ -470,3 +470,7 @@ The check also runs in `check_all.py` and GitHub Actions. It needs no game data.
 - `lol2_level_writer.py` — `--check` reconstructs command streams, event pools and predicates, then compares the complete 15 level MIX archives.
 - `lol2_text_writer.py` — `--check` finds shipped TRR message tables, rebuilds IDs, message boundaries and NUL-terminated records, and compares the original bytes. `--list` prints each table's source offset, size and row count.
 - `lol2_hmi_writer.py` — `--check` rebuilds the 33 HMI songs in `LOCAL.MIX` from their parsed tracks and events (delays, status bytes and running-status omissions, data bytes, note durations, stored variable-length widths) and compares the original bytes; the track directory is regenerated, song and track headers and the end-of-track tails are copied. No output option; MIDI conversion remains `lol2_hmi_midi.py`.
+
+`doc_format_offsets.py` checks six format-page offsets against the readers that decode those fields, using small synthetic files. It runs in `check_all.py` and needs no game data. [Check audit](../docs/CHECK_AUDIT.md)
+
+`check_all.py --quick` skips the instance-field scan, MIX writer, AUD decoder and VQA check. It lists each skip and reports the total elapsed time for the checks it ran.

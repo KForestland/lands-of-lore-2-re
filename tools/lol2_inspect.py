@@ -187,15 +187,19 @@ def text_lines(data, table, identifier):
     return trr_lines(read_at(path, row["offset"], row["size"]), filename, row["offset"], identifier)
 
 
+# Item row fields printed by --item: (offset, width, name). docs/lol2-item-format.md
+ITEM_FIELDS = ((0x2E, 1, "selector count 0"), (0x2F, 1, "selector count 1"), (0x37, 2, "strike sound"),
+               (0x39, 2, "cursor sprite"), (0x3B, 2, "hit mask"), (0x3D, 2, "hit flags"),
+               (0x3F, 1, "class byte"), (0x42, 1, "handler index"), (0x43, 1, "class flags"),
+               (0x44, 1, "post-strike countdown addend"), (0x45, 1, "kind-4 operand"))
+
+
 def item_lines(data, image, index):
     base, rows = item_layout(data)
     row = pick(rows, index, "definition")
     address = base + STRIDE*index
     yield f"Item {index} GLOBAL.MIX+0x{address:X}  identity 0x{u32(row,0x18):08X}"
-    for at, width, name in ((0x2E, 1, "selector count 0"), (0x2F, 1, "selector count 1"), (0x37, 2, "strike sound"),
-                            (0x39, 2, "cursor sprite"), (0x3B, 2, "hit mask"), (0x3D, 2, "hit flags"),
-                            (0x3F, 1, "class byte"), (0x42, 1, "handler index"), (0x43, 1, "class flags"),
-                            (0x44, 1, "post-strike countdown addend"), (0x45, 1, "kind-4 operand")):
+    for at, width, name in ITEM_FIELDS:
         value = int.from_bytes(row[at:at+width], "little")
         yield f"  row+0x{at:02X} {name} = {value} (0x{value:X})"
     handler = row[0x42]
