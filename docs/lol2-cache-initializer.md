@@ -82,7 +82,52 @@ copies `temp.cd` over `cdcache.lst` at `0x119FA8 → 0x61BA0`.
 The filenames are the strings in `LOLG.DAT+0x1C499C`,
 `+0x1C49A4`, `+0x1C49B0` and `+0x1C49BC`.
 
-**UNCONFIRMED.** The shipped list includes older lengths and
-positions, for example the L20_BB size 27,801,780 at
-`CDCACHE.LS_+0xF84`. A corresponding original cache from the
-shipped build would settle those older values.
+## Shipped lengths compared to shipped banks
+
+**CONFIRMED.** `CACHEBAK.MIX+0x00` declares five members and a
+65-byte body. Each member is 13 bytes (directory length dwords at
+`+0x0E + 12*i`). Their spans partition the complete body at +0x42.
+The backup has no allocator table or level texture bank. The retail
+initializer overwrites this position with the marker and then inserts
+the allocator, which explains the four-byte difference between the
+first seed position and the native reset position.
+
+**CONFIRMED.** Each shipped list name (record +8, convert the final
+`.tex` to `.te_`) identifies one original MIX member through its
+archive hash. Its first dword is the size that `0x11931D–0x119349`
+uses for allocation. Compare it to `CDCACHE.LS_` record +0xDC.
+All 15 matching MIX members in this edition start at +0x2A. In the
+list, state +0xD8 is −1 throughout. Position +0xE8 is 5,066 on
+L1_DC and 0xFFFFFFFF on the other 14 records. Length +0xE0
+duplicates +0xDC in those 14 and is zero on L1_DC.
+
+| Level | Seed record offset | Seed size at +0xDC | Shipped bank dword at MIX +0x2A | Bank size minus seed |
+|---|---:|---:|---:|---:|
+| L1_DC | `0xA8` | 13,040,404 | 13,040,404 | +0 |
+| L3_DH | `0x1A8` | 10,825,806 | 10,799,733 | -26,073 |
+| L4_HJ | `0x2A8` | 23,198,828 | 23,232,234 | +33,406 |
+| L5_HC | `0x3A8` | 10,680,077 | 11,008,401 | +328,324 |
+| L7_DH | `0x4A8` | 8,971,396 | 9,062,941 | +91,545 |
+| L8_SJ | `0x5A8` | 21,947,290 | 22,014,842 | +67,552 |
+| L9_DR | `0x6A8` | 38,890,424 | 38,890,424 | +0 |
+| L10_DC | `0x7A8` | 23,169,487 | 23,192,086 | +22,599 |
+| L12_CM | `0x8A8` | 15,818,686 | 15,854,483 | +35,797 |
+| L13_RC | `0x9A8` | 14,037,279 | 14,087,322 | +50,043 |
+| L14_HT | `0xAA8` | 23,639,037 | 23,639,037 | +0 |
+| L16_CA | `0xBA8` | 39,420,101 | 39,420,119 | +18 |
+| L17_HC | `0xCA8` | 8,342,669 | 8,507,280 | +164,611 |
+| L19_BC | `0xDA8` | 11,211,703 | 11,236,800 | +25,097 |
+| L20_BB | `0xEA8` | 27,801,780 | 28,451,111 | +649,331 |
+
+
+Three lengths match and 12 differ. The native loader replaces the
+old values with the shipped member's size on the unpack path.
+The full comparison is repeatable with
+`python3 tools/lol2_cache_seed.py --check --data /path/to/DAT`.
+
+**UNCONFIRMED.** The exact build or original members that produced
+the 12 differing values. The two supplied seed files and all 15
+named shipped banks were compared. To settle provenance, compare
+another genuine edition's `.te_` first dwords and its installer
+seed rows by the same name hash. A new writable cache records the
+current bank sizes.

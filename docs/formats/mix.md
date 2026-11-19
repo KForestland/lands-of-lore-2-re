@@ -25,7 +25,7 @@ All little-endian. The file is exactly 6 + 12n + data size bytes; entries lie in
 | `sphere1\l1_dc\l1_dc.te_` | 2 | 28,456,181 | 13,040,404 |
 | `sphere1\l3_dh\l3_dh.te_` | 2 | 41,496,585 | 10,799,733 |
 
-The same three offsets are the first three 25-byte records at file offset 66 of this copy (a u32, then the file offset, then the size, then 13 bytes that were not identified). A fourth record on this copy, at file offset 52,296,318 for 37,703,682 bytes, is not a state-2 name. The shipped `CDCACHE.LS_` pointers and lengths are not these values: its `l1_dc` pointer is 5,066, and its `l20_bb` length is 27,801,780. Another written copy (the reference installation, files dated 2026-04-04) differs: two state-2 records, `l1_dc` at 5,070 and `l20_bb` at 13,045,474, and its third 25-byte record is (41,496,585, 48,503,415). These numbers differ between copies. How the game builds `CDCACHE.MIX` and `CDCACHE.LST` from `CACHEBAK.MIX` and `CDCACHE.LS_` is open ([Q20](../OPEN_QUESTIONS.md)). The parser in `tools/draracle/lol2_cache_named_wall_fixture.py` reads the 256-byte records.
+The same three offsets are the first three 25-byte records at file offset 66 of this copy (a u32, then the file offset, then the size, then 13 bytes that were not identified). A fourth record on this copy, at file offset 52,296,318 for 37,703,682 bytes, is not a state-2 name. The shipped `CDCACHE.LS_` pointers and lengths are not these values: its `l1_dc` pointer is 5,066, and its `l20_bb` length is 27,801,780. Another written copy (the reference installation, files dated 2026-04-04) differs: two state-2 records, `l1_dc` at 5,070 and `l20_bb` at 13,045,474, and its third 25-byte record is (41,496,585, 48,503,415). These numbers differ between copies. The [native initializer](../lol2-cache-initializer.md) identifies the marker, allocator row layout and 15 shipped lengths. The parser in `tools/draracle/lol2_cache_named_wall_fixture.py` reads the 256-byte records.
 
 ## Keys
 
@@ -52,4 +52,4 @@ The three entries sit at file offsets 7,389,520 (35,028 bytes), 7,091,978 (297,5
 ## Open
 
 - Names for most entries ([Q3](../OPEN_QUESTIONS.md) concerns how `ARENA.MIX` is opened).
-- How a run builds `CDCACHE.MIX` and `CDCACHE.LST` from the shipped `CACHEBAK.MIX` and `CDCACHE.LS_` ([Q20](../OPEN_QUESTIONS.md)). The first u32 and the 13-byte tail of a directory record on one written copy were not identified.
+- Which original edition supplied the 12 older lengths in `CDCACHE.LS_` that differ from the shipped bank headers ([seed comparison](../lol2-cache-initializer.md#shipped-lengths-compared-to-shipped-banks)).
