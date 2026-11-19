@@ -57,19 +57,23 @@ What you can look at with your own copy of the game. Run from the clone with `ex
 
 ## Quick start
 
-You need Python 3.10+ and your own copy of the game: the English GOG release, DOS version 1.30 (program `LOLG.DAT`, SHA-256 starting `b27a35341c6e877e`; some tools refuse other editions). Most files are in its `DAT/` folder; seven MIX files sit in the game folder next to it (`LOCAL`, `LOCALLNG`, `DMUSIC`, `SETUP`, `GLOBAL`, `CACHEBAK` and the game-written `CDCACHE`), and the tools find them there from `$LOL2_DAT`. Install the system LZO library (`apt install liblzo2-2` on Debian/Ubuntu) to run the full checks and read packed textures and saves.
+Use Python 3.10 or later and your own copy of the English GOG release, DOS version 1.30. The tools recognize the original program `LOLG.DAT` by its SHA-256 prefix `b27a35341c6e877e`. Keep `DAT/` with the rest of the game folder so the readers can also find `LOLG.DAT` and the sibling MIX and TRR files.
+
+Install Pillow for pictures, Capstone 5 for disassembly checks and NumPy for VQA frame decoding. The full check uses all three and the system LZO library (`apt install liblzo2-2` on Debian or Ubuntu). The synthetic unit tests use the Python standard library.
 
 ```bash
 git clone https://github.com/KForestland/lands-of-lore-2-re.git
 cd lands-of-lore-2-re
 python3 -m venv .venv && . .venv/bin/activate
-pip install -r requirements.txt
-export LOL2_DAT=/path/to/your/LOL2/DAT          # the game's DAT folder
+python3 -m pip install -r requirements.txt
+export LOL2_DAT="/path/to/your/LOL2/DAT"
 python3 tools/check_all.py                      # 32 checks, ends with ALL 32 CHECKS PASSED
+python3 -m unittest discover -s tests
 python3 tools/lol2_mix_parser.py L1_DC.MIX      # list the entries of level 1's archive
+python3 tools/full_report.py --out "../lol2-out/report"
 ```
 
-The last command prints `Entries: 3` and one line per entry with its name key, offset and size.
+The MIX command prints `Entries: 3` and one line per entry with its name key, offset and size. The report command writes an inventory, level sheets and text counts to the named folder. On Windows, use `py -3 -m venv .venv` and `.\.venv\Scripts\python.exe` in place of `python3`. Set `$env:LOL2_DAT = 'D:\Games\LoL2\DAT'` in PowerShell, or pass `--data` with a quoted folder path to each tool.
 
 ## Status
 
