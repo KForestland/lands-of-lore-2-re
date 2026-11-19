@@ -18,8 +18,8 @@ It contains documentation, tools and small tables of numbers. It contains no gam
 These are counts of work done, not a percentage of how complete the project is. They are produced by `tools/rating.py` on the English DOS 1.30 copy; [how we rate](docs/HOW_WE_RATE.md) explains each line and what it does not claim.
 
 <!-- rating:begin -->
-- **Files read:** 81 of 83 files in `DAT` (1,915.3 of 1,915.6 MiB) have their whole layout read by a tool here: every byte belongs to a known header, directory or entry (what is inside an entry may still be only partly understood).
-- **Rules traced:** the pages mark 660 statements CONFIRMED (proved from the program code or the files) and 177 UNCONFIRMED (a reading not yet proved), on 111 current pages; old notes kept as history are not counted.
+- **Files read:** 83 of 83 files in `DAT` (1,915.6 of 1,915.6 MiB) have their whole layout read by a tool here: every byte belongs to a known header, directory, entry, chunk or segment (what is inside an entry may still be only partly understood).
+- **Rules traced:** the pages mark 662 statements CONFIRMED (proved from the program code or the files) and 179 UNCONFIRMED (a reading not yet proved), on 112 current pages; old notes kept as history are not counted.
 - **Seen in the running game:** 2 of 8 questions that can only be settled by watching the original game run are settled.
 - **Open questions:** 20 numbered questions: 3 answered, 15 mostly answered, 2 partly answered.
 <!-- rating:end -->
@@ -40,7 +40,7 @@ cd lands-of-lore-2-re
 python3 -m venv .venv && . .venv/bin/activate
 pip install -r requirements.txt
 export LOL2_DAT=/path/to/your/LOL2/DAT          # the game's DAT folder
-python3 tools/check_all.py                      # 26 checks, ends with ALL 26 CHECKS PASSED
+python3 tools/check_all.py                      # 27 checks, ends with ALL 27 CHECKS PASSED
 python3 tools/lol2_mix_parser.py L1_DC.MIX      # list the entries of level 1's archive
 ```
 
@@ -54,7 +54,7 @@ Full table with evidence: [`docs/STATUS.md`](docs/STATUS.md).
 
 | Area | State |
 |------|-------|
-| Archives (MIX), entry names, compression | [Format page](docs/formats/mix.md); readers check all 81 archives in `DAT/` (the other two files there are `AUTOPLAY.WAV` and `SETUP.EXE`) and the 6 shipped archives in the game folder. The seventh MIX file there, `CDCACHE.MIX`, is a cache the game writes itself (Q20). |
+| Archives (MIX), entry names, compression | [Format page](docs/formats/mix.md); readers check all 81 archives in `DAT/` and the 6 shipped archives in the game folder. `lol2_loose.py` reads the other two `DAT` files, `AUTOPLAY.WAV` and `SETUP.EXE`, to the last byte. The seventh MIX file in the game folder, `CDCACHE.MIX`, is a cache the game writes itself (Q20). |
 | Levels, geometry, walls, textures | Documented for the traced parts; geometry entry found in all 15 levels; wall spans and UVs partly open (Q16) |
 | Level scripts | Opcode dispatch and event layouts documented. Disassembler checks all 15 levels (Q4–Q7). |
 | Entities, items, combat | Item definitions, what items give the player, some item effects and the combat formulas, as the original program does them (Q8, Q10). |

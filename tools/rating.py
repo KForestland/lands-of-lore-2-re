@@ -18,6 +18,7 @@ from pathlib import Path
 import struct
 
 import lol2_cli
+import lol2_loose
 
 ROOT = Path(__file__).resolve().parent.parent
 BEGIN, END = "<!-- rating:begin -->", "<!-- rating:end -->"
@@ -42,13 +43,17 @@ def mix_covered(path):
 
 
 def files_read(data_dir):
-    """A MIX archive counts when mix_covered() holds. Every other file in the folder counts as not read."""
+    """A MIX archive counts when mix_covered() holds. A loose WAVE or NE file counts when lol2_loose.covered()
+    holds. Every other file in the folder counts as not read."""
     total = read = total_bytes = read_bytes = 0
     for path in sorted(p for p in Path(data_dir).iterdir() if p.is_file()):
         size = path.stat().st_size
         total += 1
         total_bytes += size
         if path.suffix.lower() == ".mix" and mix_covered(path):
+            read += 1
+            read_bytes += size
+        elif lol2_loose.covered(path):
             read += 1
             read_bytes += size
     return read, total, read_bytes, total_bytes
@@ -102,7 +107,7 @@ def rating(data_dir):
     seen, needed = probes()
     answered, mostly, partly, count = questions()
     return [
-        f"- **Files read:** {read} of {total} files in `DAT` ({read_bytes / 2**20:,.1f} of {total_bytes / 2**20:,.1f} MiB) have their whole layout read by a tool here: every byte belongs to a known header, directory or entry (what is inside an entry may still be only partly understood).",
+        f"- **Files read:** {read} of {total} files in `DAT` ({read_bytes / 2**20:,.1f} of {total_bytes / 2**20:,.1f} MiB) have their whole layout read by a tool here: every byte belongs to a known header, directory, entry, chunk or segment (what is inside an entry may still be only partly understood).",
         f"- **Rules traced:** the pages mark {confirmed:,} statements CONFIRMED (proved from the program code or the files) and {unconfirmed:,} UNCONFIRMED (a reading not yet proved), on {pages} current pages; old notes kept as history are not counted.",
         f"- **Seen in the running game:** {seen} of {needed} questions that can only be settled by watching the original game run are settled.",
         f"- **Open questions:** {count} numbered questions: {answered} answered, {mostly} mostly answered, {partly} partly answered.",

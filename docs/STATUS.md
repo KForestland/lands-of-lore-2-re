@@ -2,17 +2,17 @@
 
 **As of:** 2026-11-18. What is documented about the original game, which tool reads it, what the tools check on the game files, and what is open. This table replaces the "almost fully understood" summary of earlier pages: those pages ([understanding](lol2-understanding-2026-11.md), [current status](lol2-current-status.md), [closure summary](closure-summary.md), [final closure memo](final-closure-memo.md)) are kept as history.
 
-Run the checks: `python3 tools/check_all.py` (with `$LOL2_DAT` set) (26 checks; all pass on the copy read).
+Run the checks: `python3 tools/check_all.py` (with `$LOL2_DAT` set) (27 checks; all pass on the copy read).
 
 **Running-game results** (original program under a debugger, one run each; [procedures and results](NEEDS_A_RUNNING_GAME.md)): the frame-clock writer (Q7) and the save changes of one pickup (Q11) are answered; a creature distance branch (Q10) and the level-8 controls (Q17) are partly answered; the timed message (Q9) and two movie frames (Q12) were not reached.
 
-**Short format pages** (one per format, with a worked example from the game files): [formats/](formats/README.md), 12 pages; **level sheets**: [levels/](levels/README.md).
+**Short format pages** (one per format, with a worked example from the game files): [formats/](formats/README.md), 13 pages; **level sheets**: [levels/](levels/README.md).
 
 **Rating** (counted by `tools/rating.py`; see [how we rate](HOW_WE_RATE.md)):
 
 <!-- rating:begin -->
-- **Files read:** 81 of 83 files in `DAT` (1,915.3 of 1,915.6 MiB) have their whole layout read by a tool here: every byte belongs to a known header, directory or entry (what is inside an entry may still be only partly understood).
-- **Rules traced:** the pages mark 660 statements CONFIRMED (proved from the program code or the files) and 177 UNCONFIRMED (a reading not yet proved), on 111 current pages; old notes kept as history are not counted.
+- **Files read:** 83 of 83 files in `DAT` (1,915.6 of 1,915.6 MiB) have their whole layout read by a tool here: every byte belongs to a known header, directory, entry, chunk or segment (what is inside an entry may still be only partly understood).
+- **Rules traced:** the pages mark 662 statements CONFIRMED (proved from the program code or the files) and 179 UNCONFIRMED (a reading not yet proved), on 112 current pages; old notes kept as history are not counted.
 - **Seen in the running game:** 2 of 8 questions that can only be settled by watching the original game run are settled.
 - **Open questions:** 20 numbered questions: 3 answered, 15 mostly answered, 2 partly answered.
 <!-- rating:end -->
@@ -22,6 +22,7 @@ Run the checks: `python3 tools/check_all.py` (with `$LOL2_DAT` set) (26 checks; 
 | Area | Pages | Tool check | Open |
 |------|-------|-----------|------|
 | MIX archives | [format page](formats/mix.md), [glossary](GLOSSARY.md), [texture container](lol2-level-texture-container.md) | `lol2_mix_parser` and `lol2_source_format` agree on all 81 MIX files in `DAT/` (2905 entries; sizes, bounds, no overlap; signed key order 81/81); game folder 6/7 | Q20 |
+| Loose DAT files | [format page](formats/loose.md) | `lol2_loose`: `AUTOPLAY.WAV` and `SETUP.EXE` are read to the last byte. Whether the game opens them is open | — |
 | Entry names and keys | [texture container](lol2-level-texture-container.md#entry-name-and-key-proven) | `lol2_westwood_hash`: the texture entry name is a key in 15/15 level archives, the room module name in 47 room archives | Q3 |
 | Compression | [compression](formats/compression.md), [options shapes](formats/room-sections.md) | `LOCAL.MIX` entry 1: all 39 `options.shp` shapes reach their expected lengths and dimensions (`lol2_decompress_sphere`). Westwood LZ77 at VA `0x158D58`: self-test passes; no size-prefixed MIX entry decodes; all eleven callers' buffers mapped, source filenames open | Q1 |
 | Level geometry | [geometry format page](formats/geometry.md), [draracle-restoration](draracle-restoration.md), [native wall verification](native-wall-verification.md) | one geometry entry per level archive, 15/15 (`lol2_source_format`); 52,669 regions, all vertex and neighbour indices in range, 99.5% of 178,728 portal links reciprocal (`lol2_level_report`) | Q16 |

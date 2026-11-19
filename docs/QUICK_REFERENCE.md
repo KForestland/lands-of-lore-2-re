@@ -8,6 +8,7 @@ measured layouts and open fields.
 | File or entry | What it contains | Format and evidence | Tool | Command |
 |---|---|---|---|---|
 | `.MIX`, including `CACHEBAK.MIX` | Keyed archive and shipped cache seed | [MIX](formats/mix.md) | MIX directory reader | `python3 tools/lol2_mix_parser.py L1_DC.MIX` |
+| `AUTOPLAY.WAV`, `SETUP.EXE` | The two `DAT` files that are not MIX archives: a PCM wave, and an NE setup program | [Loose files](formats/loose.md) | Loose-file checker | `python3 tools/lol2_loose.py --check` |
 | `.WOM` in room MIX files | Room module with an executable code entry | [Room archives](lol2-room-archives.md) | Media checker | `python3 tools/lol2_media_check.py --check` |
 | Level data entry | Geometry, placements and script-table offsets | [Level data](formats/level-data.md), [geometry](formats/geometry.md), [walls](formats/walls.md) | Level report | `python3 tools/lol2_level_report.py --check` |
 | Level map drawing | Top-down region polygons, walls and portals from the level data entry | [Level maps](formats/maps.md) | Level map checker | `python3 tools/lol2_level_map.py --check` |
