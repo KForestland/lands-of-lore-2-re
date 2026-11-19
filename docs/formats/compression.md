@@ -5,7 +5,7 @@
 | Scheme | Where it is used | Tool | State |
 |---|---|---|---|
 | LZO1X in blocks | the level texture containers `<LEVEL>.TE_` in every level archive | `lol2_texture_container.py` | CONFIRMED on the data |
-| Westwood LZ77 with a leading mode byte | `options.shp` shapes and VQA buffers; decoder at VA `0x158D58` | `lol2_decompress_westwood.py` | decoder and caller buffers CONFIRMED ([Q1](../OPEN_QUESTIONS.md)) |
+| Westwood LZ77 with a leading mode byte | `options.shp` shapes, VQA buffers and the `LOCAL.MIX` WSA animation deltas; decoder at VA `0x158D58` | `lol2_decompress_westwood.py` | decoder and caller buffers CONFIRMED ([Q1](../OPEN_QUESTIONS.md)) |
 
 ## LZO1X blocks
 
@@ -101,12 +101,25 @@ a later delta at `0x15C4F2` and expands it at `0x15C50D`.
 by dimensions at +6/+8, capacity at +0x0A and flags at +0x0C.
 The dwords at +0x0E form a directory of `u16(+0) + 2` offsets.
 For `P_LUTHER.WSA`, the member starts at `LOCAL.MIX+0x1909B17`,
-and the first span `+0x1909C31..+0x190A0CB` expands to 1,351 bytes
-within the advertised 1,730-byte capacity. All 640 delta spans in
+and the first span `+0x1909C31..+0x190A0CB` (inclusive, 1,179 bytes)
+expands to 1,351 bytes within the advertised 1,730-byte capacity. The
+native output bound is `u16(+0x0A) + 6 − 0x2B`, 37 bytes below that
+capacity (`0x15BC7E–0x15BC85`); every member's largest delta fits it. All 640 delta spans in
 the 21 entries end at the next offset and decode to 670,607 bytes
-in total. `lol2_media_check.py --check` rechecks the archive and code.
+in total. `lol2_media_check.py --check` re-decodes all 640 spans and
+checks the loader's call targets and the name tables at `0xC488–0xC4F0`;
+the table operands at `0x7938F`, `0x7ADF3`, `0x7B252` and the literal
+push at `0x72E32` are cited here but not pinned by the check.
 
-**UNCONFIRMED.** The complete set of filenames reaching `0x67052` and
+**UNCONFIRMED.** Whether these 21 names are every file that reaches
+`0x15BEE1` and `0x15C50D`. The frame reader `0x15C3F4` is also called
+at `0x15C273` and `0x15C29B` inside the frame player `0x15C116` (30
+callers, e.g. `0x72E59`), and the table indexes (`[ebx+0x414]` from
+`[ebp+0x18]` at `0x7935C`, and `[ebx+0x415]`) are not bounded in the
+code; an index of 8 or more in the `0xC4D8` table would read past it.
+To settle it, show that every object reaching `0x15C116` comes from
+`0x15BB9C` and bound the index arguments at their producers. Also open:
+the complete set of filenames reaching `0x67052` and
 `0x15CAD4`, and the shape data reaching `0x15204F` and `0x15A604`.
 For the first branch, inspect the row builder callers
 `0x9DDBB`, `0x9DE84`, `0x9E5D2` and `0x9E66D`
