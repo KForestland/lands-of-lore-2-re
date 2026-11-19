@@ -2,7 +2,10 @@
 
 Message tables are a different container ([message tables](lol2-text-tables.md)). This page is the name the category arms format, and the cue id they hand to the sound player. No line of speech is copied here.
 
-`tools/lol2_speech_names.py --check` re-reads the format bytes, the switch, the eight arms, the branch, two archive keys, and the MCEL loader and category-switch import. It writes nothing unless `--out` is set, and then only the check line. It is not one of the `check_all.py` checks.
+`tools/lol2_speech_names.py --check` re-reads the format bytes, switch,
+eight arms, two archive keys, MCEL category-switch import and the
+cue-table loader. It also checks all 404 original cue words, including
+the eight category values below. `check_all.py` includes this check.
 
 `LOLG.DAT` in this note is the 1,977,007-byte image whose sha256 begins `b27a3534`. A code address is a file offset minus `0x37000`. A data address is a file offset minus `0x1C1024`. An object-2 slot stored in the file plus `0x59024` is the address used below.
 
@@ -40,6 +43,40 @@ CONFIRMED. VA `0xEE7D8` joins VA `0xEE8AC` when the first argument is `1`, `2`, 
 When bit 0 of the byte at data `0x269C4` is clear, they read a cue id from the runtime u16 table whose pointer is data `0x269CC`, at index `category + 0x8D`, and call VA `0xE3924`. The pointer and the flag byte are past the end of the file. The indexes are `161`, `162`, `167`, `168`, `174`, `197`, `198`, and `199`. VA `0xE3924` is the player opcode 20 also calls. That player joins the cue id to the bank row with the same index ([sound cues, Native bank join](lol2-sound-cues.md#native-bank-join)), so these arms play through that path.
 
 VA `0xEEC42` is the other branch. It copies data `0x326D` onto the formatted name. It is reached only through VA `0xEEC35`, and only when the dword at data `0xDB4C8` is 0. These eight arms do not reach it.
+
+### Where the cue table is loaded
+
+**CONFIRMED.** The sound object constructor clears +0x2D64 at
+`0xE34FB`. Startup supplies object `0x23C68` and
+`global\\sounds.efx` to `0xE3608` at `0xA0196–0xA01A0`.
+The loader allocates 0x328 bytes at `0xE3629–0xE362E`
+and stores the pointer through object +0x2D64 at `0xE363C`.
+That lands at `0x23C68 + 0x2D64 = 0x269CC`. The store
+uses a register displacement, so the direct LE references
+described below miss it.
+
+**CONFIRMED.** After reading the bank directory, the loader seeks
+−0x328 bytes from the end on the same handle
+(`0xE3725–0xE372D`) and reads 0x328 bytes into the new
+buffer (`0xE3735–0xE3742`). The ordinary English retail source
+is `LOCALLNG.MIX` entry 4, key `0x5D9AD8B8`, starting at
++0x33D488. Its 1,179 × 60-byte directory starts at entry +0x17C88BC
+and ends at +0x17D9D10. The 404 little-endian u16 cue words run
+from archive +0x1B17198 through +0x1B174BF, the final byte of
+the entry. They contain 361 distinct values and all are in range
+0–1,177, within the 1,179 bank rows. The eight switch indices
+join as follows.
+
+| Category index | Cue word at LOCALLNG.MIX | Bank row |
+|---:|---|---:|
+| 161 | +0x1B172DA | 298 |
+| 162 | +0x1B172DC | 317 |
+| 167 | +0x1B172E6 | 276 |
+| 168 | +0x1B172E8 | 291 |
+| 174 | +0x1B172F4 | 286 |
+| 197 | +0x1B17322 | 323 |
+| 198 | +0x1B17324 | 314 |
+| 199 | +0x1B17326 | 327 |
 
 ## Keys that match two formatted names
 
@@ -118,6 +155,6 @@ shutdown store above. The five known TRR tables from
 indirect calls from the other room modules and trace any
 text reader invoked while the cue is active. Match the
 index it reads to voice +4 or the table index from
-`0xEEB17`. A write watch on data `0x269CC` from the original
-startup would also identify the table's initial producer if it
-is written through a computed address.
+`0xEEB17`. The loaded table links to the bank rows at the
+offsets above. A text consumer would need its own code or
+data witness.

@@ -3,10 +3,9 @@
 
 --data is the game DAT folder, or $LOL2_DAT. LOLG.DAT sits in the parent of
 that folder. --check re-reads the format bytes, the switch, the eight arms,
-the branch that skips the .aud probe, two MCEL.MIX keys, and the MCEL
-module's import of the category switch (host +0xFC). It writes nothing
-unless --out is set, and then only the check line. It is not one of the
-checks in check_all.py.
+the branch that skips the .aud probe, two MCEL.MIX keys, the MCEL module's
+import of the category switch and the cue table loaded from LOCALLNG.MIX.
+It writes nothing unless --out is set, and then only the check line.
 """
 
 import os
@@ -41,6 +40,7 @@ KEYS = (
     ("WOMS\\MCEL\\0202624E.aud", 7, 21668),
 )
 ALIAS = "WOMS\\MCEL\\0312002E.aud"
+CUE_WITNESSES = {161: 298, 162: 317, 167: 276, 168: 291, 174: 286, 197: 323, 198: 314, 199: 327}
 
 
 def parent_file(dat_dir, name):
@@ -94,11 +94,44 @@ def check_cue_pointer_references(image):
         raise ValueError("cue pointer reference census")
 
 
+def check_cue_table(dat_dir, image):
+    for va, target in (
+        (0xA01A0, 0xE3608), (0xE362E, 0x14FBE0),
+        (0xE372D, 0x118BEC), (0xE3742, 0x118820),
+    ):
+        if image[va + CODE_BIAS] != 0xE8 or rel_target(image, va) != target:
+            raise ValueError(f"cue table call at {va:#x}")
+    for va, encoding in (
+        (0xA019B, "68683c0200"), (0xE3629, "6828030000"),
+        (0xE363C, "8986642d0000"), (0xE3725, "6a0268d8fcffff"),
+        (0xE3735, "68280300008b9e642d0000"),
+    ):
+        start = va + CODE_BIAS
+        raw = bytes.fromhex(encoding)
+        if image[start:start + len(raw)] != raw:
+            raise ValueError(f"cue table argument at {va:#x}")
+
+    bank, entries, base = read_mix_with_hashes(parent_file(dat_dir, "LOCALLNG.MIX"))
+    key = ww_hash_v1("global\\sounds.efx")
+    [(offset, length)] = [(offset, size) for number, offset, size in entries if number == key]
+    start = base + offset
+    count, directory = struct.unpack_from("<II", bank, start + 0x258)
+    footer = start + length - 0x328
+    if (count, start, footer) != (1179, 0x33D488, 0x1B17198) or footer != start + directory + 60 * count:
+        raise ValueError("cue table and row directory boundaries")
+    cues = struct.unpack_from("<404H", bank, footer)
+    if max(cues) >= count or len(set(cues)) != 361:
+        raise ValueError("cue index outside the sound bank or changed cue census")
+    if {index: cues[index] for index in CUE_WITNESSES} != CUE_WITNESSES:
+        raise ValueError("category cue words")
+
+
 def check(dat_dir):
     image = open(parent_file(dat_dir, "LOLG.DAT"), "rb").read()
     if len(image) != 1977007:
         raise ValueError("LOLG.DAT length %s" % len(image))
     check_cue_pointer_references(image)
+    check_cue_table(dat_dir, image)
     format_at = FORMAT_VA + DATA_BIAS
     suffix_at = SUFFIX_VA + DATA_BIAS
     if image[format_at:format_at + 23] != b"WOMS\\%s\\%02d%03d%02d%c\x00":
@@ -183,7 +216,8 @@ def check(dat_dir):
         raise ValueError("alias hash")
     return ("CHECK speech: format at file 0x1C427A; switch at 0xF133C enters "
             "eight arms through slots at 0xF131C; cue id from table 0x269CC "
-            "calls 0xE3924; 532 direct pointer loads and one shutdown store; .aud probe is the other branch; "
+            "calls 0xE3924; the reader loads 404 footer words from the EFX bank; "
+            "532 direct pointer loads and one shutdown store; .aud probe is the other branch; "
             "MCEL entries 5 and 7 are 44100 Hz codec 99 (17564 and 21668 bytes); MCEL import +0xFC reaches 0xF133C")
 
 

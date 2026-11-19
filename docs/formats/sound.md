@@ -17,6 +17,7 @@
 | 0x258 | uint32 | row count (1179) |
 | 0x25C | uint32 | offset of the row table |
 | table | 60-byte rows | uint32 offset, uint32 size, uint32 unknown, uint32 placeholder flag, 44-byte NUL-terminated name |
+| Entry end −0x328 | 404 u16 | Cue-to-bank indices. **CONFIRMED** by the seek and read at `0xE3725–0xE3742` ([cue table](../lol2-speech.md#where-the-cue-table-is-loaded)). |
 
 Rows of size 1 are placeholders (171); the others are complete Westwood AUD files. Tool: `tools/lol2_sound_bank.py`.
 
