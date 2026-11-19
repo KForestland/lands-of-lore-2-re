@@ -11,6 +11,10 @@ CODE_BIAS = 0x37000
 def check(executable):
     image = executable.read_bytes()
     for address, target in (
+        (0xE7931, 0xE867C), (0xE69D1, 0xE867C),
+        (0xE687E, 0x118820), (0xE6CFC, 0x118820),
+        (0xE7A3E, 0xEB6A0), (0xE7A5B, 0x118864),
+        (0xE749C, 0xEB600), (0xE8338, 0x118864),
         (0xE7418, 0xE8914), (0xE8125, 0xE8914),
         (0xE74B7, 0x118820), (0xE765B, 0x118820),
         (0xEA09C, 0xEB2C8), (0xEA0E6, 0xEB2C8),
@@ -39,7 +43,15 @@ def check(executable):
     for section, target in ((62, 0xEA077), (64, 0xEA0C5), (67, 0xE97AC)):
         if struct.unpack_from("<I", image, table + section * 4)[0] + 0x59024 != target:
             raise ValueError(f"section {section} adjust arm")
-    return "CHECK native save: timer sections 61–64 and 67, XOR restore, frame index and menu clock restart"
+    for table, selectors in (
+        (0x11F64C, {4: 0xE8723, 7: 0xE878D, 9: 0xE87C3, 10: 0xE87E2}),
+        (0x11F800, {7: 0xE8A34, 9: 0xE8A74, 36: 0xE8E2F, 60: 0xE90BC}),
+    ):
+        for section, target in selectors.items():
+            if struct.unpack_from("<I", image, table + section * 4)[0] + 0x59024 != target:
+                raise ValueError(f"section {section} data selector")
+    return ("CHECK native save: header, global and level payload paths, "
+            "timer restore and menu clock restart")
 
 
 def main():

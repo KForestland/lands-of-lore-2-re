@@ -153,7 +153,7 @@ save-header range (`0xEB2EC–0xEB32E`); a zero pointer remains zero.
 The list elements point to event and object records. The service reads
 and updates the countdown at event +8 (`0xB8BD1–0xB8C18`,
 `0xB8CE4`). For example, placed-item event lists come from
-`[0xB7D74] + item.u16(+0x18)` (`0xB71A0–0xB71C5`); their
+`[0xB7D74] + item.u16(+0x18)` (`0xB71A0–0xB71C7`); their
 countdowns are in the section-9 data overlaid from the saved delta
 (`0xE8A74`, flags 7; read and decompress at `0xE749C`).
 
