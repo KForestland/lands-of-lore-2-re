@@ -30,17 +30,16 @@ class byte 0x44 or 0x48.
 | +0x3D | u16 | flags word, copied to hit context +2 (matched by kind-9 word +6) | PROVEN |
 | +0x39 | u16 | sprite ID passed by `0x77B12–0x77B1E` when the item is on the cursor ([tutorial](tutorial-one-event.md)) | PROVEN |
 | +0x3F | u8 | class byte; kind-4 tests its bits | PROVEN read; slot meaning below is INTERPRETATION |
-| +0x41 | s8 | possibly a defence value | native reader not traced (UNKNOWN) |
+| +0x41 | byte | Field role **UNCONFIRMED**. | Follow definition pointers in the equipment path after `0x8FE33` and the receiver after `0x62890`, looking for a read or a copied field at +0x41. |
 | +0x42 | u8 | handler index into the item-use table (0 = no handler) | PROVEN |
 | +0x43 | u8 | bit 0 = "magic" class, bit 1 tested by kind-4 matcher 0xADCDB | PROVEN reads; names INTERPRETATION |
-| +0x44 | u8 | post-hit addend: after a strike, `[0x22C5A] + addend` is returned (halved when `[0x2270E] & 0x400`) | PROVEN value; meaning (speed/recovery) UNKNOWN |
+| +0x44 | u8 | **CONFIRMED.** Post-strike countdown addend. `0x89176–0x891A3` and `0x898D6` return whole ticks plus this byte (halved with `[0x2270E] & 0x400`). The strike caller stores the low byte at controller +0x412 (`0x7DAC0–0x7DB09`). | `0x7D99E` rejects a new strike while this byte is nonzero. `0x79A74–0x79AA2` and `0x79B5B–0x79B5F` subtract whole ticks when elapsed is below the remaining amount; 0xFF bypasses that subtraction. |
 | +0x45 | u8 | compared whole by kind-4 mode 0xADCFB | PROVEN |
-| +0x47 | 4 x 5 | descriptor rows (byte, u16, u16); all zero on the plain swords | layout PROVEN by use; ops UNKNOWN |
-| others | | +0x1C, +0x20, +0x29..+0x2D, +0x40, +0x46 and the rest | UNKNOWN |
+| +0x47 | 4 x 5 | descriptor rows (byte, u16, u16); all zero on the plain swords | Layout PROVEN by use. Other operations are **UNCONFIRMED**. Trace all nonzero rows through the selector at `0x62E6B` and compare the assembled hit amounts with the caller at `0x8916D`. |
+| others | | +0x1C, +0x20, +0x29..+0x2D, +0x40, +0x46 and the rest | **UNCONFIRMED.** Track the defined row through the definition lookup at `0x9EB5C` and a relevant virtual call, then compare each observed dereference with the 91-byte archive stride. |
 
 Class byte values seen: 0x44 hand weapons, 0x48 thrown/ranged, 0x50/0x53 shields and bracers, 0x60 body
-armour, 0x43 rings/amulets/gauntlets, 0x40 other (grouping by item, INTERPRETATION; the native reader of
-the class byte as an equipment slot is not traced).
+armour, 0x43 rings/amulets/gauntlets, 0x40 other (grouping by item, INTERPRETATION; **CONFIRMED.** Equipment selection at `0x8FE2A–0x8FE39` checks class +0x3F against `1 << slot` when the mode-16 handler did not override it).
 
 ## Item-use dispatcher 0x95840 (PROVEN)
 
@@ -56,7 +55,7 @@ the class byte as an equipment slot is not traced).
   from the LE fixup at slot `0xC860 + 4*index` (object-2 target + 0x59024). Handler 0 resolves to a stub at
   0x95874 (`xor eax, eax; ret`), so items with index 0 always take the ordinary path. (PROVEN)
 - Request struct (0x19 bytes, zeroed by every caller): `+0` mode byte, `+1` actor (u32, default 0x22574),
-  `+5` target/context object (u32). (PROVEN layout; `+5` always being the world target is UNKNOWN)
+  `+5` target/context object (u32). (PROVEN layout; the mode-specific roles of `+5` are **UNCONFIRMED**. Compare its store at each request constructor, then follow the corresponding handler’s dereference.)
 - Every handler begins with a compare on the mode byte and returns 0 for modes it does not accept.
 
 ### Modes (callers of 0x95840)
@@ -71,14 +70,13 @@ the class byte as an equipment slot is not traced).
 | 12 | 0x7DB54, after the weapon-ring hit test | item dropped on the weapon circle (PROVEN for the coat handlers) |
 | 16 | equipment slot category query at 0x8FDE6–0x8FE0F and world-interaction callers | category result in the equipment path (CONFIRMED). See [handler effects](lol2-item-handlers.md#equipment-modes). |
 | 18 | 0x942A8 and the player update 0xD0F2C | periodic tick for carried items (INTERPRETATION) |
-| 0, 9, 14, 15, 17 | various | UNKNOWN |
+| 0, 9, 14, 15, 17 | various | **CONFIRMED.** Mode 14 clears a shared flag in handler 70 (`0x99B94–0x99BEA`); mode 17 can call `0xABC08` on a type-2 object in handler 105 (`0x9B783–0x9B79D`). Other caller purposes remain **UNCONFIRMED**. Trace each mode byte from its constructor through the catalog’s corresponding handler. |
 
 Handlers read by hand so far: the two poison-coat handlers (mode 12 adds one coat, up to 9; mode 1 hits
 the player with the coat flag), the on-strike handlers for two weapons (mode 5), the passive slot
 handlers and the consumables. Player flag writes include byte `0x2270E` at `0x972F5` and
 `0x97868`, byte `0x22711` at `0x9B265` and byte `0x22712` at `0x9673A`.
-The other handlers are listed only by their head compares and calls. (Source: an automated per-handler scan
-plus hand reads; effects not read stay UNKNOWN.)
+**CONFIRMED.** All 108 destinations and the native branches traced so far are in the [handler catalog](lol2-item-handlers.md#handler-destinations), with per-slot original table offsets. For instance, handler 70 applies three different mode tests at `0x99B94–0x99BEA`.
 
 ## Weapon damage path (vertical slice, PROVEN where marked)
 
@@ -89,7 +87,7 @@ Traced for two plain swords (handler 0, mask 0x0002, flags 0x0004) and the empty
    limit 0x40 or 0x80 << 16 depending on byte 0x2271F). Byte 0x23C2D must be 1, 8 or 9. (PROVEN)
 2. Mode 5 goes through 0x95840; handler 0 returns 0, so the ordinary hit runs. (PROVEN)
 3. The attack amount at hit context +0x16 is `[0x236DC] + [0x236E4] + [0x236EC] + [0x236F4] + sar([0x2372C], 24)`.
-   (PROVEN; the names of these terms are UNKNOWN. One handler adds 20 to `[0x236E4]` while active.)
+   (PROVEN. Handler 4 adds and removes 20 from `[0x236E4]` at `0x961C7` and `0x9633C`. Other summand roles are **UNCONFIRMED**. Trace stores via the base of the strike object before `0x89045`, including structure-relative writes and the byte at object-5 `0x2372F`.)
 4. The target's `vtable+0x80` runs the damage function 0x62728; the final damage is stored at context +0x1E
    by 0x62EC9. Before the creature-side descriptor loop, the amount is scaled by byte 0xB7FB2 (0: x2, 1:
    unchanged, 2: halved above 2), then by a ratio against the target's scalar unless flag bit 0x08 is set or
@@ -102,8 +100,7 @@ Consequence: two weapons with the same +0x3B / +0x3D words get the same damage f
 that differ between them (+0x1C, +0x20, +0x29..+0x2D, +0x39, +0x40, +0x46) are not read on it. (PROVEN for
 the slice)
 
-UNKNOWN: the names
-of the attack-sum terms and of byte 0xB7FB2, what `[0x22C5A]` counts, and the runtime value of 0x23C2D.
+**CONFIRMED.** `0xB7FB2` is the clamped difficulty byte (`0xCC0C3–0xCC0F7`, `0xCCD5C–0xCCD61`). `0x22C5A` holds whole elapsed ticks (`0xE0CBA–0xE0CF3`). Which value of `0x23C2D` reaches a particular strike is **UNCONFIRMED**. Record it at the strike caller and trace the preceding writer in the same input sequence.
 No random-number call appears on this path before the descriptor callbacks.
 
 ## Still open

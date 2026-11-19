@@ -74,6 +74,6 @@ Slot 1 at file `0x1CD888` has fixup `0x8BFEC` to object 2 offset
 `0x3CFCC`, yielding `0x95FF0`.
 
 **UNCONFIRMED.** The complete semantics of the damage descriptor switch and
-spell effect record bytes +1 to +3 need consumer-specific maps. The
+spell effect record byte +2 and the remaining bits of +3 need consumer-specific maps. Follow the derived row pointer at `0xD1035`. The +1 byte is already read as the experience base at `0xD0CDF`. The
 ordinary internal fixup examples here establish these table targets.
 Other LE fixup record forms require separate decoding.

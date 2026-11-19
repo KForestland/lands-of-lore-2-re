@@ -29,5 +29,5 @@ How the game reaches the separate groups is not traced. The [level sheet](../lev
 
 ## Not covered
 
-- **The game's own automap:** the data the game uses to draw its in-game map, and which regions it marks as seen, are not located (UNCONFIRMED).
+- **The game's own automap markers are CONFIRMED.** The opcode arm at `0x64DB7` marks a 12-byte input row; the map builder iterates those rows at `0x145F2C` and emits six-byte records. The [L66 save row](../lol2-save-field-witnesses.md#native-field-and-payload-cross-reference) gives the activated bit and field sources. **UNCONFIRMED.** Which region fields the original uses for visited-area shading. Trace the region-plane reads from the map update called at `0x146268`.
 - **Several floors over one spot:** levels with storeys, such as the Huline Temple and the Hive, overlap in a top-down picture. Separating them needs the drawer's portal rules ([Q16](../OPEN_QUESTIONS.md)).

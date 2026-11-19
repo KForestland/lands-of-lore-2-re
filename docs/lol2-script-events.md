@@ -86,10 +86,7 @@ Bit 0x10 takes precedence over bit 0x80.
 
 The original writes 60 into `[0x223A8]` at `0x14E7F1`. **CONFIRMED**
 from the 616 kind-2 placement rows, the initial word lies in the range of
-the above formula for `S=60` in all 616, including fixed cases. **UNCONFIRMED**
-the live producer of both elapsed cells and the wall-clock conversion along every
-call path. A source trace of writes to those cells would settle that unit.
-The scale constant and elapsed cells play distinct roles.
+the above formula for `S=60` in all 616, including fixed cases. **CONFIRMED.** The frame routine writes the 8.8 and whole-tick elapsed cells at `0xE0C82` and `0xE0CD2`. The [timer clock](lol2-timer-clock.md#live-write-and-conversion) gives the original formulas and a runtime writer witness. The scale constant and elapsed cells play distinct roles.
 
 **CONFIRMED.** The load scan at `0xAEC74` adds enabled timer records to the
 parallel lists at `0xB7DA4` and `0xB7DB0`. Status +5 bit 0 disables, bit

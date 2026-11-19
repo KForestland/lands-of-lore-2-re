@@ -16,11 +16,11 @@ object-5 `0xB95C + 4*effect` is four bytes.
 | Row | Fields used here | Evidence |
 |---|---|---|
 | School at object-5 +0xBB20 | +0 first effect | `0xD0F4D` |
-| Same | +1 is a candidate effect count based on contiguous stored ranges | Row 0 uses it as an exclusive upper bound at `0xFB91F–0xFB92A`. General per-row use is **UNCONFIRMED**. |
+| Same | +1 is a candidate effect count based on contiguous stored ranges | Row 0 uses it as an exclusive upper bound at `0xFB91F–0xFB92A`. General per-row use is **UNCONFIRMED**. Find a reader that advances the school row or consumes +1 after indexing by the requested school. |
 | Effect at object-5 +0xB95C | +0 stored cost byte | `0x7C1AB`, `0xD1060` |
 | Same | +1 base magic experience for damage feedback | `0xD0CDF` |
 | Same | +3 bit 0 selects whether cast state +0x1B2 gets 2 or 3 | `0xD1035–0xD1050` |
-| Same | +2 and the remaining +3 bits need further decoding | **UNCONFIRMED** |
+| Same | +2 and the remaining +3 bits are **UNCONFIRMED** | Track every derived effect-row pointer from the cast and experience paths and check whether each read reaches byte +2 or tests another bit of +3. |
 
 **CONFIRMED.** These are the 16 descriptors at
 `LOLG.DAT+0x1CCB44` (row `2*school`) and their stored costs.
@@ -102,8 +102,7 @@ enters the switch at `0x81AB2`. Messages 0x21 through 0x24 call
 Messages 0x25 and 0x26 call helper `0x8651C` with IDs 6 and 1
 (`0x81A7B`, `0x81A91`). Routine `0x86418` appends a dword
 school ID and increments the count (`0x86455–0x86473`). It suppresses
-a duplicate ID 5 (`0x86423–0x86450`). **UNCONFIRMED.** The full message
-timing and all producers of acquisitions need separate call tracing.
+a duplicate ID 5 (`0x86423–0x86450`). **CONFIRMED.** Message update consumes the frame delta at `0x81C35`; the half-length branch at `0x81C79` leads to the acquisition dispatch at `0x81DF4`. **UNCONFIRMED.** The first nonzero writer of the player +0x185 timer that expires at `0xD2E57`. Trace that field from level entry or a scroll grant to its first store.
 The [lesson producers](lol2-spell-dispatch.md#lessons-from-native-producers)
 page traces two additional message paths and the update threshold.
 The [item effects](lol2-item-effects.md#selected-item-use-handlers)

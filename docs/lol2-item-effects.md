@@ -121,7 +121,4 @@ For the scrolls, the common school check at `0x8619C` can permit the
 effect or dispatch a lesson. The item removal is earlier in the handler.
 See [spell acquisition](lol2-spells.md#acquisition).
 
-**UNCONFIRMED.** The broad mechanics of most handler indices and all
-per-item descriptor operations still need decoding. The table offsets
-and dispatcher call at `0x95865` locate each handler. Each handler
-tests its own mode byte, for example `0x95FFA` in handler 1.
+**CONFIRMED.** The [catalog](lol2-item-handlers.md) maps the complete 108-slot table at `LOLG.DAT+0x1CD884` and gives native operation witnesses. **UNCONFIRMED.** Downstream uses of several descriptor and request fields. Trace a use from `0x95865` and record the first dereference of each selected field under the documented mode.
