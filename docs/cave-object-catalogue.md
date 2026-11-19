@@ -23,9 +23,9 @@ F1A14 then calls F2B94, which reads count-prefixed16-byte states followed
 by count-prefixed12-byte frames. Template bytes2E+2F partition states;
 signed state byte0D partitions frames (negative means one record).
 
-All172 states and172 frame records are consumed exactly; all1559 placements
+All 172 states and 172 frame records are consumed exactly; all 1559 placements
 reference valid templates and selectors. This is source parsing backed by
-disassembly, not a full loader replay. Templates23/24 share positive resource
+disassembly, not a full loader replay. Templates 23/24 share positive resource
 reference278;16 uses302,28 uses306,21 uses417. These candidate cache
 descriptors use28E encoding and cannot use the raw wall pixel exporter.
 Resource routing and sprite transparency are still open, so no plant/prop
@@ -36,8 +36,8 @@ names or instances are assigned here.
 `extract_prop_sprite_previews.py --game-root GAME --out OUT` decodes candidate
 resources278/302/306/417 as28E row spans. Header gives width/height and
 payload size. Each row has a control word, count and indexed pixels; lower
-14 control bits give horizontal start. In all1,158 checked rows, bit4000
-exactly matches presence of index0. All19 mip extents/dimensions/ends pass.
+14 control bits give horizontal start. In all 1,158 checked rows, bit4000
+exactly matches presence of index0. All 19 mip extents/dimensions/ends pass.
 
 Previews use provisional alpha for index0 and omitted pixels. Visual
 inspection suggests hanging vegetation278, stalagmite302, column306 and
@@ -57,7 +57,7 @@ is not traced.
 ## Column height verification
 
 `verify_prop_region_height.py` replays F1DD2..F1E12 for88 source column
-placements and72 boundary fixtures. It verifies bit2 selection, null-region
+placements and 72 boundary fixtures. It verifies bit2 selection, null-region
 fallback, signed ceiling-floor, cap255 and byte store (negative synthetic
 heights wrap, not lower-clamped). Source heights range88..156. Exporter
 now includes template28/resource306 with region-selected height, for442
