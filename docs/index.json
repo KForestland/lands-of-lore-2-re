@@ -481,6 +481,7 @@
       ],
       "tools": [
         "tools/check_all.py",
+        "tools/doc_index.py",
         "tools/doc_links.py",
         "tools/example_images.py",
         "tools/lol2_cache_seed.py",
