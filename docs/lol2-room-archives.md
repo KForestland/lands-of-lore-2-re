@@ -91,7 +91,7 @@ module use host offsets `0x18`, `0x1C`,
 slots to displacements that differ from their offsets in the host table.
 
 **CONFIRMED.** One room-change import is host table +0x88 → `0xEF558`.
-It copies the requested stem to `[0xDB4BC]`, which the caller
+Unless bit 25 of `[0x2279A]` is set (`0xEF55A–0xEF567`), it copies the requested stem to `[0xDB4BC]`, which the caller
 sends back through the name-driven room opener at `0xEDFAF–0xEDFB6`.
 For example `MCEL.MIX+0x9DF` calls this import with the argument
 stored at `+0xAC1` (`MENT_`). The corresponding original calls at

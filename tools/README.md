@@ -163,7 +163,7 @@ CHECK text: help/opt/automap/credits in LOCALLNG, credits also MOVIES entry 28, 
 
 ### `lol2_speech_names.py`
 
-Re-read the spoken-line format, the category switch, and two `MCEL.MIX` keys. Writes nothing unless `--out` is set, and then only the check line. Not one of the 20 `check_all.py` checks. Page: `docs/lol2-speech.md`.
+Re-read the spoken-line format, the category switch, two `MCEL.MIX` keys and the MCEL import of the category switch. Writes nothing unless `--out` is set, and then only the check line. Not one of the `check_all.py` checks. Page: `docs/lol2-speech.md`.
 
 ```
 $ python3 tools/lol2_speech_names.py --data /path/to/DAT --check

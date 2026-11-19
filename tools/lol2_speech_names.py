@@ -3,7 +3,8 @@
 
 --data is the game DAT folder, or $LOL2_DAT. LOLG.DAT sits in the parent of
 that folder. --check re-reads the format bytes, the switch, the eight arms,
-the branch that skips the .aud probe, and two MCEL.MIX keys. It writes nothing
+the branch that skips the .aud probe, two MCEL.MIX keys, and the MCEL
+module's import of the category switch (host +0xFC). It writes nothing
 unless --out is set, and then only the check line. It is not one of the
 checks in check_all.py.
 """

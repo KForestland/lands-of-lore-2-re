@@ -2,7 +2,7 @@
 
 Message tables are a different container ([message tables](lol2-text-tables.md)). This page is the name the category arms format, and the cue id they hand to the sound player. No line of speech is copied here.
 
-`tools/lol2_speech_names.py --check` re-reads the format bytes, the switch, the eight arms, the branch, two archive keys, and the MCEL loader and category-switch import. It writes nothing unless `--out` is set, and then only the check line. It is not one of the 20 checks.
+`tools/lol2_speech_names.py --check` re-reads the format bytes, the switch, the eight arms, the branch, two archive keys, and the MCEL loader and category-switch import. It writes nothing unless `--out` is set, and then only the check line. It is not one of the `check_all.py` checks.
 
 `LOLG.DAT` in this note is the 1,977,007-byte image whose sha256 begins `b27a3534`. A code address is a file offset minus `0x37000`. A data address is a file offset minus `0x1C1024`. An object-2 slot stored in the file plus `0x59024` is the address used below.
 
@@ -76,8 +76,8 @@ switch. Module selector 0 copies host table +0xFC to body +0xA4C
 (`MCEL.MIX+0x530–0x536`). The relocation on the indirect call at
 `MCEL.MIX+0x777` points to that slot. Its original host table dword
 at `LOLG.DAT+0x1CFA4C` resolves to `0xF133C`. The preceding
-branches at `MCEL.MIX+0x758–0x777` can pass selection bits
-`0x100`, `0x200` or `0x400`. A separate call at
+branches at `MCEL.MIX+0x751–0x777` pass selection bit `0x100`, `0x200`
+or `0x400` for module selectors 2, 3 and 4. A separate call at
 `MCEL.MIX+0xA32` passes three literal arguments to host +0x54
 (`0xEE784`, file `LOLG.DAT+0x1CF9A4`).
 

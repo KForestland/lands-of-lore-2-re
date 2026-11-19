@@ -67,8 +67,9 @@ The global texture file supplies a named witness for `0x67052`.
 `LOCAL.MIX` entry 50 at `+0x4E6`. The loader reads the secondary
 base at member +0x298 (`0x9E332–0x9E358`), then seeks to its
 section-9 table (`0x9E689–0x9E6A0`). In the original member the
-secondary base is `0x18AE18`; the dword at secondary base +0x2A4 gives 15 rows, and the table
-starts at secondary base +0x2C.
+secondary base is `0x18AE18`; the dword at secondary base +0x2A4 gives 15 rows, and the dword at secondary
+base +0x2C (`0x1AECA7`) gives the table's offset from that base
+(`LOCAL.MIX+0x339FA5`).
 The read at `0x9E6BE` uses three dwords per row. The call
 `0x9E6ED → 0x66E8C` stores secondary base + row offset (an absolute file position, sought
 at `0x67015`), capacity and the packed length (a word) in resource +4,
