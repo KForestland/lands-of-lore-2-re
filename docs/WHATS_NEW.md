@@ -4,6 +4,7 @@ Newest first. One line per question worked on, new tool or visible change; each 
 
 ## 19 November 2026
 
+- **Cross-series check.** The shared format pages already stated the same archive, movie, music and cache figures as the current notes, and the name-hash note now states the shift of 6 ([engine](engine-evolution.md)). The shared glossary words are the same text in each game ([glossary](GLOSSARY.md)).
 - **Settling tests.** Five open statements now name the comparison or the follow that would settle them: nonpositive combat flags, the spell-school count byte, the effect 32/33 packet, the `0x02AC` mip path, and the short-block dword `0xFF00FFFF` ([combat](lol2-combat-ai.md), [tables](lol2-executable-tables.md), [spells](lol2-spell-dispatch.md), [textures](lol2-level-texture-container.md), [saves](lol2-save-format.md)). The combat, `0x02AC` and short-block tests are listed under [probes not yet run](NEEDS_A_RUNNING_GAME.md#probes-not-yet-run).
 - **Close-out.** Fifteen open questions (Q1, Q3, Q4, Q5, Q6, Q8, Q9, Q10, Q11, Q12, Q13, Q14, Q16, Q17, Q20) each end with what was measured, what was tried, and what would settle the rest. States stay as they are ([open questions](OPEN_QUESTIONS.md)).
 - **Program bytes.** `LOLG.DAT` at file +0x100 is `bd 01 68 0c df 07 91 0f df 07 95 0f df 07 89 10` ([executable tables](lol2-executable-tables.md)).
