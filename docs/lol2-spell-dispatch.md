@@ -261,10 +261,22 @@ exported tables; it is entered through placed item 2's empty-hand
 interaction ([placed-item event lists](lol2-event-producers.md#placed-item-event-lists)).
 
 **UNCONFIRMED.** The numeric payload table establishes one
-downstream path for all 35 effect IDs. The effect-15 receiver and
-remaining effect-32/33 target writebacks need deeper traces. Follow the receiver called
-at `0x107BF7` (live target and request) and follow the projectile
-after `0x102718`. For the timed message 0x26,
+downstream path for all 35 effect IDs. The remaining effect-32/33 target
+writebacks need deeper traces; follow the projectile after `0x102718`.
+
+**CONFIRMED (effect 15's hit).** The effect-15 object (vtable 0x7278)
+sends its hit from `0x107ADA–0x107BF7` only when its byte +0x56 is 1
+and its target +0x42 has +0x14 bit `0x4000`. Stage +0x58 = 2 first
+plays the cue at `[0x269CC]+0x324`, other stages the cue at
+`[0x269CC]+0x134`, unless `[0x269C4]` bit 0 is set (`0x107AE8–0x107B31`).
+The 0x36-byte packet carries target +4, owner +8, the effect +0x10,
+kind 2 and ID 0xF, and by stage: 1 gives words `0x1040`/1 and
+magnitude 0x10; 2 gives `0x1080`/4 and 0x10; 3 gives `0x1040`/1 and
+10; any other stage leaves words and magnitude zero
+(`0x107B52–0x107BE9`). It goes to the target's vtable +0x80
+(`0x107BF7`): for the player `0xD03B8`, for a creature the receiver
+that calls the common routine `0x62728`
+([combat](lol2-combat-ai.md#hit-context-and-reduction)). For the timed message 0x26,
 the direct +0x185 store scan found player initialization at
 `0xCFB8B` and the expiration zero-store at `0xD2E57`.
 An original playthrough trace filtered to its first nonzero
