@@ -2,7 +2,7 @@
 
 Message tables are a different container ([message tables](lol2-text-tables.md)). This page is the name the category arms format, and the cue id they hand to the sound player. No line of speech is copied here.
 
-`tools/lol2_speech_names.py --check` re-reads the format bytes, the switch, the eight arms, the branch, and two archive keys. It writes nothing unless `--out` is set, and then only the check line. It is not one of the 20 checks.
+`tools/lol2_speech_names.py --check` re-reads the format bytes, the switch, the eight arms, the branch, two archive keys, and the MCEL loader and category-switch import. It writes nothing unless `--out` is set, and then only the check line. It is not one of the 20 checks.
 
 `LOLG.DAT` in this note is the 1,977,007-byte image whose sha256 begins `b27a3534`. A code address is a file offset minus `0x37000`. A data address is a file offset minus `0x1C1024`. An object-2 slot stored in the file plus `0x59024` is the address used below.
 
@@ -69,12 +69,35 @@ not supply one. The indexed bank lookup at `0xE4CEF–0xE4CF8`
 reads the payload for that cue from the EFX bank. The shutdown
 path frees the table pointer at `0x14EA84–0x14EA9C`.
 
+### Room callbacks during the cue
+
+**CONFIRMED.** The original MCEL WOM provides an external caller of the category
+switch. Module selector 0 copies host table +0xFC to body +0xA4C
+(`MCEL.MIX+0x530–0x536`). The relocation on the indirect call at
+`MCEL.MIX+0x777` points to that slot. Its original host table dword
+at `LOLG.DAT+0x1CFA4C` resolves to `0xF133C`. The preceding
+branches at `MCEL.MIX+0x758–0x777` can pass selection bits
+`0x100`, `0x200` or `0x400`. A separate call at
+`MCEL.MIX+0xA32` passes three literal arguments to host +0x54
+(`0xEE784`, file `LOLG.DAT+0x1CF9A4`).
+
+While the cue loop calls `0xEE010`, the timed room callback
+at `0xEE051–0xEE05A` passes selector 10 and a zero argument.
+The once-per-room callback at `0xEE247–0xEE25A` passes
+selector 9 and zero. The display callback at `0xEE1A1–0xEE1C3`
+passes selector 11 and a pointer to two copies of the same
+display-object value. The subsequent overlay draw
+`0xEE1D3 → 0xF00F0` uses the sprite pointer and coordinates
+in each 24-byte row (`0xF00FC–0xF0118`). None of these
+arguments uses the cue or its array index.
+
 **UNCONFIRMED.** A text reader keyed by the cue. The category
-call-through, its two completion loops, and the sound admission
-and cleanup branches show no conversion from cue ID to text.
-The five known TRR tables from `0xCF014` also have different row
-counts from the 1,179-row EFX bank. To settle a separate text
-path, trace the post-call owners of `[0xDB494]+0x90/+0x94`
-and imported room-module draw callbacks, then identify a reader
-that uses the same cue ID to select a text record. A count or a
-matching filename alone cannot establish that join.
+call-through, its two completion loops, the sound admission
+and cleanup branches, and these callback arguments provide
+no cue-to-text join. The five known TRR tables from
+`0xCF014` also have different row counts from the
+1,179-row EFX bank. To settle a separate text path, follow
+indirect calls from the other room modules and trace any
+text reader invoked while the cue is active. Match the
+index it reads to voice +4 or the table index from
+`0xEEB17`.

@@ -87,10 +87,20 @@ The first external call at file `ARENA.MIX+0x377` takes table
 offset +0x18, which resolves to `0xEF028` via file
 `LOLG.DAT+0x1CF968`. The seven absolute-indirect call sites in the
 module use host offsets `0x18`, `0x1C`,
-`0x54`, `0x6C` and `0x88`.
+`0x54`, `0x68` and `0x84`. The initialization copies some
+slots to displacements that differ from their offsets in the host table.
+
+**CONFIRMED.** One room-change import is host table +0x88 → `0xEF558`.
+It copies the requested stem to `[0xDB4BC]`, which the caller
+sends back through the name-driven room opener at `0xEDFAF–0xEDFB6`.
+For example `MCEL.MIX+0x9DF` calls this import with the argument
+stored at `+0xAC1` (`MENT_`). The corresponding original calls at
+`SHAMAN.MIX+0xDC5` and `SETTLE1.MIX+0x615` pass names from
+`+0x2456` and `+0x748`. Those three callers resolve through the
+46-name table.
 
 **UNCONFIRMED.** Whether the retail game opens `ARENA.MIX` by a
-secondary route. The direct constructor calls and the fixed imports
+secondary route. The direct constructor calls and the imports
 above give no such witness. Trace the room-related indirect calls
 from the shipped WOM modules into their host wrappers and record
 whether an archive constructor receives the exact name.

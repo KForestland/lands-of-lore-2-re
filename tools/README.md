@@ -167,7 +167,7 @@ Re-read the spoken-line format, the category switch, and two `MCEL.MIX` keys. Wr
 
 ```
 $ python3 tools/lol2_speech_names.py --data /path/to/DAT --check
-CHECK speech: format at file 0x1C427A; switch at 0xF133C enters eight arms through slots at 0xF131C; cue id from table 0x269CC calls 0xE3924; .aud probe is the other branch; MCEL entries 5 and 7 are 44100 Hz codec 99 (17564 and 21668 bytes)
+CHECK speech: format at file 0x1C427A; switch at 0xF133C enters eight arms through slots at 0xF131C; cue id from table 0x269CC calls 0xE3924; .aud probe is the other branch; MCEL entries 5 and 7 are 44100 Hz codec 99 (17564 and 21668 bytes); MCEL import +0xFC reaches 0xF133C
 ```
 
 ### `example_images.py`

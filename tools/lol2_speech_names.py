@@ -109,6 +109,20 @@ def check(dat_dir):
     by_hash = {}
     for index, (key, offset, size) in enumerate(entries):
         by_hash.setdefault(key, []).append((index, offset, size))
+    [(_, module, _)] = by_hash[ww_hash_v1("WOMS\\MCEL_.WOM")]
+    module += base
+    if module != 0x156:
+        raise ValueError("MCEL room module offset")
+    body_at = module + 0x30
+    body_length, _, count = struct.unpack_from("<III", raw, module + 0x24)
+    fixups_at = body_at + body_length
+    sites = struct.unpack_from(f"<{count}I", raw, fixups_at)
+    if (raw[0x530:0x53C] != bytes.fromhex("8b90fc00000089154c0a0000")
+            or raw[0x777:0x779] != b"\xFF\x15"
+            or 0x779 - body_at not in sites
+            or struct.unpack_from("<I", raw, 0x779)[0] != 0xA4C
+            or struct.unpack_from("<I", image, 0x1CFA4C)[0] + RELOC != 0xF133C):
+        raise ValueError("MCEL category switch import")
     first_hash = None
     for name, index, size in KEYS:
         key = ww_hash_v1(name)
@@ -126,7 +140,7 @@ def check(dat_dir):
     return ("CHECK speech: format at file 0x1C427A; switch at 0xF133C enters "
             "eight arms through slots at 0xF131C; cue id from table 0x269CC "
             "calls 0xE3924; .aud probe is the other branch; "
-            "MCEL entries 5 and 7 are 44100 Hz codec 99 (17564 and 21668 bytes)")
+            "MCEL entries 5 and 7 are 44100 Hz codec 99 (17564 and 21668 bytes); MCEL import +0xFC reaches 0xF133C")
 
 
 def main(argv):
