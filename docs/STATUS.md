@@ -1,6 +1,6 @@
 # LoL2 reverse-engineering status
 
-**As of:** 2026-11-18. What is documented about the original game, which tool reads it, what the tools check on the game files, and what is open. This table replaces the "almost fully understood" summary of earlier pages: those pages ([understanding](lol2-understanding-2026-11.md), [current status](lol2-current-status.md), [closure summary](closure-summary.md), [final closure memo](final-closure-memo.md)) are kept as history.
+**As of:** 2026-11-19. What is documented about the original game, which tool reads it, what the tools check on the game files, and what is open. This table replaces the "almost fully understood" summary of earlier pages: those pages ([understanding](lol2-understanding-2026-11.md), [current status](lol2-current-status.md), [closure summary](closure-summary.md), [final closure memo](final-closure-memo.md)) are kept as history.
 
 Run the checks: `python3 tools/check_all.py` (with `$LOL2_DAT` set) (27 checks; all pass on the copy read).
 
@@ -13,7 +13,7 @@ Run the checks: `python3 tools/check_all.py` (with `$LOL2_DAT` set) (27 checks; 
 <!-- rating:begin -->
 - **Files read:** 83 of 83 files in `DAT` (1,915.6 of 1,915.6 MiB) have their whole layout read by a tool here: every byte belongs to a known header, directory, entry, chunk, segment or resource, or to zero padding between them; the DOS part of `SETUP.EXE` is counted by its length (what is inside an entry may still be only partly understood).
 - **Rules traced:** the pages mark 679 statements CONFIRMED (proved from the program code or the files) and 177 UNCONFIRMED (a reading not yet proved), on 112 current pages; old notes kept as history are not counted.
-- **Seen in the running game:** 2 of 8 questions that can only be settled by watching the original game run are settled.
+- **Seen in the running game:** 2 of 8 probes that need the original game running are answered (a question can have more than one probe).
 - **Open questions:** 20 numbered questions: 3 answered, 15 mostly answered, 2 partly answered.
 <!-- rating:end -->
 
