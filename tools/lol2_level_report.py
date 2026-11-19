@@ -93,6 +93,7 @@ def wall_stats(raw):
     regs = [struct.unpack_from("<22H", raw, ro + 44 * i) for i in range(nr)]
     owner, bad = {}, 0
     by = Counter()
+    special_with_base = 0
     for i, r in enumerate(regs):
         n = r[15] & 0xFF
         if n == 0:
@@ -101,16 +102,20 @@ def wall_stats(raw):
         if r[13] + n > wc:
             bad += 1
             continue
+        earlier_codes = set()
         for k in range(r[13], r[13] + n):
             bad += k in owner
             owner[k] = i
             code = raw[ws + 8 * k + 5] & 0x1F
             if code & 16:
                 by["special"] += 1
+                special_with_base += (code & 15) in earlier_codes
             else:
                 by[("wall side" if r[2 + (code & 3)] == 0xFFFF else "portal side", code & 12)] += 1
+            earlier_codes.add(code)
     bad += len(owner) != wc or ws + 8 * wc != ro
-    return dict(rows=wc, regions_with_walls=sum(1 for r in regs if r[15] & 0xFF), by=by, bad=bad)
+    return dict(rows=wc, regions_with_walls=sum(1 for r in regs if r[15] & 0xFF),
+                by=by, special_with_base=special_with_base, bad=bad)
 
 
 # Event record kinds and their native matchers (docs/lol2-script-events.md#event-records).
@@ -418,6 +423,10 @@ def main():
         gl = sum(L["geom"]["links"] for L in levels); gr = sum(L["geom"]["reciprocal"] for L in levels)
         gs = sum(L["geom"]["shared"] for L in levels); gb = sum(L["geom"]["bad"] for L in levels)
         wb = sum(L["geom"]["wall_rows"]["bad"] for L in levels); wr = sum(L["geom"]["wall_rows"]["rows"] for L in levels)
+        special = sum(L["geom"]["wall_rows"]["by"]["special"] for L in levels)
+        based = sum(L["geom"]["wall_rows"]["special_with_base"] for L in levels)
+        if len(stems) == 15 and (special, based) != (67, 45):
+            bad.append(f"special wall counts {(special, based)}")
         ev = Counter()
         for L in levels:
             ev.update(event_kinds(L["scripts"]))
@@ -426,7 +435,7 @@ def main():
               f"{uns} commands outside the size table); texture container found by name hash in {tex}; entity records in "
               f"{ent}; {exits} level-transition commands; regions {sum(L['geom']['regions'] for L in levels):,}, "
               f"out-of-range vertex/neighbour indices {gb}, portal links {gl:,} (reciprocal {gr:,}, sharing the side's vertices "
-              f"{gs:,}); wall rows {wr:,}, partition faults {wb}; event records {sum(ev.values()):,} (kinds without a documented matcher: {unknown_kinds or 'none'}); "
+              f"{gs:,}); wall rows {wr:,}, partition faults {wb}, {special} special ({based} with earlier base); event records {sum(ev.values()):,} (kinds without a documented matcher: {unknown_kinds or 'none'}); "
               f"opcode-21 movie commands {sum(sp.values())} naming {len(sp)} scene ids (outside the scene table: {bad_scene or 'none'}); held-item tests (kind 4 mode 3) {len(tests)}, identity not in the item table: "
               f"{unknown}; bad={bad or 'none'}")
         return 0 if not bad and not uns and not unknown and not gb and not wb and not bad_scene else 1

@@ -27,7 +27,7 @@ The table pointer `[0x22D08]` is the same 8-byte-row table that the [opcode refe
 |---|---|---|
 | 0–1 | the side of the region the row stands on | CONFIRMED on the data (below) |
 | 2–3 | class: 0, 4, 8 or 12 | values CONFIRMED; meanings below |
-| 4 | special row | CONFIRMED as a separate path (`0x11463C–0x11463F` tests bit 4); its geometry is UNCONFIRMED |
+| 4 | special row | CONFIRMED as a fractional side segment (`0x11471C–0x114724` dispatches to `0x11511C`) |
 
 **Classes on the data.** Counted over all 15 levels:
 - **Class 4** stands on wall sides: 31,645 rows, nearly all of the wall-side rows.
@@ -36,7 +36,46 @@ The table pointer `[0x22D08]` is the same 8-byte-row table that the [opcode refe
 
 The earlier native replays on L1_DC ([native wall verification](../native-wall-verification.md)) treat classes 4 and 12 as the middle (full) wall and 0 and 8 as the upper and lower pieces. They follow the original routines `F4504`, `F4590` and `F49FC`.
 
-**Which of 0 and 8 is upper:** the counts above fit class 0 = upper piece (above the opening) and class 8 = lower piece (below it). That pairing is a reading of the data, UNCONFIRMED until traced in the constructor.
+**CONFIRMED.** On the ordinary geometry path, `0x114B45–0x114B64`
+switches on class. For class 0, `0x114C73–0x114CA8` puts the owning
+region's ceiling at the top, using the slope helper when flagged.
+`0x114CCE–0x114D20` obtains the bottom from the neighbour's ceiling,
+clamped at the owning floor for flat geometry. Class 8 obtains its
+bottom from the owning floor at `0x114D48–0x114D86`, then its top from
+the neighbour floor at `0x114D89–0x114E62`. The live record stores
+top heights at +4 and +0x10, bottom heights at +0x28 and +0x1C. The
+ordinary constructor passes row +6 bit 7 at `0x11472B–0x114738`, which
+lets the connector path choose endpoints or height sources separately.
+
+## Special rows
+
+**CONFIRMED.** On the `0x11511C` constructor path, let `P0` and `P1`
+be the two selected side vertices, and `F` and `C` the owning region's
+signed floor and ceiling. Let `bN` be unsigned wall row byte N. The
+horizontal endpoints in each fixed-point component are
+`P0 + ((P1 - P0) >> 8) * t`, with `t = b2` and `t = b2 + b4`.
+The top and bottom fixed-point heights are:
+
+```text
+top = (C << 16) - ((C - F - b7) << 8) * b3
+bottom = top - (b7 << 16)
+```
+
+The height stores are `0x115173–0x11518F`, the endpoint loads and stores
+`0x115192–0x115243`, and `0x11523A` marks the quad active. The
+arithmetic uses signed right shifts and 32-bit results. The constructor
+zeros the two byte offsets at wall object +0x30/+0x31, then initializes
+wall object +0x40 using byte 4 from the first earlier same-code ordinary
+row in the region, or `0x7F` when none was found
+(`0x114644–0x11467F`). Across the 15 archives, 45 of 67 special rows
+have that earlier ordinary row, and 22 use the fallback under this path.
+The level report rechecks both counts from header +0x08 and +0x0C.
+
+For example, `L14_HT.MIX+0xAFC4D2` (row 7471, region 17) has bytes
+`3d 04 1e ff e5 15 60 42`. Its region at `+0xAFDBEE` has floor 0 and
+ceiling 125. The horizontal parameters are 30 and 259. The fixed-point
+top and bottom are 4,340,480 and 15,104, respectively. The earlier
+ordinary code-5 row gives byte 4 equal to `0x80`.
 
 ## Worked example: a window in the Huline Temple
 
@@ -54,19 +93,30 @@ All four rows stand on side 0, which opens into region 37 (floor 55, ceiling 75)
 | 7,450 | 11,519,018 | `ef 01 2b 00 80 08 10 00` | 8 | 8 |
 | 7,451 | 11,519,026 | `ef 01 4c 4e 80 0c 10 00` | 12 | 12 |
 
-Read with the neighbour's heights, the opening into region 37 runs from height 55 to 75:
-- the lower piece closes 0 to 55;
-- the upper piece closes 75 to 80.
+**CONFIRMED.** A bounded replay of the original `0x114AA4` routine
+with the on-disk regions at `+0xAFD902` and `+0xAFDF5E`, and the level's
+vertex table, gives the following four active quads. The replay supplies
+table pointers and reports the constructor output. Heights below are in
+map units. X/Z positions are shown as stored 16.16 integers.
 
-So the side is a window into a raised room, not a doorway at floor level.
+| Row | Bottom to top | First endpoint (X, Z) | Second endpoint (X, Z) |
+|---:|---|---|---|
+| 7,448 | 75 to 80 | (214302720, 227475456) | (204800000, 217382912) |
+| 7,449 | 0 to 80 | (214302720, 227475456) | (212074496, 225050624) |
+| 7,450 | 0 to 55 | (214302720, 227475456) | (204800000, 217382912) |
+| 7,451 | 0 to 80 | (207834407, 220581341) | (204800000, 217382912) |
+
+The upper and lower rows bound the opening vertically. The connector
+(neighbour region flag `0x10` at `0x114AF6`) supplies the inner endpoints
+of the two full-height pieces at either end. Together the four quads
+leave a raised opening in the middle of the side.
 
 Across the Huline Temple, 5,951 of its 8,117 rows stand on portal sides (classes 0: 3,090; 8: 2,734; 4: 97; 12: 30), against 2,150 rows on wall sides (2,134 of class 4 and 16 of classes 0 and 8) and 16 special rows ([level sheet](../levels/L14_HT.md)). Most of the temple's walls are therefore pieces around openings, not full walls.
 
-This is why the temple's interior cannot be drawn by treating every portal as fully open, nor every region side as a wall. The rows say how much of each opening is closed. CONFIRMED for the row data; the drawing rule is UNCONFIRMED.
+The constructed opening has both horizontal and vertical bounds. UNCONFIRMED. Raster clipping and the screen-space texture coordinates of this opening need a draw-path witness.
 
 ## Open ([Q16](../OPEN_QUESTIONS.md))
 
 - The other row bytes: bytes 0–1 look like a texture or resource word, bytes 2–4 hold setup values the constructor copies (replayed on L1_DC by `tools/draracle/lol2_extract_wall_records.py`), and bytes 6–7 hold flags (bit 7 of byte 6 selects connector heights, per the cave page).
-- The geometry of special rows (code bit 4).
-- Which of classes 0 and 8 is the upper piece, traced in the constructor.
-- How the drawer clips at a partly closed portal, and the full UV mapping.
+- The preceding replay stops at the constructed quad. To link the Huline Temple witness to the one sampled L20_BB span, pass the four output quads at `0x114753` into `0x1322A4`. Follow the three stored setup words at runtime wall +0x32/+0x34/+0x36 (`0x114763–0x11478B`) to the clipping and sampler initialization for each surviving span. Full UV mapping remains UNCONFIRMED.
+- Selection of the alternate constructor at `0x114710` and its effect on this example in a running game remain UNCONFIRMED.
