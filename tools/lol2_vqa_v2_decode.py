@@ -32,6 +32,7 @@ import argparse
 import os
 import sys
 from pathlib import Path
+from struct import unpack_from
 
 import numpy as np
 
@@ -207,6 +208,50 @@ def _book(raw: bytes, vec: int, where: str):
     return np.frombuffer(raw, np.uint8).copy()
 
 
+def validate_pointer_stream(raw: bytes, columns: int, rows: int, vectors: int, where: str):
+    """Check the indexed VPR command words at LOLG.DAT 0x17D412–0x17D847."""
+    at = 0
+    block = 0
+    while block < columns * rows:
+        if at + 2 > len(raw):
+            raise VQAError(f'{where}: truncated pointer command at {at}')
+        word, = unpack_from('<H', raw, at)
+        at += 2
+        opcode = word >> 12
+        count = 1
+        vector = None
+        if opcode < 8:
+            vector = word
+        elif opcode == 0xA:
+            count = word & 0xFFF
+            if at + 2 > len(raw):
+                raise VQAError(f'{where}: truncated repeated block at {at}')
+            nested, = unpack_from('<H', raw, at)
+            at += 2
+            if nested < 0x8000:
+                vector = nested
+            elif nested >= 0xC000:
+                vector = nested & 0xFFF
+        elif opcode == 0xB:
+            count = (word >> 8) & 0xF
+        elif opcode == 0xC:
+            count = word & 0xFFF
+            if count & 1 or at + count > len(raw):
+                raise VQAError(f'{where}: invalid literal colour span at {at}')
+            at += count
+        elif opcode == 0xE:
+            vector = word & 0xFFF
+        elif opcode != 0xF:
+            raise VQAError(f'{where}: unknown pointer command {word:#06x}')
+        if not count or block % columns + count > columns:
+            raise VQAError(f'{where}: pointer run {word:#06x} crosses a row at block {block}')
+        if vector is not None and vector >= vectors:
+            raise VQAError(f'{where}: vector {vector} outside codebook of {vectors}')
+        block += count
+    if at != len(raw):
+        raise VQAError(f'{where}: {len(raw) - at} unread pointer bytes')
+
+
 def decode(blob: bytes, pixels: bool = False):
     """Yield ('vpt', rgb_or_None) or ('stream', None) for each frame.
 
@@ -272,13 +317,10 @@ def decode(blob: bytes, pixels: bool = False):
         rgb = None
         if b'VPRZ' in parts or b'VPTR' in parts:
             kind = 'stream'
-            raw = parts.get(b'VPRZ')
-            if raw is not None:
-                decoded = _lcw(raw, f'VQFR {fi} VPRZ')
-                if not decoded:
-                    raise VQAError(f'VQFR {fi}: VPRZ decodes empty')
-            elif not parts[b'VPTR']:
-                raise VQAError(f'VQFR {fi}: VPTR is empty')
+            tag = next(iter(pointers))
+            where = f'VQFR {fi} {tag.decode()}'
+            raw = _lcw(parts[tag], where) if tag == b'VPRZ' else parts[tag]
+            validate_pointer_stream(raw, gx, gy, len(cb) // vec, where)
         else:
             raw = _lcw(parts[b'VPTZ'], f'VQFR {fi} VPTZ') if b'VPTZ' in parts else parts[b'VPT0']
             if len(raw) != 2 * n:

@@ -44,12 +44,43 @@ codebook before frame F is drawn. The size on frame 0 is the compressed length o
 
 ### Pointer streams
 
-837 movies use `VPRZ` (LCW) or `VPTR` (raw) instead of a pointer table. They still have a 256-colour
-palette and a codebook of 8-bit vectors, so they are not 15-bit frames. `CAN.MIX` entry 22 shows the
-mismatch: 340 blocks would need a 680-byte table, and the `VPRZ` decompresses to 492 bytes. The tool
-checks the codebook and that the `VPRZ` is LCW. It does not expand the stream. Two further `VPTZ` frames
-fail on a relative copy inside an absolute-mode LCW stream. `--full` prints the frame numbers the
-decoder reports. The bytes are on the [format page](formats/vqa.md).
+**CONFIRMED.** `VPRZ` and `VPTR` select node +0x14 bit 5 at
+`0x16E5F6–0x16E661` and `0x16E4A8–0x16E50C`. `VPRZ` also sets
+bit 4 for the mode-byte LCW decoder (`0x172808–0x172845`). The
+frame builder tests bit 5 at `0x1728E4` and calls context +0x772
+at `0x17291C`. Indexed 4×4 callbacks include `0x17D3D4`
+(assignment `0x172068`, after applying the object-2 relocation).
+Its input is a stream of little-endian u16 commands, in row order.
+
+| Command | Indexed 4×4 effect | VA |
+|---|---|---|
+| `0000–7FFF` | One opaque codebook vector. The full word indexes 16-byte vectors. | `0x17D412–0x17D438`, `0x17D7F4–0x17D810` |
+| `Axxx` | Repeat the following u16 block selector `xxx` times, with `xxx` the low 12 bits of the command. A selector below `0x8000` is a full vector index. A selector in `0x8000–0xBFFF` fills with its low byte, and `0xC000–0xFFFF` indexes a transparent vector by its low 12 bits. | `0x17D5D3–0x17D627`, `0x17D690–0x17D72A` |
+| `Bxcc` | Fill `x` blocks with colour `cc`, leaving them unchanged when `cc = 0`. | `0x17D56D–0x17D5CE` |
+| `Cxxx` | Emit `xxx` solid colours from the following bytes in u16 pairs, with the high byte of each pair emitted first. Colour zero leaves the block unchanged. | `0x17D4C8–0x17D568` |
+| `Exxx` | One vector selected by low 12 bits. Zero-valued pixels leave the destination unchanged. | `0x17D47B–0x17D4C6`, `0x17D7A4–0x17D7C4` |
+| `F0cc` | One solid block of colour `cc`. Colour zero leaves the block unchanged. The arm selects `Fxxx` by its high nibble. | `0x17D43D–0x17D476`, `0x17D7CA–0x17D7D6` |
+
+The renderer advances to the next block row at the column boundary
+and stops at width-in-blocks times height-in-blocks (`0x17D825–0x17D847`).
+The original `CAN.MIX` entry 22 first frame has 340 blocks in 20 columns.
+Its 492-byte stream begins `00 B6 00 E0 01 E0 02 E0`. The first word
+`0xB600` advances six blocks without writing pixels, and the next
+three words select transparent vectors 0, 1 and 2.
+
+**CONFIRMED.** The command census consumed 52,187 pointer-stream
+frames across the 837 movies. All use 4×4 blocks. All commands
+completed within their row and consumed the exact stream length.
+The tool's `--check --full` walks the commands and checks vector
+indices against the selected codebook. **UNCONFIRMED.** The
+starting destination pixels of transparent draws on each seek and
+the equivalent behavior under other callback selections. Stream
+frames remain outside the tool's RGB export.
+
+The two exceptional `VPTZ` frames use the ordinary pointer-table
+path. The absolute mode of `0x158D58` still permits short relative
+copies. The [native copy and buffer analysis](formats/vqa.md#native-short-copy-runtime-control)
+locates the prior destination data those commands use.
 
 ## The FFmpeg problem this explains
 
@@ -73,8 +104,8 @@ pixels in two frames. This decoder is a reimplementation, not an execution of th
 `lol2_vqa_decode.py` is a chunk inspector: it lists `VQHD` fields and the chunk types (codebook, pointer,
 palette and audio chunks) of every VQA entry in a MIX, and does not produce pixels. `lol2_vqa_v2_decode.py`
 decodes pixels for version 2 pointer-table movies (4×4 and 4×2, partial or scheduled codebooks, and the
-raw `CBF0`/`CBP0`/`VPT0` forms). Malformed data raises `VQAError`. A `VPRZ`/`VPTR` movie is checked as far
-as the codebook and is not written out as frames. The tool does not decode audio: top-level chunks other
+raw `CBF0`/`CBP0`/`VPT0` forms). Malformed data raises `VQAError`. A `VPRZ`/`VPTR` movie is checked through the codebook and pointer
+commands. Frame export is available for pointer tables. The tool does not decode audio: top-level chunks other
 than `VQHD`, `VQFR` and `CINF` are skipped. An unknown sub-chunk inside a frame raises `VQAError`.
 
 ## Checked
@@ -86,6 +117,6 @@ above was not re-run for this note.
 
 Re-run on 2026-11-18 over every `WVQA` in `DAT/`. `--check` is the chunk census and one sample of each
 layout. `--full` walks every frame: 1,109 pointer-table movies pass, including the 4×2 movies and the
-byte-13 value 0 movies, and 837 pointer-stream movies pass the codebook check. Two frames fail on a
-relative LCW copy; the count is 1,109 + 837 + 2 = 1,948. Of the 130 movies with byte 13 equal to 0,
+byte-13 value 0 movies, and 837 pointer-stream movies have framed pointer commands. Two pointer-table frames require buffer history for their
+relative LCW copies; the count is 1,109 + 837 + 2 = 1,948. Of the 130 movies with byte 13 equal to 0,
 10 stage `CBPZ` parts and 120 have a single `CBFZ`. `L4_HJI.MIX` entry 67 still expands to 9 of 9 frames.

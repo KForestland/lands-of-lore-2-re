@@ -84,6 +84,17 @@ distance is `((command & 0x0F) << 8) | next_byte` at `0x158D94–0x158DB0`.
 | `L20_BBI.MIX`, key `0xD3C844E7`, entry 25 frame 115 | `+0x35202D6` | `ESI` equals `EDI` at destination base +30,400. Up to 3 bytes advance through a self-copy. |
 | `SPKSTON2.MIX`, key `0x4119C826`, entry 4 frame 492 | `+0x17695E8` | `EDI` is destination base +564 and `ESI` is destination base −110. Up to 5 bytes come from that preceding range. |
 
+**CONFIRMED.** The pointer decode at `0x172828–0x172838` chooses
+node +0's allocation or the shared pointer buffer `[context+0x6E6]`.
+Initialization can allocate the shared buffer and clear it at
+`0x16CD31–0x16CD94`. The decode call itself does no clear. In the
+shared case, frame 115 reads the same three positions in the buffer
+as the preceding contents of those positions. In the node case it
+reads the contents left there when that node was last written or
+reused. Frame 492 reads five bytes at offsets −110 through −106 from the
+selected base. The clamp at `0x158DA3–0x158DA8` limits copy length by output
+capacity, while `0x158DAE–0x158DB2` uses the computed source.
+
 **UNCONFIRMED.** The source bytes and the active codebook in the two
 specific frames are still open. The Extras menu exposed the intro and
 other replays. Loading L20_BB from the copied autosave (a player save written by the game, not shipped) read the directory
@@ -134,6 +145,6 @@ as breakpoint targets for the next runtime trial; the `SPKSTON` open also needs 
 
 ## Open
 
-- The `VPRZ`/`VPTR` pointer stream. `CAN.MIX` entry 22 is 80×68 (340 blocks of 4×4). Its first `VPRZ` decompresses to 492 bytes, not the 680 a full pointer table would be, and begins `00 b6 00 e0 01 e0 02 e0`. Reading each little-endian word by the top 3 bits, the way a published HiColor note describes `VPTR`, takes the first word as a run of length 0 and the next as a skip of 480. That covers the frame and leaves 487 of the 492 bytes unread, so it does not describe this stream. What would settle it is the routine that expands the accepted buffer.
-- The two `VPTZ` frames named above. The distance-0 command does not repeat the previous byte: in the executable a distance of 0 copies the destination onto itself. What would settle the frame is that rule applied to the absolute-mode stream, checked against the 32,000-byte table.
+- The indexed `VPRZ`/`VPTR` command grammar is [traced here](../lol2-vqa-v2.md#pointer-streams). The remaining question is the initial destination for each transparent draw and seek.
+- The two `VPTZ` frames above use the native short-copy instruction. Their prior destination contents remain open.
 - How a script names a movie is a separate page: [movie scenes](../lol2-movie-scenes.md).
