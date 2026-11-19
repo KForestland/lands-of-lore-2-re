@@ -67,6 +67,7 @@ TIMER_ACTIONS = ('change flags', 'change reload operand 1', 'change reload opera
                  'start', 'stop', 'reload', 'reload with temporary operand 1')
 TIMER_ADDRESSES = (0xB482C, 0xB483C, 0xB484C, 0xB485C, 0xB494B, 0xB49BA, 0xB49D1)
 PROPERTIES = {2: ('unlink object', 0xB50E6), 3: ('link object', 0xB5117),
+              10: ('clear object +0x16 bit 0x02', 0xB5393),
               16: ('stop object sound', 0xB5401), 17: ('set object flag 0x4000', 0xB50FB),
               18: ('clear object flag 0x4000', 0xB5109), 21: ('send kind 6 value 20', 0xB5448)}
 ARRAYS = {198: ('local', 'set', 0x64887), 199: ('shared', 'set', 0x64A8C),
@@ -99,6 +100,10 @@ def effect(row, items, scenes):
         target = ['region', index, 0x5FCE6]
     if opcode == 2 and raw[1:5] == b'\x01\x00\x00\x1c':
         return f'request level {raw[5] & 31}, arrival {raw[5] >> 5}', 0xD8797, True, ['exit', raw[5] & 31, None]
+    if opcode == 2 and raw[4] == 4 and raw[5] == 0:
+        return 'request player form 0 if conversion is enabled', 0xD7F58, True, None
+    if opcode == 2 and raw[4] == 0x13:
+        return 'request a different random player form if conversion is enabled', 0xD7FB7, True, None
     if opcode == 2:
         return f'submit game subcommand {raw[4]}, argument {raw[5]}', 0xB5BAC, False, None
     if opcode == 3 and kind in (1, 2):
@@ -120,6 +125,8 @@ def effect(row, items, scenes):
         return description, (0xB5A3C if opcode == 16 else 0xB5A76), True, target
     if opcode in (5, 7):
         value = raw[4] if opcode == 5 else signed(raw[4])
+        if opcode == 7 and kind == 3 and value == 0:
+            return 'set prop +0x36 bits 0x05 through its vtable', 0xF21C6, True, target
         slot, address = (0xB0, 0xB5970) if opcode == 5 else (0xB4, 0xB5997)
         return f'call the selected object’s slot +0x{slot:X} with {value} and {raw[5]}', address, False, target
     if opcode == 15:
@@ -127,6 +134,8 @@ def effect(row, items, scenes):
         secondary = f'{other[0].replace("_", " ")} {word(raw, 6)}' if other else f'selector {raw[5]}:{word(raw, 6)}'
         return (f'copy {secondary} coordinates, offset Z by its height byte and apply action {raw[4]}',
                 0xB5C82, False, target)
+    if opcode == 6 and raw[4] == 1:
+        return 'for an admitted object, reset kind-1 render state and submit its region’s secondary index twice', 0xB3F5C, True, target
     if opcode == 18:
         immediate = bool(word(raw, 0xA) & 0x20)
         description = ('reset sequence progress, clear slot and send kind 6 value 6' if immediate
@@ -168,6 +177,8 @@ def effect(row, items, scenes):
     if opcode == 197 and raw[4] in REGION_FLAGS:
         field, operation, bits, address = REGION_FLAGS[raw[4]]
         return f'{operation} region bits 0x{bits:X} at {field}', address, True, ['region', index, None]
+    if opcode == 197 and raw[4] == 10:
+        return 'activate the region-indexed automap marker if present', 0x64DB7, True, ['region', index, None]
     if opcode == 204:
         selector, value = signed(word(raw,4),16), word(raw,6)
         if selector == -1:
@@ -502,6 +513,27 @@ def render(data, name, items, scenes):
     return {f'{name}.md': page, **group_files, **event_files, **part_files}
 
 
+def verify_reader_anchors(image):
+    """Check original slots and operations cited in the worked excerpt."""
+    for file_offset, expected in (
+        (0xEC05C, 0xB5393 - 0x59024),  # property 10
+        (0x9BCD0, 0x64DB7 - 0x59024),  # region action 10
+        (0x1CB8D0, 0xB5000 - 0x59024),  # prop +0x64
+        (0x1CB920, 0xF21A4 - 0x59024),  # prop +0xB4
+        (0x1CB924, 0xB71A0 - 0x59024),  # prop +0xB8
+        (0x129178, 0xF21C6 - 0x59024),  # prop action 0
+    ):
+        require(struct.unpack_from('<I', image, file_offset)[0] == expected,
+                f'wrong native slot at {file_offset:#x}')
+    for address, expected in (
+        (0xF20C3, b'\xc7\x40\x28\x48\xa8\x00\x00'),
+        (0xF21C6, b'\x80\x48\x36\x05'),
+        (0xB5393, b'\x80\x63\x16\xfd'),
+    ):
+        start = address + 0x37000
+        require(image[start:start + len(expected)] == expected, f'wrong native store at {address:#x}')
+
+
 def main():
     parser = lol2_cli.tool_args(__doc__, out_help='directory outside the repository for full notes')
     parser.add_argument('level', nargs='?')
@@ -510,12 +542,14 @@ def main():
     data = Path(args.data).resolve()
     try:
         items = item_identities(data)
-        _, scenes = scene_names(data)
+        image, scenes = scene_names(data)
         if args.check:
             if args.level or args.out or args.summary:
                 parser.error('--check re-derives the committed summaries without writing')
             root = Path(__file__).resolve().parents[1] / 'docs' / 'levels' / 'notes'
+            verify_reader_anchors(image)
             groups = commands = 0
+            rooms = 0
             for name in EXPECTED_LEVELS:
                 for filename, content in summary_files(data, name, items, scenes).items():
                     require((root / filename).read_text(encoding='utf-8') == content, f'stale summary: {filename}')
@@ -524,6 +558,13 @@ def main():
                 require(len(g) == level['counts']['groups'], f'{name}: group count')
                 groups += len(g)
                 commands += sum(len(x['commands']) for x in g)
+                for group in level['groups']:
+                    for command in group['commands']:
+                        if command['opcode'] == 12:
+                            require(bytes.fromhex(command['raw_hex'])[4] < 46,
+                                    f'{name}: room selector outside original table')
+                            rooms += 1
+            require(rooms == 174, f'wrong opcode-12 room count: {rooms}')
             print(f'CHECK level_notes: {len(EXPECTED_LEVELS)} level summaries and the {EXCERPT_LEVEL} excerpt reproduced '
                   f'byte-for-byte; {groups:,} groups with {commands:,} commands re-derived (full listings are tool output, '
                   'not tracked)')

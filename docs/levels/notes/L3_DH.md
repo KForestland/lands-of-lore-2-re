@@ -28,8 +28,8 @@
 | 0:60 | descriptor 8 / kind 12 `0x59C8C4` / pred. 62 | `0x59C19A` | set 1 at local byte 25 | `0x64887` |
 | 0:78 | descriptor 8 / kind 12 `0x59C8D0` / pred. 99 | `0x59C1A6` | start for kind-2 timer 0 (argument 0) | `0xB485C` |
 | 0:738 | descriptor 34 / kind 12 `0x59CA3C` | `0x59C454` | set object state +0x25 to 5 | `0xB5A3C` |
+| 0:1026 | descriptor 61 / kind 12 `0x59CACC` | `0x59C55A` | activate the region-indexed automap marker if present | `0x64DB7` |
 | 0:1364 | descriptor 75 / kind 12 `0x59CBB2` / pred. 45 | `0x59C6B2` | add -1 at shared byte 0 (clamped to 0–10) | `0x64B1C` |
-| 0:1834 | descriptor 111 / kind 11 `0x59CC58` | `0x59C888` | set region bits 0x3 at +0x1C | `0x64D5F` |
 | 1:1498 | prop 93 / kind 5 `0x593C64` | `0x590C6E` | grant player item definition 94, instance byte +4 = 4 | `0xD78D9` |
 | 1:7306 | control 82 / kind 6 `0x5947F6` / pred. 209 | `0x592324` | request level 4, arrival 1 | `0xD8797` |
 | 1:7596 | control 92 / kind 4 `0x594864` / pred. 206 | `0x592460` | set behavior pair to 4 for admitted actor | `0xA6365` |
@@ -40,4 +40,4 @@ The table shows **CONFIRMED** static effects at admitted command sites. For a ro
 
 **UNCONFIRMED.** The annotated archive data identify the exact dispatch sites and operands below any unresolved effects. An empty direct-trigger list leaves the producer open. For virtual calls, resolve the target placement’s runtime class and its table slot, then trace that implementation. For unresolved event IDs, trace callers to the matcher addresses listed above.
 
-Opcode sites with effects still open: 1 ×77, 2 ×86, 5 ×182, 6 ×282, 7 ×40, 8 ×40, 9 ×87, 12 ×5, 13 ×27, 197 ×7, 210 ×1.
+Opcode sites with effects still open: 1 ×77, 2 ×86, 5 ×182, 6 ×218, 7 ×18, 8 ×40, 9 ×87, 12 ×5, 13 ×27, 210 ×1.

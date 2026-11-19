@@ -36,18 +36,18 @@ identifies a continuation whose effect is still open.
 |---|---:|---:|---|---|
 | 0 (00) | 4 | 0 | `0xB6B6E` guard | Fails the low switch range after subtracting one. The size is defined at `0x645E0`. |
 | 1 (01) | 6 | 1166 | `0xB5937` | Passes object and command to vtable slot +0xAC. Result controls whether the node is consumed. |
-| 2 (02) | 6 | 2252 | `0xB5BAC` | +4 selects an action. Arms 5 and 6 resolve a target at `0xB5AE4` and `0xB5B14`. Arm 5 calls `0xDD5DC` with the player, target and u8 +5. Other arms go to `0xD7890`. Arm 0x1C splits u8 +5 into a low five-bit level and high three-bit arrival index (`0xD8797–0xD87C5`). |
+| 2 (02) | 6 | 2252 | `0xB5BAC` | +4 selects an action. Arms 5 and 6 resolve a target at `0xB5AE4` and `0xB5B14`. Arm 5 calls `0xDD5DC` with the player, target and u8 +5. Other arms go to `0xD7890`. With +5 zero, arm 4 requests form 0 if enabled at `0xD7F58–0xD7F97`. Arm 0x13 chooses a different form index at `0xD7FB7–0xD801F`. Arm 0x1C splits u8 +5 into a low five-bit level and high three-bit arrival index (`0xD8797–0xD87C5`). |
 | 3 (03) | 12 | 1086 | `0xB5937` | Calls vtable +0xAC as opcode 1 does. The player target resolves the definition identity and creates an instance. See [script grants](lol2-item-effects.md#script-grants). |
 | 4 (04) | — | 0 | `0xB5947` | Common low-table epilogue. No framed command length at `0x645E0`. |
 | 5 (05) | 6 | 3752 | `0xB5970` | Calls vtable +0xB0 with u8 +4 and u8 +5. |
-| 6 (06) | 6 | 963 | `0xB598B → 0xB3EC8` | Object-action switch on +4. Arm 1 calls `0x9F584` at `0xB3F5D`. The other arms depend on object flags and class. |
-| 7 (07) | 6 | 2451 | `0xB5997` | Calls vtable +0xB4 with s8 +4 and u8 +5. |
+| 6 (06) | 6 | 963 | `0xB598B → 0xB3EC8` | Object-action switch on +4. For an admitted object with a region, arm 1 calls `0x9F584` at `0xB3F5D` and passes the current region’s u16 +0x18 twice to `0xB4130` at `0xB3FB1`. Other arms depend on object flags and class. |
+| 7 (07) | 6 | 2451 | `0xB5997` | Calls vtable +0xB4 with s8 +4 and u8 +5. Prop vtable 0xA848 points to `0xF21A4`; prop arm 0 sets +0x36 bits 0x05 at `0xF21C6`. |
 | 8 (08) | 8 | 2390 | `0xB5A1B` | Calls vtable +0xAC. A zero result exits immediately at `0xB5A33`. |
 | 9 (09) | 6 | 6586 | `0xB59B3 → 0xB50C0` | Switches on +4. See the property arms below. |
 | 10 (0A) | — | 0 | `0xB5947` | Common low-table epilogue. No framed command length at `0x645E0`. |
-| 11 (0B) | 8 | 0 | `0xB5C6E` | Calls `0xA1A74` with u16 +4. The callee checks the index against `[0x96954]` and passes `[0x96958][index]` in a request to `0x156BD0`, storing the result at `0xD0A4` (`0xA1A7E–0xA1ADC`). **UNCONFIRMED** gameplay meaning. |
-| 12 (0C) | 6 | 174 | `0xB5AA2` | Calls `0xED6D0` with u8 +4. It checks bit 25 of `[0x2279A]`, forwards +4 to `0xED470` and takes a further resource and audio path for indices below 46 (`0xED6DB–0xED78B`). **UNCONFIRMED** selection by index. |
-| 13 (0D) | 8 | 1452 | `0xB5937` | Calls vtable +0xAC as opcode 1 does. **UNCONFIRMED** effects for individual classes. |
+| 11 (0B) | 8 | 0 | `0xB5C6E` | Calls `0xA1A74` with u16 +4. The callee checks the index against `[0x96954]` and passes `[0x96958][index]` in a request to `0x156BD0`, storing the result at `0xD0A4` (`0xA1A7E–0xA1ADC`). **UNCONFIRMED** a caller in a stored script. Find a retail stream with opcode 11, then trace the resource ID returned through `0x156BD0`. |
+| 12 (0C) | 6 | 174 | `0xB5AA2` | Calls `0xED6D0` with u8 +4. It checks bit 25 of `[0x2279A]`, forwards +4 to `0xED470` and takes a further resource and audio path for indices below 46 (`0xED6DB–0xED78B`). **CONFIRMED** all 174 requests map to the 46-name table at `LOLG.DAT+0x1CFA90`. See the [level-to-room census](lol2-level-graph.md#room-archives). |
+| 13 (0D) | 8 | 1452 | `0xB5937` | Calls vtable +0xAC as opcode 1 does. For props, `0xF22B4` returns immediately for opcode 13. **UNCONFIRMED** remaining class effects. Resolve slot +0xAC from each object constructor and trace the opcode check. |
 | 14 (0E) | 8 | 3026 | `0xB59BF → 0xB47B4` | +4 is the timer action, +5 its argument, +6 the zero-based timer selector. See [timer actions](lol2-script-events.md#object-timers). |
 | 15 (0F) | 8 | 761 | `0xB5C82` | Resolves a secondary object from u8 +5 and u16 +6 through `0x5FBC8`. Copies its three coordinate dwords into locals and adds the unsigned low byte of vtable +0xEC's return to Z in 16.16 units. +4 indexes the switch at `0xB5CF1`. |
 | 16 (10) | 6 | 4873 | `0xB5A3C` | Stores u8 +4 in object byte +0x25. |
@@ -66,7 +66,7 @@ identifies a continuation whose effect is still open.
 | 200 (C8) | 6 | 0 | `0x64999 → 0x64BB4` | At shared index u8 +4, stores `R(0, 32*(u8(+5)+1)-1) >> 5`, subject to special ceilings. |
 | 201 (C9) | 6 | 4 | `0x64906` | Same range as 200, stored to level-local index u8 +4. The range and shift are also visible in the helper at `0x64C48`. |
 | 204 (CC) | 8 | 1348 | `0x647B3` | s16 +4 = −1 calls `0xF44CC(region, u16(+6))`, which writes region bytes +0x20/+0x27. −2 writes u8 +6 to region byte +0x22. Other values select an 8-byte row in `[0x22D08]`, store u16 +6 to row +0 and set row byte +5 bit 0x40. |
-| 205 (CD) | 8 | 0 | `0x6497D` | High dispatch rejects it and returns zero. **UNCONFIRMED** whether any other caller handles it. |
+| 205 (CD) | 8 | 0 | `0x6497D` | High dispatch rejects it and returns zero. **UNCONFIRMED** whether any other caller handles it. Search entry points bypassing `0x6497D` and check the original generated command at dispatch. |
 | 206 (CE) | 6 | 115 | `0x6489F → 0x64B1C` | Adds s8 +5 to shared index u8 +4, saturating at zero and the applicable ceiling. |
 | 207 (CF) | 6 | 242 | `0x648AF` | Adds s8 +5 to level-local index u8 +4, saturating at 0–255. |
 | 208 (D0) | 8 | 129 | `0x6493B → 0x65518` | Arm +4 = 0 computes a duration from u8 +6 times 60 in 16.16 units and uses +5 to update or clear cells `0x26B4E/0x26B52`. Arm 1 uses the region at u16 +2 and cache `[0x2B524]`. **UNCONFIRMED** presentation and the full arm-1 effect. |
@@ -91,6 +91,7 @@ independently readable effects.
 | 3 | `0xB5117` | Calls object link path. |
 | 16 | `0xB5401` | Stops the object's sound through the audio helper. |
 | 17 / 18 | `0xB50FB` / `0xB5109` | Sets or clears object flags bit 0x4000. |
+| 10 | `0xB5393` | Clears bit 1 of object byte +0x16. |
 | 19 | `0xB5420` | Stores u8 +5 in object byte +0x26. |
 | 21 | `0xB5448` | Obtains the object list via vtable +0xB8 and sends kind-6 event value 20 through `0xADDE0`. |
 

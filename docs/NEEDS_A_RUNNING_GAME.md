@@ -134,13 +134,13 @@ an item held as a comparison.
 
 ### Level-1 tutorial: which click binds prop 1050?
 
-In L1_DC, use the same approach for prop 1050 ([tutorial](tutorial-one-event.md)). Break at
-`0x5DA48` (a shared class method); at `0x5DA51` the prop object is in `ebx`, so condition on `word [ebx+0x36] == 0x14D4`, prop 1050's event-list offset (this assumes the placement link the tutorial marks UNCONFIRMED), record the caller and input action, compare the
-selected prop to `[0xB7D80]` at `0xADD8A`, and read its
-+0x25. Binding to prop 1050 with byte zero reaches group
-`0x228E` and the cursor grant. A different pointer establishes
-that the test uses another object's state.
-[The three original commands](tutorial-one-event.md)
+In L1_DC, break at `0xB5000` for [prop 1050](tutorial-one-event.md)
+with vtable `0xA848` and word at prop +0x18 equal to `0x14D4`.
+The first stack argument identifies the prop. Record the caller
+and input, compare the target to `[0xB7D80]` at `0xADD8A`, and read
+prop +0x25. Binding to prop 1050 with byte zero reaches group
+`0x228E` and its cursor grant. A different pointer identifies
+the object supplying the predicate's state.
 
 ### Q7 (menu). Which countdown value does the first frame after the menu use?
 

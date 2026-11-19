@@ -9,17 +9,15 @@ absolute within the named archive. Code addresses use the
 ## From the interaction to the command list
 
 1. **CONFIRMED.** Prop 1050's placement at `L1_DC.MIX+0x6F4F23`
-   has event-list offset `0x14D4` in its word at +0xC. For an
-   in-range interaction with prop +0x15 bit 0x80 clear (tested by both
-   `0x5DA54` and `0xB5004`), the prop handler `0x5DA48–0x5DAAD` calls
-   `0xB5000` with the prop and request. The range check compares
-   request +0x28 with `0x01000000`. The prop event-list virtual at
-   `0x5DA20` reads the live offset at prop +0x36, and `0xB5013–0xB501D`
-   passes the list to the matcher. The slots +0x24 and +0xB8 of the vtable at
-   `LOLG.DAT+0x1C64E8` (file `+0x1C650C`, `+0x1C65A0`) hold these routines (stored as object-2 offsets `0x4A24`/`0x49FC`; add `0x59024`).
-   **UNCONFIRMED:** that prop 1050's class installs this vtable at prop
-   +0x28, and the link from placement word +0xC to prop +0x36 through
-   `[0x273E4]`; no constructor is cited here (see the test below).
+   has event-list offset `0x14D4` in its word at +0xC.
+   The loader `0xF2128–0xF216D` reads 37-byte rows from the level
+   and calls `0xF2064`. The base constructor copies the offset
+   to object +0x18 at `0xAE9CE–0xAE9D2`. The prop constructor
+   installs vtable `0xA848` at `0xF20C3`. Slots +0x64 and
+   +0xB8 (`LOLG.DAT+0x1CB8D0` and `+0x1CB924`) select
+   `0xB5000` and `0xB71A0`. The first checks object +0x15
+   bit 0x80, then passes the event list returned by +0xB8
+   to the matcher at `0xB501D`.
 2. **CONFIRMED.** The ten-byte kind-4 record at
    `L1_DC.MIX+0x6EAB81` names command group `0x228E` in stream 1.
    Its mode and inversion bytes are both zero. The matcher accepts
@@ -30,20 +28,17 @@ absolute within the named archive. Code addresses use the
    right literal 0 and operation 0 (equality). Type 5 reads the byte
    at +0x25 of the object bound in `[0xB7D80]`
    (`0x66B3B–0x66B45`, `0x66B77`, `0x66C43–0x66C4F`).
-   The binding slot in the candidate vtable at `LOLG.DAT+0x1C6560`
-   points to a routine that binds its object at
+   The binding routine stores its object at
    `0xB71B2` when prop +0x15 bit 0x10 is clear. With prop 1050
    bound and its byte still zero, `0xADD80–0xADDB0` admits the
    event and runs the group at `L1_DC.MIX+0x6E7FF5`.
 
-**UNCONFIRMED.** The screen coordinate that picks prop 1050 and the
-input call sequence that leads to its binding virtual are open. The
-static trace starts where the world interaction supplies the prop and
-request. **Test:** a breakpoint at `0x5DA48` with the prop object in `ebx` at `0x5DA51`, conditioned on `word [ebx+0x36] == 0x14D4`, i.e. prop
-1050's object (the routine is a shared class method), on an in-game
-click, can establish
-the calling sequence and confirm that `[0xB7D80]` equals that prop before
-`0xADD8A` evaluates predicate 4.
+**UNCONFIRMED.** The screen coordinate and input call sequence
+that pick prop 1050. To settle them, break at `0xB5000` with
+`word [object+0x18] == 0x14D4` and `dword [object+0x28] == 0xA848`
+(the first stack argument is the object). Record the caller,
+`[0xB7D80]` and prop +0x25 at `0xADD8A`. Binding to this prop
+with byte zero should admit group `0x228E`.
 
 ## The three commands
 

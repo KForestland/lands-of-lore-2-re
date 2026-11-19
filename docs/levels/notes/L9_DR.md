@@ -29,7 +29,7 @@
 |---|---|---|---|---|
 | 0:0 | descriptor 5 / kind 12 `0x164EB90` | `0x164CF62` | stop for kind-2 timer 0 (argument 0) | `0xB494B` |
 | 0:20 | descriptor 7 / kind 12 `0x164EB9A` | `0x164CF70` | set object state +0x25 to 1 | `0xB5A3C` |
-| 0:134 | descriptor 43 / kind 12 `0x164EBF6` | `0x164CFF6` | set region bits 0x1 at +0x1C | `0x64D3E` |
+| 0:128 | descriptor 31 / kind 12 `0x164EBEC` | `0x164CFDC` | activate the region-indexed automap marker if present | `0x64DB7` |
 | 0:248 | descriptor 43 / kind 11 `0x164EC0E` / pred. 48 | `0x164D05A` | set 1 at local byte 18 | `0x64887` |
 | 0:548 | descriptor 181 / kind 12 `0x164EC4E` | `0x164D180` | request level 10, arrival 2 | `0xD8797` |
 | 0:5918 | descriptor 499 / kind 12 `0x164F3C4` / pred. 54 | `0x164E6A0` | set 1 at shared byte 16 | `0x64A8C` |
@@ -41,4 +41,4 @@ The table shows **CONFIRMED** static effects at admitted command sites. For a ro
 
 **UNCONFIRMED.** The annotated archive data identify the exact dispatch sites and operands below any unresolved effects. An empty direct-trigger list leaves the producer open. For virtual calls, resolve the target placement’s runtime class and its table slot, then trace that implementation. For unresolved event IDs, trace callers to the matcher addresses listed above.
 
-Opcode sites with effects still open: 1 ×57, 2 ×109, 5 ×267, 6 ×173, 7 ×72, 8 ×38, 9 ×40, 12 ×9, 13 ×48, 15 ×5, 197 ×5, 208 ×6, 210 ×1.
+Opcode sites with effects still open: 1 ×57, 2 ×92, 5 ×267, 6 ×24, 7 ×44, 8 ×38, 9 ×40, 12 ×9, 13 ×48, 15 ×5, 208 ×6, 210 ×1.

@@ -38,7 +38,7 @@ from the geometry header, commands from both streams).
 The first five are Act 1. Short names for L1-L8 are descriptive labels, not names stored in the files. For the
 later levels the longplay shows a dragon lair, a stone dungeon, a statue hall, a lava cave, a snow level, a
 large Ruloi cavern, a city with a lava moat and "Subterranean Caverns", but which archive each segment uses
-has not been traced (UNKNOWN; matching by archive name or content is only a guess).
+has not been traced (UNKNOWN). To settle each binding, log the level requested at `0xD87AE` and match the next loaded archive at the start of that segment, or match an original saved slot for it against the corresponding level MAP. The archive ID and the timestamps measure separate things.
 
 Longplay order after Act 1 (LONGPLAY, minutes): night jungle 109:40 -> dragon segment 119:10-128:40 ->
 stone dungeon 137:40 -> ruins and statue hall 149:40 -> lava cave 155:10 -> snow level 194:10 -> Ruloi
@@ -97,8 +97,7 @@ For these five levels every transition command (23) was also tied to the event r
 | L20_BB | regions 1475-1479, 1484-1488 | 3786-3840 | L19_BC / 2 |
 
 The arrival entry's binding to a specific arrival record and region is LIKELY (bytes agree; runtime
-selection not traced). Owners for the other ten levels' transitions are not listed here (UNKNOWN in this
-note).
+selection not traced). All 72 commands now join to one original event each across the 15 archives. The [exit predicate census](lol2-shared-predicates.md#exit-predicate-census) documents the table offsets, counts and repro command.
 
 ## Room archives
 
@@ -136,5 +135,32 @@ stem `arenaapr` is at file `0x1C3D1A`, between `a_cam` and `b_cam`.
 
 `LIZ.MIX`, `RUNES.MIX`, `MOVIES.MIX` and `GLOBAL.MIX` are other archives, not part of this survey.
 
-Which level opens which room is UNKNOWN in general. In L4_HJ a room is opened through a control of type
-0x10 (op12 sets the room index, event 20 fires it); the other levels' controls were not read for this.
+**CONFIRMED.** The 174 opcode-12 commands in the 15 indexed level
+streams resolve directly by u8 +4 to the native names at
+`LOLG.DAT+0x1CFA90`. The command entry `0xB5AA2` forwards
+that index into `0xED6D0`, which checks bit 25 at `0x2279A`
+before calling the room archive builder at `0xED72A → 0xED470`.
+The table lists requests stored in the two script streams. A
+request can be suppressed or never reached during play.
+
+| Original level | Opcode-12 requests by room | Example command offset |
+|---|---|---|
+| L1_DC | CFALL ×3 | +0x6FD8DB |
+| L3_DH | DRAGON ×5 | +0x59C56C |
+| L4_HJ | POOL ×7, MENT, MCEL, MGAR, VILLAGE, CHUT, MAGIC, WPNEXT ×4, TEXT | +0xC6BA90 |
+| L5_HC | SEVER, RUNECL, RUNES ×105 | +0x5AD509 |
+| L8_SJ | SHAMAN, DANIEL ×3, TMPLDOR ×6, SETTLE1 ×9 | +0xCD1D74 |
+| L9_DR | STAT, ALTAR ×8 | +0x164DE20 |
+| L10_DC | EMPT | +0xC8DD20 |
+| L13_RC | DSLAVE, SLAVES | +0x687B15 |
+| L14_HT | CHV ×2 | +0xB2FD22 |
+| L16_CA | BALCONY | +0x11EA3F3 |
+| L17_HC | HIVE1 ×3, HIVE4 ×4 | +0x496725 |
+| L7_DH, L12_CM, L19_BC, L20_BB | Zero opcode-12 requests | Geometry header +0x3C/+0x44 selects both streams. |
+
+**UNCONFIRMED.** Room entries originating outside opcode 12.
+For the other engine paths, start with the two table-based
+open calls at `0xED5B5` and `0xEDB5A` and follow the selected
+index or name back to its event producer. To test a stored
+request during play, break at `0xED6D0` on the example command
+and check the suppression bit before the constructor call.

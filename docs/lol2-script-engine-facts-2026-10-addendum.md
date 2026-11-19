@@ -27,9 +27,9 @@ LIKELY / INTERPRETATION (a reading of proven calls), UNKNOWN.
   - right type 0 = the literal in byte 4;
   - left type 5 = the byte at `[[0xB7D80] + 0x25]` (byte 2 is not read). So `00 05 00 00 NN` is true when
     that byte equals NN. Opcode 16 writes this same object byte (+0x25), but which object 0xB7D80 holds
-    during a given walk is UNKNOWN;
+    during a given walk depends on its binding call. Timer walkers store the object at `0xB8BD4` and the prop reader does so at `0xB71B2`. Other producers of the binding remain UNKNOWN; for each matcher, trace its preceding vtable +0xB8 call to a store in `0xB7D80`;
   - left type 3 = the byte at `[cell 0x26E54 + byte 2]`. The cell's name stays LIKELY at most.
-- Other operators and operand types are not decoded (UNKNOWN).
+- **CONFIRMED.** The [predicate reference](lol2-script-events.md#predicates-and-shared-bytes) verifies all eight operator arms at `0x66C10–0x66CA3`, the two array readers and recursive operands. Other unused operand handlers and their producer tests are listed there.
 
 ## Kind-19 trailer
 
@@ -37,7 +37,7 @@ A record of kind 19 (`04 13 pp pp`) directly after an event record is that recor
 the index. It is not a command group. The matchers for record kinds 4, 5, 6, 8, 9 and region kind 12
 compare the next record's kind byte with 0x13 and, if equal, call 0x66AB0 with the zero-extended word; the
 record only runs when the predicate is true. A record without a trailer has no predicate. (PROVEN) Whether
-other, unentered kinds test a trailer is UNKNOWN.
+other, unentered kinds test a trailer is UNKNOWN. To settle these, locate each kind’s native matcher and verify a comparison of the next row’s kind with 0x13.
 
 ## Record kinds and their runners
 
@@ -50,7 +50,7 @@ through `0x646EC(group + [0x2B514])`.
 | 4 | `0a 04 gggg mode inv dword` | `0xADBCC` entry, `0xADD36` mode dispatch | Byte +4 indexes modes 0–7. Mode 3 compares held-item identity +0x18 (`0xADC84–0xADC8F`). Other tests use class +0x3F bits, word +0x3D bits, byte +0x43 bits or byte +0x45 equality. Byte +5 = 0 leaves the result uninverted (`0xADC47`). Mode 0 tests for absence of the held item without using the dword at +6 (`0xADC01`, `0xADC41`). (PROVEN) |
 | 5 | `06 05 gggg event value` | 0xAD8E0 | runs every record with `[rec+4] == event` and (`value == 0xFF` or `[rec+5] == 0xFF` or `[rec+5] == value`), predicate checked; all matches run. (PROVEN) |
 | 6 | `06 06 gggg value` | 0xADDE0 | `[rec+4] == value` (byte compare). (PROVEN) |
-| 7 | `06 07 gggg mode thr` | 0xAE134 | health thresholds over hit points before / after; all matches run. Four blocks are proven (countdown, crossed down, crossed up, equal); which mode number selects which block is UNKNOWN. No Act 1 level has a kind-7 record. |
+| 7 | `06 07 gggg mode thr` | 0xAE134 | health thresholds over hit points before / after; all matches run. Modes 0 through 3 are countdown, crossed down, crossed up and equal respectively (`0xAE162–0xAE1F7`, **CONFIRMED**). |
 | 8 | `06 08 gggg wwww` | (matcher entered) | u16 at +4 compared with the argument, 0xFFFF = wildcard. (PROVEN) |
 | 9 | `0a 09 gggg m0m0 m2m2 thr flags` | 0xAE2C8 | the hit filter, below. |
 | 12 | `08 0c gggg rrrr ev val` (region lists) | region matcher | u16 +4 = region index, byte +6 = event; for event 2, byte +7 must be 0. (PROVEN) |
@@ -74,12 +74,12 @@ is the player, a kind-5 event chosen by the hit kind: 1 -> event 2 value 0xFF, 2
   after the hit (`ctx+0x26`) <= the threshold. (PROVEN) Mode 3 = cumulative damage, remainder stored back
   in byte +8 (INTERPRETATION from the record series). Mode 2 = hit points crossed the threshold downward
   (INTERPRETATION). A cleared mode byte (0) does not admit (stated as PROVEN in the 2026-10-31 walk rule;
-  an earlier contract left mode 0 UNKNOWN).
+  an earlier contract predates the native branch at `0xAE2C8`).
 - One hit enqueues at most one kind-9 record of a list, in list order: the scanner stops at the first record
   that fires, so later records and their predicates are not consulted. (PROVEN)
 - When the byte at 0x23331 is 5 (read as the level index, i.e. the Hive) and the attacker is in pool 0xDB590, a
-  mode-4 record is disabled instead of firing. (PROVEN bytes; the pool's identity is UNKNOWN.)
-- The names of context fields beyond those above, and whether kind 9 is a "bash", are UNKNOWN.
+  mode-4 record is disabled instead of firing. (**CONFIRMED.** The pool is used for props. The selector at `0x5FC43` reads `0xDB590`; `0xF2128–0xF216D` builds the 37-byte placement rows into it.)
+- The names of context fields beyond those above, and whether kind 9 is a "bash", are UNKNOWN. Compare the inputs to `0xAE2C8` after two distinct original attack actions and match context words to their producers.
 
 ## Opcode 196
 
@@ -96,7 +96,7 @@ stores nothing itself and returns the callee's result. (PROVEN)
   queued opcode-196 commands (through 0x664E4 over a list at 0x26E88) with the same record index. (PROVEN)
 - It returns 1 or 0; every return path is PROVEN (for example, the tail returns 1 when the word at
   command +0xA is 0 and 0 when it is not).
-- The gameplay meaning is not claimed. Names of 0x22D0C, 0x22C54, 0x26E88 and 0x26E6C are UNKNOWN.
+- The gameplay meaning is open. **CONFIRMED.** `0x22D0C` is the region table (`0x5FCE6`), `0x22C54` holds the frame delta at `0xE0C5C–0xE0C73`, and `0x9CC23` initializes the list header at `0x26E6C`. Queue iteration at `0x664E4` consumes the header at `0x26E88`. To resolve the remaining queue element roles, compare the entry at `0x664E4` with the allocation written by the command buffer setup.
 
 Use: opcode 196 is heavy in L9_DR, L14_HT and L16_CA and nearly absent in Act 1.
 
@@ -107,14 +107,14 @@ Length 8. Handled in `0x64770` at 0x647B3, entered only for 0xCC; the second arg
 
 - -1 (`FF FF`): record = `word(+2) * 44 + [0x22D0C]` (same table as opcode 196). Calls `0xF44CC`, which
   stores command byte 6 at record +0x20 and the byte `[[0x22D44] + byte6 * 24 + 0x15]` at record +0x27, then
-  calls 0xB861C. Further writes in 0xB6D98 / 0xF4FD0 are UNKNOWN. (PROVEN up to that point)
+  calls 0xB861C. Further writes in 0xB6D98 / 0xF4FD0 are UNKNOWN; follow arguments from `0xB861C` into those two callees and log writes to that exact region and its linked wall rows. (PROVEN up to that point)
 - -2 (`FE FF`): same record; stores command byte 6 at record +0x22. Its only store. (PROVEN)
 - other: entry = `signed word(+4) * 8 + [0x22D08]`; stores the word at command +6 at entry +0 and ORs 0x40
   into entry byte +5. (PROVEN) No range test.
 
-The tables at 0x22D08, 0x22D0C and 0x22D44 are unnamed (UNKNOWN). Opcode 204 has 1,348 uses across the 15
+**CONFIRMED.** `0x22D08` is the [8-byte wall table](formats/walls.md) selected at `0xF4370–0xF438E`; `0x22D0C` is the 44-byte region table (`0x5FCE6`). The 24-byte table at `0x22D44` provides the byte for region +0x27 and is updated at `0xA053E → 0x67460`. Its remaining fields are UNKNOWN; follow the active row after the bit-0 gate at `0x67489`. Opcode 204 has 1,348 uses across the 15
 levels; opcode 13 has 1,452 and opcode 3 has 1,086. Opcodes 13 and 3 share the low-table handler 0xB5937,
-which only calls the object's `vtable+0xAC` (callee UNKNOWN).
+which calls the object's `vtable+0xAC`. **CONFIRMED.** Props constructed by `0xF20C3` use `0xF22B4`, which returns immediately unless the command begins with byte 8. Other class implementations are UNKNOWN. Read each constructor's vtable slot +0xAC, then trace the command byte through its callee.
 
 ## Other opcode effects proven in the same pass
 

@@ -28,11 +28,11 @@
 | Group | First linked event examined | Command MIX offset | Effect | Code VA |
 |---|---|---|---|---|
 | 0:0 | descriptor 2 / kind 11 `0x6FDA2B` | `0x6FD0DD` | set 1 at local byte 7 | `0x64887` |
+| 0:6 | descriptor 2 / kind 12 `0x6FDA33` | `0x6FD105` | activate the region-indexed automap marker if present | `0x64DB7` |
 | 0:184 | descriptor 41 / kind 12 `0x6FDAB5` / pred. 12 | `0x6FD19B` | set object state +0x25 to 1 | `0xB5A3C` |
 | 0:296 | descriptor 44 / kind 12 `0x6FDAE9` / pred. 89 | `0x6FD211` | start for kind-2 timer 0 (argument 0) | `0xB485C` |
 | 0:1194 | descriptor 122 / kind 12 `0x6FDC4B` / pred. 179 | `0x6FD59F` | request level 3, arrival 1 | `0xD8797` |
 | 0:2328 | descriptor 167 / kind 12 `0x6FDE3D` / pred. 48 | `0x6FDA11` | grant actor 38 item definition 4, instance byte +4 = 1 | `0xA6334` |
-| 1:264 | prop 83 / kind 3 `0x6E97D9` | `0x6E5E7B` | move floor, target height -290, rate operand 5 | `0x64DDC` |
 | 1:2064 | prop 152 / kind 6 `0x6E9AFD` / pred. 200 | `0x6E65C3` | set behavior pair to 10 for admitted actor | `0xA6365` |
 | 1:11004 | control 136 / kind 9 `0x6EAF73` / pred. 60 | `0x6E8869` | add -1 at shared byte 0 (clamped to 0–10) | `0x64B1C` |
 
@@ -42,4 +42,4 @@ The table shows **CONFIRMED** static effects at admitted command sites. For a ro
 
 **UNCONFIRMED.** The annotated archive data identify the exact dispatch sites and operands below any unresolved effects. An empty direct-trigger list leaves the producer open. For virtual calls, resolve the target placement’s runtime class and its table slot, then trace that implementation. For unresolved event IDs, trace callers to the matcher addresses listed above.
 
-Opcode sites with effects still open: 1 ×65, 2 ×131, 5 ×218, 6 ×57, 7 ×117, 8 ×63, 9 ×67, 12 ×3, 13 ×84, 15 ×5, 197 ×3, 210 ×1.
+Opcode sites with effects still open: 1 ×65, 2 ×113, 5 ×218, 6 ×9, 7 ×38, 8 ×63, 9 ×60, 12 ×3, 13 ×84, 15 ×5, 210 ×1.
