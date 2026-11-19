@@ -35,10 +35,19 @@ from the geometry header, commands from both streams).
 | L19_BC | - | 68 | 270 | 2870 | 2790 | UNKNOWN binding |
 | L20_BB | - | 79 | 286 | 1853 | 3834 | UNKNOWN binding |
 
-The first five are Act 1. Short names for L1-L8 are descriptive labels, not names stored in the files. For the
+The first five are Act 1. Short names for L1-L8 describe the levels. For the
 later levels the longplay shows a dragon lair, a stone dungeon, a statue hall, a lava cave, a snow level, a
-large Ruloi cavern, a city with a lava moat and "Subterranean Caverns", but which archive each segment uses
-has not been traced (UNKNOWN). To settle each binding, log the level requested at `0xD87AE` and match the next loaded archive at the start of that segment, or match an original saved slot for it against the corresponding level MAP. The archive ID and the timestamps measure separate things.
+large Ruloi cavern, a city with a lava moat and "Subterranean Caverns".
+
+### Matching a recorded segment to an archive
+
+**CONFIRMED.** Each `UNKNOWN binding` above refers to the match against
+the recording. The level index `i` is stored by the script at `0xD87AE`,
+and the level loader uses the name pointer at `LOLG.DAT+0x1CDA44 + 8*i`
+(`0x9BE08`). To settle each binding, capture the first level load in that
+segment and compare its filename with that row, or read the level index
+at slot +0x17C from an original save made at the same point. Compare
+the slot's index with the specific level ID in the table above.
 
 Longplay order after Act 1 (LONGPLAY, minutes): night jungle 109:40 -> dragon segment 119:10-128:40 ->
 stone dungeon 137:40 -> ruins and statue hall 149:40 -> lava cave 155:10 -> snow level 194:10 -> Ruloi
@@ -158,9 +167,14 @@ request can be suppressed or never reached during play.
 | L17_HC | HIVE1 ×3, HIVE4 ×4 | +0x496725 |
 | L7_DH, L12_CM, L19_BC, L20_BB | Zero opcode-12 requests | Geometry header +0x3C/+0x44 selects both streams. |
 
-**UNCONFIRMED.** Room entries originating outside opcode 12.
-For the other engine paths, start with the two table-based
-open calls at `0xED5B5` and `0xEDB5A` and follow the selected
-index or name back to its event producer. To test a stored
-request during play, break at `0xED6D0` on the example command
-and check the suppression bit before the constructor call.
+**CONFIRMED.** A room module can request the next room by name, outside
+opcode 12. The direct archive-builder call at `0xEDB5A` takes the index
+resolved by `0xEDADD–0xEDB43`. Original calls include the MCEL import at
+`MCEL.MIX+0x9DF`, passing `MENT_` from +0xAC1, and the SHAMAN and SETTLE1
+imports at `SHAMAN.MIX+0xDC5` and `SETTLE1.MIX+0x615`. The original
+arguments and host import are traced in [Room archives](lol2-room-archives.md#the-extra-arena-archive).
+**UNCONFIRMED.** The encounter conditions that reach these module
+calls, and an admitted caller of the indexed entry `0xED59C`. Follow
+the three stored branch conditions to the calls above. To identify an
+indirect native entry into `0xED59C`, capture the return address and
+index at `0xED5B5`; match the index to the room-name table.
