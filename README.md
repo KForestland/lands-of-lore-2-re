@@ -28,7 +28,7 @@ cd lands-of-lore-2-re
 python3 -m venv .venv && . .venv/bin/activate
 pip install -r requirements.txt
 export LOL2_DAT=/path/to/your/LOL2/DAT          # the game's DAT folder
-python3 tools/check_all.py                      # 20 checks, ends with ALL 20 CHECKS PASSED
+python3 tools/check_all.py                      # 21 checks, ends with ALL 21 CHECKS PASSED
 python3 tools/lol2_mix_parser.py L1_DC.MIX      # list the entries of level 1's archive
 ```
 

@@ -30,7 +30,7 @@ Run every `--check` (20) and print one line each, then a summary.
 $ python3 tools/check_all.py | sed -n "1,2p;21p"
 CHECK repo_guard: N tracked files; game files, media, stray images, files over 300 KB, machine paths, words from the local list, or commit identities: none (0); private word list: not present, skipped
 CHECK mix: 81 MIX files, 2905 entries; this reader and lol2_source_format.parse_mix agree and every entry lies inside its file: 81/81; index sorted by signed key: 81/81 (by unsigned key: 20); bad=none
-ALL 20 CHECKS PASSED
+ALL 21 CHECKS PASSED
 ```
 
 ### `lol2_save_header.py`
@@ -168,6 +168,15 @@ Re-read the spoken-line format, the category switch, and two `MCEL.MIX` keys. Wr
 ```
 $ python3 tools/lol2_speech_names.py --data /path/to/DAT --check
 CHECK speech: format at file 0x1C427A; switch at 0xF133C enters eight arms through slots at 0xF131C; cue id from table 0x269CC calls 0xE3924; .aud probe is the other branch; MCEL entries 5 and 7 are 44100 Hz codec 99 (17564 and 21668 bytes)
+```
+
+### `lol2_item_labels.py`
+
+Join the executable's 74 item labels (data `0xC610`) to the 91-byte item definitions by the native label hash, and print the replacement definitions read by handlers 2, 8, 83 and 91–93. Prints indexes only. Page: `docs/lol2-item-handlers.md#replacement-definitions`.
+
+```
+$ python3 tools/lol2_item_labels.py --data /path/to/DAT --check
+CHECK item_labels: 74 of 74 executable item labels join a definition identity; handler: definitions -> replacement 2: 57 -> 58, 8: 55 -> 56, 83: 66 -> 67, 91: 100 -> 98, 92: 101 -> 98, 93: 99 -> 98
 ```
 
 ### `lol2_hmi_midi.py`

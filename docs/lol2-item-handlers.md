@@ -32,12 +32,29 @@ the item lies in the player pool and `[0x9691C]` otherwise. The mode-12
 release calls are at `0x9691E` and `0x96AE2`, the mode-1 coating release
 calls are at `0x96A2F` and `0x96BF3`, and handler 43 uses `0x98430`.
 
-The final results of the two replacement identity lookups are
-**UNCONFIRMED**. Handler 2 uses a loaded index from `[[0x96904]]+0x8C`
-at `0x960EA–0x96111`, and handler 8 uses `[[0x96904]]+0x7C`
-at `0x96761–0x96787`. Both convert that index to a definition
-identity before lookup. Resolving the loaded indexes at those sites
-would confirm the replacements for the pinned edition.
+### Replacement definitions
+
+**CONFIRMED.** `[0x96904]` is the label object built at startup
+(`0x95544–0x955C1`): its +0 points at the 74 pairs of (label
+pointer, value) at data `0xC610`. `0x623D4` hashes each label with
+the case-sensitive rotate-and-add routine `0x154880`, and for every
+91-byte definition whose identity (+0x18, returned by the callback
+`0x62694`) equals a label hash it stores the definition's index in
+that pair's value (`0x625D3–0x625EA`). So `[[0x96904]] + 8k + 4` is
+the definition index named by label k. In the retail files all 74
+labels join a definition. The handlers read four of them:
+
+| Handler (`definitions using it`) | Read | Pair | Replacement definition |
+|---|---|---:|---|
+| 2 (definition 57) | `[[0x96904]]+0x8C` at `0x960EA–0x96111` | 17 | 58 (`GLOBAL.MIX+0x5B8D87`) |
+| 8 (definition 55) | `[[0x96904]]+0x7C` at `0x96761–0x96787` | 15 | 56 (`GLOBAL.MIX+0x5B8CD1`) |
+| 83 (definition 66) | `[[0x96904]]+0xB4` at `0x9A749–0x9A781` | 22 | 67 (`GLOBAL.MIX+0x5B90BA`) |
+| 91, 92, 93 (definitions 100, 101, 99) | `[[0x96904]]+0x12C` at `0x9ADAA` | 37 | 98 (`GLOBAL.MIX+0x5B9BBF`) |
+
+Each item is replaced by its neighbouring definition: the program's
+own labels for pairs 15, 17 and 22 end in "brnt" and pair 37's in
+"E Globe", the used-up forms. `tools/lol2_item_labels.py --check`
+re-runs the join.
 
 ### Worked recharge script
 
@@ -321,12 +338,41 @@ clears the cell. Mode 15 takes the return-1 arm without
 running those paths (`0x99C76–0x99C78` → `0x99D2C–0x99D38`;
 the run path is `0x99CC8–0x99D38`).
 
-**UNCONFIRMED.** The full downstream collision behavior and
-runtime names of several native flags remain open. For the
-original projectile family at `0xF7030`, follow the vtable
-written at +0x28 to its target receiver for each variant. Use
-definition 28 and compare mode 6 with 13 to distinguish
-variants 8, 9 and 10. For the replacement cases 2, 8, 83 and
-91–93, capture the loaded indexes before `0x9EB5C`, then
-resolve the original definition identity and compare the held
-pointer and bytes +4/+5 after the call.
+### Projectile variants at `0xF7030`
+
+**CONFIRMED.** `0xF7030` builds a template object (`0xFB838`),
+installs class vtable `0x980C` at +0x28, stores the variant byte at
++0x66 and, by variant, the sequence +0x58 and lifetime +0x5E
+(`0xF704C–0xF70C6`, switch `0x9DFD0`). The class's slot +0x40
+(`0xF7774`) is the contact handler. When the projectile is still
+alive (+0x5E nonzero) and the contact is not its owner (+0x3E), it
+fills a 0x36-byte hit packet: target +4, owner +8, projectile +0x10,
+kind 5 at +0x14, byte 0x5B at +0x15, magnitude dword +0x16, first
+word +0 (default 8) and second word +2 (default 4), and sends it to
+the target's vtable +0x80 (`0xF7A46–0xF7AEB`):
+
+| Variant | Packet sent to the target's +0x80 | Native lines |
+|---:|---|---|
+| 0, 6, 7 | word 0 `0x108`, magnitude 10 | `0xF798A–0xF79AE` |
+| 1 | magnitude 10; when `0x12415C(1000)` exceeds 750 an extra packet first (word 0 `0x100`, word 2 4, magnitude 10) and a sound on the target | `0xF7802–0xF78B0` |
+| 2 | an extra packet (word 0 `0x100`, magnitude 10) and sound, then word 0 `0x108`, magnitude 10 | `0xF78B5–0xF7948` |
+| 3, 12 | defaults: word 0 8, word 2 4, magnitude 5 | `0xF77E1–0xF77F0` |
+| 4 | magnitude 5 | `0xF794F–0xF7959` |
+| 5 | a player or creature target is attached instead (+0x6E = 1, +0x6A = target, no packet); other targets take magnitude 50 | `0xF79B5–0xF79E7` |
+| 8, 9, 10 | word 0 `0x108`, magnitude 5 | `0xF795E–0xF7983` |
+| 11 | magnitude 5; the target is also kept at +0x6A | `0xF79EC–0xF79FB` |
+| 13 | word 0 `0x108`, magnitude 40 | `0xF79FE–0xF7A17` |
+| 14 | word 0 `0x108`, magnitude 20 | `0xF7A1E–0xF7A37` |
+
+Variants 6 and 9 also set word 0 bit `0x80` and word 2 bit `0x20`;
+variants 7 and 10 set word 0 bit `0x80` and word 2 bit `0x40`
+(`0xF7A72–0xF7AE0`). For an attached variant-5 projectile the update
+slot +0x38 reads the target's +0x98 and +0x88 values, each capped at
+25, and passes them with template 0x7A to `0x1000C4`
+(`0xF740C–0xF7473`). On the ground, variant 4 spawns templates 0x5E and
+0xC2 and variant 11 can spawn near the player (`0xF748D–0xF753E`).
+The receivers are the class +0x80 handlers described in
+[combat](lol2-combat-ai.md).
+
+**UNCONFIRMED.** Runtime names of several native flags, and what
+the packet word bits mean on screen.
