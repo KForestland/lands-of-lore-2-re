@@ -35,14 +35,14 @@ from the geometry header, commands from both streams).
 | L19_BC | - | 68 | 270 | 2870 | 2790 | UNKNOWN binding |
 | L20_BB | - | 79 | 286 | 1853 | 3834 | UNKNOWN binding |
 
-The first five are Act 1. Short names for L1-L8 describe the levels. For the
+The first five are Act 1. Short names for L1-L8 are descriptive labels, not names stored in the files. For the
 later levels the longplay shows a dragon lair, a stone dungeon, a statue hall, a lava cave, a snow level, a
 large Ruloi cavern, a city with a lava moat and "Subterranean Caverns".
 
 ### Matching a recorded segment to an archive
 
-**CONFIRMED.** Each `UNKNOWN binding` above refers to the match against
-the recording. The level index `i` is stored by the script at `0xD87AE`,
+Each `UNKNOWN binding` above refers to the match against
+the recording. **CONFIRMED.** The level index `i` is stored by the script at `0xD87AE`,
 and the level loader uses the name pointer at `LOLG.DAT+0x1CDA44 + 8*i`
 (`0x9BE08`). To settle each binding, capture the first level load in that
 segment and compare its filename with that row, or read the level index

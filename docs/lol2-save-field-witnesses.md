@@ -112,7 +112,7 @@ Both loaders apply section-specific fixups after the read
 | L block +0xD4 | address-map status | `0xE9719` clears, `0xEB30D` sets 1, `0xE83DF` writes header | `0xE97AC` | **CONFIRMED.** Fixup failure flag. `0xEB2EC–0xEB30D` sets it when a nonnull pointer fails all 26 ranges. The map starts four bytes into the block, so map +0xD0 is block +0xD4. Residue in short blocks is **UNCONFIRMED**; see the stack watch above. |
 | G4 | +0 and following bytes | `0xE8723` | UI strike callers of `0x88D2C`, e.g. `0x7DAC0` | UI and combat context. Individual fields beyond those joined in the [item note](lol2-item-format.md) remain **UNCONFIRMED**. |
 | G5 | scene movie context +0x10 through +0x3C | `0xE873D` | `0xA02C2`, `0xA03B4–0xA03B7` | Object at `[0x22CE0]`, used by the movie control path. Resume copies its +0x3C byte to +0x4E. Other saved fields **UNCONFIRMED**. |
-| G6 | 12 bytes at `0x22CE4` | `0xE876F` | Raw restore `0xE6CFC`, pointer fixup `0xE959A–0xE95B4` | **CONFIRMED.** The +4 dword selects a 12-byte row at `[0x22D78]` in the control path (`0x5DE52–0x5DE70`, `0x5E01A–0x5E038`); four predicate branches compare against the same index (`0xB4536`, `0xB458C`, `0xB45DA`, `0xB4631`). The +8 dword is passed to the pointer remapper. In the frame path, `0xE0BC7 → 0x9EC20` resolves it to an object and `0x9EC1E–0x9EC60` sends kind-6 value 0 or 1 through its event list. The owning object's class is **UNCONFIRMED**: trap the write of `[0x22CEC]` and read the stored object's vtable at +0x28. The +0 dword remains **UNCONFIRMED**: track reads of context `0x22CD8` at displacement +0x0C, starting at the writer/loader calls at `0xE6857` and `0xE68EF`. |
+| G6 | 12 bytes at `0x22CE4` | `0xE876F` | Raw restore `0xE6CFC`, pointer fixup `0xE959A–0xE95B4` | **CONFIRMED.** The +4 dword indexes the 12-byte table whose base pointer is `[0x22D78]` in the control path (`0x5DE52–0x5DE70`, `0x5E01A–0x5E038`); four predicate branches compare against the same index (`0xB4536`, `0xB458C`, `0xB45DA`, `0xB4631`). The +8 dword is passed to the pointer remapper. In the frame path, `0xE0BC7 → 0x9EC20` resolves it to an object and `0x9EC1E–0x9EC60` sends kind-6 value 0 or 1 through its event list. The owning object's class is **UNCONFIRMED**: trap the write of `[0x22CEC]` and read the stored object's vtable at +0x28. The +0 dword remains **UNCONFIRMED**: track reads of context `0x22CD8` at displacement +0x0C, starting at the writer/loader calls at `0xE6857` and `0xE68EF`. |
 | G7 | 13 dwords at `0xDB4CC` | `0xE878D`; set `0xEF347`, clear `0xEF375` | `0xEF39B` | Bitmap indexed by argument / 32 and argument & 31. Game-facing labels of individual bits are **UNCONFIRMED**. |
 | G8 | 91 bytes at `0x22518` | `0xE87A9` | Menu callers `0xB94F3`, `0xB95A5` | Input/overlay context used by menu open and close. Individual saved fields **UNCONFIRMED**. |
 | G9 | byte per 91-byte definition | `0xE87C3`; set at `0x95697` | `0x9567B–0x956AB` | Bit 0 records that the per-definition branch has already run. The updater computes the row from the definition pointer difference ÷ 91. Other bits are **UNCONFIRMED**. |
@@ -157,8 +157,9 @@ and advances the cursor four bytes for each level (`0xE7B33–0xE7B40`).
 The validator uses the inclusive bounds in bytes +5/+6 of the
 8-byte level descriptor table at `LOLG.DAT+0x1CDA44`. For each
 index `i`, `0xEB8D0–0xEB8EA` tests header `0x206 + 4*i` before
-comparing the saved stamp at `0x40 + 4*i`. All 540 stored lengths
-in 27 reference slots agree with the adjacent section offsets or
+comparing the saved stamp at `0x40 + 4*i`. Measured on the 27 reference
+slots (player saves written by the original game during play, not
+shipped), all 540 stored lengths agree with the adjacent section offsets or
 the final file size. `lol2_save_header.py SLOT --check` repeats the
 length comparison on a single original slot.
 

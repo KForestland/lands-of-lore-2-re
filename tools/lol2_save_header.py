@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Read the native LoL2 DOS slot header. Prints offsets and sizes to stdout."""
+"""Read the native LoL2 DOS slot header of a player save (game-written, not shipped). Prints offsets and sizes to stdout."""
 import argparse
 import json
 import struct

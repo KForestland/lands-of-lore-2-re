@@ -27,7 +27,7 @@ LIKELY / INTERPRETATION (a reading of proven calls), UNKNOWN.
   - right type 0 = the literal in byte 4;
   - left type 5 = the byte at `[[0xB7D80] + 0x25]` (byte 2 is not read). So `00 05 00 00 NN` is true when
     that byte equals NN. Opcode 16 writes this same object byte (+0x25), but which object 0xB7D80 holds
-    during a given walk depends on its binding call. Timer walkers store the object at `0xB8BD3`. The +0xB8 slot of every class vtable (`0x5484`, `0x573C`, `0x58D0`, `0x59C8`, `0x5AD8`, `0xA848`) is `0xB71A0`, which stores it at `0xB71B2` when object +0x15 bit 0x10 is clear. **CONFIRMED.** The LE direct-fixup census for `0xB7D80` gives these two stores and five readers at `0x5FD29`, `0x66BD2`, `0x66B3B`, `0xADEB9` and `0xAE3D4`.
+    during a given walk depends on its binding call. Timer walkers store the object at `0xB8BD3`. The +0xB8 slot of every class vtable (`0x5484`, `0x573C`, `0x58D0`, `0x59C8`, `0x5AD8`, `0xA848`) is `0xB71A0`, which stores it at `0xB71B2` when object +0x15 bit 0x10 is clear. **CONFIRMED.** The LE direct-fixup census for `0xB7D80` gives these two stores and five readers at `0x5FD29`, `0x66BD2`, `0x66B3B`, `0xADEB9` and `0xAE3D4`. It counts direct references only; writes through a pointer or a block copy are not excluded.
   - left type 3 = the byte at `[cell 0x26E54 + byte 2]`. The cell's name stays LIKELY at most.
 - **CONFIRMED.** The [predicate reference](lol2-script-events.md#predicates-and-shared-bytes) verifies all eight operator arms at `0x66C10–0x66CA3`, the two array readers and recursive operands. Operand types 1 and 6 (and right type 7) assign nothing; that row keeps their use **UNCONFIRMED** and gives the archive search that would settle it. No producer test exists yet.
 
