@@ -187,7 +187,7 @@ row 2 for that ID (`0x10C6D1–0x10C738`,
 | 14 | Combines player +0x171 = `600<<16` and +0x175 = `3600<<16`, changes +0x227/+0x228, clears +0x1B5 and uses refresh paths `0x7F444` and `0x7C7DC` (`0xD1281–0xD12CD`). |
 | 15 | Constructor `0x107498` sets vtable 0x7278 and places the effect. Update +0x38 is `0x107A84` and can remove it through `0xFBC54` (`0x1074BC–0x10756B`, `0x107A84–0x107AAA`, fixup `LOLG.DAT+0x8268D`). |
 | 16 | Returned object from `0x79310` receives +0x1D2 = `1800<<16`; player updates byte +0x228 (`0xD1971–0xD1998`). |
-| 17 | Vtable 0x7080 effect initializes +0x5E = `1800<<16`, +0x62 and +0x58 to zero, and tries placement. The update, contact handler and incoming-hit handler change the effect's stage and clear creature links on expiration of its contact counter. See [effect 17 callbacks](#effect-17-callbacks). |
+| 17 | Vtable 0x7080 effect initializes +0x5E = `1800<<16`, +0x62 and +0x58 to zero, and tries placement. The update and incoming-hit handlers change stage +0x63; in stages 2 and 4 the contact handler counts +0x64 down and, below 10, clears creature +0x38 links and sets flag +0x62. See [effect 17 callbacks](#effect-17-callbacks). |
 | 18 | Vtable 0x717C update dispatches mask/flags 0x40/1, kind 2, ID 18 and magnitude 1 to the live +0x5E target (`0x107C6A`, `0x107FCB–0x108026`, fixup `LOLG.DAT+0x824C4`). |
 | 19 | Clears player +0x217 and changes +0x19E after the `0x7C5DC` and `0x7C528` feedback calls (`0xD1A6E–0xD1AAE`). |
 | 20 | Constructor `0x104850` submits magnitude inputs 10/20 (`0x10495A/0x104985`). |
@@ -219,7 +219,7 @@ controller channels are **UNCONFIRMED**.
 at `0x10810E`. At `0x108119–0x10812F` it sets stage byte +0x63 and
 flag byte +0x62 to zero and starts the +0x5E timer at `1800<<16`.
 Bytes +0x64 and +0x65 start at `0x38` and `0x50`
-(`0x10824D`, `0x108251`). The vtable starts at `LOLG.DAT+0x1C80A4`.
+(`0x108251`, `0x10824D`). The vtable starts at `LOLG.DAT+0x1C80A4`.
 
 | Vtable slot | Native behavior |
 |---|---|
@@ -262,8 +262,8 @@ is **UNCONFIRMED**.
 
 **UNCONFIRMED.** The numeric payload table establishes one
 downstream path for all 35 effect IDs. The effect-15 receiver and
-remaining effect-32/33 target writebacks need deeper traces. Compare
-the live target and request at `0x107BF7` and follow the projectile
+remaining effect-32/33 target writebacks need deeper traces. Follow the receiver called
+at `0x107BF7` (live target and request) and follow the projectile
 after `0x102718`. For the timed message 0x26,
 the direct +0x185 store scan found player initialization at
 `0xCFB8B` and the expiration zero-store at `0xD2E57`.
