@@ -24,6 +24,26 @@ These are counts of work done, not a percentage of how complete the project is. 
 - **Open questions:** 20 numbered questions: 3 answered, 15 mostly answered, 2 partly answered.
 <!-- rating:end -->
 
+## Tools at a glance
+
+What you can look at with your own copy of the game. Run from the clone with `export LOL2_DAT=/path/to/your/LOL2/DAT` (and `LOL2_SLOT` set to one of your own save files for the last line); pictures and files go only where you point them (here `../lol2-out`, outside the clone). Every tool and option is in [`tools/README.md`](tools/README.md), with a table of every format and how to look at it.
+
+| To see | Command |
+|---|---|
+| A level as a map | `python3 tools/lol2_level_map.py --data "$LOL2_DAT" --level 1 --out ../lol2-out/l1_map.png` |
+| A level schematic with items and creatures | `python3 tools/lol2_level_schematic.py --data "$LOL2_DAT" --level 5 --out ../lol2-out/l5.png` |
+| Level sheets | `python3 tools/lol2_level_report.py --data "$LOL2_DAT" --out ../lol2-out/levels` |
+| A level's events and what they do | `python3 tools/lol2_event_browser.py --data "$LOL2_DAT" L1_DC --stream 1 --group 0x228e` |
+| A level's full script listing | `python3 tools/lol2_disassemble_scripts.py --data "$LOL2_DAT" L1_DC` |
+| An archive's entries | `python3 tools/lol2_mix_parser.py --data "$LOL2_DAT" L1_DC.MIX` |
+| An item definition | `python3 tools/lol2_inspect.py --data "$LOL2_DAT" item 68` |
+| An animation (WSA) | `python3 tools/lol2_inspect.py --data "$LOL2_DAT" wsa P_LUTHER.WSA --delta 0` |
+| A spoken cue | `python3 tools/lol2_inspect.py --data "$LOL2_DAT" cue 161` |
+| A table inside the game program | `python3 tools/lol2_inspect.py --data "$LOL2_DAT" native --table spell-effects --row 20` |
+| The rules behind a topic | `python3 tools/lol2_inspect.py --data "$LOL2_DAT" rules motion` |
+| Music as standard MIDI | `python3 tools/lol2_hmi_midi.py --data "$LOL2_DAT" --out ../lol2-out/midi` |
+| A saved game you made | `python3 tools/lol2_save_inspect.py "$LOL2_SLOT"` |
+
 ## What you get
 
 - **Format and engine pages** in [`docs/`](docs): archives, level scripts, level geometry, walls and textures, items, sound, music and movies. Short pages, one per format with worked examples: [`docs/formats/`](docs/formats/README.md). One sheet per level, generated from the level archives: [`docs/levels/`](docs/levels/README.md).
