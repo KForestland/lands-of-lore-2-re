@@ -35,6 +35,7 @@ offsets describe empty spans. The final level's end is the file size.
 | `0x18C` | u16 | Region index, or 0xFFFF for a null region. The writer computes a 44-byte row pointer at `0xE7D04–0xE7D3A`. |
 | `0x18E–0x1B9` | 11 u32 | Absolute offsets for global sections 0–10, written at `0xE794F`. |
 | `0x1BA–0x209` | 20 u32 | Absolute offsets for levels 1–20, written at `0xE7B92`. |
+| `0x20A–0x259` | 20 u32 | Byte lengths of levels 1–20. The writer zeroes each length at `0xE7BA5` and accumulates bytes copied at `0xE7C53–0xE7C58`. The version validator uses zero to skip the corresponding level stamp (`0xEB8D0–0xEB8EA`). |
 
 **CONFIRMED.** The initializer reads the three global stamps from file
 offset zero of `GLOBAL\\GLOBAL.VER`, `GLOBAL\\SPELL.VER` and

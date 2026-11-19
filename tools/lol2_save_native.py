@@ -23,6 +23,7 @@ def check(executable):
         (0xA033D, 0x14FADB), (0xA034A, 0x14FABD),
         (0xE95B4, 0xEB2C8), (0xD36FE, 0x115D6C),
         (0x64DBE, 0x66664), (0xE8020, 0x145F2C), (0x7CF23, 0xFA5C4),
+        (0xE7C47, 0x118864), (0xE68BB, 0xEB82C),
     ):
         opcode, displacement = struct.unpack_from("<Bi", image, address + CODE_BIAS)
         if opcode != 0xE8 or address + 5 + displacement != target:
@@ -41,6 +42,10 @@ def check(executable):
         (0xAA5E9, "3b05a46909000f94c3"),
         (0xAAF10, "893289763c"),
         (0x64DCE, "c6400901"),
+        (0xE7B79, "8d45cc"), (0xE7BA5, "c70000000000"),
+        (0xE7C53, "8b556e0102"),
+        (0xEB8D0, "8b8a060200008d34850000000085c974ce8b4a40"),
+        (0x5DE52, "8b15e82c02008d04950000000029d08b15782d0200c1e00201d0"),
     ):
         expected = bytes.fromhex(sequence)
         start = address + CODE_BIAS

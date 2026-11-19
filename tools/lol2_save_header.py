@@ -21,18 +21,26 @@ def parse_header(header, file_size):
         raise ValueError("invalid LoL2 slot section directory")
     spans = [(start, end - start) for start, end in zip(offsets, offsets[1:])]
     return dict(size=size, preview=spans[0], width=width, height=height,
-                sections=spans[1:12], levels=spans[12:])
+                sections=spans[1:12], levels=spans[12:],
+                stored_level_lengths=struct.unpack_from("<20I", header, 0x20A))
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("file", type=Path)
+    parser.add_argument("--check", action="store_true", help="compare stored and derived level lengths")
     args = parser.parse_args()
     try:
         with args.file.open("rb") as source:
             header = source.read(HEADER_SIZE)
             size = source.seek(0, 2)
-        print(json.dumps(parse_header(header, size), indent=2))
+        result = parse_header(header, size)
+        if args.check:
+            if result["stored_level_lengths"] != tuple(length for _, length in result["levels"]):
+                raise ValueError("stored level lengths disagree with the directory")
+            print("CHECK save header: 20 stored level lengths match the directory")
+        else:
+            print(json.dumps(result, indent=2))
     except (OSError, ValueError) as error:
         parser.exit(1, f"save header: {error}\n")
 
