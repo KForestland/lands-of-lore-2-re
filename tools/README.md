@@ -379,7 +379,7 @@ CHECK repo_guard: N tracked files; game files, media, stray images, files over 3
 - `lol2_source_format.py` + `lol2_export_scripts.py` — export a level's header tables and command streams to JSON (stdlib only)
 - `lol2_level_map.py` — top-down schematic map of a level from its region table (no game pixels)
   - example: `python3 tools/lol2_level_map.py --data DAT --level 1 --out l1_map.png`
-- `lol2_level_report.py` — one Markdown sheet per level (entries, counts, opcode use, exits, entity records); writes `docs/levels/`
+- `lol2_level_report.py` — one Markdown sheet per level (entries, counts, opcode use, exits, entity records); writes `docs/levels/`. `--check` requires each sheet there to equal the tool's text
   - example: `python3 tools/lol2_level_report.py --data DAT --out levels/`
 - `lol2_vqa_v2_decode.py` — VQA v2 pointer-table decoder, including 4×2 blocks and `CIND`-scheduled codebooks (needs NumPy; Pillow for `--out`). `--check` is a chunk census and one sample of each layout. `--full` walks every movie. `VPRZ`/`VPTR` movies are checked only as far as the codebook. `--out` refuses a path inside the repository
 

@@ -20,7 +20,7 @@ No game text, pictures or sound are written; only ids, counts and offsets.
 
   lol2_level_report.py --data DAT --out DIR             # all 15 levels + README.md
   lol2_level_report.py --data DAT --out DIR --level 9   # one level
-  lol2_level_report.py --check --data DAT               # one line: every level reads cleanly
+  lol2_level_report.py --check --data DAT               # one line: every level reads cleanly, and docs/levels matches the tool
 """
 import os
 import sys
@@ -598,6 +598,19 @@ def main():
         for L in levels:
             ev.update(event_kinds(L["scripts"]))
         unknown_kinds = sorted(k for k in ev if k not in EVENT_KINDS)
+        differ = []
+        if len(stems) == len(level_files(a.data)):
+            root = Path(__file__).resolve().parents[1] / "docs" / "levels"
+            for L in levels:
+                path = root / f"{L['stem']}.md"
+                if not path.is_file() or path.read_text(encoding="utf-8") != sheet(L, names, items, sn):
+                    differ.append(L["stem"])
+            readme_path = root / "README.md"
+            if not readme_path.is_file() or readme_path.read_text(encoding="utf-8") != readme(levels):
+                differ.append("README")
+            if differ:
+                bad.append("sheets differ: " + ", ".join(differ))
+        sheet_note = "sheets match docs/levels" if not differ else "sheets differ"
         print(f"CHECK level_report: {len(levels)}/{len(stems)} level archives read (level data entry, scripts framed, "
               f"{uns} commands outside the size table); texture container found by name hash in {tex}; entity records in "
               f"{ent}; {exits} level-transition commands ({direct_exits} directly linked, {guarded_exits} predicate links, "
@@ -606,7 +619,7 @@ def main():
               f"out-of-range vertex/neighbour indices {gb}, portal links {gl:,} (reciprocal {gr:,}, sharing the side's vertices "
               f"{gs:,}); wall rows {wr:,}, partition faults {wb}, {special} special ({based} with earlier base); event records {sum(ev.values()):,} (kinds without a documented matcher: {unknown_kinds or 'none'}); "
               f"opcode-21 movie commands {sum(sp.values())} naming {len(sp)} scene ids (outside the scene table: {bad_scene or 'none'}); held-item tests (kind 4 mode 3) {len(tests)}, identity not in the item table: "
-              f"{unknown}; {item_rows} placed-item rows name {item_groups} additional groups; bad={bad or 'none'}")
+              f"{unknown}; {item_rows} placed-item rows name {item_groups} additional groups; {sheet_note}; bad={bad or 'none'}")
         return 0 if not bad and not uns and not unknown and not gb and not wb and not bad_scene else 1
     items = item_identities(a.data)
     scenes = scene_names(a.data)
