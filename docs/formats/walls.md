@@ -96,13 +96,17 @@ All four rows stand on side 0, which opens into region 37 (floor 55, ceiling 75)
 | 7,450 | 11,519,018 | `ef 01 2b 00 80 08 10 00` | 8 | 8 |
 | 7,451 | 11,519,026 | `ef 01 4c 4e 80 0c 10 00` | 12 | 12 |
 
-**CONFIRMED.** A bounded static replay (a reimplementation of the
-original `0x114AA4` routine run on the file data; two independent
-replays agree, neither is committed yet) of `0x114AA4`
+**CONFIRMED.** A bounded replay of original `0x114AA4` instructions
 with the on-disk regions at `+0xAFD902` and `+0xAFDF5E`, and the level's
 vertex table, gives the following four active quads. The replay supplies
 table pointers and reports the constructor output. Heights below are in
 map units. X/Z positions are shown as stored 16.16 integers.
+
+```bash
+python3 tools/draracle/verify_huline_wall_spans.py --data DAT --check
+```
+
+This check requires Capstone. It writes nothing.
 
 | Row | Bottom to top | First endpoint (X, Z) | Second endpoint (X, Z) |
 |---:|---|---|---|
