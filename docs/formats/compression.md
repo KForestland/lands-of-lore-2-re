@@ -5,8 +5,7 @@
 | Scheme | Where it is used | Tool | State |
 |---|---|---|---|
 | LZO1X in blocks | the level texture containers `<LEVEL>.TE_` in every level archive | `lol2_texture_container.py` | CONFIRMED on the data |
-| LCW variant ("format 80") | the 37 compressed room sections in `LOCAL.MIX` entry 1 | `lol2_decompress_sphere.py` | CONFIRMED on the data |
-| Westwood LZ77 with a leading mode byte | the function at VA `0x158D58`; no MIX entry with a leading size decodes | `lol2_decompress_westwood.py` | decoder and caller buffers CONFIRMED ([Q1](../OPEN_QUESTIONS.md)) |
+| Westwood LZ77 with a leading mode byte | `options.shp` shapes and VQA buffers; decoder at VA `0x158D58` | `lol2_decompress_westwood.py` | decoder and caller buffers CONFIRMED ([Q1](../OPEN_QUESTIONS.md)) |
 
 ## LZO1X blocks
 
@@ -28,24 +27,6 @@ uint32 0
 
 A run can keep that decode in `CDCACHE.MIX`. The file is written by the game, and the offset depends on the run ([MIX](mix.md)).
 
-## LCW variant
-
-The room sections use these command bytes (`lol2_decompress_sphere.py` lines 81–92):
-
-| Command byte | Meaning |
-|---|---|
-| 0x80–0xBF | copy `cmd & 0x3F` literal bytes; `0x80` means 64 |
-| 0x00–0x7F | copy `(cmd >> 4) + 3` bytes from `((cmd & 0xF) << 8) \| next byte` back in the output |
-| 0xC0–0xFF | copy `(cmd & 0x3F) + 3` bytes from the absolute output offset in the next 2 bytes |
-
-Decoding stops when the stated decoded size is reached. Sections in one group of rotations are decoded into a buffer that already holds the previous section's output.
-
-How it differs from Westwood's classic LCW, which Lands of Lore 1 uses as "Frame4": classic LCW ends on `0x80`, and uses `0xFE` (fill) and `0xFF` (long copy) as separate commands.
-
-**CONFIRMED:** 37 of 37 compressed sections decode to exactly their stated size (`lol2_decompress_sphere.py --check`). Sections 0 and 15 are stored. Their size word counts from offset 10. The tool reads the payload at offset 12, which is 2 bytes short of that word. Whether the game starts at 10 or at 12 is open ([room sections](room-sections.md)).
-
-The routine in `LOLG.DAT` that decodes these sections has not been located (UNCONFIRMED).
-
 ## Westwood LZ77 with a mode byte
 
 **CONFIRMED.** VA `0x158D58` (`enter 0x14, 0`, then the saved registers) is the decoder. Its arguments are source, destination and output size. VA `0x158D6C` reads the first source byte:
@@ -54,6 +35,10 @@ The routine in `LOLG.DAT` that decodes these sections has not been located (UNCO
 - Any other value is the first command. Long back-references are then distances from the start of the output.
 
 In both paths a short command (`0x00`–`0x7F`) copies `(cmd >> 4) + 3` bytes from `((cmd & 0xF) << 8) | next` back in the output. A distance of 0 is `mov esi, edi` then `rep movsb` (VA `0x158DAE`, and the same sequence at `0x158E62`): the source is the destination, so those bytes stay as they are. It does not repeat the previous byte. `0x80` ends the stream. `0x81`–`0xBF` copy `cmd & 0x3F` literal bytes. `0xC0`–`0xFD` are a long back-reference of `(cmd & 0x3F) + 3` from a u16 distance. `0xFE` fills `u16` bytes with the next byte. `0xFF` is a long back-reference whose length and distance are both u16.
+
+The 37 compressed [options interface shapes](room-sections.md) in
+`LOCAL.MIX` use this decoder. The shape payload and its expanded size
+come from the native shape header.
 
 ### Direct calls and their buffers
 

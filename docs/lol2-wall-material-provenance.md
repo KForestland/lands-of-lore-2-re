@@ -78,11 +78,9 @@ not be used for this material.
 
 Earlier analysis treated `LOCAL.MIX` entry `1` (39 records) as a wall texture
 atlas. The [Entry 1 verdict](../examples/atlas_candidate_verify/ENTRY1_MODEL_VERDICT.md)
-had already demoted records `1..38` to Sphere room-section data and found
-no runtime buffer match for record `0`. This trace shows where a drawn wall's
-pixels actually come from: the per-level `.TE_` container. Entry 1 is no
-longer a candidate wall-texture source. Record `0` stays a valid raw image
-witness, but nothing links it to rendered walls.
+records the earlier interpretation. Subsequent native tracing identifies
+entry 1 as [`options.shp`](formats/room-sections.md). The draw trace on
+this page reads wall pixels from the per-level `.TE_` container.
 
 ## Evidence
 

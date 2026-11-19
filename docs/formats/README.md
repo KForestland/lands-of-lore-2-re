@@ -7,7 +7,7 @@ Each page: what the file is, its layout, a worked example with real bytes from t
 | [mix.md](mix.md) | `*.MIX` | `lol2_mix_parser.py`, `lol2_westwood_hash.py` | CONFIRMED on all 87 shipped archives (signed key order); `CDCACHE.MIX` is run-time state; the shipped files are `CACHEBAK.MIX` and `CDCACHE.LS_` (Q20) |
 | [level-data.md](level-data.md) | level data entry in `L<n>_<xx>.MIX` | `lol2_source_format.py`, `lol2_export_scripts.py` | header tables CONFIRMED on 3 levels; rest open (Q4, Q5) |
 | [texture-container.md](texture-container.md) | `<LEVEL>.TE_` | `lol2_texture_container.py` | raw flags and movie-name records CONFIRMED; non-raw payloads open, layout unknown (Q14) |
-| [room-sections.md](room-sections.md) | `LOCAL.MIX` entry 1 | `lol2_decompress_sphere.py` | 37/37 CONFIRMED; stored sections measured; payload start open (Q2) |
+| [room-sections.md](room-sections.md) | `LOCAL.MIX` entry 1 | `lol2_decompress_sphere.py` | 39 `options.shp` shapes, including two stored, CONFIRMED (Q2) |
 | [entity-records.md](entity-records.md) | 147-byte records in level archives | `lol2_entity_field_analyzer.py` | records and their containing structure CONFIRMED (Q19 answered) |
 | [items.md](items.md) | `GLOBAL.MIX` item table | `lol2_mix_parser.py` | header and counts CONFIRMED; Q8 |
 | [sound.md](sound.md) | `LOCALLNG.MIX` sound bank, music, movies | `lol2_sound_bank.py`, `lol2_aud_decode.py`, `lol2_vqa_v2_decode.py` | bank, 453 AUD entries in `DAT/` and 64 in the game-folder archives CONFIRMED; Q12, Q15; movies on [vqa.md](vqa.md) |

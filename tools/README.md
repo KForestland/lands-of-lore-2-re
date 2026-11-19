@@ -83,18 +83,15 @@ SPHERE1\L1_DC\L1_DC.TE_: v1 0xB12F2907 (2972657927)  v2 0xB12F2907  ts 0xA680308
 
 ### `lol2_decompress_sphere.py`
 
-Room layouts in `LOCAL.MIX` entry 1 (LCW sections); a section as text or PNG of tile numbers.
+Options interface shapes in `LOCAL.MIX`. `--check` validates every stored and compressed shape.
 
 ```
-$ python3 tools/lol2_decompress_sphere.py | head -3
-Section  0: 128x128 flags=0x0000 raw=16382 bytes
-Section  1:   5x32  flags=0x5A5A placed=160 void=  0
-Section  2:  32x5   flags=0x8000 placed=160 void=  0
+python3 tools/lol2_decompress_sphere.py --check
 ```
 
 ### `lol2_decompress_westwood.py`
 
-Westwood LZ77. The function is at VA `0x158D58`; `--out` required. Which buffer each call decompresses is open (Q1).
+Westwood LZ77. The function is at VA `0x158D58`; `--out` required. The [caller table](../docs/formats/compression.md#direct-calls-and-their-buffers) maps all eleven calls.
 
 ```
 $ python3 tools/lol2_decompress_westwood.py --check
@@ -198,7 +195,7 @@ CHECK repo_guard: N tracked files; game files, media, stray images, files over 3
   - example: `python3 tools/lol2_mix_parser.py --help`
 - `lol2_decompress_westwood.py` — Westwood LZ77 decompressor. The function is at VA `0x158D58`. No size-prefixed MIX entry decodes with it; which buffer each call reads is open ([Q1](../docs/OPEN_QUESTIONS.md))
   - example: `python3 tools/lol2_decompress_westwood.py --help`
-- `lol2_decompress_sphere.py` — LCW variant with chained room-group decoding, for the `LOCAL.MIX` entry 1 room sections ([room sections](../docs/formats/room-sections.md))
+- `lol2_decompress_sphere.py` — reads the `options.shp` interface shapes in `LOCAL.MIX` entry 1 ([shape format](../docs/formats/room-sections.md))
   - example: `python3 tools/lol2_decompress_sphere.py --help`
 
 ### Added 2026-10
@@ -237,7 +234,7 @@ CHECK repo_guard: N tracked files; game files, media, stray images, files over 3
   - example: `python3 tools/lol2_aud_decode.py --help`
 
 ### Texture Extraction
-- `lol2_wall_texture_extract.py` — SUPERSEDED: an early reading of `LOCAL.MIX` entry 1 as a wall texture atlas. The entry holds room tile grids ([room sections](../docs/formats/room-sections.md)); kept only for its recorded examples
+- `lol2_wall_texture_extract.py` — SUPERSEDED: an early reading of `LOCAL.MIX` entry 1 as a wall texture atlas. The entry holds options interface shapes ([room sections](../docs/formats/room-sections.md)); kept only for its recorded examples
   - example: `python3 tools/lol2_wall_texture_extract.py --help`
 
 ### Asset Extraction

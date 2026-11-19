@@ -1,295 +1,119 @@
 #!/usr/bin/env python3
-"""Sphere engine LZ77 decompressor for Lands of Lore 2 room sub-sections.
-Reverse-engineered from LOCAL.MIX Entry 1 (Draracle Caverns).
+"""Read options.shp from LoL2's LOCAL.MIX.
 
-Algorithm (the Westwood LCW / "format 80" scheme; checked on all compressed sections of LOCAL.MIX entry 1):
-  0x80-0xBF: Literal copy — count = cmd & 0x3F
-  0x00-0x7F: Short relative copy — count = (cmd>>4)+3, offset = ((cmd&0xF)<<8)|next_byte
-  0xC0-0xFF: Long absolute copy — count = (cmd&0x3F)+3, abs_offset = next_2_bytes (LE)
-
-IMPORTANT: Sections within a rotation group use CHAINED decoding — each section's
-LZ77 reads from a buffer pre-filled with the previous section's output. This is how
-the Sphere engine achieves high compression for rotated room variants.
-
-12-byte section header:
-  [0-1] uint16 flags
-  [2-3] uint16 always 0
-  [4]   uint8  width
-  [5]   uint8  height
-  [6]   uint8  always 0
-  [7]   uint8  width (duplicate)
-  [8-9] uint16 total_section_size
-  [10-11] uint16 decoded_output_size
-
-Void-skip RLE (applied to decoded buffer to produce W*H grid):
-  Non-zero byte -> place as tile at current grid position, advance
-  0x00 followed by next byte N -> skip N grid positions (void cells)
-
-Room groups (chained within each group):
-  Secs 1-2:   corridors (5x32, 32x5)
-  Secs 3-6:   16x16 corner pieces (4 rotations)
-  Secs 7-10:  17x17 cave boundaries (4 rotations)
-  Secs 11-14: 29x29 large chambers (4 rotations)
-  Secs 16-19: 8x8/8x6 small rooms (4 rotations)
-  Secs 20-23: 10x10 medium rooms (4 rotations)
-  Secs 24-38: 16x16 individual cave rooms (chained sequentially)
-
-Usage:
-  python lol2_decompress_sphere.py <entry1_blob> [section_index]
-
-  If section_index is given, prints only that section.
-  Otherwise prints a summary of all sections.
-
-Environment variables:
-  LOL2_DAT  - path to the LoL2 DAT/ directory (default: current directory)
+The tool's filename is historical. Native shape directory and header
+readers are at LOLG.DAT analysis addresses 0x15A22D and 0x15A457.
 """
-import os
 import struct
 import sys
+from pathlib import Path
+
+from lol2_decompress_westwood import decompress_westwood
 
 
-# Room groups for chained decoding
-ROOM_GROUPS = [
-    [1, 2],
-    [3, 4, 5, 6],
-    [7, 8, 9, 10],
-    [11, 12, 13, 14],
-    [16, 17, 18, 19],
-    [20, 21, 22, 23],
-    list(range(24, 39)),
-]
-
-LOL2_DAT = os.environ.get("LOL2_DAT")
-
-
-def decompress(payload: bytes, decoded_size: int, ref_buf: bytes = None) -> bytes:
-    """Decompress Sphere LZ77 payload into raw byte buffer.
-
-    Args:
-        payload: the bytes the tool reads at offset 12. Whether the game starts at 10 or 12 is open.
-        decoded_size: the word at offset 10, used as the output size
-        ref_buf: optional reference buffer from previous section (for chained decode)
-    """
-    out = bytearray(decoded_size)
-    if ref_buf:
-        copy_len = min(len(ref_buf), decoded_size)
-        out[:copy_len] = ref_buf[:copy_len]
-
-    write_pos = 0
-    inp = 0
-
-    while write_pos < decoded_size and inp < len(payload):
-        cmd = payload[inp]; inp += 1
-
-        if 0x80 <= cmd <= 0xBF:
-            # Literal copy
-            cnt = cmd & 0x3F
-            if cnt == 0:
-                cnt = 64
-            take = min(cnt, len(payload) - inp, decoded_size - write_pos)
-            out[write_pos:write_pos + take] = payload[inp:inp + take]
-            write_pos += take; inp += take
-
-        elif 0x00 <= cmd <= 0x7F:
-            # Short relative copy
-            cnt = (cmd >> 4) + 3
-            if inp < len(payload):
-                nb = payload[inp]; inp += 1
-                offset = ((cmd & 0x0F) << 8) | nb
-            else:
-                offset = 1
-            for _ in range(cnt):
-                if write_pos >= decoded_size:
-                    break
-                if offset == 0:
-                    out[write_pos] = 0
-                else:
-                    src = write_pos - offset
-                    out[write_pos] = out[src] if src >= 0 else 0
-                write_pos += 1
-
-        elif 0xC0 <= cmd <= 0xFF:
-            # Long absolute copy (reads from pre-allocated/pre-filled buffer)
-            cnt = (cmd & 0x3F) + 3
-            if inp + 1 < len(payload):
-                abs_off = struct.unpack_from("<H", payload, inp)[0]; inp += 2
-            elif inp < len(payload):
-                abs_off = payload[inp]; inp += 1
-            else:
-                abs_off = 0
-            for _ in range(cnt):
-                if write_pos >= decoded_size:
-                    break
-                out[write_pos] = out[abs_off % decoded_size]
-                write_pos += 1; abs_off += 1
-
-    return bytes(out)
-
-
-def decode_room(decoded: bytes, w: int, h: int) -> list:
-    """Apply void-skip RLE to decoded buffer, producing W*H tile grid.
-
-    Returns list of lists: grid[y][x] = tile_value (0 = void)
-    """
-    grid = [[0] * w for _ in range(h)]
-    pos = 0
-    i = 0
-    while i < len(decoded) and pos < w * h:
-        b = decoded[i]
-        if b != 0:
-            y, x = divmod(pos, w)
-            grid[y][x] = b
-            pos += 1
-            i += 1
+def decode_shape(decoded, width, height):
+    """Expand the opaque bytes and zero/run pairs used at 0x151FC4."""
+    pixels = bytearray()
+    at = 0
+    while at < len(decoded):
+        value = decoded[at]
+        at += 1
+        if value:
+            pixels.append(value)
         else:
-            if i + 1 < len(decoded):
-                pos += decoded[i + 1]
-                i += 2
-            else:
-                break
-    return grid
+            if at == len(decoded):
+                raise ValueError("shape ends inside a transparent run")
+            pixels.extend(bytes(decoded[at]))
+            at += 1
+        if len(pixels) > width * height:
+            raise ValueError("shape exceeds its declared dimensions")
+    if len(pixels) != width * height:
+        raise ValueError("shape falls short of its declared dimensions")
+    return [list(pixels[row:row + width]) for row in range(0, len(pixels), width)]
 
 
-def parse_entry1(blob: bytes) -> dict:
-    """Parse Entry 1 sub-section directory and decompress all sections with chaining.
-
-    Args:
-        blob: raw bytes of Entry 1 from a LOCAL.MIX file
-
-    Returns:
-        dict mapping section index to section info dict with keys:
-            index, flags, w, h, total_size, decoded_size, data, grid
-    """
-    count = struct.unpack_from("<H", blob, 0)[0]
-    offsets = [struct.unpack_from("<I", blob, 2 + i * 4)[0] for i in range(count)]
-    offsets_with_end = offsets + [len(blob)]
-
-    # Build group membership lookup
-    sec_to_group = {}
-    for group in ROOM_GROUPS:
-        for idx, sec in enumerate(group):
-            sec_to_group[sec] = (group, idx)
-
-    # First pass: parse headers
-    raw_sections = {}
-    for i in range(count):
-        start = offsets[i]
-        end = offsets_with_end[i + 1] if i + 1 < count else len(blob)
-        raw = blob[start:end]
-        if len(raw) < 12:
-            continue
-        raw_sections[i] = raw
-
-    # Second pass: decompress with chaining
+def parse_entry1(blob):
+    """Read shape flags 0 and 2, both present in the original options.shp."""
+    count, = struct.unpack_from("<H", blob)
+    offsets = [offset + 2 for offset in struct.unpack_from(f"<{count}I", blob, 2)]
+    if not offsets or offsets[0] < 2 + 4 * count:
+        raise ValueError("invalid shape directory")
     sections = {}
-    decoded_cache = {}
-
-    for i in sorted(raw_sections.keys()):
-        raw = raw_sections[i]
-        flags = struct.unpack_from("<H", raw, 0)[0]
-        w, h = raw[4], raw[5]
-        total_size = struct.unpack_from("<H", raw, 8)[0]
-        decoded_size = struct.unpack_from("<H", raw, 10)[0]
-        payload = raw[12:]
-
-        if i in (0, 15):
-            decoded = bytes(payload[:decoded_size])
+    for index, (start, end) in enumerate(zip(offsets, offsets[1:] + [len(blob)])):
+        if not 0 <= start < end or end > len(blob) or end - start <= 10:
+            raise ValueError(f"invalid shape {index} span")
+        flags, height, width, _, total_size, size = struct.unpack_from("<HBHBHH", blob, start)
+        if total_size != end - start or flags not in (0, 2) or not width or not height:
+            raise ValueError(f"invalid shape {index} header")
+        payload = blob[start + 10:end]
+        if flags == 2:
+            decoded = payload
         else:
-            # Find reference buffer from previous section in same group
-            ref_buf = None
-            if i in sec_to_group:
-                group, idx = sec_to_group[i]
-                if idx > 0:
-                    prev_sec = group[idx - 1]
-                    if prev_sec in decoded_cache:
-                        ref_buf = decoded_cache[prev_sec]
-
-            decoded = decompress(payload, decoded_size, ref_buf)
-
-        decoded_cache[i] = decoded
-
-        grid = None
-        if i not in (0, 15):
-            grid = decode_room(decoded, w, h)
-
-        sections[i] = {
-            'index': i, 'flags': flags, 'w': w, 'h': h,
-            'total_size': total_size, 'decoded_size': decoded_size,
-            'data': decoded, 'grid': grid,
+            decoded, errors, consumed = decompress_westwood(payload, size)
+            if errors or payload[consumed:] != b"\x80":
+                raise ValueError(f"invalid shape {index} compression framing")
+        if len(decoded) != size:
+            raise ValueError(f"shape {index} decoded size mismatch")
+        sections[index] = {
+            "index": index, "flags": flags, "w": width, "h": height,
+            "total_size": total_size, "decoded_size": size, "data": decoded,
+            "grid": decode_shape(decoded, width, height),
         }
-
     return sections
 
 
-def print_grid(grid: list):
-    """Print a tile grid as ASCII art."""
-    for row in grid:
-        print(''.join(f'{c:2X}' if c != 0 else ' .' for c in row))
-
-
-USAGE = """
-  lol2_decompress_sphere.py [--data DAT] [SECTION]   # LOCAL.MIX entry 1: summary, or one section's grid
-  lol2_decompress_sphere.py --blob entry1.bin [SECTION]
-  lol2_decompress_sphere.py 11 --png room11.png      # draw a section's tile-index grid (no game pixels)
-  lol2_decompress_sphere.py --check                  # every section of LOCAL.MIX entry 1 decodes
-LOCAL.MIX sits in the game folder next to DAT/ (it is looked for in --data and its parent).
-"""
-
-
 def load_entry1(data_dir):
-    import lol2_source_format as S
-    for d in (data_dir, os.path.dirname(os.path.normpath(data_dir))):
-        p = os.path.join(d, "LOCAL.MIX")
-        if os.path.isfile(p):
-            b = open(p, "rb").read()
-            r = S.parse_mix(b)[1]
-            return b[r["offset"]:r["offset"] + r["size"]]
-    raise FileNotFoundError("LOCAL.MIX not found in --data or its parent")
+    from lol2_cli import resolve_input
+    from lol2_source_format import parse_mix
+    from lol2_westwood_hash import ww_hash_v1
+
+    blob = Path(resolve_input("LOCAL.MIX", data_dir)).read_bytes()
+    key = ww_hash_v1("options.shp")
+    entry = next((item for item in parse_mix(blob) if item["key"] == key), None)
+    if entry is None:
+        raise ValueError("options.shp is absent from LOCAL.MIX")
+    start = entry["offset"]
+    return blob[start:start + entry["size"]]
 
 
 def main():
     import lol2_cli
-    ap = lol2_cli.tool_args((__doc__ or "") + USAGE)
-    ap.add_argument("section", nargs="?", type=int)
-    ap.add_argument("--blob", help="a saved LOCAL.MIX entry 1 instead of --data")
-    ap.add_argument("--png", help="draw the chosen section's tile-index grid (colours by index, no game pixels)")
-    a = ap.parse_args()
-    blob = open(a.blob, "rb").read() if a.blob else load_entry1(a.data)
-    sections = parse_entry1(blob)
-    if a.check:
-        comp = [s for i, s in sections.items() if i not in (0, 15)]
-        exact = sum(1 for s in comp if len(s["data"]) == s["decoded_size"])
-        raw = {i: s["decoded_size"] - len(s["data"]) for i, s in sections.items() if i in (0, 15)}
-        print(f"CHECK sphere: LOCAL.MIX entry 1 has {len(sections)} sections; compressed sections decoding to their "
-              f"stated size: {exact}/{len(comp)}; stored sections 0 and 15 are short of their stated size by "
-              f"{raw} bytes (open question)")
-        return 0 if exact == len(comp) else 1
-    if a.section is not None:
-        if a.section not in sections:
-            print(f"Section {a.section} not found. Available: {sorted(sections)}"); return 1
-        s = sections[a.section]
-        print(f"Section {a.section}: {s['w']}x{s['h']} flags=0x{s['flags']:04X} decoded={s['decoded_size']} bytes")
-        if s["grid"]:
-            print_grid(s["grid"])
-            if a.png:
-                from PIL import Image, ImageDraw
-                cell = 12
-                img = Image.new("RGB", (s["w"] * cell, s["h"] * cell), (24, 24, 32))
-                d = ImageDraw.Draw(img)
-                for y, row in enumerate(s["grid"]):
-                    for x, c in enumerate(row):
-                        if c:   # a fixed colour per tile index, not the game's palette
-                            d.rectangle([x * cell, y * cell, x * cell + cell - 2, y * cell + cell - 2],
-                                        fill=((c * 67) % 200 + 40, (c * 131) % 200 + 40, (c * 29) % 200 + 40))
-                img.save(a.png); print("wrote", a.png)
+
+    parser = lol2_cli.tool_args(__doc__, out_help="write an indexed shape preview PNG")
+    parser.add_argument("section", nargs="?", type=int, help="shape index")
+    parser.add_argument("--blob", help="a saved options.shp entry instead of LOCAL.MIX")
+    parser.add_argument("--png", help="legacy alias for --out")
+    args = parser.parse_args()
+    try:
+        blob = Path(args.blob).read_bytes() if args.blob else load_entry1(args.data)
+        sections = parse_entry1(blob)
+    except (OSError, ValueError, struct.error) as error:
+        parser.exit(1, f"options.shp: {error}\n")
+    if args.check:
+        stored = sum(shape["flags"] == 2 for shape in sections.values())
+        print(f"CHECK sphere: LOCAL.MIX options.shp: {len(sections)} shapes, {stored} stored, "
+              f"{len(sections) - stored} compressed; all section spans and decoded pixel counts match")
         return 0
-    for i in sorted(sections):
-        s = sections[i]
-        if s["grid"]:
-            placed = sum(1 for row in s["grid"] for c in row if c != 0)
-            print(f"Section {i:2d}: {s['w']:3d}x{s['h']:<3d} flags=0x{s['flags']:04X} placed={placed:3d} void={s['w'] * s['h'] - placed:3d}")
-        else:
-            print(f"Section {i:2d}: {s['w']:3d}x{s['h']:<3d} flags=0x{s['flags']:04X} raw={len(s['data'])} bytes")
+    output = args.out or args.png
+    if output and args.section is None:
+        parser.error("give a shape index when requesting a PNG")
+    if args.section is None:
+        for index, shape in sections.items():
+            print(f"Shape {index:2d}: {shape['w']:3d}x{shape['h']:<3d} "
+                  f"flags=0x{shape['flags']:04X} decoded={shape['decoded_size']} bytes")
+        return 0
+    shape = sections.get(args.section)
+    if shape is None:
+        parser.error(f"shape {args.section} is outside the directory")
+    for row in shape["grid"]:
+        print("".join(f"{value:2X} " if value else " . " for value in row))
+    if output:
+        from PIL import Image
+
+        lol2_cli.refuse_repo_output(output)
+        indices = bytes(value for row in shape["grid"] for value in row)
+        Image.frombytes("L", (shape["w"], shape["h"]), indices).save(output)
+        print(f"Wrote {output}")
     return 0
 
 

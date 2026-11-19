@@ -12,10 +12,6 @@ It contains documentation, tools and small tables of numbers. It contains no gam
 - **What is still unknown:** the [open questions](docs/OPEN_QUESTIONS.md): 1 of 20 answered, 9 mostly, 10 partly; most open points are the meaning of specific fields and effects. Some were tried in the [running game](docs/NEEDS_A_RUNNING_GAME.md) (the clock writer and a pickup's save changes are answered); the rest need later-game saves.
 - **The three games:** [LoL1](https://github.com/KForestland/lands-of-lore-1-re) · [LoL2](https://github.com/KForestland/lands-of-lore-2-re) · [LoL3](https://github.com/KForestland/Lands-of-lore-3-re) ([what they share](docs/series-formats.md), [how the engine changed](docs/engine-evolution.md)).
 
-![Room section 11 of LOCAL.MIX drawn by tools/lol2_decompress_sphere.py](docs/images/local_mix_room11_tiles.png)
-
-*A room layout from `LOCAL.MIX` entry 1, drawn from its tile numbers (`tools/lol2_decompress_sphere.py 11 --png out.png`): one colour per tile number, not the game's graphics.*
-
 ## What you get
 
 - **Format and engine pages** in [`docs/`](docs): archives, level scripts, level geometry, walls and textures, items, sound, music and movies. Short pages, one per format with worked examples: [`docs/formats/`](docs/formats/README.md). One sheet per level, generated from the level archives: [`docs/levels/`](docs/levels/README.md).
