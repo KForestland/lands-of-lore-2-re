@@ -143,8 +143,8 @@ def describe_ne(path):
         sector, length, flags, _minalloc = unpack_from("<HHHH", data, at)
         start = sector * align
         end = start + (65536 if length == 0 else length)
-        if start % align or end > len(data):
-            raise ValueError("segment is not aligned")
+        if end > len(data):
+            raise ValueError("segment runs past the file")
         if flags & 0x0100:
             if end + 2 > len(data):
                 raise ValueError("relocation count")

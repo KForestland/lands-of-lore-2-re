@@ -18,7 +18,7 @@ It contains documentation, tools and small tables of numbers. It contains no gam
 These are counts of work done, not a percentage of how complete the project is. They are produced by `tools/rating.py` on the English DOS 1.30 copy; [how we rate](docs/HOW_WE_RATE.md) explains each line and what it does not claim.
 
 <!-- rating:begin -->
-- **Files read:** 83 of 83 files in `DAT` (1,915.6 of 1,915.6 MiB) have their whole layout read by a tool here: every byte belongs to a known header, directory, entry, chunk or segment (what is inside an entry may still be only partly understood).
+- **Files read:** 83 of 83 files in `DAT` (1,915.6 of 1,915.6 MiB) have their whole layout read by a tool here: every byte belongs to a known header, directory, entry, chunk, segment or resource, or to zero padding between them; the DOS part of `SETUP.EXE` is counted by its length (what is inside an entry may still be only partly understood).
 - **Rules traced:** the pages mark 662 statements CONFIRMED (proved from the program code or the files) and 179 UNCONFIRMED (a reading not yet proved), on 112 current pages; old notes kept as history are not counted.
 - **Seen in the running game:** 2 of 8 questions that can only be settled by watching the original game run are settled.
 - **Open questions:** 20 numbered questions: 3 answered, 15 mostly answered, 2 partly answered.

@@ -12,8 +12,10 @@ repository accounts for to the last byte, by count and by size. For a MIX
 archive that means the body-size field matches the file and the entries
 tile the body from offset 0 to the end with no gap or overlap.
 `AUTOPLAY.WAV` counts when its RIFF chunks tile the file, and `SETUP.EXE`
-counts when its NE tables, segments and resources tile the file
-(`tools/lol2_loose.py`). What opens either file stays open. It
+counts when its NE tables, segments and resources tile the file, with
+zero bytes between objects counted as padding (`tools/lol2_loose.py`).
+Its first 41,584 bytes are a separate DOS program (290 relocations); it
+is counted by the length its MZ header gives, and its content is not read. What opens either file stays open. It
 does **not** mean that every entry inside is decoded or understood; the
 [STATUS](STATUS.md) table says how far each format is read. Only the `DAT` folder is counted; files the game writes while it runs
 (caches, saves) change the count on a copy that has been played.
