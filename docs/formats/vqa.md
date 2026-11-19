@@ -84,12 +84,14 @@ distance is `((command & 0x0F) << 8) | next_byte` at `0x158D94–0x158DB0`.
 | `L20_BBI.MIX`, key `0xD3C844E7`, entry 25 frame 115 | `+0x35202D6` | `ESI` equals `EDI` at destination base +30,400. Up to 3 bytes advance through a self-copy. |
 | `SPKSTON2.MIX`, key `0x4119C826`, entry 4 frame 492 | `+0x17695E8` | `EDI` is destination base +564 and `ESI` is destination base −110. Up to 5 bytes come from that preceding range. |
 
-**CONFIRMED.** The pointer decode at `0x172828–0x172838` chooses
-node +0's allocation or the shared pointer buffer `[context+0x6E6]`.
-Initialization can allocate the shared buffer and clear it at
-`0x16CD31–0x16CD94`. The decode call itself does no clear. In the
-shared case, frame 115 reads the same three positions in the buffer
-as the preceding contents of those positions. In the node case it
+**CONFIRMED.** The pointer decode at `0x17280D–0x172826` chooses
+node +0's allocation or the shared pointer buffer `[context+0x6E6]`
+(when `[context+0x152]` bit 2 is set), and `0x172828–0x172838` calls
+`0x158D58`. Initialization allocates the shared buffer through the
+context callback (op 2) and passes it to op 4 with length +0x762 at
+`0x16CD31–0x16CD94`; that op 4 clears it is **UNCONFIRMED**. The decode call itself does no clear. In the
+shared case, frame 115 copies at distance 0, so it reads three bytes
+that were already in the buffer at those positions. In the node case it
 reads the contents left there when that node was last written or
 reused. Frame 492 reads five bytes at offsets −110 through −106 from the
 selected base. The clamp at `0x158DA3–0x158DA8` limits copy length by output

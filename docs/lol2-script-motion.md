@@ -40,16 +40,17 @@ The absence of `0x100` leaves Z unchanged on that path.
 
 ### Deferred continuations
 
-**CONFIRMED.** The original object-update switch calls vtable +0x18
-with 0 for the end-of-movement return and 1 for the direct-coordinate
-return (`0xB2AE2–0xB2AFA`). Player vtable +0x18 at
+**CONFIRMED.** The object-update switch at `0xB2ADA` (relocated table
+at analysis VA `0xB285C`) sends selector 1 to vtable +0x18 with
+argument 0 (end of movement) and selector 2 to +0x18 with argument 1
+(direct coordinates) (`0xB2AE2–0xB2AFA`). Player vtable +0x18 at
 `LOLG.DAT+0x1C6C5C` resolves to `0xD0204`. Argument 1 clears
 player +0x227 bit 0x10. If player dwords +0xB5 and +0xB9 are
 both zero the wrapper sets them to `0x3FFFFFFF` and `0xC0000000`
 and clears byte +0x1E5, then forwards to `0xAF260`
 (`0xD0204–0xD024E`). Creature vtable +0x18 at
 `LOLG.DAT+0x1C690C` goes directly to `0xAF260`.
-The 0/3 continuation calls `0xAF9A4` with the object after setting
+Selectors 0 and 3 go to `0xB2B07`, which calls `0xAF9A4` with the object after setting
 `[0xB7D68]` to 1 (`0xB2B07–0xB2B15`).
 
 **CONFIRMED.** `[0x22CB1]` contributes to vertical projection. The
@@ -141,7 +142,7 @@ height operand again. Original examples with those options are
 then follows a list of up to four nonnull neighboring regions only
 when all resident calls passed (`0xB862B–0xB86B9`). The routine
 `0xB6D98` receives object, region, step and side. Its early filters
-include zero step, object flag `0x80` clear, nonzero class slot +0x78,
+include zero step, object flag `0x80` clear, class slot +0x78 returning nonzero,
 object flag `0x200000` set, or region +0x1C bit `0x80` set
 (`0xB6D9F–0xB6DF6`). These branches bypass the obstruction comparison.
 The comparison path derives upper and lower surfaces from the region

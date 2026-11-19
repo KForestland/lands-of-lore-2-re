@@ -68,8 +68,9 @@ Its 492-byte stream begins `00 B6 00 E0 01 E0 02 E0`. The first word
 `0xB600` advances six blocks without writing pixels, and the next
 three words select transparent vectors 0, 1 and 2.
 
-**CONFIRMED.** The command census consumed 52,187 pointer-stream
-frames across the 837 movies. All use 4×4 blocks. All commands
+**CONFIRMED.** A walk of the 837 movies with the tool's `decode()`
+consumed 52,187 pointer-stream frames (a review count; `--check`
+asserts the 837 movies, not the frame total). All use 4×4 blocks. All commands
 completed within their row and consumed the exact stream length.
 The tool's `--check --full` walks the commands and checks vector
 indices against the selected codebook. **UNCONFIRMED.** The

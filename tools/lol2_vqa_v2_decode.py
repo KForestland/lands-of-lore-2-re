@@ -19,7 +19,8 @@ Rules checked against the original movies (see docs/lol2-vqa-v2.md):
   The size on frame 0 is the compressed length of that frame's CBFZ.
 - Top-level VQFL chunks are seek snapshots. Linear playback skips them.
 - VPRZ (LCW) and VPTR (raw) are a different pointer stream. The codebook still
-  has to be whole vectors, but this tool does not expand those pointers to pixels.
+  has to be whole vectors; their u16 commands are validated (validate_pointer_stream)
+  but not expanded to pixels.
 
 Malformed data and unknown chunks raise VQAError.
 
