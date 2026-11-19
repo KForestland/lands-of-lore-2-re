@@ -30,7 +30,7 @@ Run every `--check` (20) and print one line each, then a summary.
 $ python3 tools/check_all.py | sed -n "1,2p;21p"
 CHECK repo_guard: N tracked files; game files, media, stray images, files over 300 KB, machine paths, words from the local list, or commit identities: none (0); private word list: not present, skipped
 CHECK mix: 81 MIX files, 2905 entries; this reader and lol2_source_format.parse_mix agree and every entry lies inside its file: 81/81; index sorted by signed key: 81/81 (by unsigned key: 20); bad=none
-ALL 22 CHECKS PASSED
+ALL 23 CHECKS PASSED
 ```
 
 ### `lol2_save_header.py`
@@ -168,6 +168,15 @@ Re-read the spoken-line format, the category switch, and two `MCEL.MIX` keys. Wr
 ```
 $ python3 tools/lol2_speech_names.py --data /path/to/DAT --check
 CHECK speech: format at file 0x1C427A; switch at 0xF133C enters eight arms through slots at 0xF131C; cue id from table 0x269CC calls 0xE3924; .aud probe is the other branch; MCEL entries 5 and 7 are 44100 Hz codec 99 (17564 and 21668 bytes)
+```
+
+### `example_images.py`
+
+Regenerates each image the repository shows (`docs/images/`, `examples/`) with its listed command and compares pixels; part of `check_all.py`.
+
+```
+$ python3 tools/example_images.py --data /path/to/DAT --check
+CHECK example_images: 1 shown image equals today's tool output pixel for pixel
 ```
 
 ### `lol2_item_labels.py`

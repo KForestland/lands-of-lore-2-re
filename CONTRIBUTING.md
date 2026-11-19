@@ -31,7 +31,7 @@ Out of scope for this repo:
 - `docs/` holds the published pages.
 - `evidence/` holds witness maps and short evidence indexes.
 - `data/` holds machine-readable summaries.
-- `examples/` holds small outputs made by the tools, without game pixels.
+- `examples/` holds small outputs made by the tools, without game pixels; every image the repository shows must be listed in `tools/example_images.py` and pass its `--check`.
 - `tools/` holds the readers and analysers.
 
 ## Checks without game files

@@ -8,7 +8,7 @@
 The picture is a plot of numbers from the level data entry and contains no game pixels.
 
 ```bash
-python3 tools/lol2_level_map.py --data <DAT> --level 1 --out l1_map.png
+python3 tools/lol2_level_map.py --data <DAT> --level 1 --size 900 --out l1_map.png   # the picture below
 python3 tools/lol2_level_map.py --check --data <DAT>
 ```
 

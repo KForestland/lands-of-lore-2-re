@@ -39,7 +39,7 @@ cd lands-of-lore-2-re
 python3 -m venv .venv && . .venv/bin/activate
 pip install -r requirements.txt
 export LOL2_DAT=/path/to/your/LOL2/DAT          # the game's DAT folder
-python3 tools/check_all.py                      # 22 checks, ends with ALL 22 CHECKS PASSED
+python3 tools/check_all.py                      # 23 checks, ends with ALL 23 CHECKS PASSED
 python3 tools/lol2_mix_parser.py L1_DC.MIX      # list the entries of level 1's archive
 ```
 
@@ -63,7 +63,7 @@ Full table with evidence: [`docs/STATUS.md`](docs/STATUS.md).
 - [`tools/`](tools/README.md): readers and analysers
 - [`evidence/`](evidence): trace references and evidence indexes from earlier work
 - [`data/`](data): machine-readable inventory summaries
-- [`examples/`](examples/README.md): small images made by the tools
+- [`examples/`](examples/README.md): notes from earlier atlas checks (the map picture lives in `docs/images/` and is checked against today's tool by `example_images.py`)
 
 ## Asset policy
 
