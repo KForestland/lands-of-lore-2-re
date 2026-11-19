@@ -479,6 +479,7 @@
         "tools/lol2_level_schematic.py",
         "tools/lol2_loose.py",
         "tools/lol2_numbers.py",
+        "tools/lol2_plot_branches.py",
         "tools/lol2_progression.py",
         "tools/lol2_save_inspect.py",
         "tools/lol2_save_native.py",
@@ -1468,7 +1469,8 @@
       ],
       "question_references": [],
       "tools": [
-        "tools/lol2_level_report.py"
+        "tools/lol2_level_report.py",
+        "tools/lol2_plot_branches.py"
       ]
     },
     {
@@ -1806,6 +1808,7 @@
         "tools/lol2_mix_parser.py",
         "tools/lol2_numbers.py",
         "tools/lol2_parse_le.py",
+        "tools/lol2_plot_branches.py",
         "tools/lol2_progression.py",
         "tools/lol2_save_header.py",
         "tools/lol2_save_inspect.py",

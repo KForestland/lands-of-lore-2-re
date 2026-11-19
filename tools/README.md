@@ -48,7 +48,7 @@ example commands, see the [format quick reference](../docs/QUICK_REFERENCE.md).
 | [ODF definitions](../docs/formats/entity-records.md), [placed objects and controls](../docs/lol2-l8-controls.md), [entity to object map](../docs/lol2-entity-object-map.md) | `lol2_entity_field_analyzer.py`, `lol2_level_report.py`, `lol2_level_schematic.py` | Definition framing, placement rows and selected joins | Entity summary, level report and numbered item and actor marks |
 | [Cave object and entity tables](../docs/cave-object-catalogue.md), [entity links](../docs/cave-entity-links.md) | `history/draracle/catalogue_cave_objects.py`, `history/draracle/catalogue_cave_entities.py` | Reference witnesses in the pages | Cave object and entity catalogues |
 | [Script framing](../docs/lol2-level-script-format.md) and [opcode dispatch](../docs/lol2-script-opcodes.md) | `lol2_disassemble_scripts.py`, `lol2_event_browser.py` | Both command streams in all 15 levels, with native opcode sizes | Full listing or paged group summaries and opcode meanings |
-| [Trigger and predicate tables](../docs/lol2-script-events.md), [shared predicates](../docs/lol2-shared-predicates.md), [level exits](../docs/lol2-level-graph.md), [progression](../docs/PROGRESSION.md) | `lol2_event_browser.py`, `lol2_level_report.py`, `lol2_progression.py`, `lol2_level_notes.py` | Event and predicate joins, the exit census and the progression page | Trigger owners, matcher operands, predicate indices, level notes and each exit's slots |
+| [Trigger and predicate tables](../docs/lol2-script-events.md), [shared predicates](../docs/lol2-shared-predicates.md), [level exits](../docs/lol2-level-graph.md), [progression](../docs/PROGRESSION.md) | `lol2_event_browser.py`, `lol2_level_report.py`, `lol2_progression.py`, `lol2_plot_branches.py`, `lol2_level_notes.py` | Event and predicate joins, the exit census, the 289 non-exit plot branches and the progression page | Trigger owners, matcher operands, predicate indices, level notes and each exit's slots |
 | [Script motion](../docs/lol2-script-motion.md), [event producers](../docs/lol2-event-producers.md), [timers and clocks](../docs/lol2-timer-clock.md) | `lol2_inspect.py rules`, `lol2_save_native.py` for clock witnesses | Original code revision, selected native reads and calls | Motion, event and timer reference sections with addresses |
 | [Item table framing](../docs/formats/items.md), [definition fields](../docs/lol2-item-format.md) and [item handlers](../docs/lol2-item-handlers.md) | `lol2_item_labels.py`, `lol2_level_report.py`, `lol2_inspect.py item` | Definition keys, names, replacement handlers and placement links | Per-definition fields, raw row and handler address |
 | [Spell table](../docs/lol2-spells.md), [dispatch](../docs/lol2-spell-dispatch.md), [item effects](../docs/lol2-item-effects.md) | `lol2_inspect.py native` and `rules` | Native table offsets and original code revision | Spell row bytes, dispatch and item effect references |
@@ -80,7 +80,7 @@ Run each `--check` and print one line each, then a summary.
 $ python3 tools/check_all.py | sed -n '1,2p;$p'
 CHECK repo_guard: N tracked files; game files, media, stray images, files over 300 KB, machine paths, words from the local list, or commit identities: none (0); private word list: not present, skipped
 CHECK mix: 81 MIX files, 2905 entries; this reader and lol2_source_format.parse_mix agree and every entry lies inside its file: 81/81; index sorted by signed key: 81/81 (by unsigned key: 20); bad=none
-ALL 35 CHECKS PASSED
+ALL 36 CHECKS PASSED
 ```
 
 ### `doc_links.py`
@@ -387,6 +387,8 @@ CHECK repo_guard: N tracked files; game files, media, stray images, files over 3
   - example: `python3 tools/lol2_level_report.py --data DAT --out levels/`
 - `lol2_progression.py` — one row per level-transition command, with the predicate on the event that names its group. `--check` requires `docs/PROGRESSION.md` to equal that table. Part of `check_all.py`.
   - example: `python3 tools/lol2_progression.py --data DAT`
+- `lol2_plot_branches.py` — one row per event that tests a shared plot byte and is not one of the 72 exits. `--check` requires the marked table in `docs/lol2-shared-predicates.md` to match. Part of `check_all.py`.
+  - example: `python3 tools/lol2_plot_branches.py --data DAT`
 - `lol2_vqa_v2_decode.py` — VQA v2 pointer-table decoder, including 4×2 blocks and `CIND`-scheduled codebooks (needs NumPy; Pillow for `--out`). `--check` is a chunk census and one sample of each layout. `--full` walks every movie. `VPRZ`/`VPTR` movies are checked only as far as the codebook. `--out` refuses a path inside the repository
 
 ### Container Utilities
