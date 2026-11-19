@@ -19,7 +19,7 @@ These are counts of work done, not a percentage of how complete the project is. 
 
 <!-- rating:begin -->
 - **Files read:** 81 of 83 files in `DAT` (1,915.3 of 1,915.6 MiB) have their whole layout read by a tool here: every byte belongs to a known header, directory or entry (what is inside an entry may still be only partly understood).
-- **Rules traced:** the pages mark 630 statements CONFIRMED (proved from the program code or the files) and 212 UNCONFIRMED (a reading not yet proved), on 111 current pages; old notes kept as history are not counted.
+- **Rules traced:** the pages mark 638 statements CONFIRMED (proved from the program code or the files) and 205 UNCONFIRMED (a reading not yet proved), on 111 current pages; old notes kept as history are not counted.
 - **Seen in the running game:** 2 of 8 questions that can only be settled by watching the original game run are settled.
 - **Open questions:** 20 numbered questions: 3 answered, 15 mostly answered, 2 partly answered.
 <!-- rating:end -->
