@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 """Recover per-region eight-byte wall records with native address/setup replay."""
 import json,struct,hashlib,argparse
+from pathlib import Path as _ToolsPath
+import sys as _tools_sys
+_tools_sys.path.append(str(_ToolsPath(__file__).resolve().parents[2]))
+from cli_errors import ReaderArgumentParser  # noqa: E402
 from pathlib import Path
 from collections import Counter
 import capstone
@@ -8,7 +12,7 @@ from lol2_extract_draracle_geometry import decode,u32
 from lol2_verify_draracle_slopes import EXE_HASH
 from lol2_verify_spatial_constructor import ConstructorReplay
 def main():
-    parser=argparse.ArgumentParser(description=__doc__)
+    parser=ReaderArgumentParser(description=__doc__)
     parser.add_argument('--game-root',type=Path,required=True)
     parser.add_argument('--out',type=Path,required=True)
     args=parser.parse_args()

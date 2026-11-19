@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 """Check a wall's preview RGB against pinned source indices and its file palette."""
 import argparse,json,struct,collections
+from pathlib import Path as _ToolsPath
+import sys as _tools_sys
+_tools_sys.path.append(str(_ToolsPath(__file__).resolve().parents[2]))
+from cli_errors import ReaderArgumentParser  # noqa: E402
 from pathlib import Path
 from PIL import Image
 from lol2_extract_draracle_geometry import decode
@@ -11,7 +15,7 @@ from lol2_pixel_layout import column_major_to_rows
 from lol2_palette_png import rgb_palette,colorize
 
 def main():
- p=argparse.ArgumentParser(description=__doc__);p.add_argument('--game-root',type=Path,required=True);p.add_argument('--textures',type=Path,required=True);p.add_argument('--record',type=int,default=2702);p.add_argument('--out',type=Path,required=True);a=p.parse_args()
+ p=ReaderArgumentParser(description=__doc__);p.add_argument('--game-root',type=Path,required=True);p.add_argument('--textures',type=Path,required=True);p.add_argument('--record',type=int,default=2702);p.add_argument('--out',type=Path,required=True);a=p.parse_args()
  _,_,raw,_,regions,_=decode((a.game_root/'DAT/L1_DC.MIX').read_bytes());require(0<=a.record<3052,'Record outside table')
  record=raw[30093+a.record*8:30101+a.record*8];descriptor=struct.unpack_from('<h',record)[0]
  owner=next(i for i,r in enumerate(regions) if r[13]<=a.record<r[13]+(r[15]&255))

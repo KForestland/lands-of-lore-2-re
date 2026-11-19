@@ -10,13 +10,67 @@ def one_line(message):
     return " ".join(str(message).splitlines()).strip()
 
 
+REPOSITORY = Path(__file__).resolve().parents[1]
+# Options through which a tool writes a file or a folder of files.
+OUTPUT_OPTIONS = ("out", "output", "output_dir", "summary", "png")
+# Options that name the game's DAT folder or the game folder above it.
+DATA_OPTIONS = ("data", "game_dat", "game_root", "lol2_root")
+
+
+def is_game_file(name):
+    """A game archive (MIX) or the game program (LOLG.DAT)."""
+    name = name.upper()
+    return name.endswith(".MIX") or name == "LOLG.DAT"
+
+
+def holds_game_data(folder):
+    """True when folder or a folder above it holds a game archive (MIX) or the game program (LOLG.DAT)."""
+    for place in (folder, *folder.parents):
+        try:
+            if any(is_game_file(entry.name) for entry in place.iterdir()):
+                return True
+        except OSError:
+            continue
+    return False
+
+
+def output_refusal(path, data=None, repository=False):
+    """Why a tool may not write path (a file or a folder), or None. Refused: the
+    --data folder (one path or several) and anything below it, any folder holding a
+    MIX archive or LOLG.DAT or lying below one, and, with repository=True, this repository."""
+    target = Path(path).resolve()
+    roots = [REPOSITORY] if repository else []
+    for folder in (data if isinstance(data, (list, tuple)) else [data]):
+        if isinstance(folder, (str, os.PathLike)) and str(folder):
+            roots.append(Path(folder).resolve())
+    if any(root == target or root in target.parents for root in roots) or holds_game_data(target):
+        where = "the game data and repository" if repository else "the game data"
+        return f"give an output path outside {where}: {path}"
+    return None
+
+
 class ReaderArgumentParser(argparse.ArgumentParser):
+    def __init__(self, *args, output_options=(), **kwargs):
+        """output_options: further option names through which this tool writes."""
+        super().__init__(*args, **kwargs)
+        self.output_options = OUTPUT_OPTIONS + tuple(output_options)
+
     def parse_args(self, args=None, namespace=None):
         options = super().parse_args(args, namespace)
         for name in ("data", "game_dat"):
             folder = getattr(options, name, None)
             if isinstance(folder, (str, os.PathLike)) and not Path(folder).is_dir():
                 self.error(f"game data folder does not exist: {folder}")
+        # A data folder that is only the built-in default "." is a guess, not a game folder;
+        # the archive check below still refuses it when it holds game files.
+        data = [getattr(options, name, None) for name in DATA_OPTIONS
+                if not getattr(options, name, None) == self.get_default(name) == "."]
+        for name in self.output_options:
+            path = getattr(options, name, None)
+            if isinstance(path, (str, os.PathLike)) and str(path):
+                refusal = output_refusal(path, data)
+                if refusal:
+                    self.error(refusal)
         return options
 
     def error(self, message):

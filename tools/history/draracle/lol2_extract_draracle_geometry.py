@@ -4,6 +4,10 @@ No textures/audio. Unknown bytes are preserved, never interpreted as invented ge
 """
 from __future__ import annotations
 import argparse, collections, hashlib, json, math, re, struct
+from pathlib import Path as _ToolsPath
+import sys as _tools_sys
+_tools_sys.path.append(str(_ToolsPath(__file__).resolve().parents[2]))
+from cli_errors import ReaderArgumentParser  # noqa: E402
 from pathlib import Path
 
 MIX_HASH = '6384ec4d4d78f1aadfc1f154d924e1e20636af037cf5af68fe35af8478854345'
@@ -152,7 +156,7 @@ def export_svg(out,verts,regions,edges):
     (out/'draracle_footprint.svg').write_text('\n'.join(lines+['</svg>']))
 
 def main():
-    ap=argparse.ArgumentParser(description=__doc__)
+    ap=ReaderArgumentParser(description=__doc__)
     ap.add_argument('--game-root',type=Path,required=True);ap.add_argument('--out',type=Path,required=True)
     args=ap.parse_args();src=args.game_root/'DAT/L1_DC.MIX';b=src.read_bytes()
     entries,e,raw,verts,records,regions=decode(b);report,edges=audit(verts,records,regions)

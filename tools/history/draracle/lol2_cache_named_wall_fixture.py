@@ -7,6 +7,10 @@ All input locations are explicit; original data files are never modified.
 from __future__ import annotations
 
 import argparse
+from pathlib import Path as _ToolsPath
+import sys as _tools_sys
+_tools_sys.path.append(str(_ToolsPath(__file__).resolve().parents[2]))
+from cli_errors import ReaderArgumentParser  # noqa: E402
 import csv
 import hashlib
 import json
@@ -118,7 +122,7 @@ def replay_reads(page: bytes, path: Path) -> dict:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = ReaderArgumentParser(description=__doc__)
     parser.add_argument("--reference-root", type=Path, required=True)
     parser.add_argument("--runtime-root", type=Path)
     parser.add_argument("--reads-csv", type=Path, required=True)

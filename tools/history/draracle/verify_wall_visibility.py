@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 """Replay the native wall draw eligibility gate, not complete visibility or collision."""
 import argparse,json,itertools
+from pathlib import Path as _ToolsPath
+import sys as _tools_sys
+_tools_sys.path.append(str(_ToolsPath(__file__).resolve().parents[2]))
+from cli_errors import ReaderArgumentParser  # noqa: E402
 from pathlib import Path
 import capstone
 from lol2_cache_named_wall_fixture import sha,require
@@ -31,7 +35,7 @@ def replay(m,active,raw,mask):
  raise ValueError('Instruction limit')
 
 def main():
- p=argparse.ArgumentParser(description=__doc__);p.add_argument('--game-root',type=Path,required=True);p.add_argument('--geometry-evidence',type=Path,required=True);p.add_argument('--out',type=Path,required=True);a=p.parse_args()
+ p=ReaderArgumentParser(description=__doc__);p.add_argument('--game-root',type=Path,required=True);p.add_argument('--geometry-evidence',type=Path,required=True);p.add_argument('--out',type=Path,required=True);a=p.parse_args()
  exe=(a.game_root/'LOLG.DAT').read_bytes();require(sha(exe)==EXE_HASH,'Executable changed');_,_,raw,_,_,_=decode((a.game_root/'DAT/L1_DC.MIX').read_bytes())
  md=capstone.Cs(capstone.CS_ARCH_X86,capstone.CS_MODE_32);md.detail=True;m=WallReplay({i.address:i for i in md.disasm(exe[0x114806+0x37000:0x114850+0x37000],0x114806)},b'')
  groups=['flat_wall_spans','upper_lower_walls','sloped_middle_walls','sloped_upper_lower_walls','connector_middle_walls','special_upper_lower_walls'];rows=[];seen=set();cases=0

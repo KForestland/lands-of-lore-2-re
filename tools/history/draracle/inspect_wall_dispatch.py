@@ -1,11 +1,15 @@
 #!/usr/bin/env python3
 """Recover stored wall renderer slots; leave relocation and live selection explicit."""
 import argparse,json,struct
+from pathlib import Path as _ToolsPath
+import sys as _tools_sys
+_tools_sys.path.append(str(_ToolsPath(__file__).resolve().parents[2]))
+from cli_errors import ReaderArgumentParser  # noqa: E402
 from pathlib import Path
 from lol2_native_height_lookup import recover
 
 def main():
- p=argparse.ArgumentParser(description=__doc__);p.add_argument('--game-root',type=Path,required=True);p.add_argument('--out',type=Path,required=True);a=p.parse_args()
+ p=ReaderArgumentParser(description=__doc__);p.add_argument('--game-root',type=Path,required=True);p.add_argument('--out',type=Path,required=True);a=p.parse_args()
  exe=(a.game_root/'LOLG.DAT').read_bytes();_,provenance=recover(exe)
  data=b''.join(exe[x['file_offset']:x['file_offset']+4096] for x in provenance['pages'])[:provenance['initialized_bytes']]
  le=provenance['le_header'];u=lambda o:struct.unpack_from('<I',exe,le+o)[0]

@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 """Recover three single-state special-pixel props from native placement tables."""
 import argparse,json,struct
+from pathlib import Path as _ToolsPath
+import sys as _tools_sys
+_tools_sys.path.append(str(_ToolsPath(__file__).resolve().parents[2]))
+from cli_errors import ReaderArgumentParser  # noqa: E402
 from pathlib import Path
 from PIL import Image
 from lol2_extract_draracle_geometry import decode,parse_mix,u32
@@ -11,7 +15,7 @@ from extract_prop_sprite_previews import decode_rows
 from verify_special_pixel_table_binding import verify
 
 def main():
- p=argparse.ArgumentParser(description=__doc__);p.add_argument('--game-root',type=Path,required=True);p.add_argument('--out',type=Path,required=True);a=p.parse_args()
+ p=ReaderArgumentParser(description=__doc__);p.add_argument('--game-root',type=Path,required=True);p.add_argument('--out',type=Path,required=True);a=p.parse_args()
  mix=(a.game_root/'DAT/L1_DC.MIX').read_bytes();_,_,geo,_,_,_=decode(mix);entry=next(e for e in parse_mix(mix) if e['key']==2971019266);raw=mix[entry['offset']:entry['offset']+entry['size']]
  off,count=u32(raw,8),u32(raw,0x40);so=off+count*55+4;fo=so+u32(raw,so-4)*16+4;state=frame=0;states={};chosen={50:474,51:475,52:476}
  for t in range(count):

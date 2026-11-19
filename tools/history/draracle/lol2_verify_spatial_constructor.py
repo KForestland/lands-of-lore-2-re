@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 """Replay call-free native spatial constructor spans against every original record."""
 import argparse,hashlib,json,struct
+from pathlib import Path as _ToolsPath
+import sys as _tools_sys
+_tools_sys.path.append(str(_ToolsPath(__file__).resolve().parents[2]))
+from cli_errors import ReaderArgumentParser  # noqa: E402
 from pathlib import Path
 import capstone
 from lol2_verify_target_resolver import ResolverReplay
@@ -33,7 +37,7 @@ class ConstructorReplay(ResolverReplay):
         if pc!=end:raise ValueError('Span ended inside instruction')
 
 def main():
-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--game-root',type=Path,required=True);p.add_argument('--out',type=Path,required=True);a=p.parse_args()
+    p=ReaderArgumentParser(description=__doc__);p.add_argument('--game-root',type=Path,required=True);p.add_argument('--out',type=Path,required=True);a=p.parse_args()
     exe=(a.game_root/'LOLG.DAT').read_bytes()
     if hashlib.sha256(exe).hexdigest()!=EXE_HASH:raise ValueError('Executable changed')
     _,entry,raw,_,_,_=decode((a.game_root/'DAT/L1_DC.MIX').read_bytes())

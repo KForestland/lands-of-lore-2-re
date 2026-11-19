@@ -103,6 +103,7 @@ def main():
         h, o, s = entries[a.index]
         blob = data[base + o:base + o + s]
         if a.out:
+            lol2_cli.refuse_repo_output(a.out, a.data)
             open(a.out, "wb").write(blob); print(f"wrote {len(blob)} bytes to {a.out}")
         else:
             print(f"entry {a.index}: key 0x{h:08X}, offset {base + o}, size {s} (use --out to write it)")

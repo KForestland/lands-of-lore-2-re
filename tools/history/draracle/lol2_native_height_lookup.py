@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 """Recover initialized LE data through the embedded MZ header and native page map."""
 import argparse,json,struct
+from pathlib import Path as _ToolsPath
+import sys as _tools_sys
+_tools_sys.path.append(str(_ToolsPath(__file__).resolve().parents[2]))
+from cli_errors import ReaderArgumentParser  # noqa: E402
 from pathlib import Path
 from lol2_cache_named_wall_fixture import sha,require
 from lol2_verify_draracle_slopes import EXE_HASH
@@ -20,5 +24,5 @@ def recover(exe):
  witnesses=[dict(height=1<<k,shift=lookup[1<<k]) for k in range(9)];require(all(v['shift']==k for k,v in enumerate(witnesses)),'Native powers-of-two mismatch')
  return lookup,dict(executable_sha256=EXE_HASH,embedded_mz=mz,le_header=le,data_pages_file_offset=data,object_base=base,object_virtual_size=size,initialized_bytes=len(initialized),pages=mapping,height_table_object_offset=offset,height_table_sha256=sha(lookup),witnesses=witnesses,rotation_table_scope='0xDB650 lies beyond this object initialized bytes; no file-backed rotation values claimed.')
 def main():
- p=argparse.ArgumentParser(description=__doc__);p.add_argument('--game-root',type=Path,required=True);p.add_argument('--out',type=Path,required=True);a=p.parse_args();lookup,report=recover((a.game_root/'LOLG.DAT').read_bytes());a.out.mkdir(parents=True,exist_ok=True);(a.out/'height_lookup.bin').write_bytes(lookup);(a.out/'height_lookup.json').write_text(json.dumps(report,indent=2)+'\n');print(report['witnesses'])
+ p=ReaderArgumentParser(description=__doc__);p.add_argument('--game-root',type=Path,required=True);p.add_argument('--out',type=Path,required=True);a=p.parse_args();lookup,report=recover((a.game_root/'LOLG.DAT').read_bytes());a.out.mkdir(parents=True,exist_ok=True);(a.out/'height_lookup.bin').write_bytes(lookup);(a.out/'height_lookup.json').write_text(json.dumps(report,indent=2)+'\n');print(report['witnesses'])
 if __name__=='__main__':main()

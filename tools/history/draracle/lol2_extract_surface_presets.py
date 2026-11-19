@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 """Extract native 24-byte floor presets and region selectors; resource resolution open."""
 import argparse,json,struct,hashlib,html,colorsys
+from pathlib import Path as _ToolsPath
+import sys as _tools_sys
+_tools_sys.path.append(str(_ToolsPath(__file__).resolve().parents[2]))
+from cli_errors import ReaderArgumentParser  # noqa: E402
 from pathlib import Path
 import capstone
 from lol2_extract_draracle_geometry import decode,u32
@@ -8,7 +12,7 @@ from lol2_verify_draracle_slopes import EXE_HASH
 from lol2_verify_spatial_constructor import ConstructorReplay
 
 def main():
- p=argparse.ArgumentParser(description=__doc__);p.add_argument('--game-root',type=Path,required=True);p.add_argument('--out',type=Path,required=True);a=p.parse_args()
+ p=ReaderArgumentParser(description=__doc__);p.add_argument('--game-root',type=Path,required=True);p.add_argument('--out',type=Path,required=True);a=p.parse_args()
  source=(a.game_root/'DAT/L1_DC.MIX').read_bytes();entries,entry,raw,verts,records,regions=decode(source);e=entries[0];meta=source[e['offset']:e['offset']+e['size']]
  start,count=u32(meta,4),u32(meta,0x3c);names=start+count*24
  if names+count*22!=u32(meta,8):raise ValueError('Preset/name boundary mismatch')

@@ -25,7 +25,7 @@ import sys as _tools_sys
 
 _tools_sys.path.append(str(_ToolsPath(__file__).resolve().parents[1]))
 
-from cli_errors import ReaderArgumentParser, run_cli
+from cli_errors import ReaderArgumentParser, output_refusal, run_cli
 import hashlib
 import json
 import os
@@ -143,6 +143,9 @@ def main() -> None:
     if not os.path.isfile(local_mix):
         raise SystemExit(f"ERROR: cannot find {local_mix}")
 
+    refusal = output_refusal(args.output, lol2_root, repository=True)
+    if refusal:
+        parser.error(refusal)
     os.makedirs(args.output, exist_ok=True)
 
     atlas_data = read_mix_entry(local_mix, 1)

@@ -3,6 +3,10 @@
 No game payloads, decoded assets or machine-specific extraction outputs required.
 """
 import argparse,csv,hashlib,io,json
+from pathlib import Path as _ToolsPath
+import sys as _tools_sys
+_tools_sys.path.append(str(_ToolsPath(__file__).resolve().parents[2]))
+from cli_errors import ReaderArgumentParser  # noqa: E402
 from pathlib import Path
 import capstone
 from extract_creature_states import parse_states
@@ -75,7 +79,7 @@ def verify(game):
 
 
 if __name__=='__main__':
-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--game-root',type=Path,required=True);p.add_argument('--out',type=Path)
+    p=ReaderArgumentParser(description=__doc__);p.add_argument('--game-root',type=Path,required=True);p.add_argument('--out',type=Path)
     args=p.parse_args();report=verify(args.game_root)
     if args.out:
         args.out.parent.mkdir(parents=True,exist_ok=True);args.out.write_text(json.dumps(report,indent=2)+'\n')

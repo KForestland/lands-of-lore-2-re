@@ -1,13 +1,17 @@
 #!/usr/bin/env python3
 """Export diagnostic UVs for verified rectangular, repeating, static-material walls."""
 import argparse,collections,json,math,struct
+from pathlib import Path as _ToolsPath
+import sys as _tools_sys
+_tools_sys.path.append(str(_ToolsPath(__file__).resolve().parents[2]))
+from cli_errors import ReaderArgumentParser  # noqa: E402
 from pathlib import Path
 from PIL import Image
 from lol2_extract_draracle_geometry import decode
 from wall_uv_addressing import address_uv
 
 def main():
- p=argparse.ArgumentParser(description=__doc__)
+ p=ReaderArgumentParser(description=__doc__)
  for flag in ['game-root','geometry-evidence','textures','out']:p.add_argument('--'+flag,type=Path,required=True)
  a=p.parse_args();_,_,raw,_,_,_=decode((a.game_root/'DAT/L1_DC.MIX').read_bytes())
  mats=json.loads(a.textures.read_text());lookup={r['record']:m for m in mats['materials'] for r in m['records']}

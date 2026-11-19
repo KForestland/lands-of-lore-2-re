@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 """Replay original connector-side and endpoint selection on all exceptional links."""
 import argparse,json,hashlib,struct
+from pathlib import Path as _ToolsPath
+import sys as _tools_sys
+_tools_sys.path.append(str(_ToolsPath(__file__).resolve().parents[2]))
+from cli_errors import ReaderArgumentParser  # noqa: E402
 from pathlib import Path
 import capstone
 from lol2_verify_draracle_slopes import Replay, EXE_HASH
@@ -51,7 +55,7 @@ class ConnectorReplay(Replay):
         return side,[vals[:2],vals[2:]]
 
 def main():
-    ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('--game-root',type=Path,required=True);ap.add_argument('--out',type=Path,required=True);a=ap.parse_args()
+    ap=ReaderArgumentParser(description=__doc__);ap.add_argument('--game-root',type=Path,required=True);ap.add_argument('--out',type=Path,required=True);a=ap.parse_args()
     exe=(a.game_root/'LOLG.DAT').read_bytes()
     if hashlib.sha256(exe).hexdigest()!=EXE_HASH:raise ValueError('Unpinned executable')
     _,_,raw,verts,records,regions=decode((a.game_root/'DAT/L1_DC.MIX').read_bytes());report,_=interpret(verts,records,regions)

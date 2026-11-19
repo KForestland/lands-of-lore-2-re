@@ -4,6 +4,10 @@ Capstone decodes original executable bytes; this deliberately small interpreter
 rejects any unsupported instruction. This is static replay, not a live capture.
 """
 import argparse, hashlib, json, struct
+from pathlib import Path as _ToolsPath
+import sys as _tools_sys
+_tools_sys.path.append(str(_ToolsPath(__file__).resolve().parents[2]))
+from cli_errors import ReaderArgumentParser  # noqa: E402
 from pathlib import Path
 from lol2_extract_draracle_geometry import decode, slope_corners, s16
 
@@ -86,7 +90,7 @@ class Replay:
 def main():
     import capstone
 
-    ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('--game-root',type=Path,required=True);ap.add_argument('--out',type=Path,required=True);a=ap.parse_args()
+    ap=ReaderArgumentParser(description=__doc__);ap.add_argument('--game-root',type=Path,required=True);ap.add_argument('--out',type=Path,required=True);a=ap.parse_args()
     exe=(a.game_root/'LOLG.DAT').read_bytes()
     if hashlib.sha256(exe).hexdigest()!=EXE_HASH:raise ValueError('Executable changed')
     _,_,raw,_,records,_=decode((a.game_root/'DAT/L1_DC.MIX').read_bytes())

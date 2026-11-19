@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 """Extract raw indexed wall mip/variant payloads; defer unsupported encodings."""
 import argparse, collections, json, struct
+from pathlib import Path as _ToolsPath
+import sys as _tools_sys
+_tools_sys.path.append(str(_ToolsPath(__file__).resolve().parents[2]))
+from cli_errors import ReaderArgumentParser  # noqa: E402
 from pathlib import Path
 from lol2_cache_named_wall_fixture import load_named, require, sha
 from lol2_extract_cave_materials import ASSET,HASH
@@ -10,7 +14,7 @@ from lol2_pixel_layout import column_major_to_rows
 from lol2_palette_png import rgb_palette,colorize,png_rgb
 
 def main():
- p=argparse.ArgumentParser(description=__doc__)
+ p=ReaderArgumentParser(description=__doc__)
  p.add_argument('--game-root',type=Path,required=True);p.add_argument('--out',type=Path,required=True);a=p.parse_args()
  _,blob,identity,_=load_named(a.game_root,ASSET);require(sha(blob)==HASH,'Cache changed')
  _,_,raw,_,regions,_=decode((a.game_root/'DAT/L1_DC.MIX').read_bytes())

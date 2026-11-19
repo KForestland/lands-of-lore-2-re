@@ -1,13 +1,17 @@
 #!/usr/bin/env python3
 """Catalogue verified spatial fields without guessing sprite or object classes."""
 import argparse,csv,json,struct
+from pathlib import Path as _ToolsPath
+import sys as _tools_sys
+_tools_sys.path.append(str(_ToolsPath(__file__).resolve().parents[2]))
+from cli_errors import ReaderArgumentParser  # noqa: E402
 from collections import defaultdict
 from pathlib import Path
 from lol2_extract_draracle_geometry import decode,u32
 
 
 def main():
-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--game-root',type=Path,required=True);p.add_argument('--walk',type=Path,required=True);p.add_argument('--out',type=Path,required=True);a=p.parse_args()
+    p=ReaderArgumentParser(description=__doc__);p.add_argument('--game-root',type=Path,required=True);p.add_argument('--walk',type=Path,required=True);p.add_argument('--out',type=Path,required=True);a=p.parse_args()
     _,_,raw,_,regions,_=decode((a.game_root/'DAT/L1_DC.MIX').read_bytes())
     walk=json.loads(a.walk.read_text())[0]
     # Use companion floors.json to handle sloped anchor heights exactly.

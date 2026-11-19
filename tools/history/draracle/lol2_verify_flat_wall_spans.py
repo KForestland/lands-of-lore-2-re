@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 """Replay call-free native flat middle wall spans; defer slopes/special links."""
 import argparse,json,struct,hashlib
+from pathlib import Path as _ToolsPath
+import sys as _tools_sys
+_tools_sys.path.append(str(_ToolsPath(__file__).resolve().parents[2]))
+from cli_errors import ReaderArgumentParser  # noqa: E402
 from pathlib import Path
 from lol2_extract_draracle_geometry import decode,s16
 from lol2_verify_target_resolver import ResolverReplay
@@ -76,7 +80,7 @@ class WallReplay(ResolverReplay):
 def main():
  import capstone
 
- p=argparse.ArgumentParser(description=__doc__);p.add_argument('--game-root',type=Path,required=True);p.add_argument('--out',type=Path,required=True);a=p.parse_args()
+ p=ReaderArgumentParser(description=__doc__);p.add_argument('--game-root',type=Path,required=True);p.add_argument('--out',type=Path,required=True);a=p.parse_args()
  source=(a.game_root/'DAT/L1_DC.MIX').read_bytes();_,e,raw,verts,records,regions=decode(source)
  exe=(a.game_root/'LOLG.DAT').read_bytes();assert hashlib.sha256(exe).hexdigest()==EXE_HASH
  md=capstone.Cs(capstone.CS_ARCH_X86,capstone.CS_MODE_32);md.detail=True

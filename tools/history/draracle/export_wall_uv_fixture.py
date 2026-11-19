@@ -1,13 +1,17 @@
 #!/usr/bin/env python3
 """Export one diagnostic wall UV fixture and original-pixel preview; no scene mutation."""
 import argparse,json,math
+from pathlib import Path as _ToolsPath
+import sys as _tools_sys
+_tools_sys.path.append(str(_ToolsPath(__file__).resolve().parents[2]))
+from cli_errors import ReaderArgumentParser  # noqa: E402
 from pathlib import Path
 from PIL import Image
 from lol2_extract_draracle_geometry import decode
 from wall_uv_addressing import address_uv
 
 def main():
- p=argparse.ArgumentParser(description=__doc__);p.add_argument('--game-root',type=Path,required=True);p.add_argument('--geometry-evidence',type=Path,required=True);p.add_argument('--textures',type=Path,required=True);p.add_argument('--out',type=Path,required=True);a=p.parse_args()
+ p=ReaderArgumentParser(description=__doc__);p.add_argument('--game-root',type=Path,required=True);p.add_argument('--geometry-evidence',type=Path,required=True);p.add_argument('--textures',type=Path,required=True);p.add_argument('--out',type=Path,required=True);a=p.parse_args()
  _,_,raw,_,_,_=decode((a.game_root/'DAT/L1_DC.MIX').read_bytes())
  textures=json.loads(a.textures.read_text());mat=next(m for m in textures['materials'] if m['descriptor']==134);ids={r['record'] for r in mat['records']}
  rows=json.loads((a.geometry_evidence/'flat_walls/flat_wall_spans.json').read_text())['results']

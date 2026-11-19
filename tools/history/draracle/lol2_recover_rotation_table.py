@@ -1,13 +1,17 @@
 #!/usr/bin/env python3
 """Reproduce recovered rotation initializer with original constants and host x87."""
 import argparse,json,struct,math,subprocess
+from pathlib import Path as _ToolsPath
+import sys as _tools_sys
+_tools_sys.path.append(str(_ToolsPath(__file__).resolve().parents[2]))
+from cli_errors import ReaderArgumentParser  # noqa: E402
 from pathlib import Path
 import capstone
 from lol2_native_height_lookup import recover
 from lol2_cache_named_wall_fixture import sha,require
 
 def main():
- p=argparse.ArgumentParser(description=__doc__);p.add_argument('--game-root',type=Path,required=True);p.add_argument('--out',type=Path,required=True);a=p.parse_args();exe=(a.game_root/'LOLG.DAT').read_bytes();_,proof=recover(exe);a.out.mkdir(parents=True,exist_ok=True)
+ p=ReaderArgumentParser(description=__doc__);p.add_argument('--game-root',type=Path,required=True);p.add_argument('--out',type=Path,required=True);a=p.parse_args();exe=(a.game_root/'LOLG.DAT').read_bytes();_,proof=recover(exe);a.out.mkdir(parents=True,exist_ok=True)
  constants=bytearray();locations=[]
  for offset in [0x344c,0x3454]:
   page=proof['pages'][offset//4096];fileoff=page['file_offset']+offset%4096;constants.extend(exe[fileoff:fileoff+8]);locations.append(dict(object_offset=offset,file_offset=fileoff))

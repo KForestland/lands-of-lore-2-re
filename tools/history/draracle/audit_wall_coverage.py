@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 """Audit disjoint wall evidence and reproduce deferred absent-neighbor failures."""
 import argparse
+from pathlib import Path as _ToolsPath
+import sys as _tools_sys
+_tools_sys.path.append(str(_ToolsPath(__file__).resolve().parents[2]))
+from cli_errors import ReaderArgumentParser  # noqa: E402
 import hashlib
 import json
 import struct
@@ -17,7 +21,7 @@ GROUPS = [('flat_walls','flat_wall_spans'), ('upper_lower_walls','upper_lower_wa
           ('special_upper_lower_walls','special_upper_lower_walls')]
 
 def main():
-    parser=argparse.ArgumentParser(description=__doc__)
+    parser=ReaderArgumentParser(description=__doc__)
     parser.add_argument('--game-root',type=Path,required=True)
     parser.add_argument('--out',type=Path,required=True)
     args=parser.parse_args()

@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 """Separate sprite colours from destination-remapping pixels; not a final composite."""
 import argparse,json,struct
+from pathlib import Path as _ToolsPath
+import sys as _tools_sys
+_tools_sys.path.append(str(_ToolsPath(__file__).resolve().parents[2]))
+from cli_errors import ReaderArgumentParser  # noqa: E402
 from pathlib import Path
 from PIL import Image
 from extract_prop_sprite_previews import decode_rows
@@ -11,7 +15,7 @@ from lol2_palette_png import rgb_palette
 
 
 def main():
-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--game-root',type=Path,required=True);p.add_argument('--out',type=Path,required=True);a=p.parse_args()
+    p=ReaderArgumentParser(description=__doc__);p.add_argument('--game-root',type=Path,required=True);p.add_argument('--out',type=Path,required=True);a=p.parse_args()
     _,b,_,_=load_named(a.game_root,ASSET);require(sha(b)==HASH,'Cache changed');s=sections(b);po=struct.unpack_from('<I',b,4)[0];pal=rgb_palette(b[po:po+768],6);a.out.mkdir(parents=True,exist_ok=True);rows=[]
     for d in [193,194,474,475,476]:
         v=struct.unpack_from('<6H11I',b,s[2]+d*56);require(v[3]==0x28e and v[4]==1,'Unsupported descriptor')

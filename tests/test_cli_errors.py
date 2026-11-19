@@ -1,4 +1,5 @@
 """File reader commands report bad inputs without Python tracebacks."""
+import json
 import os
 from pathlib import Path
 import struct
@@ -67,11 +68,13 @@ class ReaderErrors(unittest.TestCase):
 
     def test_cave_geometry_pipeline(self):
         tool = "history/draracle/run_geometry_pipeline.py"
-        args = ("--game-root", self.root, "--out", self.root / "output")
+        game = self.root / "game"
+        game.mkdir()
+        args = ("--game-root", game, "--out", self.root / "output")
         self.assert_bad(tool, *args)
-        dat = self.root / "DAT"
+        dat = game / "DAT"
         dat.mkdir()
-        (self.root / "LOLG.DAT").write_bytes(b"MZ")
+        (game / "LOLG.DAT").write_bytes(b"MZ")
         for content in (b"", struct.pack("<HI", 1, 12)):
             (dat / "L1_DC.MIX").write_bytes(content)
             with self.subTest(size=len(content)):
@@ -91,3 +94,87 @@ class ReaderErrors(unittest.TestCase):
             if not destination:
                 self.assertEqual(list(self.root.glob("*.wav")), [])
         self.assertTrue((self.root / "sample.wav").read_bytes().startswith(b"RIFF"))
+
+
+class OutputGuard(unittest.TestCase):
+    """No tool writes into the game data (the --data folder, a folder holding a MIX archive or
+    LOLG.DAT, or anything below one); tools that extract game bytes also refuse the repository."""
+
+    def setUp(self):
+        directory = tempfile.TemporaryDirectory()
+        self.addCleanup(directory.cleanup)
+        self.root = Path(directory.name)
+        self.game = self.root / "GAME"
+        self.data = self.game / "DAT"
+        self.data.mkdir(parents=True)
+        (self.game / "LOLG.DAT").write_bytes(b"MZ")
+        (self.data / "A.MIX").write_bytes(struct.pack("<HI3I", 1, 4, 0x1234, 0, 4) + b"abcd")
+        self.loose = self.root / "LOOSE"
+        (self.loose / "SUB").mkdir(parents=True)
+        (self.loose / "fake.mix").write_bytes(b"")
+        self.repo = TOOLS.parent
+        self.env = {key: value for key, value in os.environ.items()
+                    if key not in ("LOL1_DATA", "LOL2_DAT", "LOL3_DAT")}
+
+    def run_tool(self, tool, *args):
+        return subprocess.run([sys.executable, str(TOOLS / tool), *map(str, args)], cwd=self.root,
+                              env=self.env, capture_output=True, text=True, timeout=20)
+
+    def assert_refused(self, targets, tool, *args):
+        for target in targets:
+            with self.subTest(tool=tool, target=target):
+                run = self.run_tool(tool, *[target if a is None else a for a in args])
+                self.assertEqual(run.returncode, 2, run.stdout + run.stderr)
+                self.assertIn("give an output path outside", run.stderr)
+                self.assertNotIn("Traceback", run.stderr)
+                self.assertFalse(target.exists())
+
+    def game_targets(self, name):
+        return (self.loose / name, self.loose / "SUB" / name, self.data / name,
+                self.game / name, self.game / "SAVES" / name)
+
+    def test_output_refusal(self):
+        sys.path.insert(0, str(TOOLS))
+        try:
+            from cli_errors import output_refusal
+        finally:
+            sys.path.remove(str(TOOLS))
+        outside = self.root / "out" / "x.png"
+        for target in self.game_targets("x.png"):
+            with self.subTest(target=target):
+                self.assertIsNotNone(output_refusal(target, self.data))
+        self.assertIsNotNone(output_refusal(self.root / "elsewhere", [None, self.root / "elsewhere"]))
+        self.assertIsNone(output_refusal(outside, self.data))
+        self.assertIsNone(output_refusal(self.repo / "docs" / "x.md", self.data))
+        self.assertIsNotNone(output_refusal(self.repo / "docs" / "x.md", self.data, repository=True))
+        self.assertIsNone(output_refusal(outside, self.data, repository=True))
+
+    def test_shared_parser_refuses_game_folders(self):
+        trace = self.root / "trace.jsonl"
+        trace.write_text(json.dumps({"event": "read", "guest_name": "LOLG.DAT", "actual": 1}) + "\n")
+        self.assert_refused(self.game_targets("summary.md"), "lol2_guest_trace_summary.py",
+                            "--trace", trace, "--out", None)
+        fine = self.root / "summary.md"
+        run = self.run_tool("lol2_guest_trace_summary.py", "--trace", trace, "--out", fine)
+        self.assertEqual(run.returncode, 0, run.stderr)
+        self.assertTrue(fine.is_file())
+
+    def test_subcommand_and_historical_parsers(self):
+        self.assert_refused(self.game_targets("blob"), "lol2_texture_container.py",
+                            "blob", "--mix", self.data / "A.MIX", "--out", None)
+        self.assert_refused(self.game_targets("clip.ogv"), "history/convert_cave_video_review.py",
+                            self.root / "missing.vqa", None)
+        self.assert_refused(self.game_targets("frames"), "history/draracle/build_creature_group_review.py",
+                            "--game-root", self.game, "--frames", None)
+
+    def test_extracted_entry_refuses_game_and_repository(self):
+        targets = (*self.game_targets("e0.bin"), self.repo / "no-such-folder" / "e0.bin")
+        self.assert_refused(targets, "lol2_mix_parser.py", "--data", self.data, "A.MIX", "0", "--out", None)
+        fine = self.root / "e0.bin"
+        run = self.run_tool("lol2_mix_parser.py", "--data", self.data, "A.MIX", "0", "--out", fine)
+        self.assertEqual(run.returncode, 0, run.stderr)
+        self.assertEqual(fine.read_bytes(), b"abcd")
+
+    def test_relative_default_output_refuses_repository(self):
+        self.assert_refused((self.repo / "no-such-folder", *self.game_targets("walls")),
+                            "history/lol2_wall_texture_extract.py", "--lol2-root", self.game, "--output", None)

@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 """Replay native upper/lower wall slopes including original corner helper instructions."""
 import argparse,json,struct,hashlib
+from pathlib import Path as _ToolsPath
+import sys as _tools_sys
+_tools_sys.path.append(str(_ToolsPath(__file__).resolve().parents[2]))
+from cli_errors import ReaderArgumentParser  # noqa: E402
 from collections import Counter
 from lol2_verify_upper_lower_walls import model
 from pathlib import Path
@@ -10,7 +14,7 @@ from lol2_verify_draracle_slopes import EXE_HASH
 from lol2_verify_flat_wall_spans import WallReplay
 
 def main():
- p=argparse.ArgumentParser(description=__doc__);p.add_argument('--game-root',type=Path,required=True);p.add_argument('--out',type=Path,required=True);a=p.parse_args()
+ p=ReaderArgumentParser(description=__doc__);p.add_argument('--game-root',type=Path,required=True);p.add_argument('--out',type=Path,required=True);a=p.parse_args()
  _,_,raw,verts,records,_=decode((a.game_root/'DAT/L1_DC.MIX').read_bytes());exe=(a.game_root/'LOLG.DAT').read_bytes();assert hashlib.sha256(exe).hexdigest()==EXE_HASH
  md=capstone.Cs(capstone.CS_ARCH_X86,capstone.CS_MODE_32);md.detail=True;ins={};a.out.mkdir(parents=True,exist_ok=True)
  for start,end in [(0x114aa4,0x115119),(0xf4504,0xf458d),(0xf4590,0xf4614),(0xf49fc,0xf4a3c)]:

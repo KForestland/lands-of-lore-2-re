@@ -1,13 +1,17 @@
 #!/usr/bin/env python3
 """Export a limited static-prop preview from original placement and state fields."""
 import argparse,json,struct,shutil
+from pathlib import Path as _ToolsPath
+import sys as _tools_sys
+_tools_sys.path.append(str(_ToolsPath(__file__).resolve().parents[2]))
+from cli_errors import ReaderArgumentParser  # noqa: E402
 from pathlib import Path
 from lol2_extract_draracle_geometry import decode,parse_mix,u32
 from verify_prop_region_height import selected_height
 
 
 def main():
-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--game-root',type=Path,required=True);p.add_argument('--sprites',type=Path,required=True);p.add_argument('--out',type=Path,required=True);a=p.parse_args()
+    p=ReaderArgumentParser(description=__doc__);p.add_argument('--game-root',type=Path,required=True);p.add_argument('--sprites',type=Path,required=True);p.add_argument('--out',type=Path,required=True);a=p.parse_args()
     mix=(a.game_root/'DAT/L1_DC.MIX').read_bytes();_,_,geo,_,regions,_=decode(mix);entry=next(e for e in parse_mix(mix) if e['key']==2971019266);raw=mix[entry['offset']:entry['offset']+entry['size']]
     off,count=u32(raw,8),u32(raw,0x40);so=off+count*55+4;ns=u32(raw,so-4);fo=so+ns*16+4
     chosen={85:195,88:192,47:469,49:473,4:273,5:274,6:276,7:275,56:295,57:296,60:295,61:296,62:296,64:295,8:300,9:299,10:300,11:299,12:300,38:301,39:301,40:301,41:301,42:298,43:297,44:298,45:297,13:302,14:302,15:302,16:302,17:417,18:417,19:417,20:417,21:417,22:278,23:278,24:278,28:306,46:417};states={};state=0;frame=0

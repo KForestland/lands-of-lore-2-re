@@ -4,7 +4,7 @@ The game's DAT folder is never assumed; tools that read game files need
 --data /path/to/DAT or the LOL2_DAT environment variable. Nothing is written
 unless an output path is given.
 """
-from cli_errors import ReaderArgumentParser
+from cli_errors import ReaderArgumentParser, output_refusal
 import argparse
 import os
 
@@ -27,13 +27,14 @@ def mix_files(data_dir):
     return sorted(f for f in os.listdir(data_dir) if f.upper().endswith(".MIX"))
 
 
-def refuse_repo_output(path):
-    """Exit with a message if an output path lies inside this repository (game data must not land in it)."""
+def refuse_repo_output(path, data=None):
+    """Exit 2 with a message if an output path lies in this repository, in the --data folder,
+    or in or below a folder that holds a MIX archive or LOLG.DAT (game data must not land in them)."""
     import sys
-    repo = os.path.realpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
-    target = os.path.realpath(path)
-    if target == repo or target.startswith(repo + os.sep):
-        sys.exit(f"refusing to write inside the repository ({path}); give an output path outside it")
+    refusal = output_refusal(path, data, repository=True)
+    if refusal:
+        print(f"{os.path.basename(sys.argv[0])}: {refusal}", file=sys.stderr)
+        sys.exit(2)
     return path
 
 

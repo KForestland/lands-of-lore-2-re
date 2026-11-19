@@ -22,7 +22,7 @@ import sys as _tools_sys
 
 _tools_sys.path.append(str(_ToolsPath(__file__).resolve().parents[1]))
 
-from cli_errors import ReaderArgumentParser, run_cli
+from cli_errors import ReaderArgumentParser, output_refusal, run_cli
 import json
 import os
 import sys
@@ -123,6 +123,9 @@ def main() -> None:
         help="JSON output path",
     )
     args = parser.parse_args()
+    refusal = output_refusal(args.output, args.lol2_root, repository=True)
+    if refusal:
+        parser.error(refusal)
 
     local_mix = os.path.join(args.lol2_root, "LOCAL.MIX")
     atlas_data = read_mix_entry(local_mix, 1)

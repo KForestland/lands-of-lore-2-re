@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 """Extract native state-linked eight-byte frame-event lists from the pinned cave."""
 import argparse
+from pathlib import Path as _ToolsPath
+import sys as _tools_sys
+_tools_sys.path.append(str(_ToolsPath(__file__).resolve().parents[2]))
+from cli_errors import ReaderArgumentParser  # noqa: E402
 import json
 import struct
 from pathlib import Path
@@ -41,7 +45,7 @@ def load_events(game_root):
 
 
 if __name__ == '__main__':
-    p=argparse.ArgumentParser(description=__doc__)
+    p=ReaderArgumentParser(description=__doc__)
     p.add_argument('--game-root',type=Path,required=True);p.add_argument('--out',type=Path,required=True)
     a=p.parse_args();r=load_events(a.game_root);a.out.mkdir(parents=True,exist_ok=True)
     (a.out/'creature_frame_events.json').write_text(json.dumps(r,indent=2)+'\n')

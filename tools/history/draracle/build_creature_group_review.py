@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 """Validate stored block-sprite groups and build a diagnostic playback viewer."""
 import argparse,json,struct
+from pathlib import Path as _ToolsPath
+import sys as _tools_sys
+_tools_sys.path.append(str(_ToolsPath(__file__).resolve().parents[2]))
+from cli_errors import ReaderArgumentParser  # noqa: E402
 from pathlib import Path
 from lol2_cache_named_wall_fixture import load_named,require,sha
 from lol2_extract_cave_materials import ASSET,HASH
@@ -26,7 +30,7 @@ def group_frames(descriptors):
 
 
 def main():
-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--game-root',type=Path,required=True);p.add_argument('--frames',type=Path,required=True);a=p.parse_args()
+    p=ReaderArgumentParser(description=__doc__, output_options=('frames',));p.add_argument('--game-root',type=Path,required=True);p.add_argument('--frames',type=Path,required=True);a=p.parse_args()
     _,blob,_,_=load_named(a.game_root,ASSET);require(sha(blob)==HASH,'Cache changed');s=sections(blob)
     descriptors={d:struct.unpack_from('<6H11I',blob,s[2]+d*56) for d in range((s[3]-s[2])//56)}
     groups=group_frames({d:v for d,v in descriptors.items() if v[3]==0x1246})

@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 """Bind nonnegative native floor preset references to cache descriptor ordinals."""
 import argparse,json,struct,hashlib,html
+from pathlib import Path as _ToolsPath
+import sys as _tools_sys
+_tools_sys.path.append(str(_ToolsPath(__file__).resolve().parents[2]))
+from cli_errors import ReaderArgumentParser  # noqa: E402
 from pathlib import Path
 import capstone
 from lol2_cache_named_wall_fixture import load_named,require,sha
@@ -9,7 +13,7 @@ from lol2_verify_draracle_slopes import EXE_HASH
 from lol2_verify_spatial_constructor import ConstructorReplay
 
 def main():
- p=argparse.ArgumentParser(description=__doc__);p.add_argument('--game-root',type=Path,required=True);p.add_argument('--presets',type=Path,required=True);p.add_argument('--out',type=Path,required=True);a=p.parse_args()
+ p=ReaderArgumentParser(description=__doc__);p.add_argument('--game-root',type=Path,required=True);p.add_argument('--presets',type=Path,required=True);p.add_argument('--out',type=Path,required=True);a=p.parse_args()
  _,blob,identity,_=load_named(a.game_root,ASSET);require(sha(blob)==HASH,'Cache changed')
  start,size,count=(struct.unpack_from('<I',blob,x)[0] for x in [0x10,0x4c,0x2a8]);require(size==count*56,'Native descriptor count mismatch')
  table=b''.join(blob[start+i*56:start+i*56+12] for i in range(count));require(len(table)==count*12,'Compact table extent')

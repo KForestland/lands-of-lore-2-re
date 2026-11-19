@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 """Verify runtime neighbor mode selection from original region flags."""
 import argparse
+from pathlib import Path as _ToolsPath
+import sys as _tools_sys
+_tools_sys.path.append(str(_ToolsPath(__file__).resolve().parents[2]))
+from cli_errors import ReaderArgumentParser  # noqa: E402
 import json
 from pathlib import Path
 import capstone
@@ -12,7 +16,7 @@ from verify_wall_camera_clip import run
 
 
 def main():
-    p=argparse.ArgumentParser(description=__doc__)
+    p=ReaderArgumentParser(description=__doc__)
     p.add_argument('--game-root',type=Path,required=True)
     p.add_argument('--out',type=Path,required=True)
     a=p.parse_args();exe=(a.game_root/'LOLG.DAT').read_bytes()

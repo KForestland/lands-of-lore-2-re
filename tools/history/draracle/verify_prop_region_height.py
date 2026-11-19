@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 """Replay original prop region-height selection, clamp and byte store."""
 import argparse,json,struct,itertools
+from pathlib import Path as _ToolsPath
+import sys as _tools_sys
+_tools_sys.path.append(str(_ToolsPath(__file__).resolve().parents[2]))
+from cli_errors import ReaderArgumentParser  # noqa: E402
 from pathlib import Path
 import capstone
 from lol2_cache_named_wall_fixture import require,sha
@@ -14,7 +18,7 @@ def selected_height(flags,region_present,floor,ceiling,state_height):
 
 
 def main():
-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--game-root',type=Path,required=True);p.add_argument('--out',type=Path,required=True);p.add_argument('--templates',type=int,nargs='+',default=[28]);a=p.parse_args()
+    p=ReaderArgumentParser(description=__doc__);p.add_argument('--game-root',type=Path,required=True);p.add_argument('--out',type=Path,required=True);p.add_argument('--templates',type=int,nargs='+',default=[28]);a=p.parse_args()
     exe=(a.game_root/'LOLG.DAT').read_bytes();require(sha(exe)==EXE_HASH,'Executable changed')
     _,_,raw,_,regions,_=decode((a.game_root/'DAT/L1_DC.MIX').read_bytes())
     md=capstone.Cs(capstone.CS_ARCH_X86,capstone.CS_MODE_32);md.detail=True

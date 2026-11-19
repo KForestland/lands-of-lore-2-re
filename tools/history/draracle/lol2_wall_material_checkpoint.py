@@ -7,6 +7,10 @@ Images are grayscale index diagnostics, not claims about final RGB colors.
 from __future__ import annotations
 
 import argparse
+from pathlib import Path as _ToolsPath
+import sys as _tools_sys
+_tools_sys.path.append(str(_ToolsPath(__file__).resolve().parents[2]))
+from cli_errors import ReaderArgumentParser  # noqa: E402
 import collections
 import csv
 import json
@@ -202,7 +206,7 @@ def audit_trace(trace: Path, pixels: bytes, width: int, height: int,
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = ReaderArgumentParser(description=__doc__)
     parser.add_argument("--reference-root", type=Path, required=True)
     parser.add_argument("--trace", type=Path, required=True)
     parser.add_argument("--earlier-table", type=Path)

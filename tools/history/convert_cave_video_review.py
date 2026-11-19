@@ -2,6 +2,10 @@
 # Historical research helper. See tools/history/README.md.
 """Make frame-count-checked Theora/Vorbis review clips for the modern engine."""
 import argparse,json,struct,subprocess,hashlib
+from pathlib import Path as _ToolsPath
+import sys as _tools_sys
+_tools_sys.path.append(str(_ToolsPath(__file__).resolve().parents[1]))
+from cli_errors import ReaderArgumentParser  # noqa: E402
 from pathlib import Path
 
 def run(args):
@@ -29,5 +33,5 @@ def convert(source,out):
  print(out,expected,'frames verified')
 
 if __name__=='__main__':
- p=argparse.ArgumentParser(description=__doc__);p.add_argument('source',type=Path);p.add_argument('out',type=Path)
+ p=ReaderArgumentParser(description=__doc__);p.add_argument('source',type=Path);p.add_argument('out',type=Path)
  a=p.parse_args();convert(a.source,a.out)

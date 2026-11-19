@@ -6,6 +6,10 @@ supplies the level-table pointers, starts at 0x114AA4 and ends before drawing.
 Writes nothing.
 """
 import argparse
+from pathlib import Path as _ToolsPath
+import sys as _tools_sys
+_tools_sys.path.append(str(_ToolsPath(__file__).resolve().parents[2]))
+from cli_errors import ReaderArgumentParser  # noqa: E402
 import hashlib
 import os
 from pathlib import Path
@@ -73,7 +77,7 @@ def check(data_dir):
 
 
 def main():
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = ReaderArgumentParser(description=__doc__)
     data = os.environ.get("LOL2_DAT")
     parser.add_argument("--data", type=Path, default=data, required=data is None)
     parser.add_argument("--check", action="store_true", required=True)

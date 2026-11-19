@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 """Extract structurally validated bound floor variants without assigning playback semantics."""
 import argparse,json,struct
+from pathlib import Path as _ToolsPath
+import sys as _tools_sys
+_tools_sys.path.append(str(_ToolsPath(__file__).resolve().parents[2]))
+from cli_errors import ReaderArgumentParser  # noqa: E402
 from pathlib import Path
 from lol2_cache_named_wall_fixture import load_named,require,sha
 from lol2_extract_cave_materials import ASSET,HASH
@@ -21,7 +25,7 @@ def extract(blob,index):
    data=blob[pos+8:pos+size];images.append(dict(level=level,variant=variant,width=width,height=height,source_offset=pos,pixels_sha256=sha(data),pixels=data))
  return dict(descriptor_index=index,identifier=ident,flags=flags,variant_count=variants,descriptor_hex=blob[s[2]+index*56:s[2]+(index+1)*56].hex(),images=images)
 def main():
- p=argparse.ArgumentParser(description=__doc__);p.add_argument('--game-root',type=Path,required=True);p.add_argument('--out',type=Path,required=True);a=p.parse_args()
+ p=ReaderArgumentParser(description=__doc__);p.add_argument('--game-root',type=Path,required=True);p.add_argument('--out',type=Path,required=True);a=p.parse_args()
  _,b,identity,_=load_named(a.game_root,ASSET);require(sha(b)==HASH,'Cave source changed');s=sections(b);pal=struct.unpack_from('<I',b,4)[0];require(pal+768==s[4],'Palette boundary');rgb=rgb_palette(b[pal:pal+768],6);a.out.mkdir(parents=True,exist_ok=True);results=[];cards=[]
  for k in TARGETS:
   result=extract(b,k);folder=a.out/f'material_{k:04d}';folder.mkdir(exist_ok=True)

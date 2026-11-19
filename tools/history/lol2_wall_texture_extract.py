@@ -54,7 +54,7 @@ import sys as _tools_sys
 
 _tools_sys.path.append(str(_ToolsPath(__file__).resolve().parents[1]))
 
-from cli_errors import ReaderArgumentParser, run_cli
+from cli_errors import ReaderArgumentParser, output_refusal, run_cli
 import os
 import struct
 import sys
@@ -303,6 +303,10 @@ def main() -> None:
         help="Only list textures; do not extract",
     )
     args = parser.parse_args()
+    if not args.list_only:
+        refusal = output_refusal(args.output, args.lol2_root, repository=True)
+        if refusal:
+            parser.error(refusal)
 
     lol2_root: str = args.lol2_root
     local_mix = os.path.join(lol2_root, "LOCAL.MIX")

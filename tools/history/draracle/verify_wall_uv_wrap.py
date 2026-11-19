@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 """Replay all three renderer wall UV addressing modes."""
 import argparse,json
+from pathlib import Path as _ToolsPath
+import sys as _tools_sys
+_tools_sys.path.append(str(_ToolsPath(__file__).resolve().parents[2]))
+from cli_errors import ReaderArgumentParser  # noqa: E402
 from pathlib import Path
 import capstone
 from lol2_verify_flat_wall_spans import WallReplay,signed
@@ -29,7 +33,7 @@ def execute(m,u,v,uo,vo,level,width,height,flags=8):
   pc=nxt
  raise ValueError('Wrap instruction limit')
 def main():
- p=argparse.ArgumentParser(description=__doc__);p.add_argument('--game-root',type=Path,required=True);p.add_argument('--textures',type=Path,required=True);p.add_argument('--out',type=Path,required=True);a=p.parse_args()
+ p=ReaderArgumentParser(description=__doc__);p.add_argument('--game-root',type=Path,required=True);p.add_argument('--textures',type=Path,required=True);p.add_argument('--out',type=Path,required=True);a=p.parse_args()
  exe=(a.game_root/'LOLG.DAT').read_bytes();require(sha(exe)==EXE_HASH,'Executable changed');md=capstone.Cs(capstone.CS_ARCH_X86,capstone.CS_MODE_32);md.detail=True
  ins={i.address:i for i in md.disasm(exe[0x12d4d1+0x37000:0x12d584+0x37000],0x12d4d1)};m=WallReplay(ins,b'');cases=0
  layouts={(im['level'],im['width'],im['height']) for mat in json.loads(a.textures.read_text())['materials'] for im in mat['images']}

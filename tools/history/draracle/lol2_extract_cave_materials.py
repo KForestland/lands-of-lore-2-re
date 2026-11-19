@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 """Extract structurally validated A9 cave textures; no geometry/lighting assignments."""
 import argparse,base64,collections,html,json,struct
+from pathlib import Path as _ToolsPath
+import sys as _tools_sys
+_tools_sys.path.append(str(_ToolsPath(__file__).resolve().parents[2]))
+from cli_errors import ReaderArgumentParser  # noqa: E402
 from pathlib import Path
 from lol2_cache_named_wall_fixture import load_named,sha,require
 from lol2_wall_material_checkpoint import sections,material_record
@@ -9,7 +13,7 @@ from lol2_palette_png import rgb_palette,colorize,png_rgb
 ASSET='sphere1\\l1_dc\\l1_dc.tex'
 HASH='102410e0b69037da2bdf451dd4de9c7e30df2c9d1309b1d0a1c0224ab7218c97'
 def main():
- p=argparse.ArgumentParser(description=__doc__);p.add_argument('--game-root',type=Path,required=True);p.add_argument('--out',type=Path,required=True);a=p.parse_args()
+ p=ReaderArgumentParser(description=__doc__);p.add_argument('--game-root',type=Path,required=True);p.add_argument('--out',type=Path,required=True);a=p.parse_args()
  record,b,identity,_=load_named(a.game_root,ASSET);require(sha(b)==HASH,'Unsupported cave blob')
  s=sections(b);pal=struct.unpack_from('<I',b,4)[0]
  require(pal+768==s[4],'Palette boundary');dac=b[pal:pal+768];rgb=rgb_palette(dac,6)
