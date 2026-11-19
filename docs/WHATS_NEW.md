@@ -4,6 +4,7 @@ Newest first. One line per question worked on, new tool or visible change; each 
 
 ## 19 November 2026
 
+- **Header bytes.** `LOLG.DAT` at file +0x3BCBC is `02 00 01 00`, eight bytes after the LE signature. `lol2_cache_seed.py --check` re-reads those four bytes and does not interpret them ([executable tables](lol2-executable-tables.md)).
 - **Progression.** The 15 level archives hold 72 exit commands, 24 of them with a predicate over a shared slot, a local slot or the bound object's byte at +0x25. `lol2_progression.py --check` requires [progression](PROGRESSION.md) to equal that table. `check_all.py` now runs 34 checks.
 - **Numbers at a glance.** `tools/lol2_numbers.py` generates tables of the 170 item combat inputs, the 113 effect records (64 costed levels in schools 0–12, 49 zero-cost records in rows 13–14), the 128 creature definitions and the 165 stored form requests. Five more actions (0x3C, 0x3D, 0x3F, 0x40, 0x41) enter the form arms and leave the command in place. `check_all.py` now runs 33 checks ([numbers](NUMBERS.md)).
 - **Extender notice.** `LOLG.DAT` at file +0x25C begins `DOS/4G  Copyright`. `lol2_cache_seed.py --check` re-reads those seventeen bytes ([executable tables](lol2-executable-tables.md)).

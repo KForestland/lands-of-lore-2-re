@@ -98,6 +98,8 @@ def compare(data):
         raise ValueError("LOLG.DAT+0x100 differs")
     if program[0x25C:0x26D] != b"DOS/4G  Copyright":
         raise ValueError("LOLG.DAT+0x25C differs")
+    if program[0x3BCBC:0x3BCC0] != bytes.fromhex("02000100"):
+        raise ValueError("LOLG.DAT+0x3BCBC differs")
     for level, art, leved in BANK_FOLDERS:
         image, entry, _bank = find_texture_entry(data / f"{level}.MIX")
         raw = image[entry["offset"]:]
