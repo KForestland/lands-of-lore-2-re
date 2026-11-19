@@ -194,4 +194,10 @@ matching placement row in level section 25. Global section 2 and level
 sections 31/32 agree across the pair.
 [Original slot offsets and observed changes](lol2-save-sections.md#controlled-pickup-in-l20_bb)
 
-**UNCONFIRMED.** Not observed: a loose item loaded from its level placement (constructor `0x93FBC`), as the original L1_DC test asked; a newly written player element (pool index 17 was reused, so global section 2 showed no payload write); the save-side check that pool element 17's definition equals the floor row's `0xD2C8551E`. For the placed-item witness, select an original L1_DC item at `0x93FBC`, record its definition +0x18 and the allocated player row at `0x95A99`, then compare that row and its occupancy bit in sections 2/3 of the next slot.
+**ANSWERED for an original loose item, CONFIRMED.** The opening-cave
+placement at `L1_DC.MIX+0x6FBFCE` has definition `0xA4C5CBD3`.
+A left click allocated player row 0 at `0x95A99` and released placement
+row 16 at `0x9412C`. With position fixed, the saves show row 16's
+reusable bit, the new player occupancy bit, and four new definition
+bytes in global section 2. Level sections 31/32 agree.
+[Save inspector comparison and native calls](lol2-save-sections.md#original-opening-cave-pickup-in-l1_dc)

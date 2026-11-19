@@ -201,6 +201,39 @@ transfer. The serialized player payload bytes agree because the allocator
 reused the item's previous pool index. The floor item occupied section 25.
 Sections 31/32 describe a separate pool.
 
+### Original opening-cave pickup in L1_DC
+
+**CONFIRMED.** In DOS 1.30 a new game was walked into L1_DC and
+saved with F8. The slot used for the pair was taken at the item after
+reloading that run. With an empty cursor, a left click on the loose
+floor sprite took placement row 16. The row starts at
+`L1_DC.MIX+0x6FBFCE`. Its +0x20 identity is `0xA4C5CBD3`, and its
++0x24 instance input is zero. The live row at `0x1128C304` held
+that same definition identity (+0x2C indirection then definition +0x18).
+At `0x95A64` the row went to the player object. At `0x95A99`
+the allocator returned `0x102F54EC`, the first player element.
+That same world row reached the reusable-flag store at `0x9412C`.
+
+The two completed native slots have SHA-256 prefixes `b75a12565c10`
+and `cedb327d1f86`. Slot +0x17C is 1, +0x180..+0x18B holds
+`0d8690f7 0e444d14 43b50000`, and +0x18C is 604 in both.
+The save inspector decodes both slots and reads row 16 with the
+game-written `L1_DC.IMG` baseline (prefix `1d2165406adc`).
+
+| Section | Before / after stored span starts | Decoded change |
+|---|---|---|
+| Global 2 | `+0x718E` / `+0x7295` | Row 0 definition dword XOR bytes change `00 00 00 00` → `A9 42 39 10`. Its +4/+5 stay zero. The other 3,068 bytes agree. |
+| Global 3 | `+0x71AD` / `+0x72B6` | XOR byte +0 changes 0 → 1, setting the allocation bit for row 0. |
+| Level 25 | `+0x1A0F5` / `+0x1A1DC` | All 11 changed bytes belong to row 16. With the baseline applied, +0x16 changes `0x02` → `0x82`. The XOR bytes also change at +0x0C..+0x13 and +0x28..+0x29. |
+| Level 31/32 | `+0x1A393/+0x1A3CB` / `+0x1A482/+0x1A4BA` | All 768 element bytes and 8 occupancy bytes agree. |
+
+The synchronized row flag, occupancy bit and newly written definition
+dword distinguish this pickup from the reused player payload in the
+level-20 trial. The captured native transfer ties the save changes to
+the original placement identity. The global definition dword shown
+here is the decoded XOR data. Pointer adjustment for that section
+runs at `0xE940E–0xE9452`.
+
 ## Reference measurements
 
 **CONFIRMED.** The 27-slot reference set yields 135 compressed and 162
@@ -243,12 +276,6 @@ these rows use, so it is not needed to reproduce them.
   the short writer path bypasses `0xE96EC`. Trace preparation of the scratch
   header for the zero-third-argument path before the write at `0xE83DF` to
   determine how those four bytes acquire their value.
-- **UNCONFIRMED.** An isolated before/after save pair for taking a specific
-  placed item is still missing. The original pickup, release and write paths
-  identify the row flag and both saved pools, while the reference level-1 block shows no bit transition in section 25. With a same-level pair around
-  one pickup, follow that object's section-25 row and +0x16 bit, the global
-  section-3 allocation bit, and the corresponding section-2 definition and
-  instance bytes. The row may be reused, so compare immediately after pickup.
 - **UNCONFIRMED.** The meanings of unlabelled slot-header bytes remain
   open. All 27 headers were checked against the fixed-size write at
   `0xE7CE1–0xE7CFE`. The 20 level stamps end at +0x93. The dword at
