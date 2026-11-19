@@ -122,8 +122,10 @@ player away from both targets, so the test left the visible results open.
 **UNCONFIRMED.** Which visible face invokes each control and
 what geometry the destination displays. In L8_SJ approach the
 two placements from the positions recorded in the level archive.
-Interact with an empty hand while breaking at `0xB5000` and
-`0xADDB0`. Identify the record from its group word and record
+Interact with an empty hand while breaking at `0x110ACD` (log request
++0x32 kind, +0x20 object and +0x28 distance), `0xB5000` and `0xADDB0`;
+this needs a save close to the controls (one from the owner, see the
+saves list). Identify the record from its group word and record
 the first visible before/after result and the player transform
 at `0xB2A96`. Group 12668 identifies control 69 and the exact
 destination above. Group 13090 identifies control 114 and

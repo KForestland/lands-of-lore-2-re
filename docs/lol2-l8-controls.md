@@ -50,8 +50,8 @@ region 3747 (`0xCCF0AA`), with all four neighbour words 0xFFFF.
 Control 116 (`0xCE8E77`) is in region 3300 (`0xCCA3D6`).
 The clear-bit form branch at `0xD804B` enters `0xD7EE0`, calling
 `0x80064(0x23819,1)`. Its path sets the feedback timer
-+0x2EC to `0x30000` and may play the cue at table byte +0x20E
-(`0x800CB–0x80100`). It does not reach the form-change call.
++0x2EC to `0x30000` and plays the u16 cue at `[0x269CC]+0x20E` through `0xE3924` when
+`[0x269C4]` bit 0 is clear (`0x800CB–0x80100`). It does not reach the form-change call.
 The visible geometry and feedback remain **UNCONFIRMED** in play.
 
 ## Placement and input selection
@@ -65,21 +65,26 @@ as a 60-byte definition index from `[0x22D4C]` and stores that
 pointer at object +0x2C (`0x5B654–0x5B677`).
 The three control rows above name definitions 32, 12 and 10
 respectively. The [level report check](../tools/lol2_level_report.py)
-recomputes the joins, portal neighbours and destination polygon.
+recomputes the placement-to-region joins, the 3206/3209 portal pair,
+the destination polygon and both floors; the other cited values are
+read here, not machine-checked.
 
 **CONFIRMED.** The input handler at `0x75D98` reads the current
 pointer coordinates at `0x75DE2/0x75DE9` and `0x75E60/0x75E67`
-and calls the viewport picker with action argument 1 at
-`0x75DFF/0x75E7D`. The picker checks viewport bounds
+and calls `0x110F0C` with action argument 1 at `0x75DFF/0x75E7D`.
+That function sets request +0x33 to 1 for argument 1 (the wrapper
+`0x110A95` returns early for +0x33 = 2), calls the viewport picker
+`0xE1050` at `0x110F31` and the action wrapper `0x110A8C` at `0x110F70`. The picker checks viewport bounds
 (`0xE10A1–0xE10C5`), renders the pick query at `0xE1159`,
 and stores horizontal distance at request +0x28
 (`0xE118C–0xE1194`). The action wrapper's picked object at request
 +0x20 must be of pick kind 4 and within `0x01000000` (256 in 16.16).
 Its object +0x14 mask 0x04000000 must be clear
-(`0x110A9F–0x110AC2`). The wrapper then calls its vtable +0x64 at
-`0x110ACD`, which is the control interaction below. A kind-4 mode-0
-event treats request +0x0C as null when no item is selected
-(`0x110F3D–0x110F68`, `0xADBDD–0xADC04`).
+(`0x110A9F–0x110AC2`). The wrapper then calls the object's vtable (read from object +0x28)
+slot +0x64 at `0x110ACD`, which is the control interaction below. `0x110F3D–0x110F68` copies the selected item
+into request +0x0C only when `[0x223D4]` is 0, +0x33 is 1 and
+`[0x23C57]` is non-null, and zeroes it otherwise; the mode-0 test
+`0xADBDD–0xADC04` then sees null for an empty hand.
 
 **UNCONFIRMED in play.** Which visible pixels return each object from
 the pick query. To settle that, start close to the cited region, use the
