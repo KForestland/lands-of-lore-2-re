@@ -20,11 +20,13 @@ set at `0xADBDD–0xADC04` and read at `0xADC41`. At
 | `0xCD4764` | Opcode 20 sends audio index `0x030C` and control 69 to `0xE3924` at `0xB5C0D`. Selector 0x10 resolves controls through `0x5FC91`. |
 | `0xCD476E` | Opcode 18 queues the player sequence if the slot is vacant (`0xB59CE–0xB59E8`). Flags `0x0304` select the direct-position path, including Z. The native sequence update writes X = −1004, Y = 2590, Z = 100, each multiplied by 65536, and returns orientation `0x4FA4` (`0x65C3C–0x65CC5`, `0xB2A96`). |
 
-**UNCONFIRMED.** The spatial interpretation as a ladder and the
-input path that reaches the common interaction method for this exact
-control remain open. The archive records establish the player destination
-and the interaction test. The live object and caller target below narrow
-the breakpoint to the instance.
+**CONFIRMED.** The placement's signed region index at +0x0A is 678.
+Its polygon at `0xCAE12E` contains the initial position and has floor
+−10. The sequence destination (−1004, 2590) falls inside region 657,
+whose polygon is at `0xCADD92` and floor is 100, exactly the sequence's
+Z. The action therefore moves the player up 110 height units between
+those polygons. Region 678 has no portal on side 0 (word at +4 =
+0xFFFF). The exact visible climbing surface remains **UNCONFIRMED**.
 
 ## Control 114
 
@@ -40,11 +42,50 @@ The same null-selection path queues stream 1 group 13090.
 | `0xCD4920` | Property 3 links control 116 through `0xB511A → 0xB49EC` with second argument 1. Control 116's placement is at `0xCE8E77` and its event list at `0xCD6B2E` is empty. |
 | `0xCD4926` | Property 2 unlinks control 114 through `0xB50E9 → 0xB49EC` with second argument 0. |
 
-**UNCONFIRMED.** The visible geometry changes associated with the two
-props and the linked control remain open. The command list was traced
-through each direct group target. Match the three placements to their
-render or world-region consumers and follow the form branch at `0xD7EE0`
-for the clear-bit case to settle the remaining presentation and condition.
+**CONFIRMED.** Control 114 is attached to region 3206
+(`0xCC93AE`). Prop 1014 (`0xCE1D16`) is in region 3209
+(`0xCC9432`), whose side 0 connects back to side 2 of region 3206.
+Those sides share vertices 833 and 909. Prop 115 (`0xCD9B27`) is in
+region 3747 (`0xCCF0AA`), with all four neighbour words 0xFFFF.
+Control 116 (`0xCE8E77`) is in region 3300 (`0xCCA3D6`).
+The clear-bit form branch at `0xD804B` enters `0xD7EE0`, calling
+`0x80064(0x23819,1)`. Its path sets the feedback timer
++0x2EC to `0x30000` and may play the cue at table byte +0x20E
+(`0x800CB–0x80100`). It does not reach the form-change call.
+The visible geometry and feedback remain **UNCONFIRMED** in play.
+
+## Placement and input selection
+
+**CONFIRMED.** The constructor reads 33-byte placements at
+`0x5B72C–0x5B75D`. The common constructor takes signed row +0x0A
+as a geometry region, with `-1` for none, and links the object to the
+selected 44-byte row via `0xAF0E0`
+(`0xAEA30–0xAEA5C`). The control constructor takes u8 +0x20
+as a 60-byte definition index from `[0x22D4C]` and stores that
+pointer at object +0x2C (`0x5B654–0x5B677`).
+The three control rows above name definitions 32, 12 and 10
+respectively. The [level report check](../tools/lol2_level_report.py)
+recomputes the joins, portal neighbours and destination polygon.
+
+**CONFIRMED.** The input handler at `0x75D98` reads the current
+pointer coordinates at `0x75DE2/0x75DE9` and `0x75E60/0x75E67`
+and calls the viewport picker with action argument 1 at
+`0x75DFF/0x75E7D`. The picker checks viewport bounds
+(`0xE10A1–0xE10C5`), renders the pick query at `0xE1159`,
+and stores horizontal distance at request +0x28
+(`0xE118C–0xE1194`). The action wrapper's picked object at request
++0x20 must be of pick kind 4 and within `0x01000000` (256 in 16.16).
+Its object +0x14 mask 0x04000000 must be clear
+(`0x110A9F–0x110AC2`). The wrapper then calls its vtable +0x64 at
+`0x110ACD`, which is the control interaction below. A kind-4 mode-0
+event treats request +0x0C as null when no item is selected
+(`0x110F3D–0x110F68`, `0xADBDD–0xADC04`).
+
+**UNCONFIRMED in play.** Which visible pixels return each object from
+the pick query. To settle that, start close to the cited region, use the
+empty-hand action inside the viewport and log kind, selected object and
+distance at `0x110ACD`; check the object event offset before reading
+the selected group.
 
 ## Live binding of both L8 controls
 

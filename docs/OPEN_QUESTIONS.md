@@ -24,7 +24,7 @@ One line per question: its state and what would settle what is left.
 | Q14 | Mostly | Verify the live `0x02AC` branch, span flags and 190 references into one underfilled vector book. |
 | Q15 | Answered | All 33 HMI scores framed and named. `0x1305A4F0` is `MUSIC\CREDITS.HMI`. |
 | Q16 | Mostly | Follow the Huline Temple quads through screen clipping, material selection and UV setup |
-| Q17 | Partly | Trace the visible geometry and input conditions of L8 controls 69 and 114 |
+| Q17 | Partly | Static placement regions, viewport picker and both outcomes traced. Confirm the visible pick surfaces in L8. |
 | Q18 | Mostly | Every script group now has a serialized reference; confirm in play the input gesture that reaches a placed-item group such as L1 group 13584 |
 | Q19 | Answered | — |
 | Q20 | Mostly | Native writer mapped. Compare older lengths with a corresponding shipped cache |

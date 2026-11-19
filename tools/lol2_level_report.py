@@ -276,6 +276,41 @@ def exit_predicates(scripts):
     return direct, guarded, shared
 
 
+def check_l8_controls(data_dir):
+    """Join the original control and prop placements to their region rows."""
+    from struct import unpack_from
+
+    source = (Path(data_dir) / "L8_SJ.MIX").read_bytes()
+    entry, geometry = S.level_geometry(source)
+    vertices, _, regions = unpack_from("<3I", geometry, 4)
+    props, controls = unpack_from("<2I", geometry, 0x14)
+    expected = ((controls + 69 * 33, 678, 0xCE8868),
+                (controls + 114 * 33, 3206, 0xCE8E35),
+                (controls + 116 * 33, 3300, 0xCE8E77),
+                (props + 115 * 37, 3747, 0xCD9B27),
+                (props + 1014 * 37, 3209, 0xCE1D16))
+    for row, region, absolute in expected:
+        if entry["offset"] + row != absolute or unpack_from("<h", geometry, row + 10)[0] != region:
+            raise ValueError("L8 control or linked prop region")
+    lower, upper = (regions + 44 * index for index in (678, 657))
+    if (unpack_from("<h", geometry, lower + 0x14)[0] != -10
+            or unpack_from("<h", geometry, upper + 0x14)[0] != 100):
+        raise ValueError("L8 control 69 floor heights")
+    x, y, z = unpack_from("<hhh", source, 0xCD476E + 4)
+    corners = unpack_from("<4H", geometry, upper + 0xC)
+    polygon = [unpack_from("<ii", geometry, vertices + 8 * corner) for corner in corners]
+    cross = [(bx - ax) * ((y << 16) - ay) - (by - ay) * ((x << 16) - ax)
+             for (ax, ay), (bx, by) in zip(polygon, polygon[1:] + polygon[:1])]
+    if z != 100 or min(cross) < 0 < max(cross):
+        raise ValueError("L8 control 69 sequence destination")
+    left, right = (regions + 44 * index for index in (3206, 3209))
+    if (unpack_from("<H", geometry, left + 8)[0] != 3209
+            or unpack_from("<H", geometry, right + 4)[0] != 3206
+            or unpack_from("<HH", geometry, left + 16) != (833, 909)
+            or unpack_from("<HH", geometry, right + 12) != (909, 833)):
+        raise ValueError("L8 control 114 reciprocal edge")
+
+
 def read_level(data_dir, stem):
     path = Path(data_dir) / f"{stem}.MIX"
     b = path.read_bytes()
@@ -507,6 +542,11 @@ def main():
         l1 = next((L for L in levels if L["stem"] == "L1_DC"), None)
         if l1 and 13584 not in l1["geom"]["placed_item_groups"][1]:
             bad.append("placed-item group 13584 missing from L1_DC")
+        if "L8_SJ" in stems:
+            try:
+                check_l8_controls(a.data)
+            except (OSError, ValueError) as error:
+                bad.append(str(error))
         ev = Counter()
         for L in levels:
             ev.update(event_kinds(L["scripts"]))
