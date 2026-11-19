@@ -6,7 +6,7 @@
 |---|---|---|---|
 | LZO1X in blocks | the level texture containers `<LEVEL>.TE_` in every level archive | `lol2_texture_container.py` | CONFIRMED on the data |
 | LCW variant ("format 80") | the 37 compressed room sections in `LOCAL.MIX` entry 1 | `lol2_decompress_sphere.py` | CONFIRMED on the data |
-| Westwood LZ77 with a leading mode byte | the function at VA `0x158D58`; no MIX entry with a leading size decodes | `lol2_decompress_westwood.py` | code CONFIRMED; the buffers are open ([Q1](../OPEN_QUESTIONS.md)) |
+| Westwood LZ77 with a leading mode byte | the function at VA `0x158D58`; no MIX entry with a leading size decodes | `lol2_decompress_westwood.py` | decoder and caller buffers CONFIRMED ([Q1](../OPEN_QUESTIONS.md)) |
 
 ## LZO1X blocks
 
@@ -48,14 +48,42 @@ The routine in `LOLG.DAT` that decodes these sections has not been located (UNCO
 
 ## Westwood LZ77 with a mode byte
 
-CONFIRMED in the executable, not yet tied to a file. VA `0x158D58` (`enter 0x14, 0`, then the saved registers) is the decoder. Its arguments are source, destination and output size. VA `0x158D6C` reads the first source byte:
+**CONFIRMED.** VA `0x158D58` (`enter 0x14, 0`, then the saved registers) is the decoder. Its arguments are source, destination and output size. VA `0x158D6C` reads the first source byte:
 
 - `0` selects relative long back-references and is consumed.
 - Any other value is the first command. Long back-references are then distances from the start of the output.
 
 In both paths a short command (`0x00`–`0x7F`) copies `(cmd >> 4) + 3` bytes from `((cmd & 0xF) << 8) | next` back in the output. A distance of 0 is `mov esi, edi` then `rep movsb` (VA `0x158DAE`, and the same sequence at `0x158E62`): the source is the destination, so those bytes stay as they are. It does not repeat the previous byte. `0x80` ends the stream. `0x81`–`0xBF` copy `cmd & 0x3F` literal bytes. `0xC0`–`0xFD` are a long back-reference of `(cmd & 0x3F) + 3` from a u16 distance. `0xFE` fills `u16` bytes with the next byte. `0xFF` is a long back-reference whose length and distance are both u16.
 
-Eleven direct calls pass the three arguments from registers, structure fields or globals. The call at VA `0x15A604` pushes `[ebp-0x40]`, the global `[0x16774]`, then `[ebp-0x44]` (size, destination, source). The eleven calls are VA `0x67052`, `0x15204F`, `0x15A604`, `0x15BEE1`, `0x15C50D`, `0x15CAD4`, `0x17140F`, `0x172335`, `0x1727C6`, `0x1727F1` and `0x172838`. The address is not stored as a dword. Following one of those calls back to a buffer that came from a file is still open ([Q1](../OPEN_QUESTIONS.md)).
+### Direct calls and their buffers
+
+**CONFIRMED.** The DOS 1.30 code object has eleven direct `call rel32`
+instructions whose target is `0x158D58`. The table follows the three
+arguments back to their producers. `row` and `node` refer to the
+structures accessed by the indicated caller.
+
+| Call | Source and destination | Capacity and evidence |
+|---|---|---|
+| `0x67052` | Read from a generic resource handle after seeking to row +4. The stream is staged at `allocation + expanded_size − packed_size` and expanded to the allocation base. | Expanded size dword row +8; packed size word row +0xC must be nonzero (`0x67013–0x67052`). The EFX loader supplies zero at `0xE3715 → 0x66E8C`. |
+| `0x15204F` | Shape data after the ten-byte header and, if flag bit 0 is set, a 16-byte remap. Destination is the matching payload position in scratch `[0x16774]`. The continuation reads the temporary shape into `[0x1552C]`. | Shape u16 +8 (`0x151F55–0x151F5E`, `0x15A202–0x15A20C`, `0x15201D–0x152063`). |
+| `0x15A604` | Shape payload selected after the header and optional remap at `0x15A457–0x15A4C3`. The draw path uses scratch `[0x16774]` for the expanded source. | Shape u16 +8, copied to local −0x40. Enters the decoder when flag bit 1 is clear (`0x15A46E`, `0x15A5ED–0x15A616`). |
+| `0x15BEE1` | Stream read at `0x15BEAC` to an address near the end of the destination allocation. The file path seeks to the resource position plus `0xE` and an auxiliary byte count. Destination is local −0x2C; source is that pointer plus expanded length minus packed length. | Resource u16 +0xC (`0x15BE6A–0x15BEE6`). |
+| `0x15C50D` | Same resource capacity field, with compressed input read from the handle at `0x15C4F2` to local −0x14 after adjustment by the expanded-minus-packed size. Output pointer is resource +0xE. | Resource u16 +0xC (`0x15C4D3–0x15C512`). |
+| `0x15CAD4` | In-memory record of type byte 4. Source is `record + 8 + u16(record+6)`; destination is the helper's second argument. Its file-fed caller reads the packed bytes after copying the eight-byte header (`0x15CA74–0x15CAA7`). | Record dword +2 (`0x15CACE–0x15CAFD`). |
+| `0x17140F` | Packed VQA node input from `node[+8] + node[+0x24]` to `node[+8]`; the result is copied into the pending packet at context-local +0x24. | Movie context +0x75A. Decoded length goes to node +0x28 (`0x1713EE–0x171445`). |
+| `0x172335` | Same VQA node stream and output, in the other packet-building path. | Movie context +0x75A; clears node +0x14 bit 3 after decoding (`0x172317–0x172352`). |
+| `0x1727C6` | Packed stream at `aux_node[+0] + aux_node[+0xC]`, where `aux_node = node[+4]`. Destination is the auxiliary node base or movie context +0x6EE. | Movie context +0x75E; result length at auxiliary node +0x10 (`0x172787–0x1727D6`). |
+| `0x1727F1` | Same VQA node +0x24 stream and +8 destination, this time from the frame-preparation path. | Movie context +0x75A; result length at node +0x28 (`0x1727D9–0x172802`). |
+| `0x172838` | Compressed VQA pointer payload at `node[+0] + node[+0x20]`. Destination is node +0's pointer or the separate buffer at movie context +0x6E6. | Movie context +0x762. The [original intro trace](vqa.md#native-short-copy-runtime-control) reached this call (`0x172805–0x172845`). |
+
+**UNCONFIRMED.** The complete set of original filenames reaching the
+conditional resource branches at `0x67052`, `0x15BEE1`, `0x15C50D` and
+`0x15CAD4`. For the first branch, inspect the row builder callers
+`0x9DDBB`, `0x9DE84`, `0x9E5D2`, `0x9E66D` and `0x9E6ED`
+for a nonzero packed length. For the graphics loaders, follow the
+native open handle back from `0x118820`, then verify the packed span
+against that file. The CLI's leading-u32 experiment does not detect
+this framing.
 
 `tools/lol2_decompress_westwood.py` follows that rule. Its self-test passes. Of the MIX entries whose first u32 is larger than the entry and at most 16 times the entry, 8 were tried and none decoded to that size (`--check`, re-run 2026-11-18).
 

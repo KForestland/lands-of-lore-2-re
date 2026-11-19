@@ -8,7 +8,7 @@ One line per question: its state and what would settle what is left.
 
 | ID | State | What would settle the rest |
 |---|---|---|
-| Q1 | Partly | Find which buffer each of the eleven calls of the LZ77 routine `0x158D58` decompresses |
+| Q1 | Mostly | All eleven caller buffers are mapped. Find original filename witnesses for the conditional resource loaders. |
 | Q2 | Partly | Trace the reader of `LOCAL.MIX` stored sections to see whether the payload starts at byte 10 or 12 |
 | Q3 | Mostly | Find how `ARENA` is opened (it is not in the room table at `0x1CFA90`) |
 | Q4 | Partly | Trace the remaining subcommands and virtual continuations of opcodes 18 and 196 |
@@ -33,7 +33,7 @@ One line per question: its state and what would settle what is left.
 
 | ID | Question | Page |
 |----|----------|------|
-| Q1 | Westwood LZ77 with a leading mode byte. **Answered for the code:** VA `0x158D58`, eleven direct calls, rule in [compression](formats/compression.md). **Still open:** which buffer each call decompresses. No MIX entry whose first u32 looks like a size decodes to that size | [formats/compression.md](formats/compression.md) |
+| Q1 | Westwood LZ77 with a mode byte. **Mostly answered:** decoder and input/output buffers for all eleven calls, including five VQA calls. **UNCONFIRMED:** a full filename join for the generic resource and graphics loaders. | [Caller table](formats/compression.md#direct-calls-and-their-buffers) |
 | Q2 | `LOCAL.MIX` entry 1 stored sections. **Partly answered:** sections 0 and 15 have 2 at byte +2, the word at +8 is the on-disk extent, and the word at +10 counts from offset 10. Section 15 is not a raw 155×147 grid. **Still open:** whether the payload starts at byte 10 or byte 12. The reader was not traced | [formats/room-sections.md](formats/room-sections.md) |
 | Q3 | Room archives, 45 versus 47. **Answered for the count:** both numbers are right. 47 archives carry `WOMS\<ROOM>_.WOM`. 46 of those names are the dword table at file `0x1CFA90`, and `ARENA` is the extra archive. **Still open:** how `ARENA.MIX` is opened. There is no `ARENA.MIX` or `arena_` string, and `ww_hash_v1("ARENA.MIX")` is not stored as a dword. The movie stem `arenaapr` is at file `0x1C3D1A` | [lol2-level-graph.md](lol2-level-graph.md) |
 | Q4 | What do the remaining subcommands and virtual continuations do? The opcode 18 updater and opcode 196 post-call stores are mapped. | [Opcode table](lol2-script-opcodes.md), [motion](lol2-script-motion.md) |
@@ -61,7 +61,7 @@ uses one game action to bind an indirect producer or player-facing result. See [
 
 | ID | Status | What was measured, tried, and what would settle the rest |
 |---|---|---|
-| Q1 | VQA answered, other callers static | **CONFIRMED** five calls in the VQA node path, including pointer decode at `0x172838`. `0x67052` also decodes a generic resource when row +0xC is nonzero. **UNCONFIRMED** the files behind the other six call sites. The EFX loader's call `0xE3715 → 0x66E8C` passes +0xC = 0, so that bank never reaches `0x67052`. **Test:** Bind the other callers of `0x66E8C` (`0x9DDBB`, `0x9DE84`, `0x9E5D2`, `0x9E66D`, `0x9E6ED`) first, then locate an original entry with nonzero +0xC. |
+| Q1 | Caller buffers answered | **CONFIRMED** each direct call to `0x158D58` and its source, destination and capacity. **UNCONFIRMED** all original filenames for the resource loaders. **Test:** follow the packed span from a native read back to its opened file. [Caller table](formats/compression.md#direct-calls-and-their-buffers) |
 | Q2 | Partial, static | **CONFIRMED** stored spans at `LOCAL.MIX+0x19311CF` (16,394 bytes) and `+0x1935AF0` (11,970 bytes). Their +8 words equal the span size; their +10 words equal span size − 10. Starting at +10 instead of +12 includes `00 40` and `B8 2E` respectively. **UNCONFIRMED** whether either pair is copied into the decoded output. **Test:** Find an original seek into entry 1 and inspect the stored branch's source pointer. |
 | Q3 | Archive count answered, open path static | **CONFIRMED** the 46-row table at `LOLG.DAT+0x1CFA90` and the additional `ARENA.MIX` WOM directory hit. The stem `arenaapr` at file +0x1C3D1A is a movie name. **UNCONFIRMED** the archive opener for ARENA. **Test:** Find its argument at a call to the archive constructor `0x11C654` outside the table-based room path. |
 | Q4 | Partial, static | **CONFIRMED** opcode 18 drift and direct sequence calculation, and opcode 196's post-call state and transform writes. **UNCONFIRMED** the dynamic continuation. **Test:** Trace the 196 admission and reversal flags at `0x64E6E–0x64EB4` and `0xB8642`. For 18, bind the receiver of vtable +0x18 at `0xB2AE2/0xB2AF4` and the next consumer of `[0x22CB1]`. |
