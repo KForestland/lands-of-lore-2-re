@@ -203,28 +203,31 @@ arithmetic wraps to 16 bits where the routine writes a word.
 
 | L26 offset | L27 offset | Native role and evidence |
 |---|---|---|
-| +0x04 | +0x00 and +0x07 | L26 signed +4 selects a 12-byte material descriptor at `[0x22D78]`. A negative index selects L27 row `abs(index)`, whose u16 +0 and current frame u8 +7 sum to the descriptor index. Region preset selection and the join are at `0xF6556–0xF65DC`. A wall's own signed material uses the same L27 join at `0x11491E–0x11495C`. The updates write L26 +4 or L27 +7 at `0x676E7` or `0x1109C2`. |
+| +0x04 | +0x00 and +0x07 | L26 signed +4 selects a 12-byte material descriptor at `[0x22D78]`. A negative index selects L27 row `abs(index)`, whose u16 +0 and current frame u8 +7 sum to the descriptor index. Region preset selection and the join are at `0xF6556–0xF65DC`. A wall's own signed material uses the same L27 join at `0x11491E–0x11495C`. The updates write L26 +4 at `0x676E7` and L27 +7 at `0x1109C2` (low mode 3 also at `0x11099B` and `0x1109B1`). |
 | +0x0C | +0x02 | Countdown word. The high nibble of the mode chooses the source subtracted each frame. Values `0x00/0x20` take 8.8 elapsed time at `[0x22C58]`; `0x10/0x30` take the low word of whole ticks at `[0x22C5A]`. The signed result triggers an advance only below zero (`0x674A1–0x675DF`, `0x110795–0x1108BF`). |
 | +0x0E | +0x04 | Period byte. Modes `0x20/0x30` add `period × 256` or `period × u16([0x223A8])` until the countdown is nonnegative, counting each advance. Modes `0x00/0x10` draw one new delay through `0x12415C` and advance once after expiry (`0x674BC–0x675A9`, `0x1107AF–0x11088C`). |
 | +0x0F | +0x05 | High nibble selects countdown handling above. Low nibble 1 wraps the frame in the current direction, 2 chooses a different random frame within the range, and 3 reverses direction at either end (`0x67645–0x676E7`, `0x11090C–0x1109C2`). L27's frame range is 0 through descriptor byte +8 minus one. For L26 the lower end is current index minus descriptor byte +9 and the upper end is lower end plus byte +8 minus one. |
 | +0x10 | +0x06 | Bit 0 enables the update (`0x67486–0x6748B`, `0x11077A–0x11077F`). Bit 1 selects the advancing direction and changes at the endpoints in low mode 3 (`0x67661–0x676BB`, `0x110938–0x1109B1`). |
 | +0x06, +0x08, +0x0A; +0x11–+0x13; +0x17 | — | Each advance adds signed bytes +0x11/+0x12 to words +8/+0x0A, and signed byte +0x13 × 32 to word +6. The updater clears +0x17 once per enabled row and increments it for advances that apply these changes (`0x675DF`, `0x676EB–0x67745`). The surface setup at `0x67754–0x677B6` passes the words or their low bytes into the render path. |
-| +0x14–+0x16 | — | Setup copies the low two bits of +0x14 to the top two bits of draw word +0x3E (`0x677BC–0x677CE`). The region initializer copies +0x15 to region +0x27 (`0xF3A07–0xF3A17`). Byte +0x16 selects surface-dependent branches such as `0xD3C54–0xD3C66` and indexes a flag table at `0xD3983–0xD3991`. |
+| +0x14–+0x16 | — | Setup ORs the low two bits of +0x14 into the top two bits of draw word +0x3E (`0x677BC–0x677CE`). The region initializer copies +0x15 to region +0x27 (`0xF3A07–0xF3A17`). Byte +0x16 selects surface-dependent branches such as `0xD3C54–0xD3C66` and indexes a flag table at `0xD3983–0xD3991`. |
 
 **CONFIRMED.** The original corpus contains 428 L26 and 36 L27 source
 rows by the header fields above, with 95 and 19 enabled respectively.
-All 100 nonempty L26 saves and 54 nonempty L27 saves in the 27-slot
-reference set have decoded lengths matching their level assets. Both
+Measured on the 27 reference slots (player saves written by the original
+game during play, not shipped), all 100 nonempty L26 saves and 54
+nonempty L27 saves have decoded lengths matching their level assets. Both
 sections store compressed XOR deltas (flags 7 at `0xE8D14` and
 `0xE8D37`), with no row pointer fixups. Both adjuster entries at
 `LOLG.DAT+0x120640/+0x120644` jump to the status return `0xE97AC`.
 
-**CONFIRMED.** For the reference slot with SHA-256 prefix `a97f9c4782d4`,
+**CONFIRMED.** For the reference slot with SHA-256 prefix `a97f9c4782d4`
+(a game-written player save),
 L26 at slot `+0x1945E` decodes to 504 bytes and L27 at `+0x194D9`
-decodes to 24. The `L1_DC.IMG` baseline slices at `+0x4AA02` and
+decodes to 24. The `L1_DC.IMG` baseline (written by the game, not shipped; SHA-256
+prefix `1d2165406adc`) slices at `+0x4AA02` and
 `+0x4ABFA` match the original ODF at `L1_DC.MIX+0x70C354` and the
 expanded texture stream at `+0xC67AFB`, byte for byte. Applying the
-deltas gives L26 row 8 material 29 → 33 and countdown 0 → 264.
+deltas gives L26 row 8 material 285 → 289 (signed word +4) and countdown 0 → 264.
 L27 row 1 at expanded `+0xC67B03` changes its countdown 0 → 264 and
 frame 0 → 9. The section offsets and decoded lengths are in level block
 `0x6EA8` at +0xD8 and +0x1E8, indexed by section number.
