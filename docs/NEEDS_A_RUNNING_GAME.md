@@ -259,6 +259,32 @@ the object-5 base.
   +0x9D mask 0x05 clear and 0x0A set, action 1 or action 9 shows the
   remembered bit; a change to another mode needs a trace of that
   actor's mode store.
+- **Nonpositive hit contributions (not run).** Settles the open
+  nonpositive and descriptor-flag cases on the
+  [combat page](lol2-combat-ai.md#hit-context-and-reduction); no
+  numbered question holds them. Setup: an edited copy with the party
+  placed near one creature, by the
+  [position recipe](lol2-save-format.md#editing-a-copy-of-an-original-slot).
+  Watch: `0x62EB9` (the rounding `sar(fixed + 0xFFFF, 16)`) and the
+  descriptor switch at `0x62E6B`. Play: trade blows until a hit
+  arrives with a zero or negative working contribution. Result: log the
+  fixed value before the rounding, the switch arm taken for each flag
+  and the health the receiver sets at `0xA6CC8–0xA6CDF`.
+- **The `0x02AC` mip path (not run).** Settles the live `0x02AC`
+  branch of [Q14](OPEN_QUESTIONS.md). Setup: a game-written slot in
+  L16_CA, in view of a surface that uses descriptor 7320 or 7322 (rows
+  1507 and 1508). Watch: the selector `0x125FC4` and the book output
+  at `0x67052`. Play: stand still facing that surface. Result: the mip
+  pointer entering `0x125FC4` and the branch it takes on the record's
+  `0x20` bit, compared with the
+  [static read](lol2-level-texture-container.md#run-length-columns-and-raw-fallback-mips).
+- **The short-block dword `0xFF00FFFF` (not run).** Settles one
+  residual header field of [Q11](OPEN_QUESTIONS.md). Setup: any
+  game-written slot. Watch: the stack address passed at `0xE83D9` plus
+  0xD4, from before `0xE7F68`. Play: save the game, so that the writer
+  produces a short level block. Result: the instruction that leaves
+  `0xFF00FFFF` at that address is the producer. Details:
+  [short snapshot status](lol2-save-field-witnesses.md#short-snapshot-status).
 
 ## Answered probes
 

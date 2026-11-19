@@ -266,7 +266,7 @@ interaction ([placed-item event lists](lol2-event-producers.md#placed-item-event
 
 **UNCONFIRMED.** The numeric payload table establishes one
 downstream path for all 35 effect IDs. Effects 32 and 33 write back to their target only through one hit
-packet ([below](#effect-3233-contact)).
+packet ([below](#effect-3233-contact)). Follow that packet from contact slot `0x1024B4` into the target's stored health to settle the write-back.
 
 ### Effect 32/33 contact
 

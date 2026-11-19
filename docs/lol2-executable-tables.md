@@ -47,7 +47,7 @@ These locations and table roles are **CONFIRMED** by their consumers.
 | Low script jump table | `0xEC89C` | 24 dwords starting at opcode 1 | `0xB6B8D` |
 | Predicate left/right/operator | `0x9DA50`, `0x9DA70`, `0x9DA90` | Eight code offsets each | `0x66ADE`, `0x66B0D`, `0x66B84` |
 | Item-use handlers | `0x1CD884` | 108 dwords, indices 0–107, object-5 +0xC860 | `0x95865` |
-| Spell schools | `0x1CCB44` | Two bytes per row (first effect ID, candidate effect count (**UNCONFIRMED** per-row use)), object-5 +0xBB20 | `0xD0F4D` |
+| Spell schools | `0x1CCB44` | Two bytes per row (first effect ID, candidate effect count (**UNCONFIRMED** per-row use; `0xD0F4D` reads only byte +0, so a reader of +1 after indexing a school row settles it)), object-5 +0xBB20 | `0xD0F4D` |
 | Spell effects | `0x1CC980` | Four bytes per effect, object-5 +0xB95C | `0x7C1AB`, `0xD1060` |
 | Damage descriptor switch | `0x99704` | Nine code dwords from object-2 +0x96E0 | `0x62E6B` |
 | Global save sections | `0x11F64C` | Twelve dwords, last entry returns without supplying a section | `0xE869B` |

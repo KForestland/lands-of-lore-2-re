@@ -225,7 +225,9 @@ bank `+0x2762E7` and is 7,659 bytes. The 37 pairs from payload
 `(0x40A9, 6)` and is followed by six bytes. All four values of the first
 word's high two bits occur across the banks. UNCONFIRMED: the meaning
 of those bits, the treatment of uncovered pixels and the native reader
-address. The counted spans establish byte framing.
+address. The counted spans establish byte framing. A reader under
+`0x125FC4` that masks the first word with `0xC000` or shifts it right
+by 14 would name the reader and the bits.
 
 ### Vector-coded rows (flag `0x1246`)
 
@@ -319,7 +321,7 @@ the record's `0x20` bit first for `0x02AC`, selecting the
 contiguous-row helper `0x1261E8`. The static read and the file framing
 disagree for this flag if the original bytes are supplied verbatim.
 Both descriptors are in L16_CA, rows 1507 and 1508 (IDs 7320 and 7322).
-These four mips are in its decoded `.TE_` bank.
+These four mips are in its decoded `.TE_` bank. Capture the `0x02AC` mip entering `0x125FC4` and compare it with the book output at `0x67052` to settle the live path.
 
 | Descriptor | Mip 0 (8 × 8) | Mip 1 (4 × 4) |
 |---|---|---|

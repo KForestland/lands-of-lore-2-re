@@ -77,7 +77,7 @@ at `0xE80DC` and fills it at `0xE83DF`.
 |---|---|---|
 | `0x000` | u32 block size | End query and header rewind at `0xE83BB–0xE83DF`. |
 | `0x004` | 26 u32 source bases, then 26 u32 lengths | Map filled at `0xE80D2` via `0xE5C48`. |
-| `0x0D4–0x0D7` | u32 | Address-map adjustment status at map +0xD0 when the pointer helper runs (`0xE827E–0xE8283`, `0xE9719`, `0xEB30D`). The origin of `0xFF00FFFF` in short blocks is **UNCONFIRMED**. |
+| `0x0D4–0x0D7` | u32 | Address-map adjustment status at map +0xD0 when the pointer helper runs (`0xE827E–0xE8283`, `0xE9719`, `0xEB30D`). The origin of `0xFF00FFFF` in short blocks is **UNCONFIRMED**. A watch on the stack address passed at `0xE83D9` plus 0xD4, from before `0xE7F68`, on a short write settles it ([field witnesses](lol2-save-field-witnesses.md)). |
 | `0x0D8` | 68 u32 block-relative section offsets | `0xE8148`, increment and loop guard `0xE837E–0xE8393`. |
 | `0x1E8` | 68 u32 section lengths before compression | `0xE8184`. |
 | `0x2F8` | First section data | Frame starts after the fixed prefix at `0xE80E4`. |

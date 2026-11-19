@@ -42,7 +42,8 @@ this level-state loader. If the bit is clear, the branch skips reading
 that section through this path. Flag `0x4` still selects compressed or
 raw input at `0xE7626–0xE765B` for a section without the XOR flag. This
 bounds the role of flag `0x1` for the traced reader. Other consumers of
-that flag remain **UNCONFIRMED**.
+that flag remain **UNCONFIRMED**. A code search for other tests of bit
+`0x1` of the section flags word read at `0xE742E–0xE7436` settles it.
 
 ## From placement row to item definition
 

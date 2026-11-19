@@ -79,7 +79,9 @@ flag remain **UNCONFIRMED**. The final slot is converted with
 positive fractional loss upward. The creature receiver runs its script
 handler and then sets health from +0x26 at `0xA6CC8–0xA6CDF`.
 The health setter calls the death handler for a zero result unless one
-of its gates applies (`0xA7A9C–0xA7AD4`).
+of its gates applies (`0xA7A9C–0xA7AD4`). Settle the nonpositive cases
+by stepping a zero or negative contribution through `0x62EB9`, and each
+remaining descriptor flag through the switch at `0x62E6B`.
 
 ## Scripted hits and thresholds
 

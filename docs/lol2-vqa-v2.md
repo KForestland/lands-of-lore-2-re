@@ -76,7 +76,9 @@ The tool's `--check --full` walks the commands and checks vector
 indices against the selected codebook. **UNCONFIRMED.** The
 starting destination pixels of transparent draws on each seek and
 the equivalent behavior under other callback selections. Stream
-frames remain outside the tool's RGB export.
+frames remain outside the tool's RGB export. Logging the destination
+buffer at callback `0x17D3D4` on the first frame after a seek settles
+it, as in the [frame-115 test](NEEDS_A_RUNNING_GAME.md#q12-which-history-do-two-exceptional-vqa-frames-read).
 
 The two exceptional `VPTZ` frames use the ordinary pointer-table
 path. The absolute mode of `0x158D58` still permits short relative
