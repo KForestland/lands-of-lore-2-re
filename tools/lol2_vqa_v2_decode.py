@@ -24,7 +24,7 @@ Rules checked against the original movies (see docs/lol2-vqa-v2.md):
 
 Malformed data and unknown chunks raise VQAError.
 
-Requires Python 3.10+ and NumPy. Pillow is needed only for --out.
+Requires Python 3.10+. Frame decoding uses NumPy. Pillow is needed only for --out.
 
     python3 tools/lol2_vqa_v2_decode.py ./lol2_game/DAT/CHUT.MIX
     python3 tools/lol2_vqa_v2_decode.py ./lol2_game/DAT/CHUT.MIX --entry 3 --out frames/
@@ -34,8 +34,6 @@ import os
 import sys
 from pathlib import Path
 from struct import unpack_from
-
-import numpy as np
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import lol2_cli  # noqa: E402
@@ -206,7 +204,7 @@ def cinf_schedule(top) -> dict:
 def _book(raw: bytes, vec: int, where: str):
     if not raw or len(raw) % vec:
         raise VQAError(f'{where}: codebook is {len(raw)} bytes (not whole {vec}-byte vectors)')
-    return np.frombuffer(raw, np.uint8).copy()
+    return raw
 
 
 def validate_pointer_stream(raw: bytes, columns: int, rows: int, vectors: int, where: str):
@@ -261,6 +259,10 @@ def decode(blob: bytes, pixels: bool = False):
     """
     top, f = header(blob)
     _supported(f)
+    try:
+        import numpy as np
+    except ImportError as error:
+        raise VQAError("NumPy is required for VQA frame decoding") from error
     bw, bh = f['block_w'], f['block_h']
     vec = bw * bh
     w, h, per = f['width'], f['height'], f['parts']
@@ -335,7 +337,7 @@ def decode(blob: bytes, pixels: bool = False):
                 raise VQAError(
                     f'VQFR {fi}: vector {int(index[~solid].max())} outside codebook of {nvec}')
             if pixels:
-                table = cb.reshape(nvec, bh, bw)
+                table = np.frombuffer(cb, np.uint8).reshape(nvec, bh, bw)
                 picked = table[np.where(solid, 0, index)]
                 blocks = np.where(solid[:, None, None], lo[:, None, None].astype(np.uint8), picked)
                 rgb = pal[blocks.reshape(gy, gx, bh, bw).transpose(0, 2, 1, 3).reshape(h, w)]

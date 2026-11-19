@@ -38,7 +38,8 @@ def native_hash(text):
 
 
 def item_layout(dat_dir):
-    raw = open(os.path.join(dat_dir, "GLOBAL.MIX"), "rb").read()
+    with open(os.path.join(dat_dir, "GLOBAL.MIX"), "rb") as source:
+        raw = source.read()
     count = struct.unpack_from("<H", raw)[0]
     base = 6 + 12 * count
     for i in range(count):
