@@ -138,8 +138,9 @@ bit 1 (`0xA28C9–0xA28DB`). The flags coexist in
 initial behavior 14). This record proves the original values at load.
 
 **CONFIRMED.** The same placement mask 0x10 also selects actor +0x64
-on mode 3's other item continuation. After the request at `0xA2A6F`,
-the continuation clears actor +0xB5 bit 0x10 and writes +0x64 = 0 with
+on mode 3's waypoint-arrival arm (`0xA2A22`), when actor +0xB5 bit
+0x10 is set (`0xA2A2B`). After the item calls `0x95C24` or `0x95894`,
+the join at `0xA2A8D` clears actor +0xB5 bit 0x10 and writes +0x64 = 0 with
 the placement bit set, or 0xFE if clear (`0xA2A8D–0xA2AB0`). This
 path also selects secondary state 9. Across the actor rows read by
 `0xA2283`, 86 carry mask 0x10, 373 carry mask 0x20, and 57 carry both.

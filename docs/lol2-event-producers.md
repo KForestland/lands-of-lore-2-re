@@ -94,13 +94,13 @@ vertex's shade into its span setup and compare the first byte lookup.
 
 **CONFIRMED.** The parallel `0x131D58` path packs three channel values.
 At `0x132178–0x1321E8` it scales the first sum triplet by the
-view-dependent factor and scales the second by the global factor at
-`0xFD8A8`. It adds channel pairs, arithmetically shifts each sum right
+product of the factor at `0xFD8A8` and the view-dependent factor
+(`0x132178–0x132181`), and the second by `0xFD8A8` alone. It adds channel pairs, arithmetically shifts each sum right
 14 and clamps it to 0–255 (`0x1321EC–0x13227F`). The stores at
 `0x13227F–0x132297` put the first, second and third values in return
 bits 24–31, 16–23 and 8–15. Direct callers at `0x139254`, `0x13A732`
 and `0x13BD50` store the packed dword per vertex before clipping;
-`0x13C845` stores a single result before its draw setup at `0x13C872`.
+`0x13C845` stores a single result before the call at `0x13C872`.
 For the actor-4 witness at `L10_DC.MIX+0xC8296B`, zero contribution
 from that row alone leaves the total from other rows and view terms
 undetermined. Match one original primitive's coordinate and excluded

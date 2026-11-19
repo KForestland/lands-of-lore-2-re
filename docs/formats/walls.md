@@ -131,8 +131,8 @@ stores the three rounded components (`0x1322AD–0x132397`). A component
 of exactly 65,536 is decremented to keep it in range after the
 arithmetic shift right one. The caller stores those half-scale
 components at wall +0x32/+0x34/+0x36 (`0x11475B–0x11478B`).
-These are inputs for the face normal. The clipping and UV paths
-use other fields.
+These are inputs for the face normal; the UV path reads +0x30/+0x31
+instead (below).
 
 **CONFIRMED.** The wall material preparation at `0x11491E–0x11495C`
 uses signed on-disk row +0. A nonnegative value directly indexes a
@@ -140,13 +140,13 @@ uses signed on-disk row +0. A nonnegative value directly indexes a
 8-byte row at `[0x22D54] + 8*abs(value)`, where u16 +0 and u8 +7
 are added to form that index. The routine dispatches through
 `[0xE890]` method +0x28 at `0x11496D`. Its alternate branch uses
-`[0x22CE8]` at `0x1148FA` if wall byte +6 bit 1 and the resource
+`[0x22CE8]` at `0x1148FA` if row byte +6 bit 1 and the resource
 state at `0x1148E2–0x1148F8` admit it. For the four serialized rows
 above these direct material indexes are 181, 495, 495 and 495.
 
 **CONFIRMED.** For a software draw, the UV-offset path at
 `0x12759C–0x1275BA` reads wall bytes +0x30/+0x31 and shifts each
-left 16 before projection at `0x12766A`. The update at
+left 16 before the shared continuation at `0x12766A`. The update at
 `0x114860–0x11486F` can copy row +2/+3/+4 into wall +0x30/+0x31/+0x40
 when the row flags admit it. The horizontal camera helper at
 `0x1338B7` transforms the endpoints using camera cells
