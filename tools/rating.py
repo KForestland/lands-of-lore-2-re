@@ -69,6 +69,8 @@ def label_counts():
         if history(text) or page.name == "HOW_WE_RATE.md":
             continue
         text = re.sub(re.escape(BEGIN) + ".*?" + re.escape(END), "", text, flags=re.S)  # the rating block itself
+        if page.name == "GLOSSARY.md":
+            text = ""  # the glossary only defines the label words; its page still counts
         confirmed = len(re.findall(r"(?<![A-Z])(?:CONFIRMED|PROVEN)\b", text))
         unconfirmed = len(re.findall(r"\b(?:UNCONFIRMED|UNKNOWN)\b", text))
         yield page.relative_to(ROOT), confirmed, unconfirmed

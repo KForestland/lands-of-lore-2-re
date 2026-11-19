@@ -4,6 +4,7 @@ Newest first. One line per question worked on, new tool or visible change; each 
 
 ## 19 November 2026
 
+- **Glossary.** The [glossary](GLOSSARY.md) gives a one-line meaning to each term on the front page, the start page and the cookbook. A word shared with the other two games has the same meaning there. The rating still counts the glossary as a page, but not its label words.
 - **Link check.** `doc_links.py` resolves every relative link and anchor in the README and the docs, and `check_all.py` runs it.
 - **Files read to the last byte.** `lol2_loose.py` walks `AUTOPLAY.WAV` and `SETUP.EXE`, the two `DAT` files that are not MIX archives. The 41,584-byte DOS part of `SETUP.EXE` is counted by its length, not read ([loose files](formats/loose.md)).
 - **Counted rating.** The README and [STATUS](STATUS.md) show four counted lines instead of a percentage; [how we rate](HOW_WE_RATE.md) explains them.
