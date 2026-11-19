@@ -187,7 +187,7 @@ row 2 for that ID (`0x10C6D1–0x10C738`,
 | 14 | Combines player +0x171 = `600<<16` and +0x175 = `3600<<16`, changes +0x227/+0x228, clears +0x1B5 and uses refresh paths `0x7F444` and `0x7C7DC` (`0xD1281–0xD12CD`). |
 | 15 | Constructor `0x107498` sets vtable 0x7278 and places the effect. Update +0x38 is `0x107A84` and can remove it through `0xFBC54` (`0x1074BC–0x10756B`, `0x107A84–0x107AAA`, fixup `LOLG.DAT+0x8268D`). |
 | 16 | Returned object from `0x79310` receives +0x1D2 = `1800<<16`; player updates byte +0x228 (`0xD1971–0xD1998`). |
-| 17 | Vtable 0x7080 effect initializes +0x5E = `1800<<16`, +0x62 and +0x58 to zero, and tries placement. Update +0x38 goes to `0x1082C4` (`0x10810E–0x1081AE`, fixup `LOLG.DAT+0x822FD`). |
+| 17 | Vtable 0x7080 effect initializes +0x5E = `1800<<16`, +0x62 and +0x58 to zero, and tries placement. The update, contact handler and incoming-hit handler change the effect's stage and clear creature links on expiration of its contact counter. See [effect 17 callbacks](#effect-17-callbacks). |
 | 18 | Vtable 0x717C update dispatches mask/flags 0x40/1, kind 2, ID 18 and magnitude 1 to the live +0x5E target (`0x107C6A`, `0x107FCB–0x108026`, fixup `LOLG.DAT+0x824C4`). |
 | 19 | Clears player +0x217 and changes +0x19E after the `0x7C5DC` and `0x7C528` feedback calls (`0xD1A6E–0xD1AAE`). |
 | 20 | Constructor `0x104850` submits magnitude inputs 10/20 (`0x10495A/0x104985`). |
@@ -202,7 +202,7 @@ row 2 for that ID (`0x10C6D1–0x10C738`,
 | 29 | Template 0x66 constructor `0xF9E88` installs vtable 0xA4D8 and starts +0x58 at 1. Update `0xFA148` can reset +0x56 and call the effect removal and follow-up helpers `0xFBC54` and `0xFBAF0` (`0xF9EB8–0xF9F1F`, `0xFA1C9–0xFA1E4`, fixup `LOLG.DAT+0x8A7A9`). |
 | 30 | Primary hit mask/flags 0x10/5, kind 2, ID 30 and magnitude 5. See the primary and nearby-target arms above (`0x109B42–0x109B9D`). |
 | 31 | Its vtable-0x6574 object can create one effect-30 object immediately and another at +0x56 = 3 (`0x109CC4–0x109CDC`, `0x109CFD–0x109D09`, `0x109E8B–0x109EA4`). |
-| 32, 33 | Share the vtable-0x8734 projectile. Collision at `0x102718` tests byte +0x6A, conditionally clears it and calls `0xFB9A0`. The other path temporarily changes the animation byte +0x58 around that call (`0x10271D–0x10274F`, fixup `LOLG.DAT+0x8578A`). |
+| 32, 33 | Share the vtable-0x8734 projectile. At `0x102718`, nonzero byte +0x6A is cleared and returns 1 immediately. An initially zero byte reaches `0xFB9A0`. If animation byte +0x58 is 4 after that call, the routine sets it to 5 for a second call and decrements it afterwards. The helper updates +0x57 from its returned animation record (`0x10271D–0x102757`, `0xFBA2F–0xFBA43`, fixup `LOLG.DAT+0x8578A`). |
 | 34 | Vtable-0x8344 update submits kind-2 ID-34 hits with mask/flags 0x10/2 and 0x100/4. With effect byte +0x5E nonzero the amounts are 20/20, otherwise 50/30 (`0x102EDC`, `0x103753–0x103820`, fixup `LOLG.DAT+0x84C7E`). |
 
 The two controller helpers in 26 and 27 set up distinct controller
@@ -212,6 +212,25 @@ initial value `6<<16` (`0x7FF4C–0x7FF8E`).
 path similarly writes +0x3B4 and +0x2E4, initially `4<<16`
 (`0x7FE24–0x7FE61`). The game-facing names of those
 controller channels are **UNCONFIRMED**.
+
+### Effect 17 callbacks
+
+**CONFIRMED.** The constructor at `0x1080F0` installs vtable `0x7080`
+at `0x10810E`. At `0x108119–0x10812F` it sets stage byte +0x63 and
+flag byte +0x62 to zero and starts the +0x5E timer at `1800<<16`.
+Bytes +0x64 and +0x65 start at `0x38` and `0x50`
+(`0x10824D`, `0x108251`). The vtable starts at `LOLG.DAT+0x1C80A4`.
+
+| Vtable slot | Native behavior |
+|---|---|
+| +0x30, `0x108418` (fixup `LOLG.DAT+0x822EB`) | If +0x62 is set, return 0 immediately. In stages 2 and 4, decrement +0x64 and +0x65. If the resulting unsigned +0x64 is below 10, scan active entries of the creature pool `[0x9696C]` and clear a creature's +0x38 when it points at this effect and the creature's +0x15 bit 0x10 is clear. Then set effect +0x62 to 1, set timer +0x5E to `900<<16`, and return 0 (`0x108420–0x1084EE`). Other accepted paths call `0xFBA48`, set animation row bytes +0xE/+0xF to `0x38/0x50`, and return 1 (`0x108437–0x10844E`, `0x1084EF–0x10851A`). |
+| +0x38, `0x1082C4` (fixup `LOLG.DAT+0x822FD`) | Subtract `[0x22C54]` from timer +0x5E. When it is at or below `60<<16` and stage is neither 2 nor 4, try a template-0x5E follow-up and set stage 2. A stage-3 value that reaches the later test similarly tries the follow-up and sets stage 4. With timer at or below zero and +0x62 set, call vtable +0xF0 with argument 2 (`0x1082CE–0x108366`). |
+| +0x80, `0x1083E0` (fixup `LOLG.DAT+0x8239F`) | Inspect the hit context's attacker pointer at +8. A nonnull attacker whose vtable +0 returns type 2 sets stage 3, provided the stage was neither 2 nor 4 (`0x1083E0–0x108416`). The creature type callback returns 2 at `0xA6ACC` (vtable `LOLG.DAT+0x1C68F4`, fixup `+0x7F03C`). |
+
+**UNCONFIRMED.** What the contact looks like during play and which
+encounter supplies it. Watch the effect's +0x62/+0x63 and a linked
+creature's +0x38 at `0x108418` and `0x1083E0`. Compare a contact with
+no incoming hit to a creature hit before the timer crosses `60<<16`.
 
 ### Original level inputs to lesson items
 
@@ -242,11 +261,10 @@ object or region event in the exported tables. Their call route
 is **UNCONFIRMED**.
 
 **UNCONFIRMED.** The numeric payload table establishes one
-downstream path for all 35 effect IDs. The effect-15 receiver,
-effect-17 collision and remaining effect-32/33 target writebacks
-need deeper traces. At `0x107B77–0x107B9E`, `0x108418`
-and `0x102718`, compare the dynamic target and request words
-for one original cast of each ID. For the timed message 0x26,
+downstream path for all 35 effect IDs. The effect-15 receiver and
+remaining effect-32/33 target writebacks need deeper traces. Compare
+the live target and request at `0x107BF7` and follow the projectile
+after `0x102718`. For the timed message 0x26,
 the direct +0x185 store scan found player initialization at
 `0xCFB8B` and the expiration zero-store at `0xD2E57`.
 An original playthrough trace filtered to its first nonzero
