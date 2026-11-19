@@ -256,9 +256,9 @@ The state-test witnesses for predicates 206 and 207 in L7 are
 `L7_DH.MIX+0x4C239C/0x4C23A1`, whose entries compare the
 bound object's state with 0 and 1, respectively. The level with
 the L8 grants uses predicate 207 at `L8_SJ.MIX+0xD11284`.
-Some stream-1 groups, including L1 group 13584, had no incoming
-object or region event in the exported tables. Their call route
-is **UNCONFIRMED**.
+L1 group 13584 has no incoming object or region event in the four
+exported tables; it is entered through placed item 2's empty-hand
+interaction ([placed-item event lists](lol2-event-producers.md#placed-item-event-lists)).
 
 **UNCONFIRMED.** The numeric payload table establishes one
 downstream path for all 35 effect IDs. The effect-15 receiver and
@@ -269,8 +269,6 @@ the direct +0x185 store scan found player initialization at
 `0xCFB8B` and the expiration zero-store at `0xD2E57`.
 An original playthrough trace filtered to its first nonzero
 write would identify the producer and its quest or item input.
-For an unlinked grant such as L1 group 13584, capture the
-original return address when its stream-1 group is entered.
 
 ### Timed-message runtime control
 

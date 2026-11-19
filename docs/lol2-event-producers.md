@@ -68,8 +68,9 @@ The row flag `0x40` sends the contribution to the second sum at
 by the view distance calculation at `0x131C8B–0x131D12`. The function
 adds the scaled sums and clamps to 0 through `0x3F0000`
 (`0x131D16–0x131D4D`). In the L10_DC witness above the inner distance is
-64 and the fade width is 1024. The zero starting magnitude prevents a
-contribution on the first evaluation. **UNCONFIRMED.** Colour channel and
+64 and the fade width is 1024. With flags 0x0041 and starting
+magnitude +0xA zero, the value helper returns 0, so this row adds
+nothing while +0xA stays 0. **UNCONFIRMED.** Colour channel and
 surface selection for this particular object. Trace the values returned
 by `0x1319B4` and the three-channel routine `0x131D58` into the final shade-table index for it.
 
@@ -89,7 +90,7 @@ It can be shared with other producers of the same event number.
 | Object kind 5 | 6, values 0, 1, 2 or 4 | `0xD4B39` uses angular difference above `0x4000`, `0xD4AD1` and `0xD4AF4` use distance thresholds, and `0xD0C22` supplies 2. |
 | Object kind 5 | 13, 14, 15 | At `0xD0889`, `0xD0847`, `0xD0868` respectively. Player byte +0x1AB chooses 14 for zero, 15 for one, 13 for two (`0xD0895–0xD08AB`). These call sites pass value 0xFF. |
 | Object kind 5 | 16 and 20, value 0xFF | `0xD08C5` issues 16 on the object held in context +8 of that code path. `0xB435F` issues 20 in the hit path. |
-| Object kind 6 | 0, 1 | Callback `0x9EBFC` sends event 0 at `0x9EC31` when resource update `0x113BF0` returns 5, or event 1 at `0x9EC60` when it returns 4. The update can return 5 or 4 with resource +0x30 equal to zero or nonzero respectively at `0x113CA8–0x113CB6`. Original rows `L10_DC.MIX+0xC802BF` and `+0xC804FD`. |
+| Object kind 6 | 0, 1 | Callback `0x9EBFC` sends event 0 at `0x9EC31` when resource update `0x113BF0` returns 5, or event 1 at `0x9EC60` when it returns 4. The update can return 5 or 4 with resource +0x30 equal to zero or nonzero respectively at `0x113CA8–0x113CB6`. Example rows (kind 6 with +4 = 0 and 1; 715 and 18 such rows exist) are `L10_DC.MIX+0xC802BF` and `+0xC804FD`. |
 | Object kind 6 | 19 | `0xB2B97` sends after accumulating and clearing nonzero +0x1A when countdown +0x23 is clear. `0xB2C84` sends when `0x68124` returns nonzero with +0x1A zero. `0xB2CFA` sends after the other countdown path reaches zero with +0x1A zero. The four-table event scan found no +4=19 rows. |
 | Object kind 6 | 6, 8, 10, 18, 20, 22 | Opcode-18 reset (`0xB5A0E`), actor nonpositive-path arm (`0xA29FA`), actor terminal branch (death interpretation **UNCONFIRMED**) (`0xA77A1–0xA77EB`), kind-1 live byte reaching zero (`0x9F6CD`), opcode 9 property 21 (`0xB5458`), and creature behavior branch (`0xA3CFA–0xA3D0E`), respectively. |
 | Object kind 6 | 9 with additional byte +5 | Calls at `0xAECEB` and `0xAEEFF` reach `0xADF34`, which checks kind 6, +4 = 9 and the value at +5, with a special wildcard case at `0xADF6B–0xADF7C`. |
@@ -141,6 +142,7 @@ definitions through opcode 3. The placed item vtable +0x64 points to
 **UNCONFIRMED.** Which pointer or input gesture picks the L1_DC item
 in a running game. To settle that, stop at `0x95218` with item 2 as the
 receiver, record the call into vtable +0x64 and confirm stream-1 group
-`0x3510` at `0x646EC`. For the remaining groups without a serialized
-reference, check script command arguments and virtual callers of the
-runner separately. The 57 additional joins come from a named file table.
+`0x3510` at `0x646EC`. After the 57 placed-item joins, a review count over
+both streams, the four event tables, the region lists and the placed
+items finds no group without a serialized reference. The 57 joins come
+from the placed-item table at level header +0x20/+0x6C.
