@@ -374,7 +374,7 @@ CHECK repo_guard: N tracked files; game files, media, stray images, files over 3
 
 ### Added 2026-10
 - `lol2_sound_bank.py` — list or extract the named AUD sound bank in `LOCALLNG.MIX` (1008 clips)
-- `lol2_media_check.py` — one `CHECK` line for the movie scene ids, one sound-bank row, the music stem hashes and the 46 room-archive code entries. Writes nothing. `--data` is the DAT folder. Pages: `docs/lol2-movie-scenes.md`, `docs/lol2-sound-cues.md`, `docs/lol2-music-selection.md`, `docs/lol2-room-archives.md`.
+- `lol2_media_check.py` — one `CHECK` line for the movie scene ids, a sound-bank row, the music stem hashes and 47 room modules, among other media checks. Writes nothing. `--data` is the DAT folder. Pages: `docs/lol2-movie-scenes.md`, `docs/lol2-sound-cues.md`, `docs/lol2-music-selection.md`, `docs/lol2-room-archives.md`.
 - `lol2_texture_container.py` — level `.TE_` containers (LZO1X). Decodes the ten raw flags, including `0x80A9`. Its standalone `--check --data DAT` verifies 38,361 descriptors.
 - `lol2_source_format.py` + `lol2_export_scripts.py` — export a level's header tables and command streams to JSON (stdlib only)
 - `lol2_level_map.py` — top-down schematic map of a level from its region table (no game pixels)
