@@ -148,7 +148,7 @@ def check(data_dir):
     if (shapes, len(names), deltas, books) != (37, 21, 640, 15):
         raise ValueError("mode-byte writer corpus changed")
     print(f"CHECK Westwood write: {shapes} options shapes, {deltas} WSA deltas in {len(names)} panels, "
-          f"{books} global texture streams; decoded bytes identical, compressed bytes not")
+          f"{books} global texture streams; decoded bytes identical; compressed bytes generally differ (see the round-trip page)")
 
 
 def main():
