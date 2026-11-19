@@ -212,6 +212,12 @@ def page(rows, names, writes):
         "",
         "Locked doors are not on this page. It lists level-transition commands only.",
         "",
+        "**CONFIRMED.** Every matcher an exit row uses runs all matching records in list order, not only the first: "
+        "the region walker `0xF2D2C` and the kind 5, 6 and 8 matchers `0xAD8E0`, `0xADDE0` and `0xAE510` "
+        "advance to the next record after each run (back edges `0xF2FAD`, `0xAD9EF`, `0xADF26`, `0xAE5FA`). "
+        "Each guard is checked after earlier matching groups in the same walk have run, and when two exits fire "
+        "the later one wins, because the exit arm only stores the pending level (`0xD87AE`, `mov [0x223C8],eax`).",
+        "",
         "## What a row does not show",
         "",
         f"**UNCONFIRMED.** {len(objects)} rows hang on an object record, not on a region record. "
