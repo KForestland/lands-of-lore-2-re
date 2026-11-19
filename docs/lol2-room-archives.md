@@ -4,7 +4,7 @@ The executable names 46 MIX archives from a table of short names. `TEXT` and `TC
 
 Each of the 46 archives has one entry that begins with the banner `This is a linear executable dll`. That entry is a header plus executable bytes. `TEXT` and `TCEL` are the worked example of the name table and of that entry.
 
-`tools/lol2_media_check.py --check` re-reads the 46 names, the one code entry in each archive, and the `TEXT` and `TCEL` directories. It writes nothing.
+`tools/lol2_media_check.py --check` re-reads the 46 names, the one code entry in each archive, the Arena module, the 47-module / 8,469-relocation census, and the `TEXT` and `TCEL` directories. It writes nothing.
 
 ## The 46 names
 
@@ -42,7 +42,7 @@ The same cut-and-append names the other 44 archives. `DAT/TDOOR.MIX` is a MIX of
 **CONFIRMED.** `DAT/ARENA.MIX` has two entries. Directory entry 1
 at file +0x12 carries key `0x0CBF521D`, the hash of
 `WOMS\ARENA_.WOM`. It points to `+0x1E`, length `0x5E8`, and has
-the same executable-module prefix as the table-bound room modules.
+the same banner and version as the table-bound room modules (its dispatch offset is `0x2C`, not `0x34`).
 Entry 0 at `+0x606` is a 13-byte marker. The executable room-name table
 at `LOLG.DAT+0x1CFA90` has no `arena_` row.
 
@@ -54,13 +54,13 @@ builder `0xED470` use its indexed path (`0xED5B5`, `0xED72A`,
 `0xEDB62–0xEDB89`. This path cannot supply `arena.mix` through a
 matching room-table row.
 
-The code object has 28 direct calls to archive constructor
+**CONFIRMED.** The code object has 28 direct calls to archive constructor
 `0x11C654`. The 15 calls in `0x95E07–0x9A63C` build the
 `SPKSTON%d.MIX` name (`LOLG.DAT+0x1C1BD4`). The two dynamic
 movie-path calls at `0x9BFAC` and `0x9C02B` use a stem from
 `[0xCA20 + 8*i]`; the suffixes at `LOLG.DAT+0x1C1BFE` and
 `+0x1C1C03` are `.MIX` and `I.MIX` (`0x9BE06–0x9BE40`,
-`0x9BFDC–0x9C02B`). The remaining calls use the following names. File offsets in the
+`0x9BFDC–0x9C02B`). The remaining 11 calls (10 rows) use the following names. File offsets in the
 right column refer to the original executable.
 
 | Constructor call | Name source | File offset |
@@ -81,12 +81,12 @@ stem `arenaapr` at `+0x1C3D1A`. Room-related external literals
 survive in `SHAMAN.MIX+0x248B`, `SETTLE1.MIX+0x73C` and
 `L8_SJ.MIX+0xD10AD9`. The host passes its callback table at data
 `0xE92C` from `0xEDCC3` and invokes the loaded module with
-selector 0 at `0xEF881`. The Arena module copies the first 53
-entries, starting at module +0x125 (file `ARENA.MIX+0x143`).
+selector 0 at `0xEF881` (**CONFIRMED**). The Arena module copies the first 53
+entries, starting at member +0x125 (file `ARENA.MIX+0x143`).
 The first external call at file `ARENA.MIX+0x377` takes table
 offset +0x18, which resolves to `0xEF028` via file
-`LOLG.DAT+0x1CF968`. The module's direct absolute-indirect
-instruction sites select host offsets `0x18`, `0x1C`,
+`LOLG.DAT+0x1CF968`. The seven absolute-indirect call sites in the
+module use host offsets `0x18`, `0x1C`,
 `0x54`, `0x6C` and `0x88`.
 
 **UNCONFIRMED.** Whether the retail game opens `ARENA.MIX` by a
@@ -98,7 +98,7 @@ The archive's presence alone leaves it open.
 
 ## The code entry
 
-CONFIRMED for the banner, the two shared dwords and the four prologue bytes. This pass opened every archive the table names. Each file is `DAT/<name>.MIX` after the trailing `_` is cut off. Each of the 46 archives has exactly one entry whose first 32 bytes are the banner: the 31 characters `This is a linear executable dll` and a newline. After the banner, three little-endian dwords: `0x101`, a middle dword that differs from archive to archive, and `0x34`. At offset `0x64` the bytes are `53 56 57 55`, which is `push ebx` / `push esi` / `push edi` / `push ebp`. That entry is not always member 0.
+CONFIRMED for the banner, the header fields, the reader and relocation pass below, and the four prologue bytes. This pass opened every archive the table names. Each file is `DAT/<name>.MIX` after the trailing `_` is cut off. Each of the 46 archives has exactly one entry whose first 32 bytes are the banner: the 31 characters `This is a linear executable dll` and a newline. After the banner come the version `0x101`, the body length, the dispatch offset (`0x34` in these 46) and the relocation count. At offset `0x64` the bytes are `53 56 57 55`, which is `push ebx` / `push esi` / `push edi` / `push ebp`. That entry is not always member 0.
 
 The native reader checks the version at `0xDF7E2–0xDF7FA`. It
 then reads three dwords, the body length (+0x24), dispatch offset

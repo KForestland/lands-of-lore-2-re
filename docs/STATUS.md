@@ -12,7 +12,7 @@ Run the checks: `python3 tools/check_all.py` (with `$LOL2_DAT` set) (22 checks; 
 
 <!-- rating:begin -->
 - **Files read:** 81 of 83 files in `DAT` (1,915.3 of 1,915.6 MiB) are accounted for to the last byte by a reader here.
-- **Rules traced:** 607 statements labelled CONFIRMED against the program or the files, 182 labelled UNCONFIRMED, on 110 current pages.
+- **Rules traced:** 609 statements labelled CONFIRMED against the program or the files, 181 labelled UNCONFIRMED, on 110 current pages.
 - **Seen in the running game:** 2 of 7 probes that need the original game running are answered.
 - **Open questions:** 20: 3 answered, 15 mostly, 2 partly.
 <!-- rating:end -->
