@@ -557,10 +557,14 @@ def check(folder, full=False) -> int:
               f'(partial codebook {w_layouts.get("partial codebook", 0)}, 4x2 {w_layouts.get("4x2", 0)}, '
               f'parts 0 {w_layouts.get("parts 0", 0)}); pointer-stream {w_streams}; '
               f'relative-reference frames: {named}; bad={bad[:3] or "none"}')
+        expected_relative_references = {
+            'L20_BBI.MIX#25: VQFR 115 VPTZ: LCW: relative reference 0 outside output at 23849',
+            'SPKSTON2.MIX#4: VQFR 492 VPTZ: LCW: relative reference 674 outside output at 549',
+        }
         ok = (ok and not bad and w_total == 1948 and w_streams == 837
               and sum(w_layouts.values()) == 1109 and w_layouts.get('partial codebook') == 974
               and w_layouts.get('4x2') == 5 and w_layouts.get('parts 0') == 130
-              and len(open_rel) == 2 and all('relative reference' in b for b in open_rel))
+              and len(open_rel) == 2 and set(open_rel) == expected_relative_references)
         return 0 if ok else 1
     print(f'CHECK vqa: {total} WVQA; pointer-table headers {sum(layouts.values())} ({four}; '
           f'of parts 0, {staged} stage CBPZ and {single} have a single CBFZ); '

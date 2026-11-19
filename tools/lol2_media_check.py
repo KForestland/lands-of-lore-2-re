@@ -187,8 +187,37 @@ def check_global_texture_books(image, local, entries):
         raise ValueError("global texture book count")
 
 
+def check_vqa_buffer_callbacks(image):
+    """Check the DOS movie allocator and memory-lock callback arms."""
+    code_bias = 0x37000
+    code_base = 0x59024
+    for word, slot in ((0xCA6F0, 0xCA713), (0xCF489, 0xCF4A4),
+                       (0x1127E9, 0x1127E3), (0x113905, 0x113928)):
+        if u32(image, word + code_bias) + code_base != 0x113550:
+            raise ValueError(f"movie memory callback at 0x{slot:X}")
+    for callback, table, arm in ((0x113550, 0x113538, 0x113588),
+                                 (0x16D7D8, 0x16D7C0, 0x16D814)):
+        if u32(image, table + code_bias + 3 * 4) + code_base != arm:
+            raise ValueError(f"movie callback 0x{callback:X} operation 4")
+    for address, sequence in (
+        (0x15DE76, "c74204b4471100"),  # default memory callback
+        (0x16CD89, "8b966207000052506a0456ff5504"),
+        (0x11356B, "6a008d422050e86ac60300"),  # allocate with flags zero
+        (0x14FD66, "f6450c02740c576a0053e82ffbffff"),
+        (0x113588, "803dd523020000740d8d42205053e865c50300"),
+        (0x16D814, "525689f3e8e322feff"),
+        (0x14FB22, "c745d800060000"),  # DPMI function AX=0x0600
+        (0x14FB60, "6a31e85a1d0100"),
+    ):
+        expected = bytes.fromhex(sequence)
+        start = address + code_bias
+        if image[start:start + len(expected)] != expected:
+            raise ValueError(f"movie buffer callback instruction at 0x{address:X}")
+
+
 def check(dat_dir):
     image, names = scene_names(dat_dir)
+    check_vqa_buffer_callbacks(image)
     formats = image[OBJ5 + 0x2C84:OBJ5 + 0x2CC0]
     if formats[:3] != b"ss-" or b"%s.vqa" not in formats or b"outtakes\\%s" not in formats:
         raise ValueError("movie format strings moved")

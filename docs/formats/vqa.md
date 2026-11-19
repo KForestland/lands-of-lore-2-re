@@ -86,11 +86,26 @@ distance is `((command & 0x0F) << 8) | next_byte` at `0x158D94–0x158DB0`.
 
 **CONFIRMED.** The pointer decode at `0x17280D–0x172826` chooses
 node +0's allocation or the shared pointer buffer `[context+0x6E6]`
-(when `[context+0x152]` bit 2 is set), and `0x172828–0x172838` calls
+(when `[context+0x152] & 0x02` is set), and `0x172828–0x172838` calls
 `0x158D58`. Initialization allocates the shared buffer through the
 context callback (op 2) and passes it to op 4 with length +0x762 at
-`0x16CD31–0x16CD94`; that op 4 clears it is **UNCONFIRMED**. The decode call itself does no clear. In the
-shared case, frame 115 copies at distance 0, so it reads three bytes
+`0x16CD31–0x16CD94`.
+
+**CONFIRMED.** The movie openers at `0xCA798`, `0xCF5B5`, `0x112B68`
+and `0x113A1B` install the same memory callback at `0x113550` through
+the settings copy at `0x15DE49–0x15DE76`. Its op-2 arm at `0x11356B`
+passes allocation flags zero to `0x14FBE0`. The allocator fills the
+payload with zero only if those flags have mask `0x02` (`0x14FD66–0x14FD70`).
+Op 4 selects `0x113588` (the fourth dword of the table at file
+`LOLG.DAT+0x14A538`). This arm either returns the passed pointer or
+calls `0x14FB00` when `[0x223D5]` is nonzero. The built-in fallback
+installed at `0x15DE76` has an op-4 arm at `0x16D814` that also calls
+`0x14FB00`. That helper passes DPMI function `0x0600`, with the pointer
+and length, to interrupt `0x31` (`0x14FB22–0x14FB62`). It locks the
+memory range. The callback and decode call leave its existing bytes in place.
+`lol2_media_check.py --check` re-reads the callback slots and call sites.
+
+In the shared case, frame 115 copies at distance 0, so it reads three bytes
 that were already in the buffer at those positions. In the node case it
 reads the contents left there when that node was last written or
 reused. Frame 492 reads five bytes at offsets −110 through −106 from the
