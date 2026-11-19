@@ -23,8 +23,8 @@ package is needed. Reads only the user's own game files.
 
 Usage:
   lol2_texture_container.py info     --mix DAT/L1_DC.MIX
-  lol2_texture_container.py material --mix DAT/L1_DC.MIX --index 0
-  lol2_texture_container.py export   --mix DAT/L1_DC.MIX --index 0 --out DIR
+  lol2_texture_container.py material --mix DAT/L1_DC.MIX --index 1
+  lol2_texture_container.py export   --mix DAT/L1_DC.MIX --index 1 --out DIR
   lol2_texture_container.py blob     --mix DAT/L1_DC.MIX --out l1_dc.bin
   lol2_texture_container.py --check --data DAT
 """

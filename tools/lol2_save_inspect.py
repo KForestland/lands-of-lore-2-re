@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Inspect an original DOS 1.30 save slot. Prints to standard output."""
+"""Inspect a player save written by the original DOS 1.30 game. Prints to stdout."""
 import argparse
 from ctypes import byref, c_size_t, create_string_buffer
 from functools import lru_cache
@@ -42,7 +42,8 @@ ITEM_FIELDS = (12, {0: ("I", "definition pointer"), 4: ("B", "instance input"),
                     5: ("B", "instance byte +5"), 8: ("I", "second adjusted pointer")})
 LIST_FIELDS = (12, {0: ("I", "list pointer"), 4: ("I", "capacity"), 8: ("I", "active count")})
 GLOBAL_FIELDS = {
-    0: (0x22E, {0x162: ("B", "spell skill input"), 0x185: ("i", "timed spell lesson countdown"),
+    0: (0x22E, {0x145: ("I", "mana"), 0x162: ("B", "spell skill input"),
+                0x185: ("i", "countdown (first nonzero writer UNCONFIRMED)"),
                 0x19A: ("B", "first spell discount flags"), 0x19B: ("B", "second spell discount flags"),
                 0x1AB: ("B", "player form")}),
     1: (1, {0: ("B", "shared byte")}), 2: ITEM_FIELDS,
@@ -53,13 +54,13 @@ GLOBAL_FIELDS = {
     10: (0x30, {4: ("I", "level clock"), 0x14: ("I", "accumulated sample"), 0x21: ("B", "frame index")}),
 }
 LEVEL_FIELDS = {
-    11: (8, {0: ("i", "X (16.16)"), 4: ("i", "Z (16.16)")}),
+    11: (8, {0: ("i", "X (16.16)"), 4: ("i", "Y (16.16)")}),
     12: (44, {0: ("I", "adjusted pointer"), **{4 + 2*i: ("H", f"neighbour {i}") for i in range(4)},
               **{12 + 2*i: ("H", f"vertex {i}") for i in range(4)}, 0x14: ("h", "floor height"),
               0x16: ("h", "ceiling height"), 0x1A: ("H", "wall run selector"), 0x1C: ("H", "region flags")}),
     14: (8, {0: ("h", "material selector"), 5: ("B", "wall flags byte +5"), 6: ("B", "wall flags byte +6")}),
     19: (0x40, {0x26: ("H", "durability"), 0x36: ("H", "event-data offset")}),
-    21: (0xBC, {0x88: ("H", "health"), 0xA8: ("B", "behaviour"), 0xA9: ("B", "previous behaviour")}),
+    21: (0xBC, {0x88: ("H", "health"), 0xA8: ("B", "state byte"), 0xA9: ("B", "state mirror")}),
     22: (0x58, {0x48: ("I", "position field"), 0x55: ("B", "state"), 0x36: ("H", "event-data offset")}),
     24: (1, {0: ("B", "local script byte")}),
     25: (0x3C, {0xC: ("I", "adjusted region link"), 0x10: ("I", "next world-list link"),
@@ -75,7 +76,7 @@ LEVEL_FIELDS = {
              6: ("B", "update and direction flags"), 7: ("B", "current frame")}),
     28: (4, {0: ("I", "first list head pointer")}), 29: (4, {0: ("I", "second list head pointer")}),
     31: ITEM_FIELDS, 32: (1, {0: ("B", "item occupancy mask")}),
-    33: (4, {0: ("I", "creature pointer")}), 34: (4, {0: ("I", "waypoint pointer")}),
+    33: (4, {0: ("I", "creature pointer")}), 34: (4, {0: ("I", "row pointer")}),
     35: (8, {0: ("I", "group head pointer"), 4: ("B", "member count"), 7: ("B", "group index")}),
     **{section: (4, {0: ("I", label)}) for section, label in enumerate((
         "effect-8 step limit", "effect-8 step counter", "effect-8 object +0x56 copy", "effect-8 target pointer",
@@ -294,7 +295,7 @@ def verify_slot(data):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("slot", type=Path, nargs="?", help="original save slot file")
+    parser.add_argument("slot", type=Path, nargs="?", help="player save slot written by the game")
     parser.add_argument("--data", type=Path, default=os.environ.get("LOL2_DAT"), help="original DAT folder")
     parser.add_argument("--check", action="store_true", help="check one slot, or the native code and sibling SAVEGAME folder")
     parser.add_argument("--level", type=int, choices=range(1, 21), metavar="1–20")
@@ -320,7 +321,7 @@ def main():
                 paths = sorted(path for path in (root / "SAVEGAME").glob("$*")
                                if path.is_file() and re.fullmatch(r"\.(?:\d{3}|XXX)", path.suffix.upper()))
             count = sum(verify_slot(path.read_bytes()) for path in paths)
-            print(f"CHECK save inspector: {len(paths)} original slots and {count} level blocks"
+            print(f"CHECK save inspector: {len(paths)} game-written player saves and {count} level blocks"
                   if paths else "CHECK save inspector: native save witnesses checked; no save slots supplied")
         else:
             baseline = args.baseline.read_bytes() if args.baseline else None

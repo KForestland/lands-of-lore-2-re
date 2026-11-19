@@ -37,7 +37,7 @@ def native_hash(text):
     return value
 
 
-def item_definitions(dat_dir):
+def item_layout(dat_dir):
     raw = open(os.path.join(dat_dir, "GLOBAL.MIX"), "rb").read()
     count = struct.unpack_from("<H", raw)[0]
     base = 6 + 12 * count
@@ -46,8 +46,14 @@ def item_definitions(dat_dir):
         if key == ITEMS_KEY:
             entry = raw[base + offset:base + offset + size]
             table, rows = struct.unpack_from("<I", entry, 4)[0], struct.unpack_from("<I", entry, 0x34)[0]
-            return [entry[table + STRIDE * r:table + STRIDE * (r + 1)] for r in range(rows)]
+            if table + STRIDE * rows > len(entry):
+                raise ValueError("item definitions overrun their MIX entry")
+            return base + offset + table, [entry[table + STRIDE * r:table + STRIDE * (r + 1)] for r in range(rows)]
     raise ValueError("item table entry not found in GLOBAL.MIX")
+
+
+def item_definitions(dat_dir):
+    return item_layout(dat_dir)[1]
 
 
 def join(dat_dir):

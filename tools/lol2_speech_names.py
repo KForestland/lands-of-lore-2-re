@@ -117,6 +117,12 @@ def check_cue_table(dat_dir, image):
     if image[0x1192 + DATA_BIAS:0x1192 + DATA_BIAS + len(name)] != name:
         raise ValueError("cue table name at data 0x1192")
 
+    _, _, _, cues = cue_footer(dat_dir)
+    if {index: cues[index] for index in CUE_WITNESSES} != CUE_WITNESSES:
+        raise ValueError("category cue words")
+
+
+def cue_footer(dat_dir):
     bank, entries, base = read_mix_with_hashes(parent_file(dat_dir, "LOCALLNG.MIX"))
     key = ww_hash_v1("global\\sounds.efx")
     [(offset, length)] = [(offset, size) for number, offset, size in entries if number == key]
@@ -128,8 +134,7 @@ def check_cue_table(dat_dir, image):
     cues = struct.unpack_from("<404H", bank, footer)
     if max(cues) >= count or len(set(cues)) != 361:
         raise ValueError("cue index outside the sound bank or changed cue census")
-    if {index: cues[index] for index in CUE_WITNESSES} != CUE_WITNESSES:
-        raise ValueError("category cue words")
+    return bank, start + directory, footer, cues
 
 
 def check(dat_dir):

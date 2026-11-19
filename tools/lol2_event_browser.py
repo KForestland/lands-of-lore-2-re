@@ -9,10 +9,11 @@ Use --start and --limit to page through a level. Offsets identify the original
 records. Command meanings come from the documented native opcode paths.
 """
 from collections import Counter, defaultdict
+import argparse
+import os
 from pathlib import Path
 from struct import error as StructError
 
-import lol2_cli
 from lol2_disassemble_scripts import EXPECTED_LEVELS, select_archive
 from lol2_export_scripts import export, require
 from lol2_level_notes import EVENTS, effect, event_fields, room_names, trigger_description
@@ -62,12 +63,14 @@ def summary(group, triggers, items, scenes, rooms, verbose=False):
     meanings = Counter()
     for row in commands:
         meaning, address, confirmed, _ = effect(row, items, scenes, rooms)
-        meanings[(row["opcode"], meaning, address, confirmed)] += 1
-    for (opcode, meaning, address, confirmed), count in meanings.items():
+        offset = row["file_offset"] if verbose else None
+        meanings[(row["opcode"], meaning, address, confirmed, offset)] += 1
+    for (opcode, meaning, address, confirmed, offset), count in meanings.items():
         witness = f"VA 0x{address:X}" if address is not None else "handler open"
         status = "CONFIRMED" if confirmed else "continuation UNCONFIRMED"
         multiple = f" x{count}" if count > 1 else ""
-        yield f"  0x{opcode:02X}{multiple}  {meaning} [{witness}, {status}]"
+        where = f"MIX+0x{offset:X}  " if offset is not None else ""
+        yield f"  {where}0x{opcode:02X}{multiple}  {meaning} [{witness}, {status}]"
 
 
 def context(data):
@@ -106,21 +109,22 @@ def check(data, lookup):
 
 
 def main():
-    parser = lol2_cli.tool_args(__doc__)
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    dat = os.environ.get("LOL2_DAT")
+    parser.add_argument("--data", default=dat, type=Path, required=dat is None, help="original DAT directory")
+    parser.add_argument("--check", action="store_true")
     parser.add_argument("level", nargs="?", help="level name or number")
     parser.add_argument("--stream", type=int, choices=(0, 1))
     parser.add_argument("--group", type=lambda text: int(text, 0), help="stream-relative group offset, e.g. 0x228e")
     parser.add_argument("--start", type=int, default=0, help="zero-based start within the selected groups")
     parser.add_argument("--limit", type=int, default=20)
     args = parser.parse_args()
-    if args.out:
-        parser.error("prints to stdout")
     if args.check == bool(args.level):
         parser.error("choose one level or --check")
     if args.start < 0 or args.limit < 1:
         parser.error("start must be nonnegative and limit positive")
     try:
-        data = Path(args.data)
+        data = args.data
         lookup = context(data)
         if args.check:
             print(check(data, lookup))

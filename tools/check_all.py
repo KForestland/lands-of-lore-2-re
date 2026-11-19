@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run every LoL2 tool that has a --check against a game DAT folder; one line each.
+"""Run the LoL2 repository checks against an original DAT folder; one line each.
 
   check_all.py --data /path/to/LoL2/DAT     # or set $LOL2_DAT
 Exit code 0 when all pass. Tools that read DOSBox traces run a self-test instead.
@@ -15,7 +15,7 @@ TOOLS = ["repo_guard", "lol2_mix_parser", "lol2_source_format", "lol2_disassembl
          "lol2_analyze_disarm_rearm", "lol2_guest_trace_summary", "lol2_aud_decode", "lol2_vqa_v2_decode",
          "lol2_level_report", "lol2_level_map", "lol2_level_schematic", "lol2_media_check", "lol2_level_notes", "lol2_text_tables",
          "lol2_hmi_midi", "lol2_item_labels", "rating", "example_images", "lol2_save_native", "lol2_save_inspect",
-         "lol2_cache_seed", "lol2_speech_names", "lol2_loose", "doc_links"]
+         "lol2_cache_seed", "lol2_speech_names", "lol2_loose", "lol2_inspect", "doc_links"]
 
 
 def main():

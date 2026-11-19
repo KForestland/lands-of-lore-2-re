@@ -27,6 +27,7 @@ PORTAL = "#637b91"
 DOOR = "#f8b65c"
 ITEM = "#86e7cc"
 CREATURE = "#f7a5b4"
+FOCUS = "#6de1ff"
 
 
 @dataclass(frozen=True)
@@ -59,6 +60,8 @@ def parse_geometry(raw):
             x = int.from_bytes(rows[at:at+2], "little", signed=True) << 16
             y = int.from_bytes(rows[at+2:at+4], "little", signed=True) << 16
             region = int.from_bytes(rows[at+10:at+12], "little", signed=True)
+            if region != -1 and not 0 <= region < len(regs):
+                raise ValueError(f"placement {kind}{at // width} has an invalid region")
             marks.append(Placement(kind, at // width, x, y, region))
     return verts, regs, marks
 
@@ -114,7 +117,7 @@ def draw(stem, verts, regs, placements, focus, radius, size):
             continue
         shade = (len(FLOORS)-1) * (s16(row[10]) - floor) // max(1, roof - floor)
         corners = [point(*v) for v in polygon]
-        plot.polygon(corners, fill="#566e7e" if index == focus else FLOORS[shade])
+        plot.polygon(corners, fill=FLOORS[shade])
         for side, other in enumerate(row[2:6]):
             key = edge_type(row, regs[other] if other != 0xFFFF else None)
             segment = tuple(sorted((corners[side], corners[(side+1) % 4])))
@@ -122,6 +125,10 @@ def draw(stem, verts, regs, placements, focus, radius, size):
     for name, color, stroke in (("portal", PORTAL, 1), ("wall", WALL, 2), ("door", DOOR, 4)):
         for segment in sorted(edges[name]):
             plot.line(segment, fill=color, width=stroke)
+    if focus is not None:
+        outline = [point(*verts[v]) for v in regs[focus][6:10]]
+        plot.line([*outline, outline[0]], fill=BACKGROUND, width=5)
+        plot.line([*outline, outline[0]], fill=FOCUS, width=2)
 
     mark_font = ImageFont.load_default(size=15)
     visible = [(mark, point(mark.x, mark.y)) for mark in placements
@@ -150,7 +157,7 @@ def draw(stem, verts, regs, placements, focus, radius, size):
         else:
             hidden += 1
 
-    image = Image.new("RGB", (width, height + 146), BACKGROUND)
+    image = Image.new("RGB", (width, height + 172), BACKGROUND)
     image.paste(canvas, (0, 67))
     page = ImageDraw.Draw(image)
     title_font = ImageFont.load_default(size=27)
@@ -167,10 +174,14 @@ def draw(stem, verts, regs, placements, focus, radius, size):
     page.ellipse((21, footer+32, 31, footer+42), fill=ITEM)
     page.text((38, footer+27), "I  Placed item", fill=INK, font=caption_font)
     page.polygon([(161, footer+31), (167, footer+37), (161, footer+43), (155, footer+37)], fill=CREATURE)
-    page.text((173, footer+27), "A  Creature placement", fill=INK, font=caption_font)
+    page.text((173, footer+27), "A  Actor (creature) placement", fill=INK, font=caption_font)
+    if focus is not None:
+        page.rectangle((374, footer+32, 389, footer+42), outline=FOCUS, width=2)
+        page.text((396, footer+27), "Selected region", fill=INK, font=caption_font)
+    page.text((20, footer+50), "Lighter floors are higher. Storeys can overlap.", fill=MUTED, font=caption_font)
     hint = (f"{hidden} crowded labels omitted. Use --focus and --radius to zoom."
             if hidden else "IDs are zero-based rows in the original placement tables.")
-    page.text((20, footer+50), hint, fill=MUTED, font=caption_font)
+    page.text((20, footer+73), hint, fill=MUTED, font=caption_font)
     return image, len(visible), hidden
 
 
@@ -190,11 +201,11 @@ def check(data, stems):
     if (len(stems), regions, items, actors, doors) != (15, 52669, 663, 1028, 2473):
         raise ValueError("original level or placement census differs")
     return (f"CHECK level schematic: {len(stems)} levels, {regions} regions, {items} items, "
-            f"{actors} creatures, {doors} collapsed portal sides")
+            f"{actors} actor placements, {doors} collapsed portal sides")
 
 
 def main():
-    parser = lol2_cli.tool_args(__doc__)
+    parser = lol2_cli.tool_args(__doc__, out_help="PNG path outside the repository and original installation")
     parser.add_argument("--level", type=int)
     parser.add_argument("--focus", type=int, metavar="REGION", help="center the map on this zero-based region")
     parser.add_argument("--radius", type=int, default=450, help="map units on each side of a focused region")

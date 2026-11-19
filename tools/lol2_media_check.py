@@ -148,17 +148,25 @@ def scene_names(dat_dir):
 
 def room_module_fixups(path, member, entry_offset):
     raw = read_at(path, member["offset"], member["size"])
+    _, _, sites = room_module_layout(raw, entry_offset)
+    return len(sites)
+
+
+def room_module_layout(raw, entry_offset=None):
+    if not raw.startswith(BANNER) or len(raw) < len(BANNER) + 16:
+        raise ValueError("room module header")
     version, body_length, offset, count = struct.unpack_from("<4I", raw, len(BANNER))
     body_start = len(BANNER) + 16
     body_end = body_start + body_length
-    if (version != 0x101 or offset != entry_offset or offset >= body_length
+    if (version != 0x101 or (entry_offset is not None and offset != entry_offset) or offset + 4 > body_length
             or body_end + 4 * count != len(raw)
             or raw[body_start + offset:body_start + offset + 4] != PROLOGUE):
-        raise ValueError(f"{os.path.basename(path)} room module extent")
-    for (site,) in struct.iter_unpack("<I", raw[body_end:]):
+        raise ValueError("room module extent")
+    sites = [site for (site,) in struct.iter_unpack("<I", raw[body_end:])]
+    for site in sites:
         if site + 4 > body_length or u32(raw, body_start + site) >= body_length:
-            raise ValueError(f"{os.path.basename(path)} room module relocation")
-    return count
+            raise ValueError("room module relocation")
+    return body_length, offset, sites
 
 
 def check_global_texture_books(image, local, entries):
@@ -215,8 +223,7 @@ def check_vqa_buffer_callbacks(image):
             raise ValueError(f"movie buffer callback instruction at 0x{address:X}")
 
 
-def check_wsa_frames(image, local, entries):
-    """Join the native panel animation names and consume each compressed delta."""
+def panel_names(image):
     names = set()
     for cell in range(0xC488, 0xC4F0, 4):
         pointer = u32(image, OBJ5 + cell)
@@ -224,25 +231,38 @@ def check_wsa_frames(image, local, entries):
             name = cstr(image, OBJ5 + pointer)
             if name:
                 names.add(name)
+    return sorted(names)
+
+
+def wsa_frames(member):
+    count, _, _, width, height, capacity, flags = struct.unpack_from("<7H", member)
+    offsets = struct.unpack_from(f"<{count + 2}I", member, 14)
+    if flags or min(width, height, capacity) == 0 or offsets[0] != 14 + 4 * len(offsets) or offsets[-1] != len(member):
+        raise ValueError("WSA header or extent")
+    spans = []
+    for start, end in zip(offsets, offsets[1:]):
+        if end <= start:
+            raise ValueError("WSA delta extent")
+        delta, errors, used = decompress_westwood(member[start:end], capacity)
+        if errors or used != end - start or not delta:
+            raise ValueError(f"WSA delta at {start:#x}")
+        spans.append((start, end - start, len(delta)))
+    return count, width, height, spans
+
+
+def check_wsa_frames(image, local, entries):
+    """Join the native panel animation names and consume each compressed delta."""
+    names = panel_names(image)
     index = {row["key"]: row for row in entries}
     frames = decoded_bytes = 0
-    for name in sorted(names):
+    for name in names:
         row = index.get(ww_hash_v1(name))
         if row is None or not name.endswith(".WSA"):
             raise ValueError(f"missing panel animation {name}")
         member = read_at(local, row["offset"], row["size"])
-        count, _, _, width, height, capacity, flags = struct.unpack_from("<7H", member)
-        offsets = struct.unpack_from(f"<{count + 2}I", member, 14)
-        if flags or min(width, height, capacity) == 0 or offsets[0] != 14 + 4 * len(offsets) or offsets[-1] != len(member):
-            raise ValueError(f"{name}: WSA header or extent")
-        for start, end in zip(offsets, offsets[1:]):
-            if end <= start:
-                raise ValueError(f"{name}: WSA delta extent")
-            delta, errors, used = decompress_westwood(member[start:end], capacity)
-            if errors or used != end - start or not delta:
-                raise ValueError(f"{name}: WSA delta at {start:#x}")
-            frames += 1
-            decoded_bytes += len(delta)
+        _, _, _, spans = wsa_frames(member)
+        frames += len(spans)
+        decoded_bytes += sum(length for _, _, length in spans)
     if (len(names), frames, decoded_bytes) != (21, 640, 670607):
         raise ValueError("WSA animation corpus changed")
     for address, target in ((0x72E39, 0x15BB9C), (0x79397, 0x15BB9C),

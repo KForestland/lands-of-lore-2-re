@@ -9,9 +9,11 @@ The picture is a plot of numbers from the level data entry and contains no game 
 
 For a view with numbered creatures and items, use
 [`lol2_level_schematic.py`](../../tools/lol2_level_schematic.py).
-Amber marks denote linked sides where either flat region has equal
-floor and ceiling words (region +0x14/+0x16, read at `0xF4504`).
-The condition identifies doorway candidates. A known height-changing
+Amber marks denote linked sides where both regions are unsloped
+(+0x1C bits 2–3 clear) and either region has equal floor and ceiling
+words (+0x14/+0x16, readers `0xF4504` and `0xF4742`).
+**Interpretation.** The schematic labels these sides as doorway
+candidates. A recorded height-changing
 example is shown on the [schematic page](../../examples/README.md#level-5-schematic).
 
 ```bash

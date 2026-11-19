@@ -32,7 +32,7 @@ These are counts of work done, not a percentage of how complete the project is. 
 
 ## Quick start
 
-You need Python 3.10+ and your own copy of the game: the English GOG release, DOS version 1.30 (program `LOLG.DAT`, SHA-256 starting `b27a35341c6e877e`; some tools refuse other editions). Most files are in its `DAT/` folder; seven MIX files sit in the game folder next to it (`LOCAL`, `LOCALLNG`, `DMUSIC`, `SETUP`, `GLOBAL`, `CACHEBAK` and the game-written `CDCACHE`), and the tools find them there from `$LOL2_DAT`. Optional: the system LZO library (`apt install liblzo2-2`) for the texture tool.
+You need Python 3.10+ and your own copy of the game: the English GOG release, DOS version 1.30 (program `LOLG.DAT`, SHA-256 starting `b27a35341c6e877e`; some tools refuse other editions). Most files are in its `DAT/` folder; seven MIX files sit in the game folder next to it (`LOCAL`, `LOCALLNG`, `DMUSIC`, `SETUP`, `GLOBAL`, `CACHEBAK` and the game-written `CDCACHE`), and the tools find them there from `$LOL2_DAT`. Install the system LZO library (`apt install liblzo2-2` on Debian/Ubuntu) to run the full checks and read packed textures and saves.
 
 ```bash
 git clone https://github.com/KForestland/lands-of-lore-2-re.git
@@ -40,7 +40,7 @@ cd lands-of-lore-2-re
 python3 -m venv .venv && . .venv/bin/activate
 pip install -r requirements.txt
 export LOL2_DAT=/path/to/your/LOL2/DAT          # the game's DAT folder
-python3 tools/check_all.py                      # 28 checks, ends with ALL 28 CHECKS PASSED
+python3 tools/check_all.py                      # 32 checks, ends with ALL 32 CHECKS PASSED
 python3 tools/lol2_mix_parser.py L1_DC.MIX      # list the entries of level 1's archive
 ```
 

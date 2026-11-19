@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Parse DOS4GW LE (Linear Executable) from LOLG.DAT and extract segments.
+Inspect DOS4GW LE (Linear Executable) from LOLG.DAT. Extract with --out.
 
 LOLG.DAT structure: MZ stub + BW (DOS4GW extender) + LE executable
 The LE header is located by brute-force scanning for the 'LE' signature
@@ -87,7 +87,7 @@ def segment_type(flags):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Parse DOS4GW LE (Linear Executable) header and extract segments."
+        description="Inspect DOS4GW LE headers and objects. Export segments only with an explicit output folder."
     )
     parser.add_argument(
         "exe_path", nargs="?",
@@ -99,15 +99,20 @@ def main():
     )
     parser.add_argument(
         "output_dir", nargs="?",
-        default=os.environ.get("OUTPUT_DIR", "."),
-        help="Directory for extracted segment files (default: $OUTPUT_DIR or '.')"
+        help="legacy positional output directory"
     )
+    parser.add_argument("--out", help="explicit directory for segment files")
     args = parser.parse_args()
 
     input_file = args.exe_path
-    output_dir = refuse_repo_output(args.output_dir)
-
-    os.makedirs(output_dir, exist_ok=True)
+    if args.out and args.output_dir:
+        parser.error("use only one output directory")
+    output_dir = args.out or args.output_dir
+    if output_dir:
+        output_dir = refuse_repo_output(output_dir)
+        input_dir = os.path.dirname(os.path.realpath(input_file))
+        if os.path.commonpath((input_dir, os.path.realpath(output_dir))) == input_dir:
+            parser.error("give an output directory outside the executable's folder")
 
     with open(input_file, "rb") as f:
         data = f.read()
@@ -185,6 +190,8 @@ def main():
     import_proc_off=struct.unpack_from('<I', data, le_off + 0x78)[0]
     per_page_chk  = struct.unpack_from('<I', data, le_off + 0x7C)[0]
     data_pages_off= struct.unpack_from('<I', data, le_off + 0x80)[0]
+    if le_off == 0x3BCB4 and data[0x39024:0x39026] == b'MZ':
+        data_pages_off += 0x39024  # DOS 1.30 embedded MZ base
     preload_pages = struct.unpack_from('<I', data, le_off + 0x84)[0]
     nonres_name_off=struct.unpack_from('<I', data, le_off + 0x88)[0]
     nonres_name_sz= struct.unpack_from('<I', data, le_off + 0x8C)[0]
@@ -274,6 +281,9 @@ def main():
               f"as_u32=0x{u32:08X} "
               f"high16=0x{vals[0]:04X} low8=0x{vals[1]:02X} flags=0x{vals[2]:02X}")
 
+    if output_dir is None:
+        return
+    os.makedirs(output_dir, exist_ok=True)
     print(f"\n=== Extracting Segments ===")
     segment_data = {}
 

@@ -8,7 +8,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))
 from lol2_decompress_westwood import decompress_westwood
 from lol2_event_browser import event_index, summary
 from lol2_export_scripts import SourceError, frame, group, walk
+from lol2_inspect import reference_section, trr_lines
 from lol2_level_schematic import Placement, bounds, edge_type, parse_geometry
+from lol2_media_check import BANNER, PROLOGUE, room_module_layout, wsa_frames
 from lol2_save_header import HEADER_SIZE, parse_header
 from lol2_save_inspect import LEVEL_HEADER, decode_chunks, inspect, level_sections
 from lol2_source_format import parse_mix
@@ -110,8 +112,25 @@ class ReaderTests(unittest.TestCase):
         triggers = event_index(scripts)[1, 12]
         self.assertEqual(len(triggers), 1)
         group = {"stream": 1, "group": 12, "file_offset": 44,
-                 "commands": [{"opcode": 16, "kind": 3, "target": 2, "raw_hex": "100302000100"}]}
+                 "commands": [{"opcode": 16, "kind": 3, "target": 2, "raw_hex": "100302000100", "file_offset": 44}]}
         lines = "\n".join(summary(group, triggers, {}, [], []))
         self.assertIn("placed item 5, prop 2 receives kind-6 value 20", lines)
         self.assertIn("predicate 3 passes (MIX+0xA0)", lines)
         self.assertIn("0x10  set object state +0x25 to 1", lines)
+        exact = "\n".join(summary(group, triggers, {}, [], [], verbose=True))
+        self.assertIn("MIX+0x2C  0x10", exact)
+
+    def test_format_inspector_tables_and_frame_spans(self):
+        module = BANNER + struct.pack("<4I", 0x101, 8, 0, 1) + PROLOGUE + struct.pack("<2I", 0, 4)
+        self.assertEqual(room_module_layout(module), (8, 0, [4]))
+        with self.assertRaises(ValueError):
+            room_module_layout(module[:-1])
+
+        delta = b"\x83abc\x80"
+        wsa = struct.pack("<7H3I", 1, 0, 0, 1, 1, 16, 0, 26, 31, 36) + delta * 2
+        self.assertEqual(wsa_frames(wsa), (1, 1, 1, [(26, 5, 3), (31, 5, 3)]))
+
+        trr = struct.pack("<4I", 1, 9, 12, 14) + b"z\0"
+        self.assertEqual(list(trr_lines(trr, "synthetic", base=0x100, identifier=9))[1],
+                         "  ID 009  +0x110  2 bytes")
+        self.assertEqual(reference_section("# Root\n## Pick\nOne\n## Leave\nTwo", "Pick"), "## Pick\nOne")

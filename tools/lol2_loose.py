@@ -79,6 +79,7 @@ def describe_wave(path):
     fmt = None
     data_size = None
     info = None
+    chunks = []
     while pos + 8 <= len(data):
         ident = data[pos:pos + 4]
         size = unpack_from("<I", data, pos + 4)[0]
@@ -86,6 +87,7 @@ def describe_wave(path):
         end = payload + size
         if end > len(data):
             raise ValueError(f"{ident!r} runs past the file")
+        chunks.append((pos, ident, size))
         if ident == b"fmt ":
             if size < 16:
                 raise ValueError("fmt is short")
@@ -102,7 +104,7 @@ def describe_wave(path):
         pos = end + (size & 1)
     if pos != len(data) or fmt is None or data_size is None:
         raise ValueError("WAVE chunks do not tile the file")
-    return {"size": len(data), "fmt": fmt, "data": data_size, "info": info}
+    return {"size": len(data), "fmt": fmt, "data": data_size, "info": info, "chunks": chunks}
 
 
 def describe_ne(path):
@@ -178,6 +180,8 @@ def describe_ne(path):
         "relocs": tuple(count for _start, _rel_end, count in segments),
         "module": resident[0] if resident else b"",
         "nonresident": nonresident[0] if nonresident else b"",
+        "segments": segments,
+        "resources": resources,
     }
 
 
