@@ -26,4 +26,4 @@ The [full region overview](../docs/formats/maps.md) comes from
 `tools/lol2_level_map.py`. `tools/example_images.py --check` rebuilds
 both tracked pictures and compares the pixels.
 
-The game wall texture and the decoded tile images that used to be here were removed on 2026-11-18 (asset policy). `atlas_candidate_verify/` keeps its notes and JSON; the images it mentions are no longer in the repository.
+The game wall texture and the decoded tile images that used to be here were removed (asset policy). `atlas_candidate_verify/` keeps its notes and JSON; the images it mentions are no longer in the repository.

@@ -10,6 +10,7 @@ These words mean the same thing in the notes for all three Lands of Lore games.
 |------|---------|
 | Original | The released game's own files and program. Every fact in this repository is about the original game. |
 | CONFIRMED / UNCONFIRMED | CONFIRMED: proved from the program code or the files. UNCONFIRMED: a reading not yet proved. |
+| Answered / Mostly answered / Partly answered | The state words of [open questions](OPEN_QUESTIONS.md). *Answered*: nothing is left to settle from the files or the program. *Mostly answered*: the main question is settled; named details remain. *Partly answered*: part is settled; the main point is open. A row that says 'answered for' a setup (one renderer, one device) counts as answered for that setup only. |
 | Native | In or from the original game program, as opposed to a reimplementation. |
 | Open question | A numbered question on the [open-questions page](OPEN_QUESTIONS.md). |
 | Archive | A file that holds many pieces of game data. |

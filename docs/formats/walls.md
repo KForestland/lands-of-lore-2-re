@@ -19,7 +19,7 @@ Tool: `tools/lol2_level_report.py` checks the table and counts the rows per leve
 
 The table pointer `[0x22D08]` is the same 8-byte-row table that the [opcode reference](../lol2-script-opcodes.md) names for opcode 204.
 
-**Partition.** `lol2_level_report.py --check` re-ran on 2026-11-18. In all 15 levels every row belongs to exactly one region's run, and no run reaches past the table. Regions without walls have first row `0xFFFF`. That is 88,994 rows in all. CONFIRMED.
+**Partition.** `lol2_level_report.py --check`: in all 15 levels every row belongs to exactly one region's run, and no run reaches past the table. Regions without walls have first row `0xFFFF`. That is 88,994 rows in all. CONFIRMED.
 
 ## The code
 

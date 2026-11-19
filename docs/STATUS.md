@@ -1,8 +1,8 @@
 # LoL2 reverse-engineering status
 
-**As of:** 2026-11-19. What is documented about the original game, which tool reads it, what the tools check on the game files, and what is open. This table replaces the "almost fully understood" summary of earlier pages: those pages ([understanding](lol2-understanding-2026-11.md), [current status](lol2-current-status.md), [closure summary](closure-summary.md), [final closure memo](final-closure-memo.md)) are kept as history.
+What is documented about the original game, which tool reads it, what the tools check on the game files, and what is open. This table replaces the "almost fully understood" summary of earlier pages: those pages ([understanding (history)](lol2-understanding-2026-11.md), [current status (history)](lol2-current-status.md), [closure summary (history)](closure-summary.md), [final closure memo (history)](final-closure-memo.md)) are kept as history.
 
-Run the checks: `python3 tools/check_all.py` (with `$LOL2_DAT` set) (32 checks; all pass on the copy read).
+Run the checks: `python3 tools/check_all.py` with `$LOL2_DAT` set: 32 checks, all pass on the English DOS 1.30 copy with the listed requirements.
 
 **Running-game results.** Answered probes are counted in the rating; which ones and how: [NEEDS_A_RUNNING_GAME](NEEDS_A_RUNNING_GAME.md#answered-probes). Runs on hand-edited copies of a game-written save: [edited saves](EDITED_SAVES.md).
 
@@ -44,7 +44,7 @@ Run the checks: `python3 tools/check_all.py` (with `$LOL2_DAT` set) (32 checks; 
 
 The top-level tools answer `--help`, take `--data` (or `$LOL2_DAT`) and write only where you tell them, never inside the repository. Those listed in `check_all.py` have a `--check`. The other tools and the `tools/draracle/` pipeline still use their own options.
 
-## Corrections made in this pass (2026-11-18)
+## Corrections to earlier pages
 
 1. The game wall texture and decoded tile images in `examples/` were removed (asset policy); the README picture (`docs/images/l1_dc_regions.png`) is now drawn by a tool from the level's region table.
 2. `lol2_l9dr_census.py` reads the whole `L9_DR.MIX` as 147-byte records from offset 0; it is marked exploratory (5,861 of 160,622 slots carry a printable tag). Use `lol2_entity_field_analyzer.py` for the real entity records.

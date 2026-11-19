@@ -38,7 +38,7 @@ Reproduce (prints the prop-table end, the control-table offset and the predicate
 python3 -c "import sys,struct; sys.path.insert(0,'tools'); import lol2_source_format as S; g,raw=S.level_geometry(open(sys.argv[1],'rb').read()); d=lambda o: struct.unpack_from('<I',raw,o)[0]; print(d(0x14)+37*d(0x60), d(0x18), d(0xB8))" "$LOL2_DAT/L1_DC.MIX"
 ```
 
-Header dwords of the L1_DC entry (entry 1 of `L1_DC.MIX`, 297,542 bytes), and two consistency checks re-run on 2026-11-18:
+Header dwords of the L1_DC entry (entry 1 of `L1_DC.MIX`, 297,542 bytes), and two consistency checks:
 
 | Field | L1_DC | L7_DH | L20_BB |
 |---|---:|---:|---:|

@@ -15,7 +15,7 @@
 
 Record fields known so far (from [lol2-item-format.md](../lol2-item-format.md#record-fields)): +0x18 identity (u32), +0x37 strike sound, +0x3B mask word, +0x3D flags word, +0x3F class byte, +0x42 handler index into the item-use table, +0x43 magic bits, +0x44 post-hit addend, +0x47 four 5-byte descriptor rows; other fields are **UNCONFIRMED** unless named in the definition table. Trace the definition from `0x9EB5C` into the appropriate mode at `0x95865`, taking note of any reads through aliases.
 
-## Worked example (re-run 2026-11-18)
+## Worked example
 
 Reproduce (prints base, count, the count after the table, record 1's identity, class and handler, and the handler-0 count and highest handler):
 

@@ -20,9 +20,9 @@ wall-record evidence from pinned original files.
 - Set `LOL2_DAT` to your LoL2 `DAT/` directory path, or pass `--data`
 - Older tools may use `OUTPUT_DIR` / `LOL2_OUT`; never point them inside this repository
 
-## Common options (2026-11-18)
+## Common options
 
-For the new reader tools, `--help` changes nothing and `--data` or
+For the reader tools below, `--help` changes nothing and `--data` or
 `$LOL2_DAT` identifies the game files. Text reports print to stdout.
 The schematic writes to the path you pass with `--out`.
 `check_all.py` runs the configured corpus checks. Standalone checks

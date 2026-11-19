@@ -27,7 +27,7 @@ The routine `0xF4504` multiplies the region number by 44 and adds the table poin
 
 ## Portals
 
-A side whose neighbour word is not `0xFFFF` is an opening into the neighbouring region. Checked on all 15 levels with `lol2_level_report.py --check` (re-run 2026-11-18). CONFIRMED:
+A side whose neighbour word is not `0xFFFF` is an opening into the neighbouring region. Checked on all 15 levels with `lol2_level_report.py --check`. CONFIRMED:
 - Every vertex index is in range, and every neighbour index is a valid region.
 - The 15 levels hold 52,669 regions with 178,728 neighbour links. 177,774 of them (99.5%) are reciprocal: the neighbour names the region back.
 - 177,318 links (99.2%) share the side's two vertices with the neighbour.

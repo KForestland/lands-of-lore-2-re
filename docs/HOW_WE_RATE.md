@@ -15,10 +15,13 @@ tile the body from offset 0 to the end with no gap or overlap.
 counts when its NE tables, segments and resources tile the file, with
 zero bytes between objects counted as padding (`tools/lol2_loose.py`).
 Its first 41,584 bytes are a separate DOS program (290 relocations); it
-is counted by the length its MZ header gives, and its content is not read. What opens either file stays open. It
+is counted by the length its MZ header gives, and its content is not read. Which part of the game reads these two files is still unknown. It
 does **not** mean that every entry inside is decoded or understood; the
-[STATUS](STATUS.md) table says how far each format is read. Only the `DAT` folder is counted; files the game writes while it runs
-(caches, saves) change the count on a copy that has been played.
+[STATUS](STATUS.md) table says how far each format is read. Only files directly in the `DAT` folder are counted, not its subfolders.
+A file the game writes there while it runs (a cache or a save) is counted
+like any other: it adds to the total, and it counts as read only when it
+is a MIX archive whose entries tile it or a loose file `lol2_loose.py`
+accounts for. So a copy that has been played can show a larger total.
 
 **Rules traced.** How many statements on the current pages carry the
 evidence label CONFIRMED (backed by a program address or a file offset
@@ -46,11 +49,12 @@ An answered probe counts here when its section says "edited-save run"
 and none of its bold labels says "answered" without "edited-save". A
 label like that marks a run on a save the game wrote itself. A probe
 that is still open is not counted, even when an edited-save run added
-evidence to it.
+evidence to it. Probes listed under "Probes not yet run" are not counted
+in either number.
 
 **Open questions.** The state words of the At-a-glance table in
 [OPEN_QUESTIONS.md](OPEN_QUESTIONS.md): answered, mostly answered, partly
-answered. A question may be answered for one setup only; the table says so.
+answered. *Answered*: nothing is left to settle from the files or the program. *Mostly answered*: the main question is settled; named details remain. *Partly answered*: part is settled; the main point is open. A row that says 'answered for' a setup (one renderer, one device) counts as answered for that setup only.
 
 ## What the rating does not say
 

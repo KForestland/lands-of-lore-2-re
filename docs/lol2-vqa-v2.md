@@ -116,7 +116,7 @@ Run on retail files (2026-10-31): the listing mode found 126 partial-codebook mo
 65-frame movie from `L3_DHI.MIX` decoded to frames that look correct on inspection. The FFmpeg comparison
 above was not re-run for this note.
 
-Re-run on 2026-11-18 over every `WVQA` in `DAT/`. `--check` is the chunk census and one sample of each
+Run over every `WVQA` in `DAT/`. `--check` is the chunk census and one sample of each
 layout. `--full` walks every frame: 1,109 pointer-table movies pass, including the 4×2 movies and the
 byte-13 value 0 movies, and 837 pointer-stream movies have framed pointer commands. Two pointer-table frames require buffer history for their
 relative LCW copies; the count is 1,109 + 837 + 2 = 1,948. Of the 130 movies with byte 13 equal to 0,

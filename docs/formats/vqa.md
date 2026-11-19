@@ -28,7 +28,7 @@ Details are in [lol2-vqa-v2.md](../lol2-vqa-v2.md#format-notes).
 
 ## Confirmed on the data
 
-`lol2_vqa_v2_decode.py --check --data <DAT>` is a chunk census plus one sample of each layout. `--full` decodes every movie. Re-ran on 2026-11-18. CONFIRMED:
+`lol2_vqa_v2_decode.py --check --data <DAT>` is a chunk census plus one sample of each layout. `--full` decodes every movie. CONFIRMED:
 - **All movies valid:** `DAT/` holds 1,948 `WVQA` movies. Every header is valid, every frame count matches, all are version 2, and the colour count at `VQHD` offset 14 is 256 in every one.
 - **The count:** 1,109 pointer-table movies pass every frame, 837 are pointer streams, and 2 pointer-table movies fail on one frame. 1,109 + 837 + 2 = 1,948. An earlier "948 decoded" figure was a classification, not a frame-by-frame pass: that class is 948 movies with a `CBPZ` or `CBP0` chunk, 4×4 blocks and byte 13 greater than 0, and it includes one `VPRZ` movie (`L4_HJI.MIX` entry 103) and the 2 open movies. The 1,109 holds 945 of that class and 164 outside it: 29 4×4 movies with byte 13 greater than 0 and no `CBPZ`/`CBP0` chunk, the 5 4×2 movies and the 130 byte-13 = 0 movies.
 - **Pointer tables:** 1,111 movies have a pointer table in the header.

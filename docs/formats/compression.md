@@ -19,7 +19,7 @@ uint32 0
 
 **CONFIRMED** on all 15 level archives (`lol2_level_report.py --check` finds each texture container by the hash of its name; `lol2_texture_container.py` decodes them with the system `liblzo2`).
 
-**Worked example** (re-run 2026-11-18). `L1_DC.MIX` entry 2 starts with `14 fb c6 00 d7 22 06 00`:
+**Worked example.** `L1_DC.MIX` entry 2 starts with `14 fb c6 00 d7 22 06 00`:
 - The total decoded size is 13,040,404 bytes.
 - The first block is 402,135 bytes compressed.
 - 13 blocks follow: 12 decode to 1 MiB each, and the last decodes to 457,492 bytes.
@@ -155,6 +155,6 @@ handle passed to the read at `0x118820` back to its open, then verify the packed
 against that file. The CLI's leading-u32 experiment does not detect
 this framing.
 
-`tools/lol2_decompress_westwood.py` follows the decoding rule above. Its self-test passes. Of the MIX entries whose first u32 is larger than the entry and at most 16 times the entry, 8 were tried and none decoded to that size (`--check`, re-run 2026-11-18).
+`tools/lol2_decompress_westwood.py` follows the decoding rule above. Its self-test passes. Of the MIX entries whose first u32 is larger than the entry and at most 16 times the entry, 8 were tried and none decoded to that size (`--check`).
 
 `tools/lol2_lcw.py` holds a fourth, LCW-like function. It was kept only because `lol2_verify_wall_atlas_candidate.py` recorded its result. It is not classic LCW, and nothing in the game data is known to use it.

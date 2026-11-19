@@ -21,7 +21,7 @@ python3 tools/lol2_level_map.py --data <DAT> --level 1 --size 900 --out l1_map.p
 python3 tools/lol2_level_map.py --check --data <DAT>
 ```
 
-**CONFIRMED** (re-run 2026-11-18): the 15 levels hold 52,669 region polygons, and each one has four distinct corners inside the vertex table.
+**CONFIRMED**: the 15 levels hold 52,669 region polygons, and each one has four distinct corners inside the vertex table.
 
 ## Worked example
 

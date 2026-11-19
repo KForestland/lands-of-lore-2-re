@@ -1,6 +1,6 @@
 # LoL2 file formats, one page each
 
-Each page: what the file is, its layout, a worked example with real bytes from the game files (re-checked on 2026-11-18), the tool that reads it, and what is open. The older long pages in [`../`](..) hold the detailed notes; these pages are the short entry points. Conventions as in the [glossary](../GLOSSARY.md): CONFIRMED = checked on the game files or in the program; UNCONFIRMED = not yet.
+Each page: what the file is, its layout, a worked example with real bytes from the game files, the tool that reads it, and what is open. The older long pages in [`../`](..) hold the detailed notes; these pages are the short entry points. Conventions as in the [glossary](../GLOSSARY.md): CONFIRMED = checked on the game files or in the program; UNCONFIRMED = not yet.
 
 | Page | Files | Tool | State |
 |------|-------|------|-------|

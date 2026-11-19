@@ -28,8 +28,8 @@ reference valid templates and selectors. This is source parsing backed by
 disassembly, not a full loader replay. Templates23/24 share positive resource
 reference278;16 uses302,28 uses306,21 uses417. These candidate cache
 descriptors use28E encoding and cannot use the raw wall pixel exporter.
-Next verify resource routing and decode sprite transparency before assigning
-plant/prop names or adding instances. No visible props added in this pass.
+Resource routing and sprite transparency are still open, so no plant/prop
+names or instances are assigned here.
 
 ## Decoded prop previews
 

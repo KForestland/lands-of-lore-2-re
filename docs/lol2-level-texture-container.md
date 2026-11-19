@@ -1,6 +1,6 @@
 # LoL2 Level Texture Container (.TE_)
 
-Date: 2026-10-31. Flag census re-measured 2026-11-18 on all 15 level containers
+Date: 2026-10-31. Flag census measured on all 15 level containers
 (38,361 descriptors).
 
 ## Scope
@@ -365,7 +365,7 @@ python3 tools/lol2_texture_container.py --check --data ./lol2_game/DAT
 local use; do not commit them. `--check` prints one line and writes nothing.
 It is not one of the checks in `check_all.py`.
 
-The line from the 2026-11-19 run:
+The line it prints:
 
 ```
 CHECK textures: 15 levels, 38361 descriptors; raw 8-bit 2039; movie-name records 881 (0 bare names are DAT keys); payload-length header 7537 (1 header-height mismatch); flag 0x1246 records 27889; 30593 row spans and 4 ambiguous spans, 4366 compressed columns, 1185 raw fallback mips; 400 vector books, 1135521 row slots, 190 indexes beyond decoded book data; empty 15; rectangular raw samples store columns; bad=none

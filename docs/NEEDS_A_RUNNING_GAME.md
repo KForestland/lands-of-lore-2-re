@@ -48,7 +48,7 @@ write and stack if it occurs, then whether the same object reaches
 identify that trial's producer. The already-known lesson and
 effect-0x0A cast provide zero-valued controls.
 
-Parked (not run); see [Parked probes](#parked-probes-not-run).
+Not yet run; see [Probes not yet run](#probes-not-yet-run).
 
 ### Q10. Which observation path a live mode-2 creature takes
 
@@ -77,7 +77,7 @@ clear and 0x0A set, action 1 and 9 distinguish the remembered
 bit's two settings. A transition to a different mode calls for
 a trace of that actor's mode store with the same target snapshot.
 
-Parked (not run); see [Parked probes](#parked-probes-not-run).
+Not yet run; see [Probes not yet run](#probes-not-yet-run).
 
 ### Q12. Which history do two exceptional VQA frames read?
 
@@ -122,7 +122,7 @@ and the native `bb_brth` frame 115 remain open. The relocated
 late slot had already reached prop 87 state 14.
 [Exact edits and frame-492 trace](formats/vqa.md#scene-probes-from-edited-copies)
 
-Parked (not run); see [Parked probes](#parked-probes-not-run).
+Not yet run; see [Probes not yet run](#probes-not-yet-run).
 
 ### Q17. What on-screen action reaches these records?
 
@@ -170,12 +170,11 @@ prop +0x25. Binding to prop 1050 with byte zero reaches group
 `0x228E` and its cursor grant. A different pointer identifies
 the object supplying the predicate's state.
 
-## Parked probes (not run)
+## Probes not yet run
 
-These running-game tests were planned and then parked. No one will run
-them here. Each one is "not run": it has no result and the question it
-belongs to keeps its state. A reader with the original game and a
-debugger can do it. Addresses follow the convention at the top of this
+These running-game tests have no result yet. A reader with the original
+game and a debugger can run them; the question each belongs to keeps its
+state until then. Addresses follow the convention at the top of this
 page: code at `LOLG.DAT` analysis addresses, data as displacements from
 the object-5 base.
 

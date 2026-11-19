@@ -29,9 +29,29 @@ These are counts of work done, not a percentage of how complete the project is. 
 - **Open questions:** 20 numbered questions: 5 answered, 14 mostly answered, 1 partly answered.
 <!-- rating:end -->
 
+## Quick start
+
+Use Python 3.10 or later and your own copy of the English GOG release, DOS version 1.30. The tools recognize the original program `LOLG.DAT` by its SHA-256 prefix `b27a35341c6e877e`. Keep `DAT/` with the rest of the game folder so the readers can also find `LOLG.DAT` and the sibling MIX and TRR files.
+
+Install Pillow for pictures, Capstone 5 for disassembly checks and NumPy for VQA frame decoding. The full check uses all three and the system LZO library (`apt install liblzo2-2` on Debian or Ubuntu). The synthetic unit tests use the Python standard library.
+
+```bash
+git clone https://github.com/KForestland/lands-of-lore-2-re.git
+cd lands-of-lore-2-re
+python3 -m venv .venv && . .venv/bin/activate
+python3 -m pip install -r requirements.txt
+export LOL2_DAT="/path/to/your/LOL2/DAT"
+python3 tools/check_all.py                      # 32 checks, ends with ALL 32 CHECKS PASSED
+python3 -m unittest discover -s tests
+python3 tools/lol2_mix_parser.py --data "$LOL2_DAT" L1_DC.MIX   # list the entries of level 1's archive
+python3 tools/full_report.py --out "../lol2-out/report"
+```
+
+The MIX command prints the archive path, then `Entries: 3`, then one line per entry with its name key, offset and size. The report command writes an inventory, level sheets and text counts to the named folder. On Windows, use `py -3 -m venv .venv` and `.\.venv\Scripts\python.exe` in place of `python3`. Set `$env:LOL2_DAT = 'D:\Games\LoL2\DAT'` in PowerShell, or pass `--data` with a quoted folder path to each tool.
+
 ## Tools at a glance
 
-What you can look at with your own copy of the game. Run from the clone with `export LOL2_DAT=/path/to/your/LOL2/DAT` (and `LOL2_SLOT` set to one of your own save files for the last line); pictures and files go only where you point them (here `../lol2-out`, outside the clone). Every tool and option is in [`tools/README.md`](tools/README.md), with a table of every format and how to look at it.
+What you can look at with your own copy of the game. Run from the clone with `export LOL2_DAT=/path/to/your/LOL2/DAT` (and `LOL2_SLOT` set to one of your own save files for the last line); pictures and files go only where you point them (here `../lol2-out`, outside the clone; make it first with `mkdir -p ../lol2-out`). Every tool and option is in [`tools/README.md`](tools/README.md), with a table of every format and how to look at it.
 
 | To see | Command |
 |---|---|
@@ -55,26 +75,6 @@ What you can look at with your own copy of the game. Run from the clone with `ex
 - **Tools** in [`tools/`](tools/README.md): archive reader, name hashing, decompressors, entity and level analysers, audio and video decoders, and the wall and level-geometry tools in `tools/draracle/`.
 - **[Start here, by goal](docs/START_HERE.md)**, a **[glossary](docs/GLOSSARY.md)** and the **[open questions](docs/OPEN_QUESTIONS.md)**.
 
-## Quick start
-
-Use Python 3.10 or later and your own copy of the English GOG release, DOS version 1.30. The tools recognize the original program `LOLG.DAT` by its SHA-256 prefix `b27a35341c6e877e`. Keep `DAT/` with the rest of the game folder so the readers can also find `LOLG.DAT` and the sibling MIX and TRR files.
-
-Install Pillow for pictures, Capstone 5 for disassembly checks and NumPy for VQA frame decoding. The full check uses all three and the system LZO library (`apt install liblzo2-2` on Debian or Ubuntu). The synthetic unit tests use the Python standard library.
-
-```bash
-git clone https://github.com/KForestland/lands-of-lore-2-re.git
-cd lands-of-lore-2-re
-python3 -m venv .venv && . .venv/bin/activate
-python3 -m pip install -r requirements.txt
-export LOL2_DAT="/path/to/your/LOL2/DAT"
-python3 tools/check_all.py                      # 32 checks, ends with ALL 32 CHECKS PASSED
-python3 -m unittest discover -s tests
-python3 tools/lol2_mix_parser.py L1_DC.MIX      # list the entries of level 1's archive
-python3 tools/full_report.py --out "../lol2-out/report"
-```
-
-The MIX command prints `Entries: 3` and one line per entry with its name key, offset and size. The report command writes an inventory, level sheets and text counts to the named folder. On Windows, use `py -3 -m venv .venv` and `.\.venv\Scripts\python.exe` in place of `python3`. Set `$env:LOL2_DAT = 'D:\Games\LoL2\DAT'` in PowerShell, or pass `--data` with a quoted folder path to each tool.
-
 ## Status
 
 "Q8" and the like are numbered questions in [`docs/OPEN_QUESTIONS.md`](docs/OPEN_QUESTIONS.md).
@@ -93,7 +93,7 @@ Full table with evidence: [`docs/STATUS.md`](docs/STATUS.md).
 
 ## Repository layout
 
-- [`docs/`](docs): format and engine pages, status, open questions, glossary; older closure notes kept as history
+- [`docs/`](docs): format and engine pages, status, open questions, glossary; older notes kept as history
 - [`tools/`](tools/README.md): readers and analysers
 - [`evidence/`](evidence): lists of program addresses and files that back up the pages
 - [`data/`](data): machine-readable inventory summaries

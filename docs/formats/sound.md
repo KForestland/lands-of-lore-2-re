@@ -1,6 +1,6 @@
 # Sound bank, music and movies
 
-**What and where (read 2026-11-18):**
+**What and where:**
 
 | Data | Where | Pages |
 |---|---|---|
@@ -21,7 +21,7 @@
 
 Rows of size 1 are placeholders (171); the others are complete Westwood AUD files. Tool: `tools/lol2_sound_bank.py`.
 
-## Worked example (re-run 2026-11-18)
+## Worked example
 
 Row 0: offset 612, size 13,894, placeholder flag 0, name `zombie1.aud`. The AUD header at offset 612:
 
@@ -41,7 +41,7 @@ CONFIRMED: 1179 rows, 171 placeholders. Decoder: `tools/lol2_aud_decode.py`.
 
 ## AUD files stored as MIX entries
 
-Besides the bank, 453 complete AUD files sit directly as entries in 29 of the 81 archives in `DAT/`, and 64 in 3 of the 7 game-folder archives (`DMUSIC.MIX`, `SETUP.MIX`, `GLOBAL.MIX`). `lol2_aud_decode.py --check --data <folder>` finds them by structure: the header's size field plus 12 equals the entry size, codec 99, and `0x0000DEAF` chunks that end at the entry's last byte and sum to the stated decoded size. All of them decode. CONFIRMED (re-run 2026-11-18).
+Besides the bank, 453 complete AUD files sit directly as entries in 29 of the 81 archives in `DAT/`, and 64 in 3 of the 7 game-folder archives (`DMUSIC.MIX`, `SETUP.MIX`, `GLOBAL.MIX`). `lol2_aud_decode.py --check --data <folder>` finds them by structure: the header's size field plus 12 equals the entry size, codec 99, and `0x0000DEAF` chunks that end at the entry's last byte and sum to the stated decoded size. All of them decode. CONFIRMED.
 
 - **The "22 56" entries are sounds.** At 22,050 Hz a file starts with the bytes `22 56`. An earlier tool in this repository read the 513 entries that start this way (450 in `DAT/`) as "0x2256 cell sprites" and drew them as pictures. Every one of them is a complete AUD file; that tool was removed.
 - **One sample short.** In 16 files in `DAT/` and 47 in the game folder, the last chunk states one sample (2 bytes) more than its compressed bytes can hold; the decoded output is 2 bytes shorter than the header's decoded size. **UNCONFIRMED.** How the native path treats the missing sample. At the playback request `0xE4D2F`, capture the bank index and exact clip length, then compare the last chunk’s declared sample count with the last output store.
