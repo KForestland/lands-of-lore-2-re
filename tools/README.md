@@ -30,7 +30,7 @@ Run every `--check` (20) and print one line each, then a summary.
 $ python3 tools/check_all.py | sed -n "1,2p;21p"
 CHECK repo_guard: N tracked files; game files, media, stray images, files over 300 KB, machine paths, words from the local list, or commit identities: none (0); private word list: not present, skipped
 CHECK mix: 81 MIX files, 2905 entries; this reader and lol2_source_format.parse_mix agree and every entry lies inside its file: 81/81; index sorted by signed key: 81/81 (by unsigned key: 20); bad=none
-ALL 24 CHECKS PASSED
+ALL 25 CHECKS PASSED
 ```
 
 ### `lol2_save_header.py`
@@ -173,6 +173,10 @@ CHECK speech: format at file 0x1C427A; switch at 0xF133C enters eight arms throu
 ### `lol2_save_native.py`
 
 Re-reads the native save and clock instructions cited on the [timer page](../docs/lol2-timer-clock.md#save-restore-and-menu-pause): the section selector calls, the section-67 XOR restore, the 62/64 pointer rebase arms, the frame index and the menu clock restart. Part of `check_all.py`.
+
+### `lol2_cache_seed.py`
+
+Joins the 15 shipped `CDCACHE.LS_` rows to the level texture banks by name and compares the seed sizes with each bank's first dword; also reads `CACHEBAK.MIX`. Part of `check_all.py`. Page: `docs/lol2-cache-initializer.md`.
 
 ### `example_images.py`
 

@@ -27,7 +27,7 @@ One line per question: its state and what would settle what is left.
 | Q17 | Partly | Static placement regions, viewport picker and both outcomes traced. Confirm the visible pick surfaces in L8. |
 | Q18 | Mostly | Every script group now has a serialized reference; confirm in play the input gesture that reaches a placed-item group such as L1 group 13584 |
 | Q19 | Answered | — |
-| Q20 | Mostly | Compared all 15 seed lengths to the shipped banks. Twelve differences leave the older source edition open. |
+| Q20 | Mostly | Compared all 15 seed lengths to the shipped banks. Twelve differences leave the build that supplied the 12 differing sizes open. |
 
 ## Questions
 
@@ -52,7 +52,7 @@ One line per question: its state and what would settle what is left.
 | Q17 | L8 controls 69 and 114. Direct events, motion, link and unlink commands mapped. The input path to the control slot is traced (picker to `0x110ACD`); the visible pick surfaces remain open | [L8 controls](lol2-l8-controls.md), [running-game test](NEEDS_A_RUNNING_GAME.md#q17-what-on-screen-action-reaches-these-records) |
 | Q18 | **Mostly answered.** The placed-item table leads to 57 groups outside the earlier four-table join. L1 stream-1 group 13584 follows the placed item 2 empty-hand interaction. After this join no group of the 13,197 in the 15 levels is left without a serialized reference (review count over both streams, the four event tables, the region lists and the placed items). The input gesture that triggers a placed-item group is still to be confirmed in play. | [Placed-item event lists](lol2-event-producers.md#placed-item-event-lists), [per-level notes](levels/notes/README.md) |
 | Q19 | **Answered.** The level ODF entry stores the 147-byte definitions at header u32 +0x10 with count at +0x48, verified in all 15 level archives and in the native reader | [formats/entity-records.md](formats/entity-records.md) |
-| Q20 | The texture cache. The installer ships `CACHEBAK.MIX` (131 bytes) and `CDCACHE.LS_` (4,008 bytes, 15 records, every state -1). **Mostly answered:** the native seed copy, the marker at 66, the 200-row allocator at 70 and the shutdown writeback are mapped in [lol2-cache-initializer.md](lol2-cache-initializer.md). **CONFIRMED:** three older list lengths match shipped banks, twelve differ and only L1 has a finite list position. **Still open:** which release supplied the differing sizes. A run's written `CDCACHE.MIX`/`.LST` is one run's state, not the format | [Native cache initializer](lol2-cache-initializer.md), [MIX layout](formats/mix.md) |
+| Q20 | The texture cache. The installer ships `CACHEBAK.MIX` (131 bytes) and `CDCACHE.LS_` (4,008 bytes, 15 records, every state -1). **Mostly answered:** the native seed copy, the marker at 66, the 200-row allocator at 70 and the shutdown writeback are mapped in [lol2-cache-initializer.md](lol2-cache-initializer.md). **CONFIRMED:** three older list lengths match shipped banks, twelve differ and only L1 has a finite list position. **Still open:** which build supplied the differing sizes. A run's written `CDCACHE.MIX`/`.LST` is one run's state, not the format | [Native cache initializer](lol2-cache-initializer.md), [MIX layout](formats/mix.md) |
 
 ## Remaining evidence and settling tests
 

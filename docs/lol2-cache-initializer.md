@@ -86,22 +86,24 @@ The filenames are the strings in `LOLG.DAT+0x1C499C`,
 
 **CONFIRMED.** `CACHEBAK.MIX+0x00` declares five members and a
 65-byte body. Each member is 13 bytes (directory length dwords at
-`+0x0E + 12*i`). Their spans partition the complete body at +0x42.
+`+0x0E + 12*i`), and all five are the same short text line. Their spans partition the complete body at +0x42.
 The backup has no allocator table or level texture bank. The retail
 initializer overwrites this position with the marker and then inserts
 the allocator, which explains the four-byte difference between the
-first seed position and the native reset position.
+first seed position and the native reset position (5,066 = 66 + 0x1388
+and 5,070 = 70 + 0x1388 are consistent with that).
 
 **CONFIRMED.** Each shipped list name (record +8, convert the final
 `.tex` to `.te_`) identifies one original MIX member through its
 archive hash. Its first dword is the size that `0x11931D–0x119349`
 uses for allocation. Compare it to `CDCACHE.LS_` record +0xDC.
-All 15 matching MIX members in this edition start at +0x2A. In the
+All 15 matching MIX members in this edition start at absolute offset
+`0x2A` (the first data byte of each three-entry level MIX). In the
 list, state +0xD8 is −1 throughout. Position +0xE8 is 5,066 on
 L1_DC and 0xFFFFFFFF on the other 14 records. Length +0xE0
 duplicates +0xDC in those 14 and is zero on L1_DC.
 
-| Level | Seed record offset | Seed size at +0xDC | Shipped bank dword at MIX +0x2A | Bank size minus seed |
+| Level | Seed record offset | Seed size at +0xDC | Shipped bank dword at MIX +0x2A | Bank dword minus seed |
 |---|---:|---:|---:|---:|
 | L1_DC | `0xA8` | 13,040,404 | 13,040,404 | +0 |
 | L3_DH | `0x1A8` | 10,825,806 | 10,799,733 | -26,073 |
@@ -119,11 +121,10 @@ duplicates +0xDC in those 14 and is zero on L1_DC.
 | L19_BC | `0xDA8` | 11,211,703 | 11,236,800 | +25,097 |
 | L20_BB | `0xEA8` | 27,801,780 | 28,451,111 | +649,331 |
 
-
 Three lengths match and 12 differ. The native loader replaces the
-old values with the shipped member's size on the unpack path.
+old values with the bank's first dword (its decoded size) on the unpack path.
 The full comparison is repeatable with
-`python3 tools/lol2_cache_seed.py --check --data /path/to/DAT`.
+`python3 tools/lol2_cache_seed.py --check --data /path/to/DAT` (part of `check_all.py`).
 
 **UNCONFIRMED.** The exact build or original members that produced
 the 12 differing values. The two supplied seed files and all 15
