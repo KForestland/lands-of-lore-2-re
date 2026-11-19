@@ -159,3 +159,13 @@ cache-dialog coordinates after restore. The saved view frames
 show the timber assembly, but their timing does not establish
 the first visual change. A native slot near both controls
 would settle the actions from normally reached states.
+
+## Close-out
+
+### Q17
+
+**What was measured.** The 38 bytes at `0xE10A1` in `LOLG.DAT` are `8D 43 4D 8B 78 10 83 C4 0C 39 FE 7C 19 8B 50 04 01 FA 39 D6 7D 10 8B 78 14 39 FD 7C 09 8B 50 08 01 FA 39 D5 7C 0A`. They compare the pointer against four dwords at `ebx+0x4D` and contain no immediate width or height.
+
+**What was tried.** This read is the viewport test the picker uses before `0x110ACD`. The page already records the edited-save clicks and the control placements.
+
+**What would settle it.** The running-game test is not yet run ([on-screen action](NEEDS_A_RUNNING_GAME.md#q17-what-on-screen-action-reaches-these-records)). Repeat both picks from native saves and compare an item-in-hand click.

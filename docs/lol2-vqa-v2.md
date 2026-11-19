@@ -121,3 +121,13 @@ layout. `--full` walks every frame: 1,109 pointer-table movies pass, including t
 byte-13 value 0 movies, and 837 pointer-stream movies have framed pointer commands. Two pointer-table frames require buffer history for their
 relative LCW copies; the count is 1,109 + 837 + 2 = 1,948. Of the 130 movies with byte 13 equal to 0,
 10 stage `CBPZ` parts and 120 have a single `CBFZ`. `L4_HJI.MIX` entry 67 still expands to 9 of 9 frames.
+
+## Close-out
+
+### Q12
+
+**What was measured.** In `L20_BBI.MIX` entry 25, frame 115's `VPTZ` chunk is 24,660 bytes, and the six bytes at input 23,845 are `53 00 00 00 00 B1`. The codebook completed on frame 111 is 31,840 bytes, 1,990 vectors of 16, while frame 115 only adds a 2,941-byte `CBPZ` part and leaves that book in place (four of eight parts staged, 11,764 bytes pending).
+
+**What was tried.** This walk read that frame's chunks and the partial-codebook groups before it. The page already records the pointer-stream command bytes and the two exceptional copy distances.
+
+**What would settle it.** The running-game test is not yet run ([frame 115](NEEDS_A_RUNNING_GAME.md#q12-which-history-do-two-exceptional-vqa-frames-read)). At `0x158D58`, capture the destination buffer before either short relative copy, and match the codebook selected at the frame callback to the indexed source.

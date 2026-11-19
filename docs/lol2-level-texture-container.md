@@ -379,3 +379,13 @@ CHECK textures: 15 levels, 38361 descriptors; raw 8-bit 2039; movie-name records
 - How a movie-name record is resolved to a file.
 - How the renderer picks a shade row per surface.
 - Sections other than 2, 3 and 4.
+
+## Close-out
+
+### Q14
+
+**What was measured.** In the decoded `L16_CA` texture bank, descriptor 1507 mip 0 at `+0x1F969E1` begins `AC 02 08 00 08 00 60 00 00 00 08 00 03 03 03 03`, and descriptor 1508 mip 0 at `+0x1F96A71` begins with the same 16 bytes. The word at +6 is `0x0060` and the first literal pixel is `0x03`.
+
+**What was tried.** This read is the on-disk row the selector at `0x125FC4` would frame. The page already records the four `0x02AC` mip offsets and that each row at +8 starts with a zero word and the width.
+
+**What would settle it.** The running-game capture of the `0x02AC` mip has not been run ([probes not yet run](NEEDS_A_RUNNING_GAME.md#probes-not-yet-run)). Compare the native book output at `0x67052` to the affected L20_BB read at `0x12616C`, and capture the `0x02AC` mip entering `0x125FC4`.

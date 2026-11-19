@@ -158,3 +158,13 @@ this framing.
 `tools/lol2_decompress_westwood.py` follows the decoding rule above. Its self-test passes. Of the MIX entries whose first u32 is larger than the entry and at most 16 times the entry, 8 were tried and none decoded to that size (`--check`).
 
 `tools/lol2_lcw.py` holds a fourth, LCW-like function. It was kept only because `lol2_verify_wall_atlas_candidate.py` recorded its result. It is not classic LCW, and nothing in the game data is known to use it.
+
+## Close-out
+
+### Q1
+
+**What was measured.** The code in `LOLG.DAT` contains the address bytes `D6 23 02 00` 66 times. Thirty-eight are the seven-byte compare `80 3D D6 23 02 00 00`, every one with immediate 0, and the other 28 are `8A` loads of that byte (`8A 25` eleven times, `8A 35` nine, `8A 15` two, `8A 3D` two, `8A 2D` two, `8A 1D` once and `8A 0D` once).
+
+**What was tried.** This scan counted those embedded address bytes in the code object. The page already records the 66 relocation reads and that the direct absolute store forms are absent.
+
+**What would settle it.** The branches at `0x15BEE1` and `0x15C50D` already have 21 named witnesses. For the rest, follow the decompress call at `0x67052` or the read at `0x15CAD4` to its filename and compare the compressed bytes and seek position with the original archive, and find what writes the byte at data `0x223D6`.

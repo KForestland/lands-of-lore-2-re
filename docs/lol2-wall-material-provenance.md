@@ -91,3 +91,13 @@ this page reads wall pixels from the per-level `.TE_` container.
   install, the blob, palette (`aee85cf7...`) and shade row 0x2D
   (`450e13dc...`) hashes match the checkpoint values. The span replay itself
   is not part of this repo.
+
+## Close-out
+
+### Q16
+
+**What was measured.** The routine at `0x133FF4` in `LOLG.DAT` begins `53 56 57 55 89 E5 81 EC 24 02 00 00`, subtracting `0x224` from the stack. Its first memory compare is `3B 3D 24 E4 0F 00` at `0x13407A`, against the dword at `0xFE424`, and the next two compares use `0xFE428` and `0xFE42C`.
+
+**What was tried.** This slice is the clip entry the Huline test names. The page already records the L20_BB descriptor 556 span and not these compare operands.
+
+**What would settle it.** The running-game test is not yet run ([probes not yet run](NEEDS_A_RUNNING_GAME.md#probes-not-yet-run)). Follow each L14_HT quad through the callback at `0x11496D` and compare surviving data at `0x133FF4` with the span setup.

@@ -173,3 +173,13 @@ known TRR tables from `0xCF014` also have different row counts from the
 room modules and match an index to voice +4 or the table index from
 `0xEEB17`. The loaded table links to the bank rows at the offsets
 above. A text consumer would need its own code or data witness.
+
+## Close-out
+
+### Q13
+
+**What was measured.** At `0xE3A08` the three bytes are `89 43 04`, storing the dword loaded from `[esp+0x40]` by `8B 44 24 40` at `0xE3A01` into `[ebx+4]`. The other arm at `0xE3AF9` is `89 42 04`.
+
+**What was tried.** This disassembly sits inside the player already walked from `0xE3924` to `0xE3AA6`. The page already counts 533 direct uses of the cue-table pointer, including 21 compares with voice +4.
+
+**What would settle it.** The running-game test is not yet run ([probes not yet run](NEEDS_A_RUNNING_GAME.md#probes-not-yet-run)). Follow indirect calls from the other room modules and match an index to voice +4 or the table index from `0xEEB17`. The direct pointer loads are not that reader.

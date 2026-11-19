@@ -132,3 +132,13 @@ disabled bit and keeps its current countdown when the argument is zero.
 The corpus check frames both streams, resolves the linked event groups and
 verifies the listing prints all 42,594 commands. See
 [the stream layout](lol2-level-script-format.md) for geometry header offsets.
+
+## Close-out
+
+### Q4
+
+**What was measured.** At `0xB6E8F` the three bytes are `FF 50 08`, a call through vtable slot +8. The compare at `0xB6E98` is `39 C7`, and the next instruction is `0F 8F 12 01 00 00`, a jump to `0xB6FB2` when the first operand is greater.
+
+**What was tried.** This slice is the obstruction compare next to the opcode-196 gate. The opcode page already records the handler `0x64DDC` and the framed corpus of 42,594 commands.
+
+**What would settle it.** The running-game test is not yet run ([probes not yet run](NEEDS_A_RUNNING_GAME.md#probes-not-yet-run)). Match the opcode-196 handler at `0x64DDC` and record the first geometry rejection before the candidate transform is written.

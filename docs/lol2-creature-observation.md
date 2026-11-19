@@ -215,3 +215,13 @@ record +0x9E, +0xB8 and +0xB9 on entry at `0xA2C63`, then check the
 requested action at `0xA2E84` against the animation install at
 `0xA7DC4`. Trace other placement and definition masks from their first
 caller to establish their uses.
+
+## Close-out
+
+### Q10
+
+**What was measured.** The 1,028 actor rows in the 15 level archives store behavior byte +0x25 as 3 (29 rows), 4 (20), 5 (2), 6 (653), 7 (5) or 14 (319). None of the 1,028 bytes is 8.
+
+**What was tried.** This census read +0x25 of every 56-byte actor row. The page already records the +0x21 mask counts on those rows and the mode-8 branch at `0xA2C63`.
+
+**What would settle it.** The running-game test is not yet run ([probes not yet run](NEEDS_A_RUNNING_GAME.md#probes-not-yet-run)). Capture observation +0x9E and both update bytes for mode 8 at `0xA2C63`, then compare the requested action at `0xA2E84` with the install at `0xA7DC4`.

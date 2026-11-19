@@ -239,3 +239,13 @@ Trace +0–+3 after the `0x67424` copy, and pair a chosen +0x16 value
 with its switch arm at `0xD3C66` and the resulting contact effect. For flag
 bits beyond 0 and 1, log a test of the original flag byte in a consumer
 of either row before assigning meaning.
+
+## Close-out
+
+### Q11
+
+**What was measured.** At `0xE78B1` the six bytes are `89 95 5A FE FF FF`, storing `edx` at `[ebp-0x1A6]`. The next instruction is `8B 40 04`, and that displacement is header +0x98 when the header base is `ebp-0x23E`.
+
+**What was tried.** This read is the writer the witness table names for header +0x98. The page already records that writer, the bulk header read at `0xE687E`, and the header base at `ebp-0x23E`.
+
+**What would settle it.** Use the per-field read addresses in the save witness table, starting with header +0x94/+0x98 after `0xE687E`.

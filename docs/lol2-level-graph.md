@@ -178,3 +178,13 @@ calls, and an admitted caller of the indexed entry `0xED59C`. Follow
 the three stored branch conditions to the calls above. To identify an
 indirect native entry into `0xED59C`, capture the return address and
 index at `0xED5B5`; match the index to the room-name table.
+
+## Close-out
+
+### Q3
+
+**What was measured.** `LOLG.DAT` contains 28 direct `E8` calls whose target is `0x11C654`. The one at `0xED54A` is the five bytes `E8 05 F1 02 00`.
+
+**What was tried.** This scan counted direct relative calls into that constructor. The page already records that the 46-name table at file `0x1CFA90` does not include `ARENA`, and that `ARENA.MIX` is not a stored string.
+
+**What would settle it.** The running-game test is not yet run ([probes not yet run](NEEDS_A_RUNNING_GAME.md#probes-not-yet-run)). Trace an indirect host wrapper into constructor `0x11C654` with the name `ARENA.MIX`.

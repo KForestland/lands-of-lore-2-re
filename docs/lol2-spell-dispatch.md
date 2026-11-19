@@ -370,3 +370,13 @@ genuine form transition (observe +0x1AB change). In either
 trial record the first nonzero writer with its call stack
 and follow the same player through `0xD2E57–0xD2E61` to check
 whether expiry sends 0x26.
+
+## Close-out
+
+### Q9
+
+**What was measured.** Five instructions in `LOLG.DAT` use memory displacement `0x185` on `ebx`: ten-byte zero stores `C7 83 85 01 00 00 00 00 00 00` at `0xCFB8B` and `0xD2E57`, compares `83 BB 85 01 00 00 00` at `0xD2E30` and `0xD2E47`, and `8D 83 85 01 00 00` at `0xD2E39`. Three other copies of the bytes `85 01 00 00` are conditional-jump displacements, not memory operands.
+
+**What was tried.** This scan classified every embedded `85 01 00 00` in the code object. The page already records the two zero stores and the lesson use that left the field at zero.
+
+**What would settle it.** The running-game test is not yet run ([timed message 0x26](NEEDS_A_RUNNING_GAME.md#q9-what-starts-the-timed-message-0x26)). A runtime watch on player +0x185 distinguishes the first nonzero store from its observed expiration at `0xD2E57`.

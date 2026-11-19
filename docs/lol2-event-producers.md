@@ -199,3 +199,13 @@ group's local-byte-16 write at `L1_DC.MIX+0x6E93BB`.
 The click also called `0x95A64` to transfer the item to the player.
 Thus an ordinary empty-hand left click reaches a placed-item
 group and can pick up the same item on the same input.
+
+## Close-out
+
+### Q5
+
+**What was measured.** `L10_DC.MIX` holds 119 distinct kind-1 records on the object and placed-item lists, and actor 4's record at `+0xC8296B` is `0E 01 41 00 00 00 00 04 40 00 00 00 00 00`. Of those 119, byte +9 is nonzero in 96, byte +0xA is nonzero in 98, and byte +0xD is zero in every one.
+
+**What was tried.** This walk counted the endpoint bytes of each kind-1 record in that archive. The page already records that actor 4's value helper returns zero and names the shade callers at `0x129C23` and `0x13C845`.
+
+**What would settle it.** The running-game test is not yet run ([probes not yet run](NEEDS_A_RUNNING_GAME.md#probes-not-yet-run)). Match a primitive to that actor at `0x129C23` (scalar, 256-byte shade row) or `0x13C845` (three packed channels).

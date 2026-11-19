@@ -378,3 +378,13 @@ The receivers are the class +0x80 handlers described in
 the packet word bits mean on screen. To name a bit, follow the packet
 at `0xF7774` into the selected +0x80 receiver and compare an original
 contact that sets that bit with one where it is clear.
+
+## Close-out
+
+### Q8
+
+**What was measured.** The code in `LOLG.DAT` contains 20 byte stores (`C6 /0`) whose 8-bit displacement is 5. One, at `0x9B5E9`, is `C6 40 05 05`, and nine store immediate 0, including `C6 40 05 00` at `0x95830`. The handler-2 instructions from `0x960EA` to `0x96111` contain no memory displacement 5; their first twelve bytes are `A1 04 69 09 00 8B 00 05 88 00 00 00`.
+
+**What was tried.** This scan counted those displacement-5 byte stores. The page already records the constructor clear of instance +5, handler 102's store of 5, and the replacement read in that handler-2 window.
+
+**What would settle it.** The running-game test is not yet run ([probes not yet run](NEEDS_A_RUNNING_GAME.md#probes-not-yet-run)). Watch the held instance +5 across one use of handler 2 and compare it with the value written at `0x960EA–0x96111`. For the packet bits, follow the receiver called at `0xF7774` before and after that contact.

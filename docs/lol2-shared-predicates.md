@@ -139,3 +139,13 @@ of player +0x228 mask `0x80` after `0xD7ABC` and see whether player
 +0x229 and +0x85 admit the pointer write. For branches other than the
 72 exits, identify each event's linked command effect and all the
 leaves of its root predicate before assigning a narrative role.
+
+## Close-out
+
+### Q6
+
+**What was measured.** A disassembly of the code in `LOLG.DAT` finds eight `test byte [reg+0x228], 0x80` instructions, and all eight sit below `0xD7ABC`. From that address through the end of the code object the same scan finds zero, and the next mask of bit 0x80 on `[ebx+0x228]` is the seven bytes `80 A3 28 02 00 00 7F` at `0xD7B21`.
+
+**What was tried.** This scan looked for memory-immediate tests of that bit. The page already records the set of bit 0x80 at `0xD7ABC` and the clears through `0xD0138`.
+
+**What would settle it.** Follow the first read of player +0x228 bit `0x80` after `0xD7ABC`, and check the pointer-position gate at `0xD01D3`.
