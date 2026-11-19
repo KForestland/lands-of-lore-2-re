@@ -54,13 +54,15 @@ def trr_sources(data):
                 yield name, start, blob
 
 
-def check(data):
+def check(data, listing=False):
     found = []
     for name, offset, blob in trr_sources(data):
         rows = read_trr(blob)
         if write_trr(rows) != blob:
             raise ValueError(f"{name}+{offset:#x}: rebuilt TRR differs")
         found.append((name, len(rows)))
+        if listing:
+            print(f"{name}+{offset:#x} size={len(blob)} rows={len(rows)}")
     if len(found) != 8:
         raise ValueError(f"expected eight retail TRR tables, found {found}")
     print(f"CHECK text write: {len(found)} byte-identical TRR tables, "
@@ -69,10 +71,11 @@ def check(data):
 
 def main():
     parser = lol2_cli.tool_args(__doc__, writes=False)
+    parser.add_argument("--list", action="store_true", help="list source offsets and counts")
     args = parser.parse_args()
-    if not args.check:
-        parser.error("give --check to scan and compare the original TRRs in memory")
-    check(Path(args.data))
+    if not (args.check or args.list):
+        parser.error("give --check or --list to compare the original TRRs in memory")
+    check(Path(args.data), args.list)
     return 0
 
 

@@ -1550,7 +1550,8 @@
       ],
       "question_references": [],
       "tools": [
-        "tools/lol2_text_tables.py"
+        "tools/lol2_text_tables.py",
+        "tools/lol2_text_writer.py"
       ]
     },
     {

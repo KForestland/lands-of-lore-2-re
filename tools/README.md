@@ -468,4 +468,4 @@ python3 tools/doc_index.py --check
 
 The check also runs in `check_all.py` and GitHub Actions. It needs no game data.
 - `lol2_level_writer.py` — `--check` reconstructs command streams, event pools and predicates, then compares the complete 15 level MIX archives.
-- `lol2_text_writer.py` — `--check` finds shipped TRR message tables, rebuilds IDs, message boundaries and NUL-terminated records, and compares the original bytes.
+- `lol2_text_writer.py` — `--check` finds shipped TRR message tables, rebuilds IDs, message boundaries and NUL-terminated records, and compares the original bytes. `--list` prints each table's source offset, size and row count.

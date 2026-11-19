@@ -28,7 +28,7 @@ Five writers read the original DOS 1.30 files, build a replacement in memory and
 
 ## Text tables
 
-**CONFIRMED.** A TRR is a u32 count, the u32 message IDs, then count + 1 u32 offsets (counted from +4), then the NUL-terminated messages. The writer rebuilds the whole table from (ID, message) rows; IDs may repeat and be sparse. It finds the three loose tables beside `DAT` and the five stored inside MIX archives.
+**CONFIRMED.** A TRR is a u32 count, the u32 message IDs, then count + 1 u32 offsets (counted from +4), then the NUL-terminated messages. The writer rebuilds the whole table from (ID, message) rows; IDs may repeat and be sparse. It finds the three loose tables beside `DAT` and the five stored inside MIX archives. `--list` prints each source offset, size and row count. [Writing the stored tables](lol2-text-tables.md#writing-the-stored-tables)
 
 ## Run the checks
 

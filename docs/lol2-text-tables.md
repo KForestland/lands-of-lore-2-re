@@ -85,3 +85,25 @@ No sentence from a record is copied here.
 ## What would settle the rest
 
 The eight callers take the `0xEEA6D` branch and do not reach the `.aud` append; that is on the [spoken lines](lol2-speech.md) page. What reads text for the cue id they pass to VA `0xE3924` is still open. A second text reader, one that does not call VA `0xCF014`, would be a different container.
+
+## Writing the stored tables
+
+**CONFIRMED.** `tools/lol2_text_writer.py --check --data /path/to/DAT`
+reconstructs the eight copies in the table above, with 988 stored rows.
+The writer calculates the relative boundaries from the ordered ID and
+message fields, including empty messages and control bytes. The
+`--list` offsets include `LOCALLNG.MIX+0x1B185DF` for the help
+table and `MOVIES.MIX+0x87BFDB0` for the second archive copy of
+credits. The loose tables start at file +0. The check compares the
+original bytes before any substitution by `0x15F44C`.
+
+**UNCONFIRMED.** A separate LoL2 table that maps spoken cues to text.
+The TRR scan covered every MIX archive in `DAT` and beside it (except
+`CDCACHE.MIX`) and the loose TRRs, and finds only the eight tables
+above; the nine direct calls of the loader `0xCF014` name only the five message
+files. The eight spoken-line arms pass a cue to `0xE3924`, which stores it on the voice at
+`0xE3A08` ([Q13 close-out](lol2-speech.md#q13)). **Test:** follow
+indirect calls from the other room modules and match an index to voice
++4 or the table index from `0xEEB17`; a text reader found that way, or
+a second container not read through `0xCF014`, would settle it. Until
+then this is [Q13](OPEN_QUESTIONS.md), partly answered.
