@@ -125,3 +125,64 @@ The sheet's geometry table counts `actors` as 57. Its entity section is:
 
 11 records of 147 bytes, by name tag: `B_HUMAN` ×3, `GGUARD` ×2, `WORM` ×2, `GGCAPT` ×1, `Kenneth` ×1, `ROACH` ×1, `Roach` ×1.
 ```
+
+## Change one thing safely
+
+This example replaces the help message with ID 0 in a copy of
+`LOCALLNG.MIX`. **CONFIRMED.** The table starts at archive `+0x1B185DF`
+and its first message at `+0x1B1872F`. The replacement uses the same
+field length, so the other rows and MIX offsets stay at their stored
+positions. See [message tables](lol2-text-tables.md).
+
+The result is a modified copy for your own tests, not the original game.
+This repository ships no game files and no changed files. The script only
+reads your installation and writes only inside the new folder, so your
+original stays untouched. Keep the changed copy to yourself and do not
+share modified game files.
+
+From this repository's root, set `source` to your game folder containing
+`DAT`. Set `out` to a new directory outside the installation and the
+repository. The script refuses an output folder inside either and needs
+room for a full copy.
+
+```bash
+source="/path/to/LoL2"
+out="/path/to/my-lol2-copy"
+PYTHONPATH=tools python3 - "$source" "$out" <<'PY'
+from pathlib import Path
+import shutil
+import sys
+
+from lol2_mix_parser import read_mix_with_hashes
+from lol2_mix_writer import write_mix
+from lol2_text_writer import read_trr, write_trr
+from lol2_westwood_hash import ww_hash_v1
+
+source, out = (Path(arg).resolve() for arg in sys.argv[1:])
+repo = Path.cwd()
+if any(root == out or root in out.parents for root in (source, repo)):
+    raise SystemExit("choose a new output directory outside the source and repo")
+archive = Path("LOCALLNG.MIX")
+original, directory, base = read_mix_with_hashes(source / archive)
+members = [(key, start, original[base + start:base + start + size])
+           for key, start, size in directory]
+index, = (i for i, (key, _, _) in enumerate(members)
+          if key == ww_hash_v1("helptext.trr"))
+key, start, body = members[index]
+rows = read_trr(body)
+first, = (i for i, (key, _) in enumerate(rows) if key == 0)
+ident, text = rows[first]
+replacement = b"LOCAL TEST"
+if len(replacement) > len(text):
+    raise SystemExit("replacement exceeds the stored field length")
+rows[first] = ident, replacement.ljust(len(text), b" ")
+members[index] = key, start, write_trr(rows)
+rebuilt = write_mix(members, len(original) - base)
+shutil.copytree(source, out)
+(out / archive).write_bytes(rebuilt)
+PY
+python3 tools/lol2_inspect.py --data "$out/DAT" trr help --id 0
+```
+
+Expect the reader to display ID 0 at `+0x1B1872F`, 262 bytes including
+its terminating NUL, and the text `LOCAL TEST` followed by spaces.
