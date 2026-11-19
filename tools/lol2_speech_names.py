@@ -13,7 +13,6 @@ import os
 import struct
 import sys
 
-import capstone
 
 import lol2_cli
 from lol2_mix_parser import read_mix_with_hashes
@@ -106,6 +105,7 @@ def check_cue_pointer_uses(image):
     page_size = struct.unpack_from("<I", image, le + 0x28)[0]
     first, count = struct.unpack_from("<II", image, 0x3BD90 + 0xC)
     record_lengths = {(2, 0): 5, (7, 0): 7, (7, 16): 9, (19, 0): 7}
+    import capstone  # only the program census needs it
     decoder = capstone.Cs(capstone.CS_ARCH_X86, capstone.CS_MODE_32)
     kinds = {"player": 0, "cleanup": 0, "compare": 0, "null test": 0, "store": 0}
     via_jump = 0
