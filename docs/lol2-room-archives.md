@@ -37,6 +37,42 @@ The copy does not itself change case. The compare that selected the index alread
 
 The same cut-and-append names the other 44 archives. `DAT/TDOOR.MIX` is a MIX of 11 entries and `DAT/TINT.MIX` is a MIX of 92. Their entries other than the code entry were not framed.
 
+## The extra ARENA archive
+
+**CONFIRMED.** `DAT/ARENA.MIX` has two entries. Directory entry 1
+at file +0x12 carries key `0x0CBF521D`, the hash of
+`WOMS\ARENA_.WOM`. It points to `+0x1E`, length `0x5E8`, and has
+the same executable-module prefix as the table-bound room modules.
+Entry 0 at `+0x606` is a 13-byte marker. The executable room-name table
+at `LOLG.DAT+0x1CFA90` has no `arena_` row.
+
+**CONFIRMED.** All three direct callers of the table-based archive
+builder `0xED470` use its indexed path (`0xED5B5`, `0xED72A`,
+`0xEDB5A`). The name-driven caller searches the same table in
+`0xEDADD–0xEDB43`. On a miss, it selects index 0 before it calls
+`0xED470` (`0xEDB47–0xEDB5A`). Formatting a `.WOM` name follows at
+`0xEDB62–0xEDB89`. This path cannot supply `arena.mix` through a
+matching room-table row.
+
+The code object has 28 direct calls to archive constructor
+`0x11C654`. The 15 calls in `0x95E07–0x9A63C` build the
+`SPKSTON%d.MIX` name (`LOLG.DAT+0x1C1BD4`). The two dynamic
+movie-path calls at `0x9BFAC` and `0x9C02B` use a stem from
+`[0xCA20 + 8*i]`; the suffixes at `LOLG.DAT+0x1C1BFE` and
+`+0x1C1C03` are `.MIX` and `I.MIX` (`0x9BE06–0x9BE40`,
+`0x9BFDC–0x9C02B`). The only case-insensitive `arena` text in
+`LOLG.DAT` is the movie stem `arenaapr` at `+0x1C3D1A`.
+Room-related external literals survive in `SHAMAN.MIX+0x248B`,
+`SETTLE1.MIX+0x73C` and `L8_SJ.MIX+0xD10AD9`; they are parts of
+longer script or module identifiers.
+
+**UNCONFIRMED.** Whether the retail game opens `ARENA.MIX` by a
+secondary route. Inspect calls imported by the external WOM modules,
+starting with the modules containing the cited Arena identifiers.
+An import that passes `ARENA.MIX` to the constructor, or a native
+open witness carrying that exact name, would establish the route.
+The archive's presence alone leaves it open.
+
 ## The code entry
 
 CONFIRMED for the banner, the two shared dwords and the four prologue bytes. This pass opened every archive the table names. Each file is `DAT/<name>.MIX` after the trailing `_` is cut off. Each of the 46 archives has exactly one entry whose first 32 bytes are the banner: the 31 characters `This is a linear executable dll` and a newline. After the banner, three little-endian dwords: `0x101`, a middle dword that differs from archive to archive, and `0x34`. At offset `0x64` the bytes are `53 56 57 55`, which is `push ebx` / `push esi` / `push edi` / `push ebp`. That entry is not always member 0.
