@@ -10,6 +10,7 @@ It contains documentation, tools and small tables of numbers. It contains no gam
 - **What you can do today:** list and unpack every archive, decode sounds, music and movies, read every level's geometry and scripts, follow one event from a click to its result, and look up what each item handler and spell does.
 - **Start in five minutes:** the [Quick start](#quick-start) below, then [Start here, by goal](docs/START_HERE.md), [How the game works](docs/HOW_THE_GAME_WORKS.md) or the [worked example](docs/tutorial-one-event.md).
 - **What is still unknown:** the [open questions](docs/OPEN_QUESTIONS.md) (counts in the [rating](#rating)); most open points are the meaning of specific fields and effects. Some were tried in the [running game](docs/NEEDS_A_RUNNING_GAME.md) (the clock writer and a pickup's save changes are answered); the rest need later-game saves.
+- **What changed lately:** [what's new](docs/WHATS_NEW.md), newest first.
 - **The three games:** [LoL1](https://github.com/KForestland/lands-of-lore-1-re) · [LoL2](https://github.com/KForestland/lands-of-lore-2-re) · [LoL3](https://github.com/KForestland/Lands-of-lore-3-re) ([what they share](docs/series-formats.md), [how the engine changed](docs/engine-evolution.md)).
 
 ## Rating
@@ -18,7 +19,7 @@ Counted by `tools/rating.py` on the English DOS 1.30 copy; [how we rate](docs/HO
 
 <!-- rating:begin -->
 - **Files read:** 81 of 83 files in `DAT` (1,915.3 of 1,915.6 MiB) are accounted for to the last byte by a reader here.
-- **Rules traced:** 630 statements labelled CONFIRMED against the program or the files, 212 labelled UNCONFIRMED, on 110 current pages.
+- **Rules traced:** 630 statements labelled CONFIRMED against the program or the files, 212 labelled UNCONFIRMED, on 111 current pages.
 - **Seen in the running game:** 2 of 8 probes that need the original game running are answered.
 - **Open questions:** 20: 3 answered, 15 mostly, 2 partly.
 <!-- rating:end -->
