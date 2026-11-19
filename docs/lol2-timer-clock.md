@@ -175,10 +175,41 @@ samples (`0xE0BE9–0xE0C3E`). The timer service consumes an elapsed
 value only when called (`0xB8BDF–0xB8C21`); the menu loop does
 not directly invoke it.
 
-**UNCONFIRMED in play.** The first resumed delay with the unchanged
-ring history and a particular object countdown. To observe it, open
-and close the normal menu during an active kind-2 countdown. Record
-the event +8 countdown (subtracted at `0xB8CE4`), the marker (object +0,
-stored at `0x14FAB3` and `0x14FACE`), and the first post-menu sample at `0xE0BE9`.
-For a load, compare the three XOR-restored fields at `0xE7559`
-before the next frame update at `0xE0C5C`.
+### First countdown after save-load and menu pause
+
+**CONFIRMED, saved timer.** DOS 1.30 loaded the game-written L20_BB
+autosave with SHA-256 prefix `e2393dbe4d2b`. In that slot, the
+L61 active-count XOR at slot `+0x189819` is 1 and the first
+L62 pointer at `+0x189825` is `0x1120284C`. The rebasing
+arms `0xEA077/0xEA0C5` executed. The first live event was at
+`0x11202774`, or L9 buffer +0x18 in this run (L9 stored span
+starts at slot `+0x183669`). Its first six bytes
+`0A 02 18 00 30 80` identify kind 2, command offset 0x18 and
+flag byte 0x30. Mask 0x90 is present, so the service loads the
+whole-tick cell at `0xB8BE5`.
+
+**CONFIRMED, first service after load.** The three cells were zero
+at the section-67 reader entry (`0xE7418`, selector 67). The
+first service at `0xA055B` saw `0x30000/0x300/3`, which
+matches L67 XOR at slot `+0x189BDC`, decoded offsets
++0x14/+0x18/+0x1A. That same service changed event +8 from
+`0x0A0B` to `0x0A08` with AX=3 at `0xB8CE4`. Only then
+did `0xE0BE9` take the first new sample, 43. The first
+countdown therefore uses the restored triplet.
+
+**CONFIRMED, first service after pause.** A separate restore of
+the same slot used Escape and Resume Game with the same event
+active. During an eight-second menu interval the event was
+`0x0A05` at both snapshots, the frame-clock marker was zero,
+and the ring stayed `[24, 43, 27, 24]`. The resume path
+`0xB96A7 → 0xA033D → 0xA034A` cleared the frame accumulator
+from 3 to zero and reanchored the marker at `0x0F31`
+(`0x14FACE`, read back at `0xA034F`).
+The first countdown ran before the first new sample. It
+subtracted the existing whole-tick cell 4 at `0xB8CE4`,
+taking +8 from `0x0A05` to `0x0A01`. The subsequent frame
+sample at `0xE0BE9` was 24, with marker `0x0F49`.
+That marker is 24 counts after the resume anchor. The observed
+menu interval did not advance the countdown or enter the next
+raw frame sample. The first debit and the new clock sample
+are distinct points in the update order.

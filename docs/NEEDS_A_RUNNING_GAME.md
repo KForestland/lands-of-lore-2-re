@@ -144,21 +144,6 @@ prop +0x25. Binding to prop 1050 with byte zero reaches group
 `0x228E` and its cursor grant. A different pointer identifies
 the object supplying the predicate's state.
 
-### Q7 (menu). Which countdown value does the first frame after the menu use?
-
-Question: [Q7 in OPEN_QUESTIONS](OPEN_QUESTIONS.md).
-
-**CONFIRMED in code.** Pause stops the frame clock `0x22C44` and resume
-resets and reanchors it (`0xA023E`, `0xA033D`, `0xA034A`); the menu may
-run one frame update in between (`0xB938C`). [Save restore and menu
-pause](lol2-timer-clock.md#save-restore-and-menu-pause)
-
-**UNCONFIRMED in play.** Open and close the normal menu during an active
-kind-2 countdown. Record the event +8 countdown (subtracted at
-`0xB8CE4`), the clock marker (stored at `0x14FAB3` and `0x14FACE`) and
-the first post-menu sample at `0xE0BE9`; expect a sample that covers only
-the time since resume.
-
 ## Answered probes
 
 ### Q7. Which live writer supplies the timer service?
@@ -179,6 +164,18 @@ two values `0x34000` and `0x340` yielded whole ticks 4 and 3 on
 adjacent frames. A slowed frame supplied `0x7B000`, `0x7B0`, and 7 to
 the service before the subtraction at `0xB8CE4`.
 [Live trace and conversion formulas](lol2-timer-clock.md#live-write-and-conversion)
+
+### Q7 (save-load and menu). What does the first resumed countdown use?
+
+**ANSWERED, CONFIRMED.** The same kind-2 L20_BB event first
+used 3 restored whole ticks after load (`0x0A0B` → `0x0A08`).
+In a separate normal-menu trial it stayed at `0x0A05` for
+eight seconds, then used 4 retained whole ticks on resume
+(`0x0A05` → `0x0A01`). Both first debits at `0xB8CE4`
+preceded the first new sample at `0xE0BE9`. In the pause
+trial that new sample was 24, with the marker advancing only
+`0x0F31` → `0x0F49` since `0xA034A` restarted the clock.
+[Slot offsets and native trace sequence](lol2-timer-clock.md#first-countdown-after-save-load-and-menu-pause)
 
 ### Q11. Which saved rows change on a known pickup?
 
