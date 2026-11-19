@@ -25,7 +25,7 @@ These are counts of work done, not a percentage of how complete the project is. 
 
 <!-- rating:begin -->
 - **Files read:** 83 of 83 files in `DAT` (1,915.6 of 1,915.6 MiB) have their whole layout read by a tool here: every byte belongs to a known header, directory, entry, chunk, segment or resource, or to zero padding between them; the DOS part of `SETUP.EXE` is counted by its length (what is inside an entry may still be only partly understood).
-- **Rules traced:** the pages mark 713 statements CONFIRMED (proved from the program code or the files) and 168 UNCONFIRMED (a reading not yet proved), on 113 current pages; old notes kept as history are not counted.
+- **Rules traced:** the pages mark 716 statements CONFIRMED (proved from the program code or the files) and 169 UNCONFIRMED (a reading not yet proved), on 114 current pages; old notes kept as history are not counted.
 - **Seen in the running game:** 4 of 9 probes that need the original game running are answered (a question can have more than one probe); 0 of them rest on edited saves only.
 - **Open questions:** 20 numbered questions: 5 answered, 14 mostly answered, 1 partly answered.
 <!-- rating:end -->
@@ -51,6 +51,8 @@ python3 tools/full_report.py --out "../lol2-out/report"
 The MIX command prints the archive path, then `Entries: 3`, then one line per entry with its name key, offset and size. The report command writes an inventory, level sheets and text counts to the named folder. On Windows, use `py -3 -m venv .venv` and `.\.venv\Scripts\python.exe` in place of `python3`. Set `$env:LOL2_DAT = 'D:\Games\LoL2\DAT'` in PowerShell, or pass `--data` with a quoted folder path to each tool.
 
 ## Tools at a glance
+
+[How a level is put together](docs/HOW_A_LEVEL_IS_PUT_TOGETHER.md)
 
 What you can look at with your own copy of the game. Run from the clone with `export LOL2_DAT=/path/to/your/LOL2/DAT` (and `LOL2_SLOT` set to one of your own save files for the last line); pictures and files go only where you point them (here `../lol2-out`, outside the clone; make it first with `mkdir -p ../lol2-out`). Every tool and option is in [`tools/README.md`](tools/README.md), with a table of every format and how to look at it.
 
