@@ -27,7 +27,7 @@ The table pointer `[0x22D08]` is the same 8-byte-row table that the [opcode refe
 |---|---|---|
 | 0–1 | the side of the region the row stands on | CONFIRMED on the data (below) |
 | 2–3 | class: 0, 4, 8 or 12 | values CONFIRMED; meanings below |
-| 4 | special row | CONFIRMED as a fractional side segment (`0x11471C–0x114724` dispatches to `0x11511C`) |
+| 4 | special row | CONFIRMED as a fractional side segment (`0x11471C–0x114724` dispatches to `0x11511C` when region +0x1C bit 7 is clear; otherwise `0x115250`) |
 
 **Classes on the data.** Counted over all 15 levels:
 - **Class 4** stands on wall sides: 31,645 rows, nearly all of the wall-side rows.
@@ -42,7 +42,10 @@ region's ceiling at the top, using the slope helper when flagged.
 `0x114CCE–0x114D20` obtains the bottom from the neighbour's ceiling,
 clamped at the owning floor for flat geometry. Class 8 obtains its
 bottom from the owning floor at `0x114D48–0x114D86`, then its top from
-the neighbour floor at `0x114D89–0x114E62`. The live record stores
+the neighbour floor at `0x114D89–0x114E62`; when region byte +0x22 is
+not `0xFF` and that floor is above the owning ceiling, the top becomes
+the owning ceiling and byte +0x31 advances by
+`diff >> (((+0x3E >> 14) & 3) - 1)`, a V offset (`0x114DEC–0x114E51`). The live record stores
 top heights at +4 and +0x10, bottom heights at +0x28 and +0x1C. The
 ordinary constructor passes row +6 bit 7 at `0x11472B–0x114738`, which
 lets the connector path choose endpoints or height sources separately.
@@ -63,11 +66,11 @@ bottom = top - (b7 << 16)
 
 The height stores are `0x115173–0x11518F`, the endpoint loads and stores
 `0x115192–0x115243`, and `0x11523A` marks the quad active. The
-arithmetic uses signed right shifts and 32-bit results. The constructor
-zeros the two byte offsets at wall object +0x30/+0x31, then initializes
-wall object +0x40 using byte 4 from the first earlier same-code ordinary
-row in the region, or `0x7F` when none was found
-(`0x114644–0x11467F`). Across the 15 archives, 45 of 67 special rows
+arithmetic uses signed right shifts and 32-bit results. The caller loop
+sets wall object +0x40 to `0x7F` (`0x11464D`), replaces it with byte 4
+of the first earlier ordinary row in the region whose code equals the
+special row's code with bit 4 cleared, and then zeros the byte offsets
+at +0x30/+0x31 (`0x114644–0x11467F`). Across the 15 archives, 45 of 67 special rows
 have that earlier ordinary row, and 22 use the fallback under this path.
 The level report rechecks both counts from header +0x08 and +0x0C.
 
@@ -93,7 +96,9 @@ All four rows stand on side 0, which opens into region 37 (floor 55, ceiling 75)
 | 7,450 | 11,519,018 | `ef 01 2b 00 80 08 10 00` | 8 | 8 |
 | 7,451 | 11,519,026 | `ef 01 4c 4e 80 0c 10 00` | 12 | 12 |
 
-**CONFIRMED.** A bounded replay of the original `0x114AA4` routine
+**CONFIRMED.** A bounded static replay (a reimplementation of the
+original `0x114AA4` routine run on the file data; two independent
+replays agree, neither is committed yet) of `0x114AA4`
 with the on-disk regions at `+0xAFD902` and `+0xAFDF5E`, and the level's
 vertex table, gives the following four active quads. The replay supplies
 table pointers and reports the constructor output. Heights below are in
@@ -117,6 +122,7 @@ The constructed opening has both horizontal and vertical bounds. UNCONFIRMED. Ra
 
 ## Open ([Q16](../OPEN_QUESTIONS.md))
 
-- The other row bytes: bytes 0–1 look like a texture or resource word, bytes 2–4 hold setup values the constructor copies (replayed on L1_DC by `tools/draracle/lol2_extract_wall_records.py`), and bytes 6–7 hold flags (bit 7 of byte 6 selects connector heights, per the cave page).
+- The other row bytes: bytes 0–1 look like a texture or resource word, bytes 2–4 hold setup values the constructor copies (replayed on L1_DC by `tools/draracle/lol2_extract_wall_records.py`), and bytes 6–7 hold flags (bit 7 of byte 6 selects connector endpoints for classes 0/8 and the height source for classes 4/12, as traced above).
 - The preceding replay stops at the constructed quad. To link the Huline Temple witness to the one sampled L20_BB span, pass the four output quads at `0x114753` into `0x1322A4`. Follow the three stored setup words at runtime wall +0x32/+0x34/+0x36 (`0x114763–0x11478B`) to the clipping and sampler initialization for each surviving span. Full UV mapping remains UNCONFIRMED.
-- Selection of the alternate constructor at `0x114710` and its effect on this example in a running game remain UNCONFIRMED.
+- The alternate constructor `0x115250` is selected when region +0x1C bit 7 is set (`0x1145CE–0x1145DC`, call at `0x114710`); none of the 67 special rows sits in such a region. Its behaviour remains UNCONFIRMED.
+- Commit the replay of `0x114AA4` as a tool so the table above can be re-run.

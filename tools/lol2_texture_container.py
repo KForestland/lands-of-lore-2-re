@@ -359,7 +359,7 @@ def validate_row_payload(blob, start, size):
 
 
 def check(data_dir):
-    """Walk every level .TE_ and pin the flag layouts measured on 2026-11-18."""
+    """Walk every level .TE_ and pin the flag layouts measured on 2026-11-18 (row framing added 2026-11-19)."""
     bad = []
     counts = collections.Counter()
     levels = 0

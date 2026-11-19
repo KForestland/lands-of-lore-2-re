@@ -23,9 +23,9 @@ low-nibble-first IMA decoder already used for LoL2 speech (predictor and step in
 
 `LOCAL.MIX` holds 33 entries that start with the 18 bytes `HMI-MIDISONG061595`. The same bytes are at `LOLG.DAT` file `0x1C5D90` (object-5 cell `0x4D6C`). VA `0x16A8C9` compares the loaded buffer with that string and stores error `0x0E` when it does not match.
 
-32 of the 33 keys are `ww_hash_v1` of `MUSIC\<stem>.HMI` for the 32 real stems in the table at file `0x1CE10C` ([the selection note](lol2-music-selection.md)). CONFIRMED. The direct builder at VA `0xCA8E0` appends `credits.hmi` at `LOLG.DAT+0x1C26C9` and calls the HMI loader at `0xCAA57`. Both hashes of `MUSIC\\CREDITS.HMI` are `0x1305A4F0`, entry 71.
+32 of the 33 keys are `ww_hash_v1` of `MUSIC\<stem>.HMI` for the 32 real stems in the table at file `0x1CE10C` ([the selection note](lol2-music-selection.md)). CONFIRMED. The direct builder at VA `0xCA8E0` appends `credits.hmi` at `LOLG.DAT+0x1C26C9` and calls the HMI loader at `0xCAA57`. Both hashes of `MUSIC\CREDITS.HMI` are `0x1305A4F0`, entry 71.
 
-`tools/lol2_hmi_midi.py --check` re-reads the songs, walks every track to its end marker, and builds a standard MIDI file in memory and checks all 33 names. It writes nothing.
+`tools/lol2_hmi_midi.py --check` re-reads the songs, walks every track to its end marker, and builds a standard MIDI file in memory, and checks all 33 names. It writes nothing.
 
 ### Song
 

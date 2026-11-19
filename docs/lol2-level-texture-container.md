@@ -219,7 +219,7 @@ In `L10_DC.MIX`, descriptor 1 mip 0 (`0x028E`, 320×200) starts at decoded
 bank `+0x2762E7` and is 7,659 bytes. The 37 pairs from payload
 `+0x2762EF` are `(0x0140, 0)`. The next pair at bank `+0x276383` is
 `(0x40A9, 6)` and is followed by six bytes. All four values of the first
-word's high two bits occur across the banks. UNCONFIRMED. The significance
+word's high two bits occur across the banks. UNCONFIRMED: the meaning
 of those bits, the treatment of uncovered pixels and the native reader
 address. The counted spans establish byte framing.
 
@@ -231,7 +231,7 @@ word. In `L10_DC.MIX`, descriptor 699 mip 0 at decoded bank
 zero bytes and one `03` between the header and the payload. The payload
 at record `+0x16` begins `2F 5A 00 66 00 76 00`. Only mip 0 is populated.
 
-UNCONFIRMED. The `0x1246` payload and the other six payload-length flags
+UNCONFIRMED. The `0x1246` payload and the other six payload-length flags (of which `0x02AC`, in two descriptors with four mips, also frames under the row rule above; the other five do not)
 have no verified row decoder. Feeding one sample of each to the movie
 LCW and mode-byte LZ77 decoders produced no exact pixel count. A direct
 comparison with `0x1246` was absent in the code scan. To settle it, trace

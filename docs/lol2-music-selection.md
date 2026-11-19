@@ -61,17 +61,17 @@ CONFIRMED. `DMUSIC.MIX` has 33 entries. For every stem except the empty slot and
 ### The direct credits path
 
 CONFIRMED. At VA `0xCA8E9` and `0xCA90A` the original builds its prefix
-with the literals `music` and `\\` at `LOLG.DAT+0x1C26B5` and
+with the literals `music` and `\` at `LOLG.DAT+0x1C26B5` and
 `+0x1C26BB`. For audio mode 2, `0xCA976` appends `credits.aud`
 (`+0x1C26BD`) and `0xCA9D9` calls the digital loader `0x155850`.
 For mode 1, `0xCA9FB` appends `credits.hmi` (`+0x1C26C9`) and
 `0xCAA57` calls `0x156BD0`. Both branches store the resulting handle
 at data `0xB7F20` (`0xCA9E1`, `0xCAA5F`).
 
-Both Westwood hashes of `MUSIC\\CREDITS.AUD` are `0x22F7A4EB`,
+Both Westwood hashes of `MUSIC\CREDITS.AUD` are `0x22F7A4EB`,
 `DMUSIC.MIX` entry 16, size 2,784,067. Its header gives rate 22050,
 flags 2, codec 99 and first chunk id `0xDEAF`. Both hashes of
-`MUSIC\\CREDITS.HMI` are `0x1305A4F0`, `LOCAL.MIX` entry 71,
+`MUSIC\CREDITS.HMI` are `0x1305A4F0`, `LOCAL.MIX` entry 71,
 size 23,055, starting with `HMI-MIDISONG`. These two names come
 directly from code, separate from the indexed stem table at
 file `0x1CE10C`.
