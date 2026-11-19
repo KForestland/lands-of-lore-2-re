@@ -2,7 +2,6 @@
 """Decode bounded 28E row-span previews; alpha semantics remain provisional."""
 import argparse,json,struct
 from pathlib import Path
-from PIL import Image
 from lol2_cache_named_wall_fixture import load_named,require,sha
 from lol2_extract_cave_materials import ASSET,HASH
 from lol2_wall_material_checkpoint import sections
@@ -28,6 +27,8 @@ def decode_rows(data, expected_flags=0x28e, allow_special=False):
 
 
 def main():
+    from PIL import Image
+
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('--game-root',type=Path,required=True);p.add_argument('--out',type=Path,required=True);a=p.parse_args()
     _,blob,_,_=load_named(a.game_root,ASSET);require(sha(blob)==HASH,'Cache changed');s=sections(blob)
     paloff=struct.unpack_from('<I',blob,4)[0];pal=rgb_palette(blob[paloff:paloff+768],6)

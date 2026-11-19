@@ -4,7 +4,6 @@ import argparse
 import json
 import struct
 from pathlib import Path
-from PIL import Image
 from lol2_cache_named_wall_fixture import load_named, require, sha
 from lol2_extract_cave_materials import ASSET, HASH
 from lol2_extract_draracle_geometry import parse_mix
@@ -35,6 +34,8 @@ def partition_entities(records, table):
 
 
 def main():
+    from PIL import Image
+
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--game-root', type=Path, required=True)
     p.add_argument('--out', type=Path, required=True)

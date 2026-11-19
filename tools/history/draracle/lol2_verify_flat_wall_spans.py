@@ -2,7 +2,6 @@
 """Replay call-free native flat middle wall spans; defer slopes/special links."""
 import argparse,json,struct,hashlib
 from pathlib import Path
-import capstone
 from lol2_extract_draracle_geometry import decode,s16
 from lol2_verify_target_resolver import ResolverReplay
 from lol2_verify_draracle_slopes import EXE_HASH
@@ -75,6 +74,8 @@ class WallReplay(ResolverReplay):
    pc=nxt
   raise ValueError('Instruction limit')
 def main():
+ import capstone
+
  p=argparse.ArgumentParser(description=__doc__);p.add_argument('--game-root',type=Path,required=True);p.add_argument('--out',type=Path,required=True);a=p.parse_args()
  source=(a.game_root/'DAT/L1_DC.MIX').read_bytes();_,e,raw,verts,records,regions=decode(source)
  exe=(a.game_root/'LOLG.DAT').read_bytes();assert hashlib.sha256(exe).hexdigest()==EXE_HASH

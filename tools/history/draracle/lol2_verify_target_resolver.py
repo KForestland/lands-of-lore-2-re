@@ -2,7 +2,6 @@
 """Static original-code target resolution with synthetic runtime tables, not placement binding."""
 import argparse, hashlib, json
 from pathlib import Path
-import capstone
 from lol2_verify_draracle_slopes import Replay, EXE_HASH
 
 class ResolverReplay(Replay):
@@ -61,6 +60,8 @@ class ResolverReplay(Replay):
         raise ValueError('Instruction limit')
 
 def main():
+    import capstone
+
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('--game-root',type=Path,required=True);p.add_argument('--out',type=Path,required=True);a=p.parse_args()
     exe=(a.game_root/'LOLG.DAT').read_bytes()
     if hashlib.sha256(exe).hexdigest()!=EXE_HASH:raise ValueError('Executable changed')

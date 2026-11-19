@@ -5,8 +5,6 @@ rejects any unsupported instruction. This is static replay, not a live capture.
 """
 import argparse, hashlib, json, struct
 from pathlib import Path
-import capstone
-from capstone.x86_const import X86_OP_REG, X86_OP_IMM, X86_OP_MEM
 from lol2_extract_draracle_geometry import decode, slope_corners, s16
 
 EXE_HASH='b27a35341c6e877e40b1540b6482748e7a750c605fefe6452431b18a5d766775'
@@ -37,11 +35,15 @@ class Replay:
         if not 0<=a<=len(self.mem)-n:raise ValueError('Replay memory bounds')
         self.mem[a:a+n]=(v&((1<<(8*n))-1)).to_bytes(n,'little')
     def get(self,i,o):
+        from capstone.x86_const import X86_OP_IMM, X86_OP_MEM, X86_OP_REG
+
         if o.type==X86_OP_IMM:return o.imm
         if o.type==X86_OP_REG:return self.reg(i.reg_name(o.reg))
         if o.type==X86_OP_MEM:return self.readmem(self.addr(i,o),o.size)
         raise ValueError('Unsupported operand')
     def put(self,i,o,v):
+        from capstone.x86_const import X86_OP_MEM, X86_OP_REG
+
         if o.type==X86_OP_REG:self.setreg(i.reg_name(o.reg),v)
         elif o.type==X86_OP_MEM:self.writemem(self.addr(i,o),o.size,v)
         else:raise ValueError('Unsupported destination')
@@ -82,6 +84,8 @@ class Replay:
         raise ValueError('Replay instruction limit')
 
 def main():
+    import capstone
+
     ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('--game-root',type=Path,required=True);ap.add_argument('--out',type=Path,required=True);a=ap.parse_args()
     exe=(a.game_root/'LOLG.DAT').read_bytes()
     if hashlib.sha256(exe).hexdigest()!=EXE_HASH:raise ValueError('Executable changed')
