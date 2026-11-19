@@ -38,12 +38,32 @@ ordinary deferred dispatch it takes the direct-coordinate path, because
 `0x04` is set and `0x20` is clear. X/Y become `536<<16` and `11154<<16`.
 The absence of `0x100` leaves Z unchanged on that path.
 
-**UNCONFIRMED.** The player-specific dword's presentation meaning and the
-full downstream collision and qualification behavior of `0xDD8F4` remain
-open. The register computations and the caller's stores were traced above.
-To settle those details, follow consumers of `[0x22CB1]` and compare the XYZ
-and obstruction outputs of `0xDD8F4` for one Z-enabled command in two
-regions with different geometry.
+### Deferred continuations
+
+**CONFIRMED.** The original object-update switch calls vtable +0x18
+with 0 for the end-of-movement return and 1 for the direct-coordinate
+return (`0xB2AE2–0xB2AFA`). Player vtable +0x18 at
+`LOLG.DAT+0x1C6C5C` resolves to `0xD0204`. Argument 1 clears
+player +0x227 bit 0x10. If player dwords +0xB5 and +0xB9 are
+both zero the wrapper sets them to `0x3FFFFFFF` and `0xC0000000`
+and clears byte +0x1E5, then forwards to `0xAF260`
+(`0xD0204–0xD024E`). Creature vtable +0x18 at
+`LOLG.DAT+0x1C690C` goes directly to `0xAF260`.
+The 0/3 continuation calls `0xAF9A4` with the object after setting
+`[0xB7D68]` to 1 (`0xB2B07–0xB2B15`).
+
+**CONFIRMED.** `[0x22CB1]` contributes to vertical projection. The
+renderer arithmetic at `0x137719–0x137735` adds the product of
+`(s32([0x22CB1]) >> 1)` and its local scale factor to the vertical
+term before testing the viewport. The paired write to object +0x1E
+is passed to `0x7C908` and stored in controller word +0x3FC
+(`0xB2AB3–0xB2ABD`, `0x7C95F–0x7C96A`).
+
+**UNCONFIRMED.** Presentation units, downstream `0xDD8F4` corner
+cases and dynamic +0x18 receivers in the other selector pools. For one
+Z-enabled command, follow `0xDD8F4` to its region/object rejection
+branches and record the XYZ result. Follow the indirect call at
+`0xB2AE7` or `0xB2AFA` with a selected object from each remaining pool.
 
 ## Opcode 196
 
@@ -103,9 +123,37 @@ native initialization makes remaining delta −367 − (−395) = 28 and
 sets the floor-active bit. The per-update numerator uses `floor(5*100/2)`
 = 250. Event scripts or prior commands may change the row before this site runs.
 
-**UNCONFIRMED.** The eight stores and primary rate/height calculation are
-resolved. The complete admission rules under `0xB6D98` and the reversal path for
-flags `0x04|0x08` still need a state witness. To isolate them, compare two
-native invocations with the same region and opposite signed deltas, and record
-command +4/+0xA and region +0x28 before and after the checks at
-`0x64E6E–0x64EB4` and `0xB8642`.
+### Admission and reversing commands
+
+**CONFIRMED.** The start request's second argument must be nonzero
+and the chosen region side's active bit must be clear for a new
+initialization (`0x64E13–0x64E56`). On the conflicting-start path
+with nonzero remaining delta and both option bits `0x04` and `0x08`
+set, the low-word arithmetic changes the signed height operand `H`
+to `−H` and the remaining delta `R` to `R − H` in both sign arms
+(`0x64E6E–0x64EB8`). This is a modulo-65536 update to both words.
+On normal completion with those bits set, `0x6525F` negates the
+height operand again. Original examples with those options are
+`L14_HT.MIX+0xB300DA` (floor, options `0x0C`) and `+0xB300F8`
+(ceiling, options `0x0D`), both with a zero initial remaining word.
+
+**CONFIRMED.** The gate at `0xB861C` checks every resident node,
+then follows a list of up to four nonnull neighboring regions only
+when all resident calls passed (`0xB862B–0xB86B9`). The routine
+`0xB6D98` receives object, region, step and side. Its early filters
+include zero step, object flag `0x80` clear, nonzero class slot +0x78,
+object flag `0x200000` set, or region +0x1C bit `0x80` set
+(`0xB6D9F–0xB6DF6`). These branches bypass the obstruction comparison.
+The comparison path derives upper and lower surfaces from the region
+words or coordinate-dependent helpers, applies the signed step on the
+selected side and compares clearance to class slot +8 shifted left 16
+(`0xB6DFC–0xB6E9A`). Remaining obstruction goes to the class path
+at `0xB6EA0`, which can return zero or deliver a hit through slot
++0x80 (`0xB6F41–0xB6FA8`). Passing paths can add the shifted step to
+object +0x1A and set its update flag, depending on its side and region
+binding (`0xB6FB2–0xB70C1`).
+
+**UNCONFIRMED.** Which nearby objects make the same geometry command
+stop in play. Isolate a floor or ceiling command while changing only
+one resident object, then compare the virtual methods at `0xB6DCC`,
+`0xB6E8F` and the returned gate at `0x65111–0x65118`.
