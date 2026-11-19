@@ -80,7 +80,7 @@ Run each `--check` and print one line each, then a summary.
 $ python3 tools/check_all.py | sed -n '1,2p;$p'
 CHECK repo_guard: N tracked files; game files, media, stray images, files over 300 KB, machine paths, words from the local list, or commit identities: none (0); private word list: not present, skipped
 CHECK mix: 81 MIX files, 2905 entries; this reader and lol2_source_format.parse_mix agree and every entry lies inside its file: 81/81; index sorted by signed key: 81/81 (by unsigned key: 20); bad=none
-ALL 34 CHECKS PASSED
+ALL 35 CHECKS PASSED
 ```
 
 ### `doc_links.py`
@@ -436,3 +436,20 @@ Set `LOL2_DAT` or pass `--data` for the original game's DAT directory. Run `--he
 | `--summary` for script notes | Summaries contain the checked-in excerpts. `--out` selects the full external listings. |
 | `lol2_aud_decode.py` without `--out` | It prints the AUD header and writes nothing. Before, it wrote `<archive>_entry<N>.wav` into the current folder. A WAV is now written only to an explicit `--out` path, like every other tool. |
 | Older output flags and positional arguments | Old spellings are kept as aliases and shown in `--help`. `lol2_aud_decode.py --output`, `lol2_sound_bank.py --extract`, the image check's `--out-dir` and legacy exporter positional paths still work. The [historical helpers](history/README.md) retain their original switches, including the cave pipeline's `--game-root` for pinned inputs. |
+
+## Documentation index
+
+`doc_index.py` reads the repository's Markdown pages and generates [docs/index.json](../docs/index.json).
+Its `pages` records include the title, original path, question IDs and cited tool source paths.
+`answers` uses the Page or Where column of [Open questions](../docs/OPEN_QUESTIONS.md).
+`question_references` records other references to the same IDs. The top-level `questions`
+object preserves the published state and lists each question's answer pages. Tool citations
+include command examples. The index covers the Markdown files shipped in the repository,
+including the root pages, example and evidence notes, and issue templates.
+
+```bash
+python3 tools/doc_index.py --out docs/index.json
+python3 tools/doc_index.py --check
+```
+
+The check also runs in `check_all.py` and GitHub Actions. It needs no game data.

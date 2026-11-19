@@ -16,5 +16,7 @@ jobs:
         run: python3 -m unittest
       - name: Run historical cave geometry tests
         run: python3 -m unittest discover -s tools/history/draracle
+      - name: Check the documentation index
+        run: python3 tools/doc_index.py --check
       - name: Check repository contents
         run: python3 tools/repo_guard.py --check

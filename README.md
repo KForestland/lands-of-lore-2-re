@@ -42,7 +42,7 @@ cd lands-of-lore-2-re
 python3 -m venv .venv && . .venv/bin/activate
 python3 -m pip install -r requirements.txt
 export LOL2_DAT="/path/to/your/LOL2/DAT"
-python3 tools/check_all.py                      # 34 checks, ends with ALL 34 CHECKS PASSED
+python3 tools/check_all.py                      # 35 checks, ends with ALL 35 CHECKS PASSED
 python3 -m unittest discover -s tests
 python3 tools/lol2_mix_parser.py --data "$LOL2_DAT" L1_DC.MIX   # list the entries of level 1's archive
 python3 tools/full_report.py --out "../lol2-out/report"
@@ -74,7 +74,7 @@ What you can look at with your own copy of the game. Run from the clone with `ex
 
 ## What you get
 
-[Walk through one level from its map to its exit](docs/TOUR.md).
+[Walk through one level from its map to its exit](docs/TOUR.md). Search the [JSON documentation index](docs/index.json) by page, question or tool.
 
 - **Format and engine pages** in [`docs/`](docs): archives, level scripts, level geometry, walls and textures, items, sound, music and movies. Short pages, one per format with worked examples: [`docs/formats/`](docs/formats/README.md). One sheet per level, generated from the level archives: [`docs/levels/`](docs/levels/README.md).
 - **Tools** in [`tools/`](tools/README.md): archive reader, name hashing, decompressors, entity and level analysers, audio and video decoders, and the wall and level-geometry tools in `tools/history/draracle/`.

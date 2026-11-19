@@ -1,0 +1,1926 @@
+{
+  "schema_version": 1,
+  "question_source": "docs/OPEN_QUESTIONS.md",
+  "questions": {
+    "Q1": {
+      "state": "Mostly answered",
+      "answer_pages": [
+        "docs/formats/compression.md"
+      ]
+    },
+    "Q2": {
+      "state": "Answered",
+      "answer_pages": [
+        "docs/formats/room-sections.md"
+      ]
+    },
+    "Q3": {
+      "state": "Mostly answered",
+      "answer_pages": [
+        "docs/lol2-level-graph.md"
+      ]
+    },
+    "Q4": {
+      "state": "Mostly answered",
+      "answer_pages": [
+        "docs/lol2-script-motion.md",
+        "docs/lol2-script-opcodes.md"
+      ]
+    },
+    "Q5": {
+      "state": "Mostly answered",
+      "answer_pages": [
+        "docs/lol2-event-producers.md"
+      ]
+    },
+    "Q6": {
+      "state": "Mostly answered",
+      "answer_pages": [
+        "docs/lol2-shared-predicates.md"
+      ]
+    },
+    "Q7": {
+      "state": "Answered",
+      "answer_pages": [
+        "docs/NEEDS_A_RUNNING_GAME.md",
+        "docs/lol2-timer-clock.md"
+      ]
+    },
+    "Q8": {
+      "state": "Mostly answered",
+      "answer_pages": [
+        "docs/lol2-item-handlers.md"
+      ]
+    },
+    "Q9": {
+      "state": "Mostly answered",
+      "answer_pages": [
+        "docs/NEEDS_A_RUNNING_GAME.md",
+        "docs/lol2-spell-dispatch.md"
+      ]
+    },
+    "Q10": {
+      "state": "Mostly answered",
+      "answer_pages": [
+        "docs/NEEDS_A_RUNNING_GAME.md",
+        "docs/lol2-creature-observation.md"
+      ]
+    },
+    "Q11": {
+      "state": "Mostly answered",
+      "answer_pages": [
+        "docs/NEEDS_A_RUNNING_GAME.md",
+        "docs/lol2-save-field-witnesses.md",
+        "docs/lol2-save-sections.md"
+      ]
+    },
+    "Q12": {
+      "state": "Mostly answered",
+      "answer_pages": [
+        "docs/NEEDS_A_RUNNING_GAME.md",
+        "docs/formats/vqa.md",
+        "docs/lol2-vqa-v2.md"
+      ]
+    },
+    "Q13": {
+      "state": "Partly answered",
+      "answer_pages": [
+        "docs/lol2-speech.md",
+        "docs/lol2-text-tables.md"
+      ]
+    },
+    "Q14": {
+      "state": "Mostly answered",
+      "answer_pages": [
+        "docs/lol2-level-texture-container.md"
+      ]
+    },
+    "Q15": {
+      "state": "Answered",
+      "answer_pages": [
+        "docs/lol2-music-2026-11.md",
+        "docs/lol2-music-selection.md"
+      ]
+    },
+    "Q16": {
+      "state": "Mostly answered",
+      "answer_pages": [
+        "docs/draracle-restoration.md",
+        "docs/lol2-wall-material-provenance.md"
+      ]
+    },
+    "Q17": {
+      "state": "Mostly answered",
+      "answer_pages": [
+        "docs/NEEDS_A_RUNNING_GAME.md",
+        "docs/lol2-l8-controls.md"
+      ]
+    },
+    "Q18": {
+      "state": "Answered",
+      "answer_pages": [
+        "docs/levels/notes/README.md",
+        "docs/lol2-event-producers.md"
+      ]
+    },
+    "Q19": {
+      "state": "Answered",
+      "answer_pages": [
+        "docs/formats/entity-records.md"
+      ]
+    },
+    "Q20": {
+      "state": "Mostly answered",
+      "answer_pages": [
+        "docs/formats/mix.md",
+        "docs/lol2-cache-initializer.md"
+      ]
+    }
+  },
+  "pages": [
+    {
+      "path": ".github/ISSUE_TEMPLATE/bug_report.md",
+      "title": "Bug report",
+      "answers": [],
+      "question_references": [],
+      "tools": []
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/research_note.md",
+      "title": "Research note",
+      "answers": [],
+      "question_references": [],
+      "tools": []
+    },
+    {
+      "path": "CHANGELOG.md",
+      "title": "Changelog",
+      "answers": [],
+      "question_references": [],
+      "tools": [
+        "tools/lol2_aud_decode.py",
+        "tools/lol2_entity_field_analyzer.py",
+        "tools/lol2_sound_bank.py",
+        "tools/lol2_texture_container.py"
+      ]
+    },
+    {
+      "path": "CONTRIBUTING.md",
+      "title": "Contributing",
+      "answers": [],
+      "question_references": [],
+      "tools": [
+        "tools/check_all.py",
+        "tools/example_images.py",
+        "tools/repo_guard.py"
+      ]
+    },
+    {
+      "path": "README.md",
+      "title": "Lands of Lore II: file formats and game rules",
+      "answers": [],
+      "question_references": [
+        "Q4",
+        "Q7",
+        "Q8",
+        "Q9",
+        "Q10",
+        "Q11",
+        "Q12",
+        "Q13",
+        "Q15",
+        "Q16",
+        "Q20"
+      ],
+      "tools": [
+        "tools/check_all.py",
+        "tools/example_images.py",
+        "tools/full_report.py",
+        "tools/lol2_disassemble_scripts.py",
+        "tools/lol2_event_browser.py",
+        "tools/lol2_hmi_midi.py",
+        "tools/lol2_inspect.py",
+        "tools/lol2_level_map.py",
+        "tools/lol2_level_report.py",
+        "tools/lol2_level_schematic.py",
+        "tools/lol2_loose.py",
+        "tools/lol2_mix_parser.py",
+        "tools/lol2_numbers.py",
+        "tools/lol2_save_inspect.py",
+        "tools/rating.py",
+        "tools/repo_guard.py"
+      ]
+    },
+    {
+      "path": "data/README.md",
+      "title": "Data",
+      "answers": [],
+      "question_references": [],
+      "tools": []
+    },
+    {
+      "path": "docs/COOKBOOK.md",
+      "title": "Cookbook",
+      "answers": [],
+      "question_references": [],
+      "tools": [
+        "tools/full_report.py",
+        "tools/lol2_event_browser.py",
+        "tools/lol2_hmi_midi.py",
+        "tools/lol2_inspect.py",
+        "tools/lol2_level_report.py",
+        "tools/lol2_level_schematic.py",
+        "tools/lol2_mix_parser.py",
+        "tools/lol2_save_inspect.py"
+      ]
+    },
+    {
+      "path": "docs/EDITED_SAVES.md",
+      "title": "Runs on edited saves",
+      "answers": [],
+      "question_references": [
+        "Q12",
+        "Q17"
+      ],
+      "tools": []
+    },
+    {
+      "path": "docs/GLOSSARY.md",
+      "title": "Glossary",
+      "answers": [],
+      "question_references": [
+        "Q16"
+      ],
+      "tools": [
+        "tools/lol2_decompress_sphere.py",
+        "tools/lol2_inspect.py",
+        "tools/lol2_westwood_hash.py",
+        "tools/rating.py"
+      ]
+    },
+    {
+      "path": "docs/HOW_A_LEVEL_IS_PUT_TOGETHER.md",
+      "title": "How a LoL2 level is put together",
+      "answers": [],
+      "question_references": [],
+      "tools": []
+    },
+    {
+      "path": "docs/HOW_THE_GAME_WORKS.md",
+      "title": "How Lands of Lore II works",
+      "answers": [],
+      "question_references": [],
+      "tools": []
+    },
+    {
+      "path": "docs/HOW_WE_RATE.md",
+      "title": "How we rate this repository",
+      "answers": [],
+      "question_references": [],
+      "tools": [
+        "tools/check_all.py",
+        "tools/lol2_loose.py",
+        "tools/rating.py"
+      ]
+    },
+    {
+      "path": "docs/NEEDS_A_RUNNING_GAME.md",
+      "title": "LoL2 questions to test in the original DOS game",
+      "answers": [
+        "Q7",
+        "Q9",
+        "Q10",
+        "Q11",
+        "Q12",
+        "Q17"
+      ],
+      "question_references": [
+        "Q3",
+        "Q5",
+        "Q13",
+        "Q14",
+        "Q16",
+        "Q18"
+      ],
+      "tools": []
+    },
+    {
+      "path": "docs/NUMBERS.md",
+      "title": "LoL2 numbers at a glance",
+      "answers": [],
+      "question_references": [],
+      "tools": [
+        "tools/lol2_numbers.py"
+      ]
+    },
+    {
+      "path": "docs/OPEN_QUESTIONS.md",
+      "title": "Open questions",
+      "answers": [],
+      "question_references": [
+        "Q1",
+        "Q2",
+        "Q3",
+        "Q4",
+        "Q5",
+        "Q6",
+        "Q7",
+        "Q8",
+        "Q9",
+        "Q10",
+        "Q11",
+        "Q12",
+        "Q13",
+        "Q14",
+        "Q15",
+        "Q16",
+        "Q17",
+        "Q18",
+        "Q19",
+        "Q20"
+      ],
+      "tools": [
+        "tools/lol2_item_labels.py"
+      ]
+    },
+    {
+      "path": "docs/PROGRESSION.md",
+      "title": "Progression",
+      "answers": [],
+      "question_references": [],
+      "tools": [
+        "tools/lol2_progression.py"
+      ]
+    },
+    {
+      "path": "docs/QUICK_REFERENCE.md",
+      "title": "Format quick reference",
+      "answers": [],
+      "question_references": [],
+      "tools": [
+        "tools/lol2_aud_decode.py",
+        "tools/lol2_cache_seed.py",
+        "tools/lol2_decompress_sphere.py",
+        "tools/lol2_decompress_westwood.py",
+        "tools/lol2_entity_field_analyzer.py",
+        "tools/lol2_event_browser.py",
+        "tools/lol2_inspect.py",
+        "tools/lol2_level_report.py",
+        "tools/lol2_level_schematic.py",
+        "tools/lol2_mix_parser.py",
+        "tools/lol2_save_inspect.py",
+        "tools/lol2_sound_bank.py",
+        "tools/lol2_texture_container.py",
+        "tools/lol2_vqa_v2_decode.py"
+      ]
+    },
+    {
+      "path": "docs/README.md",
+      "title": "Docs",
+      "answers": [],
+      "question_references": [],
+      "tools": []
+    },
+    {
+      "path": "docs/START_HERE.md",
+      "title": "Start here, by goal",
+      "answers": [],
+      "question_references": [],
+      "tools": [
+        "tools/check_all.py",
+        "tools/lol2_aud_decode.py",
+        "tools/lol2_decompress_sphere.py",
+        "tools/lol2_disassemble_scripts.py",
+        "tools/lol2_entity_field_analyzer.py",
+        "tools/lol2_mix_parser.py",
+        "tools/lol2_sound_bank.py",
+        "tools/lol2_vqa_v2_decode.py",
+        "tools/lol2_westwood_hash.py"
+      ]
+    },
+    {
+      "path": "docs/STATUS.md",
+      "title": "LoL2 reverse-engineering status",
+      "answers": [],
+      "question_references": [
+        "Q1",
+        "Q3",
+        "Q4",
+        "Q7",
+        "Q8",
+        "Q9",
+        "Q10",
+        "Q11",
+        "Q12",
+        "Q13",
+        "Q14",
+        "Q16",
+        "Q17",
+        "Q18",
+        "Q20"
+      ],
+      "tools": [
+        "tools/check_all.py",
+        "tools/lol2_entity_field_analyzer.py",
+        "tools/lol2_l9dr_census.py",
+        "tools/lol2_speech_names.py",
+        "tools/lol2_text_tables.py",
+        "tools/lol2_texture_container.py",
+        "tools/rating.py"
+      ]
+    },
+    {
+      "path": "docs/TOUR.md",
+      "title": "Follow LoL2 L1_DC from map to exit",
+      "answers": [],
+      "question_references": [],
+      "tools": [
+        "tools/lol2_event_browser.py",
+        "tools/lol2_level_map.py",
+        "tools/lol2_level_report.py",
+        "tools/lol2_numbers.py",
+        "tools/lol2_progression.py"
+      ]
+    },
+    {
+      "path": "docs/WHATS_NEW.md",
+      "title": "What's new",
+      "answers": [],
+      "question_references": [
+        "Q1",
+        "Q2",
+        "Q3",
+        "Q4",
+        "Q5",
+        "Q6",
+        "Q7",
+        "Q8",
+        "Q9",
+        "Q10",
+        "Q11",
+        "Q12",
+        "Q13",
+        "Q14",
+        "Q15",
+        "Q16",
+        "Q17",
+        "Q18",
+        "Q20"
+      ],
+      "tools": [
+        "tools/check_all.py",
+        "tools/doc_links.py",
+        "tools/example_images.py",
+        "tools/lol2_cache_seed.py",
+        "tools/lol2_event_browser.py",
+        "tools/lol2_inspect.py",
+        "tools/lol2_item_labels.py",
+        "tools/lol2_level_report.py",
+        "tools/lol2_level_schematic.py",
+        "tools/lol2_loose.py",
+        "tools/lol2_numbers.py",
+        "tools/lol2_progression.py",
+        "tools/lol2_save_inspect.py",
+        "tools/lol2_save_native.py",
+        "tools/rating.py"
+      ]
+    },
+    {
+      "path": "docs/audio-inventory.md",
+      "title": "LoL2 Audio & Music Inventory",
+      "answers": [],
+      "question_references": [],
+      "tools": [
+        "tools/history/lol2_vqa_decode.py",
+        "tools/lol2_aud_decode.py",
+        "tools/lol2_hmi_midi.py",
+        "tools/lol2_mix_parser.py",
+        "tools/lol2_sound_bank.py"
+      ]
+    },
+    {
+      "path": "docs/block-sprite-decoder.md",
+      "title": "Cave block sprite decoder",
+      "answers": [],
+      "question_references": [],
+      "tools": [
+        "tools/history/draracle/extract_block_sprite_frames.py"
+      ]
+    },
+    {
+      "path": "docs/cave-entity-links.md",
+      "title": "Cave entity source links",
+      "answers": [],
+      "question_references": [],
+      "tools": [
+        "tools/history/draracle/catalogue_cave_entities.py"
+      ]
+    },
+    {
+      "path": "docs/cave-object-catalogue.md",
+      "title": "Cave object catalogue",
+      "answers": [],
+      "question_references": [],
+      "tools": [
+        "tools/history/draracle/catalogue_cave_objects.py",
+        "tools/history/draracle/export_cave_prop_preview.py",
+        "tools/history/draracle/extract_cave_object_templates.py",
+        "tools/history/draracle/extract_prop_sprite_previews.py",
+        "tools/history/draracle/verify_prop_region_height.py"
+      ]
+    },
+    {
+      "path": "docs/cave-sprite-sequences.md",
+      "title": "Cave sprite sequences",
+      "answers": [],
+      "question_references": [],
+      "tools": [
+        "tools/history/draracle/extract_cave_sprite_sequences.py"
+      ]
+    },
+    {
+      "path": "docs/closure-summary.md",
+      "title": "LoL2 Closure Summary",
+      "answers": [],
+      "question_references": [],
+      "tools": []
+    },
+    {
+      "path": "docs/creature-frame-groups.md",
+      "title": "Creature frame group review",
+      "answers": [],
+      "question_references": [],
+      "tools": [
+        "tools/history/draracle/build_creature_group_review.py",
+        "tools/history/draracle/extract_block_sprite_frames.py"
+      ]
+    },
+    {
+      "path": "docs/draracle-restoration.md",
+      "title": "Draracle cave restoration findings",
+      "answers": [
+        "Q16"
+      ],
+      "question_references": [],
+      "tools": [
+        "tools/history/draracle/run_geometry_pipeline.py"
+      ]
+    },
+    {
+      "path": "docs/engine-evolution.md",
+      "title": "How the Lands of Lore engine changed",
+      "answers": [],
+      "question_references": [],
+      "tools": []
+    },
+    {
+      "path": "docs/executioner-combat-evidence.md",
+      "title": "Hive executioner: combat evidence checkpoint",
+      "answers": [],
+      "question_references": [],
+      "tools": [
+        "tools/history/draracle/extract_creature_states.py",
+        "tools/history/draracle/verify_creature_states.py",
+        "tools/history/draracle/verify_executioner_arithmetic.py"
+      ]
+    },
+    {
+      "path": "docs/final-closure-memo.md",
+      "title": "LoL2 Final Closure Memo",
+      "answers": [],
+      "question_references": [],
+      "tools": []
+    },
+    {
+      "path": "docs/formats/README.md",
+      "title": "LoL2 file formats, one page each",
+      "answers": [],
+      "question_references": [
+        "Q1",
+        "Q2",
+        "Q4",
+        "Q5",
+        "Q8",
+        "Q12",
+        "Q14",
+        "Q15",
+        "Q16",
+        "Q19",
+        "Q20"
+      ],
+      "tools": [
+        "tools/lol2_aud_decode.py",
+        "tools/lol2_decompress_sphere.py",
+        "tools/lol2_decompress_westwood.py",
+        "tools/lol2_entity_field_analyzer.py",
+        "tools/lol2_export_scripts.py",
+        "tools/lol2_level_map.py",
+        "tools/lol2_level_report.py",
+        "tools/lol2_loose.py",
+        "tools/lol2_mix_parser.py",
+        "tools/lol2_sound_bank.py",
+        "tools/lol2_source_format.py",
+        "tools/lol2_texture_container.py",
+        "tools/lol2_vqa_v2_decode.py",
+        "tools/lol2_westwood_hash.py"
+      ]
+    },
+    {
+      "path": "docs/formats/compression.md",
+      "title": "Compression schemes",
+      "answers": [
+        "Q1"
+      ],
+      "question_references": [],
+      "tools": [
+        "tools/history/lol2_lcw.py",
+        "tools/history/lol2_verify_wall_atlas_candidate.py",
+        "tools/lol2_decompress_westwood.py",
+        "tools/lol2_level_report.py",
+        "tools/lol2_media_check.py",
+        "tools/lol2_texture_container.py"
+      ]
+    },
+    {
+      "path": "docs/formats/entity-records.md",
+      "title": "147-byte entity records",
+      "answers": [
+        "Q19"
+      ],
+      "question_references": [],
+      "tools": [
+        "tools/lol2_entity_field_analyzer.py"
+      ]
+    },
+    {
+      "path": "docs/formats/geometry.md",
+      "title": "Level geometry: vertices, regions and portals",
+      "answers": [],
+      "question_references": [
+        "Q16"
+      ],
+      "tools": [
+        "tools/lol2_level_report.py"
+      ]
+    },
+    {
+      "path": "docs/formats/items.md",
+      "title": "Item definition table",
+      "answers": [],
+      "question_references": [
+        "Q8"
+      ],
+      "tools": [
+        "tools/lol2_mix_parser.py"
+      ]
+    },
+    {
+      "path": "docs/formats/level-data.md",
+      "title": "Level data entry (geometry, objects, scripts)",
+      "answers": [],
+      "question_references": [
+        "Q4",
+        "Q5",
+        "Q16"
+      ],
+      "tools": [
+        "tools/lol2_export_scripts.py",
+        "tools/lol2_source_format.py"
+      ]
+    },
+    {
+      "path": "docs/formats/loose.md",
+      "title": "Loose DAT files",
+      "answers": [],
+      "question_references": [],
+      "tools": [
+        "tools/lol2_loose.py"
+      ]
+    },
+    {
+      "path": "docs/formats/maps.md",
+      "title": "Level maps",
+      "answers": [],
+      "question_references": [
+        "Q16"
+      ],
+      "tools": [
+        "tools/lol2_level_map.py",
+        "tools/lol2_level_schematic.py"
+      ]
+    },
+    {
+      "path": "docs/formats/mix.md",
+      "title": "MIX archives",
+      "answers": [
+        "Q20"
+      ],
+      "question_references": [
+        "Q3"
+      ],
+      "tools": [
+        "tools/history/draracle/lol2_cache_named_wall_fixture.py",
+        "tools/lol2_mix_parser.py",
+        "tools/lol2_source_format.py",
+        "tools/lol2_westwood_hash.py"
+      ]
+    },
+    {
+      "path": "docs/formats/room-sections.md",
+      "title": "Options interface shapes in LOCAL.MIX",
+      "answers": [
+        "Q2"
+      ],
+      "question_references": [],
+      "tools": [
+        "tools/lol2_decompress_sphere.py"
+      ]
+    },
+    {
+      "path": "docs/formats/sound.md",
+      "title": "Sound bank, music and movies",
+      "answers": [],
+      "question_references": [],
+      "tools": [
+        "tools/lol2_aud_decode.py",
+        "tools/lol2_sound_bank.py"
+      ]
+    },
+    {
+      "path": "docs/formats/texture-container.md",
+      "title": "Level texture container (.TE_)",
+      "answers": [],
+      "question_references": [
+        "Q14",
+        "Q16"
+      ],
+      "tools": [
+        "tools/lol2_texture_container.py"
+      ]
+    },
+    {
+      "path": "docs/formats/vqa.md",
+      "title": "VQA movies",
+      "answers": [
+        "Q12"
+      ],
+      "question_references": [],
+      "tools": [
+        "tools/lol2_media_check.py",
+        "tools/lol2_vqa_v2_decode.py"
+      ]
+    },
+    {
+      "path": "docs/formats/walls.md",
+      "title": "Wall rows",
+      "answers": [],
+      "question_references": [
+        "Q16"
+      ],
+      "tools": [
+        "tools/history/draracle/lol2_extract_wall_records.py",
+        "tools/history/draracle/verify_huline_wall_spans.py",
+        "tools/lol2_level_report.py"
+      ]
+    },
+    {
+      "path": "docs/inventory-overview.md",
+      "title": "LoL2 Inventory Overview",
+      "answers": [],
+      "question_references": [],
+      "tools": [
+        "tools/lol2_sound_bank.py"
+      ]
+    },
+    {
+      "path": "docs/levels/L10_DC.md",
+      "title": "L10_DC",
+      "answers": [],
+      "question_references": [
+        "Q4",
+        "Q5",
+        "Q18",
+        "Q19"
+      ],
+      "tools": [
+        "tools/lol2_level_report.py"
+      ]
+    },
+    {
+      "path": "docs/levels/L12_CM.md",
+      "title": "L12_CM",
+      "answers": [],
+      "question_references": [
+        "Q4",
+        "Q5",
+        "Q18",
+        "Q19"
+      ],
+      "tools": [
+        "tools/lol2_level_report.py"
+      ]
+    },
+    {
+      "path": "docs/levels/L13_RC.md",
+      "title": "L13_RC",
+      "answers": [],
+      "question_references": [
+        "Q4",
+        "Q5",
+        "Q18",
+        "Q19"
+      ],
+      "tools": [
+        "tools/lol2_level_report.py"
+      ]
+    },
+    {
+      "path": "docs/levels/L14_HT.md",
+      "title": "L14_HT",
+      "answers": [],
+      "question_references": [
+        "Q4",
+        "Q5",
+        "Q18",
+        "Q19"
+      ],
+      "tools": [
+        "tools/lol2_level_report.py"
+      ]
+    },
+    {
+      "path": "docs/levels/L16_CA.md",
+      "title": "L16_CA",
+      "answers": [],
+      "question_references": [
+        "Q4",
+        "Q5",
+        "Q18",
+        "Q19"
+      ],
+      "tools": [
+        "tools/lol2_level_report.py"
+      ]
+    },
+    {
+      "path": "docs/levels/L17_HC.md",
+      "title": "L17_HC",
+      "answers": [],
+      "question_references": [
+        "Q4",
+        "Q5",
+        "Q18",
+        "Q19"
+      ],
+      "tools": [
+        "tools/lol2_level_report.py"
+      ]
+    },
+    {
+      "path": "docs/levels/L19_BC.md",
+      "title": "L19_BC",
+      "answers": [],
+      "question_references": [
+        "Q4",
+        "Q5",
+        "Q18",
+        "Q19"
+      ],
+      "tools": [
+        "tools/lol2_level_report.py"
+      ]
+    },
+    {
+      "path": "docs/levels/L1_DC.md",
+      "title": "L1_DC",
+      "answers": [],
+      "question_references": [
+        "Q4",
+        "Q5",
+        "Q18",
+        "Q19"
+      ],
+      "tools": [
+        "tools/lol2_level_report.py"
+      ]
+    },
+    {
+      "path": "docs/levels/L20_BB.md",
+      "title": "L20_BB",
+      "answers": [],
+      "question_references": [
+        "Q4",
+        "Q5",
+        "Q18",
+        "Q19"
+      ],
+      "tools": [
+        "tools/lol2_level_report.py"
+      ]
+    },
+    {
+      "path": "docs/levels/L3_DH.md",
+      "title": "L3_DH",
+      "answers": [],
+      "question_references": [
+        "Q4",
+        "Q5",
+        "Q18",
+        "Q19"
+      ],
+      "tools": [
+        "tools/lol2_level_report.py"
+      ]
+    },
+    {
+      "path": "docs/levels/L4_HJ.md",
+      "title": "L4_HJ",
+      "answers": [],
+      "question_references": [
+        "Q4",
+        "Q5",
+        "Q18",
+        "Q19"
+      ],
+      "tools": [
+        "tools/lol2_level_report.py"
+      ]
+    },
+    {
+      "path": "docs/levels/L5_HC.md",
+      "title": "L5_HC",
+      "answers": [],
+      "question_references": [
+        "Q4",
+        "Q5",
+        "Q18",
+        "Q19"
+      ],
+      "tools": [
+        "tools/lol2_level_report.py"
+      ]
+    },
+    {
+      "path": "docs/levels/L7_DH.md",
+      "title": "L7_DH",
+      "answers": [],
+      "question_references": [
+        "Q4",
+        "Q5",
+        "Q18",
+        "Q19"
+      ],
+      "tools": [
+        "tools/lol2_level_report.py"
+      ]
+    },
+    {
+      "path": "docs/levels/L8_SJ.md",
+      "title": "L8_SJ",
+      "answers": [],
+      "question_references": [
+        "Q4",
+        "Q5",
+        "Q18",
+        "Q19"
+      ],
+      "tools": [
+        "tools/lol2_level_report.py"
+      ]
+    },
+    {
+      "path": "docs/levels/L9_DR.md",
+      "title": "L9_DR",
+      "answers": [],
+      "question_references": [
+        "Q4",
+        "Q5",
+        "Q18",
+        "Q19"
+      ],
+      "tools": [
+        "tools/lol2_level_report.py"
+      ]
+    },
+    {
+      "path": "docs/levels/README.md",
+      "title": "Level sheets",
+      "answers": [],
+      "question_references": [],
+      "tools": [
+        "tools/lol2_level_report.py"
+      ]
+    },
+    {
+      "path": "docs/levels/notes/L10_DC.md",
+      "title": "L10_DC script records",
+      "answers": [],
+      "question_references": [],
+      "tools": [
+        "tools/lol2_level_notes.py"
+      ]
+    },
+    {
+      "path": "docs/levels/notes/L12_CM.md",
+      "title": "L12_CM script records",
+      "answers": [],
+      "question_references": [],
+      "tools": [
+        "tools/lol2_level_notes.py"
+      ]
+    },
+    {
+      "path": "docs/levels/notes/L13_RC.md",
+      "title": "L13_RC script records",
+      "answers": [],
+      "question_references": [],
+      "tools": [
+        "tools/lol2_level_notes.py"
+      ]
+    },
+    {
+      "path": "docs/levels/notes/L14_HT.md",
+      "title": "L14_HT script records",
+      "answers": [],
+      "question_references": [],
+      "tools": [
+        "tools/lol2_level_notes.py"
+      ]
+    },
+    {
+      "path": "docs/levels/notes/L16_CA.md",
+      "title": "L16_CA script records",
+      "answers": [],
+      "question_references": [],
+      "tools": [
+        "tools/lol2_level_notes.py"
+      ]
+    },
+    {
+      "path": "docs/levels/notes/L17_HC.md",
+      "title": "L17_HC script records",
+      "answers": [],
+      "question_references": [],
+      "tools": [
+        "tools/lol2_level_notes.py"
+      ]
+    },
+    {
+      "path": "docs/levels/notes/L19_BC.md",
+      "title": "L19_BC script records",
+      "answers": [],
+      "question_references": [],
+      "tools": [
+        "tools/lol2_level_notes.py"
+      ]
+    },
+    {
+      "path": "docs/levels/notes/L1_DC.excerpt.md",
+      "title": "L1_DC: worked excerpt",
+      "answers": [],
+      "question_references": [],
+      "tools": [
+        "tools/lol2_level_notes.py"
+      ]
+    },
+    {
+      "path": "docs/levels/notes/L1_DC.md",
+      "title": "L1_DC script records",
+      "answers": [],
+      "question_references": [],
+      "tools": [
+        "tools/lol2_level_notes.py"
+      ]
+    },
+    {
+      "path": "docs/levels/notes/L20_BB.md",
+      "title": "L20_BB script records",
+      "answers": [],
+      "question_references": [],
+      "tools": [
+        "tools/lol2_level_notes.py"
+      ]
+    },
+    {
+      "path": "docs/levels/notes/L3_DH.md",
+      "title": "L3_DH script records",
+      "answers": [],
+      "question_references": [],
+      "tools": [
+        "tools/lol2_level_notes.py"
+      ]
+    },
+    {
+      "path": "docs/levels/notes/L4_HJ.md",
+      "title": "L4_HJ script records",
+      "answers": [],
+      "question_references": [],
+      "tools": [
+        "tools/lol2_level_notes.py"
+      ]
+    },
+    {
+      "path": "docs/levels/notes/L5_HC.md",
+      "title": "L5_HC script records",
+      "answers": [],
+      "question_references": [],
+      "tools": [
+        "tools/lol2_level_notes.py"
+      ]
+    },
+    {
+      "path": "docs/levels/notes/L7_DH.md",
+      "title": "L7_DH script records",
+      "answers": [],
+      "question_references": [],
+      "tools": [
+        "tools/lol2_level_notes.py"
+      ]
+    },
+    {
+      "path": "docs/levels/notes/L8_SJ.md",
+      "title": "L8_SJ script records",
+      "answers": [],
+      "question_references": [],
+      "tools": [
+        "tools/lol2_level_notes.py"
+      ]
+    },
+    {
+      "path": "docs/levels/notes/L9_DR.md",
+      "title": "L9_DR script records",
+      "answers": [],
+      "question_references": [],
+      "tools": [
+        "tools/lol2_level_notes.py"
+      ]
+    },
+    {
+      "path": "docs/levels/notes/README.md",
+      "title": "Per-level script notes",
+      "answers": [
+        "Q18"
+      ],
+      "question_references": [],
+      "tools": [
+        "tools/lol2_level_notes.py"
+      ]
+    },
+    {
+      "path": "docs/lol2-cache-initializer.md",
+      "title": "Native texture cache initialization",
+      "answers": [
+        "Q20"
+      ],
+      "question_references": [],
+      "tools": [
+        "tools/check_all.py",
+        "tools/lol2_cache_seed.py"
+      ]
+    },
+    {
+      "path": "docs/lol2-combat-ai.md",
+      "title": "LoL2 combat and creature decisions",
+      "answers": [],
+      "question_references": [],
+      "tools": []
+    },
+    {
+      "path": "docs/lol2-compact-path-branch-steering.md",
+      "title": "LoL2 Compact Path Branch Steering",
+      "answers": [],
+      "question_references": [],
+      "tools": []
+    },
+    {
+      "path": "docs/lol2-creature-observation.md",
+      "title": "LoL2 creature observation and mode 2",
+      "answers": [
+        "Q10"
+      ],
+      "question_references": [],
+      "tools": []
+    },
+    {
+      "path": "docs/lol2-creature-transitions.md",
+      "title": "LoL2 creature behavior and animation transitions",
+      "answers": [],
+      "question_references": [],
+      "tools": [
+        "tools/lol2_westwood_hash.py"
+      ]
+    },
+    {
+      "path": "docs/lol2-current-status.md",
+      "title": "LoL2 current status",
+      "answers": [],
+      "question_references": [],
+      "tools": [
+        "tools/lol2_export_scripts.py",
+        "tools/lol2_sound_bank.py",
+        "tools/lol2_texture_container.py",
+        "tools/lol2_vqa_v2_decode.py"
+      ]
+    },
+    {
+      "path": "docs/lol2-entity-object-map.md",
+      "title": "LoL2 Entity Object Map",
+      "answers": [],
+      "question_references": [],
+      "tools": [
+        "tools/lol2_entity_field_analyzer.py"
+      ]
+    },
+    {
+      "path": "docs/lol2-event-producers.md",
+      "title": "LoL2 object kind 1 and event producers",
+      "answers": [
+        "Q5",
+        "Q18"
+      ],
+      "question_references": [],
+      "tools": []
+    },
+    {
+      "path": "docs/lol2-executable-tables.md",
+      "title": "LoL2 executable addresses and tables",
+      "answers": [],
+      "question_references": [],
+      "tools": [
+        "tools/lol2_cache_seed.py"
+      ]
+    },
+    {
+      "path": "docs/lol2-item-effects.md",
+      "title": "LoL2 item grants and use effects",
+      "answers": [],
+      "question_references": [],
+      "tools": []
+    },
+    {
+      "path": "docs/lol2-item-format.md",
+      "title": "LoL2 item definitions and the item-use dispatcher",
+      "answers": [],
+      "question_references": [],
+      "tools": []
+    },
+    {
+      "path": "docs/lol2-item-handlers.md",
+      "title": "LoL2 item handler catalog and instance effects",
+      "answers": [
+        "Q8"
+      ],
+      "question_references": [],
+      "tools": [
+        "tools/lol2_item_labels.py"
+      ]
+    },
+    {
+      "path": "docs/lol2-l8-controls.md",
+      "title": "L8_SJ controls 69 and 114",
+      "answers": [
+        "Q17"
+      ],
+      "question_references": [],
+      "tools": [
+        "tools/lol2_level_report.py"
+      ]
+    },
+    {
+      "path": "docs/lol2-level-graph.md",
+      "title": "LoL2 levels, room archives and the exit graph",
+      "answers": [
+        "Q3"
+      ],
+      "question_references": [],
+      "tools": [
+        "tools/lol2_export_scripts.py"
+      ]
+    },
+    {
+      "path": "docs/lol2-level-script-format.md",
+      "title": "LoL2 level script format",
+      "answers": [],
+      "question_references": [],
+      "tools": [
+        "tools/lol2_export_scripts.py",
+        "tools/lol2_source_format.py"
+      ]
+    },
+    {
+      "path": "docs/lol2-level-texture-container.md",
+      "title": "LoL2 Level Texture Container (.TE_)",
+      "answers": [
+        "Q14"
+      ],
+      "question_references": [],
+      "tools": [
+        "tools/check_all.py",
+        "tools/lol2_texture_container.py",
+        "tools/lol2_westwood_hash.py"
+      ]
+    },
+    {
+      "path": "docs/lol2-movie-scenes.md",
+      "title": "Movie scene ids",
+      "answers": [],
+      "question_references": [
+        "Q12"
+      ],
+      "tools": [
+        "tools/lol2_media_check.py"
+      ]
+    },
+    {
+      "path": "docs/lol2-music-2026-11.md",
+      "title": "LoL2 music: DMUSIC.MIX is decodable (November 2026)",
+      "answers": [
+        "Q15"
+      ],
+      "question_references": [],
+      "tools": [
+        "tools/lol2_hmi_midi.py"
+      ]
+    },
+    {
+      "path": "docs/lol2-music-selection.md",
+      "title": "Music selection",
+      "answers": [
+        "Q15"
+      ],
+      "question_references": [],
+      "tools": [
+        "tools/lol2_media_check.py"
+      ]
+    },
+    {
+      "path": "docs/lol2-native-runtime-patch-plan.md",
+      "title": "LoL2 Native Runtime Patch Plan",
+      "answers": [],
+      "question_references": [],
+      "tools": []
+    },
+    {
+      "path": "docs/lol2-object-state-word.md",
+      "title": "LoL2 Object State Word At [+80] + 0xB4",
+      "answers": [],
+      "question_references": [],
+      "tools": []
+    },
+    {
+      "path": "docs/lol2-room-archives.md",
+      "title": "Room archives",
+      "answers": [],
+      "question_references": [
+        "Q3",
+        "Q13"
+      ],
+      "tools": [
+        "tools/lol2_media_check.py"
+      ]
+    },
+    {
+      "path": "docs/lol2-runtime-to-renderer-bridge.md",
+      "title": "LoL2 Runtime-To-Renderer Bridge",
+      "answers": [],
+      "question_references": [],
+      "tools": []
+    },
+    {
+      "path": "docs/lol2-save-field-witnesses.md",
+      "title": "LoL2 save list heads and placed-item inputs",
+      "answers": [
+        "Q11"
+      ],
+      "question_references": [],
+      "tools": [
+        "tools/check_all.py",
+        "tools/lol2_save_header.py",
+        "tools/lol2_save_native.py"
+      ]
+    },
+    {
+      "path": "docs/lol2-save-format.md",
+      "title": "LoL2 native save slots",
+      "answers": [],
+      "question_references": [],
+      "tools": [
+        "tools/lol2_save_header.py",
+        "tools/lol2_save_inspect.py"
+      ]
+    },
+    {
+      "path": "docs/lol2-save-sections.md",
+      "title": "LoL2 native save section descriptors",
+      "answers": [
+        "Q11"
+      ],
+      "question_references": [],
+      "tools": []
+    },
+    {
+      "path": "docs/lol2-script-engine-facts-2026-10-addendum.md",
+      "title": "LoL2 script engine facts: addendum (late October 2026)",
+      "answers": [],
+      "question_references": [],
+      "tools": []
+    },
+    {
+      "path": "docs/lol2-script-engine-facts-2026-10.md",
+      "title": "LoL2 script engine and runtime facts (2026-10)",
+      "answers": [],
+      "question_references": [],
+      "tools": []
+    },
+    {
+      "path": "docs/lol2-script-events.md",
+      "title": "LoL2 script records, timers and predicates",
+      "answers": [],
+      "question_references": [],
+      "tools": []
+    },
+    {
+      "path": "docs/lol2-script-motion.md",
+      "title": "LoL2 deferred sequence and region motion",
+      "answers": [
+        "Q4"
+      ],
+      "question_references": [],
+      "tools": []
+    },
+    {
+      "path": "docs/lol2-script-opcodes.md",
+      "title": "LoL2 script opcodes",
+      "answers": [
+        "Q4"
+      ],
+      "question_references": [],
+      "tools": [
+        "tools/lol2_disassemble_scripts.py",
+        "tools/lol2_level_notes.py"
+      ]
+    },
+    {
+      "path": "docs/lol2-shared-predicates.md",
+      "title": "LoL2 shared bytes and predicate type 7",
+      "answers": [
+        "Q6"
+      ],
+      "question_references": [],
+      "tools": [
+        "tools/lol2_level_report.py"
+      ]
+    },
+    {
+      "path": "docs/lol2-sound-cues.md",
+      "title": "Sound cue ids",
+      "answers": [],
+      "question_references": [
+        "Q1"
+      ],
+      "tools": [
+        "tools/lol2_media_check.py",
+        "tools/lol2_sound_bank.py"
+      ]
+    },
+    {
+      "path": "docs/lol2-speech.md",
+      "title": "Spoken lines",
+      "answers": [
+        "Q13"
+      ],
+      "question_references": [],
+      "tools": [
+        "tools/check_all.py",
+        "tools/lol2_speech_names.py"
+      ]
+    },
+    {
+      "path": "docs/lol2-spell-dispatch.md",
+      "title": "LoL2 player spell dispatch and lesson conditions",
+      "answers": [
+        "Q9"
+      ],
+      "question_references": [],
+      "tools": []
+    },
+    {
+      "path": "docs/lol2-spells.md",
+      "title": "LoL2 spells",
+      "answers": [],
+      "question_references": [],
+      "tools": []
+    },
+    {
+      "path": "docs/lol2-text-tables.md",
+      "title": "Message tables",
+      "answers": [
+        "Q13"
+      ],
+      "question_references": [],
+      "tools": [
+        "tools/lol2_text_tables.py"
+      ]
+    },
+    {
+      "path": "docs/lol2-timer-clock.md",
+      "title": "LoL2 timer clocks and elapsed units",
+      "answers": [
+        "Q7"
+      ],
+      "question_references": [],
+      "tools": [
+        "tools/check_all.py",
+        "tools/lol2_save_native.py"
+      ]
+    },
+    {
+      "path": "docs/lol2-understanding-2026-11.md",
+      "title": "LoL2 understanding — November 2026",
+      "answers": [],
+      "question_references": [],
+      "tools": []
+    },
+    {
+      "path": "docs/lol2-vqa-v2.md",
+      "title": "LoL2 VQA v2 movies with partial codebooks",
+      "answers": [
+        "Q12"
+      ],
+      "question_references": [],
+      "tools": [
+        "tools/history/lol2_vqa_decode.py",
+        "tools/lol2_vqa_v2_decode.py"
+      ]
+    },
+    {
+      "path": "docs/lol2-wall-control-ladder-note-2026-04-04.md",
+      "title": "LoL2 Wall Control Ladder Note",
+      "answers": [],
+      "question_references": [],
+      "tools": []
+    },
+    {
+      "path": "docs/lol2-wall-material-provenance.md",
+      "title": "LoL2 Wall Material Provenance (Runtime Witness)",
+      "answers": [
+        "Q16"
+      ],
+      "question_references": [
+        "Q20"
+      ],
+      "tools": [
+        "tools/lol2_texture_container.py"
+      ]
+    },
+    {
+      "path": "docs/native-flat-wall-spans.md",
+      "title": "Native flat wall span check",
+      "answers": [],
+      "question_references": [],
+      "tools": [
+        "tools/history/draracle/lol2_verify_flat_wall_spans.py"
+      ]
+    },
+    {
+      "path": "docs/native-wall-verification.md",
+      "title": "Expanded native wall verification",
+      "answers": [],
+      "question_references": [],
+      "tools": [
+        "tools/history/draracle/audit_wall_allocation_ranges.py",
+        "tools/history/draracle/audit_wall_coverage.py",
+        "tools/history/draracle/run_geometry_pipeline.py",
+        "tools/history/draracle/verify_wall_allocation_request.py",
+        "tools/history/draracle/verify_wall_camera_clip.py",
+        "tools/history/draracle/verify_wall_descriptor_loader.py",
+        "tools/history/draracle/verify_wall_edge_mask.py",
+        "tools/history/draracle/verify_wall_facing.py",
+        "tools/history/draracle/verify_wall_neighbor_constructor.py",
+        "tools/history/draracle/verify_wall_neighbor_mask.py",
+        "tools/history/draracle/verify_wall_neighbor_mode.py",
+        "tools/history/draracle/verify_wall_screen_bounds.py",
+        "tools/history/draracle/verify_wall_visibility_helper.py"
+      ]
+    },
+    {
+      "path": "docs/prop-frame-mirroring.md",
+      "title": "Prop frame mirroring",
+      "answers": [],
+      "question_references": [],
+      "tools": [
+        "tools/history/draracle/verify_prop_flip_setup.py"
+      ]
+    },
+    {
+      "path": "docs/provenance.md",
+      "title": "Provenance",
+      "answers": [],
+      "question_references": [],
+      "tools": []
+    },
+    {
+      "path": "docs/repo-scope.md",
+      "title": "Repository Scope",
+      "answers": [],
+      "question_references": [],
+      "tools": []
+    },
+    {
+      "path": "docs/series-formats.md",
+      "title": "What the three games share",
+      "answers": [],
+      "question_references": [],
+      "tools": []
+    },
+    {
+      "path": "docs/series-progress-and-numbers.md",
+      "title": "How the three games gate progress and scale numbers",
+      "answers": [],
+      "question_references": [],
+      "tools": []
+    },
+    {
+      "path": "docs/special-sprite-pixels.md",
+      "title": "Special sprite pixels",
+      "answers": [],
+      "question_references": [],
+      "tools": [
+        "tools/history/draracle/export_special_prop_placements.py",
+        "tools/history/draracle/export_special_sprite_indices.py",
+        "tools/history/draracle/extract_special_sprite_masks.py",
+        "tools/history/draracle/verify_special_pixel_table_binding.py",
+        "tools/history/draracle/verify_sprite_special_pixels.py"
+      ]
+    },
+    {
+      "path": "docs/texture-map-inventory.md",
+      "title": "LoL2 Texture And Map Inventory",
+      "answers": [],
+      "question_references": [],
+      "tools": []
+    },
+    {
+      "path": "docs/tooling-catalog.md",
+      "title": "Tooling Catalog",
+      "answers": [],
+      "question_references": [],
+      "tools": []
+    },
+    {
+      "path": "docs/tutorial-one-event.md",
+      "title": "Follow one interaction in level 1",
+      "answers": [],
+      "question_references": [],
+      "tools": [
+        "tools/lol2_event_browser.py"
+      ]
+    },
+    {
+      "path": "docs/wall-texture-review.md",
+      "title": "Original wall texture review",
+      "answers": [],
+      "question_references": [],
+      "tools": [
+        "tools/history/draracle/audit_wall_palette.py",
+        "tools/history/draracle/export_flat_wall_uvs.py",
+        "tools/history/draracle/export_wall_uv_fixture.py",
+        "tools/history/draracle/extract_wall_texture_review.py",
+        "tools/history/draracle/inspect_wall_dispatch.py",
+        "tools/history/draracle/verify_wall_mip_ids.py",
+        "tools/history/draracle/verify_wall_orientation.py",
+        "tools/history/draracle/verify_wall_projection.py",
+        "tools/history/draracle/verify_wall_uv_inputs.py",
+        "tools/history/draracle/verify_wall_uv_wrap.py",
+        "tools/history/draracle/verify_wall_visibility.py"
+      ]
+    },
+    {
+      "path": "evidence/README.md",
+      "title": "Evidence",
+      "answers": [],
+      "question_references": [],
+      "tools": []
+    },
+    {
+      "path": "evidence/lol2-evidence-index.md",
+      "title": "LoL2 Evidence Index",
+      "answers": [],
+      "question_references": [],
+      "tools": []
+    },
+    {
+      "path": "evidence/lol2-witness-map.md",
+      "title": "LoL2 Witness Map",
+      "answers": [],
+      "question_references": [],
+      "tools": []
+    },
+    {
+      "path": "examples/README.md",
+      "title": "Examples",
+      "answers": [],
+      "question_references": [],
+      "tools": [
+        "tools/example_images.py",
+        "tools/lol2_level_map.py",
+        "tools/lol2_level_schematic.py"
+      ]
+    },
+    {
+      "path": "examples/atlas_candidate_verify/ENTRY1_MODEL_VERDICT.md",
+      "title": "LOCAL.MIX Entry 1 Model Verdict",
+      "answers": [],
+      "question_references": [],
+      "tools": [
+        "tools/history/lol2_verify_wall_atlas_candidate.py"
+      ]
+    },
+    {
+      "path": "examples/atlas_candidate_verify/ENTRY1_RUNTIME_BUFFER_CHECK_2026-04-02.md",
+      "title": "LOCAL.MIX Entry 1 Record 0 Runtime Buffer Check",
+      "answers": [],
+      "question_references": [],
+      "tools": [
+        "tools/history/lol2_verify_entry1_runtime_witness.py"
+      ]
+    },
+    {
+      "path": "examples/atlas_candidate_verify/atlas_16x16_family_notes.md",
+      "title": "LOCAL.MIX Entry 1: 16x16 Compressed Family Notes",
+      "answers": [],
+      "question_references": [],
+      "tools": [
+        "tools/lol2_decompress_sphere.py"
+      ]
+    },
+    {
+      "path": "future-patches/README.md",
+      "title": "Future Patches",
+      "answers": [],
+      "question_references": [],
+      "tools": []
+    },
+    {
+      "path": "tools/README.md",
+      "title": "Tools",
+      "answers": [],
+      "question_references": [
+        "Q1"
+      ],
+      "tools": [
+        "tools/check_all.py",
+        "tools/cli_errors.py",
+        "tools/doc_index.py",
+        "tools/doc_links.py",
+        "tools/example_images.py",
+        "tools/full_report.py",
+        "tools/history/draracle/catalogue_cave_entities.py",
+        "tools/history/draracle/catalogue_cave_objects.py",
+        "tools/history/draracle/extract_block_sprite_frames.py",
+        "tools/history/draracle/extract_cave_sprite_sequences.py",
+        "tools/history/draracle/run_geometry_pipeline.py",
+        "tools/history/draracle/verify_huline_wall_spans.py",
+        "tools/lol2_analyze_disarm_rearm.py",
+        "tools/lol2_aud_decode.py",
+        "tools/lol2_cache_seed.py",
+        "tools/lol2_cli.py",
+        "tools/lol2_cross_level_witnesses.py",
+        "tools/lol2_decompress_sphere.py",
+        "tools/lol2_decompress_westwood.py",
+        "tools/lol2_disassemble_scripts.py",
+        "tools/lol2_entity_field_analyzer.py",
+        "tools/lol2_event_browser.py",
+        "tools/lol2_export_scripts.py",
+        "tools/lol2_guest_trace_summary.py",
+        "tools/lol2_hmi_midi.py",
+        "tools/lol2_inspect.py",
+        "tools/lol2_item_labels.py",
+        "tools/lol2_l9dr_census.py",
+        "tools/lol2_level_map.py",
+        "tools/lol2_level_notes.py",
+        "tools/lol2_level_report.py",
+        "tools/lol2_level_schematic.py",
+        "tools/lol2_loose.py",
+        "tools/lol2_media_check.py",
+        "tools/lol2_mix_parser.py",
+        "tools/lol2_numbers.py",
+        "tools/lol2_parse_le.py",
+        "tools/lol2_progression.py",
+        "tools/lol2_save_header.py",
+        "tools/lol2_save_inspect.py",
+        "tools/lol2_save_native.py",
+        "tools/lol2_sound_bank.py",
+        "tools/lol2_source_format.py",
+        "tools/lol2_speech_names.py",
+        "tools/lol2_text_tables.py",
+        "tools/lol2_texture_container.py",
+        "tools/lol2_vqa_v2_decode.py",
+        "tools/lol2_westwood_hash.py",
+        "tools/rating.py",
+        "tools/repo_guard.py"
+      ]
+    },
+    {
+      "path": "tools/history/README.md",
+      "title": "Historical LoL2 research helpers",
+      "answers": [],
+      "question_references": [],
+      "tools": [
+        "tools/history/convert_cave_video_review.py",
+        "tools/history/draracle/audit_wall_allocation_ranges.py",
+        "tools/history/draracle/audit_wall_coverage.py",
+        "tools/history/draracle/audit_wall_palette.py",
+        "tools/history/draracle/build_creature_group_review.py",
+        "tools/history/draracle/catalogue_cave_entities.py",
+        "tools/history/draracle/catalogue_cave_objects.py",
+        "tools/history/draracle/export_cave_prop_preview.py",
+        "tools/history/draracle/export_flat_wall_uvs.py",
+        "tools/history/draracle/export_special_prop_placements.py",
+        "tools/history/draracle/export_special_sprite_indices.py",
+        "tools/history/draracle/export_wall_uv_fixture.py",
+        "tools/history/draracle/extract_block_sprite_frames.py",
+        "tools/history/draracle/extract_cave_object_templates.py",
+        "tools/history/draracle/extract_cave_sprite_sequences.py",
+        "tools/history/draracle/extract_creature_frame_events.py",
+        "tools/history/draracle/extract_creature_states.py",
+        "tools/history/draracle/extract_progression_commands.py",
+        "tools/history/draracle/extract_prop_sprite_previews.py",
+        "tools/history/draracle/extract_special_sprite_masks.py",
+        "tools/history/draracle/extract_wall_texture_review.py",
+        "tools/history/draracle/inspect_wall_dispatch.py",
+        "tools/history/draracle/lol2_bind_floor_materials.py",
+        "tools/history/draracle/lol2_cache_named_wall_fixture.py",
+        "tools/history/draracle/lol2_draracle_openings.py",
+        "tools/history/draracle/lol2_extract_bound_floor_variants.py",
+        "tools/history/draracle/lol2_extract_cave_materials.py",
+        "tools/history/draracle/lol2_extract_draracle_geometry.py",
+        "tools/history/draracle/lol2_extract_surface_presets.py",
+        "tools/history/draracle/lol2_extract_wall_records.py",
+        "tools/history/draracle/lol2_native_height_lookup.py",
+        "tools/history/draracle/lol2_palette_png.py",
+        "tools/history/draracle/lol2_pixel_layout.py",
+        "tools/history/draracle/lol2_recover_rotation_table.py",
+        "tools/history/draracle/lol2_verify_connector_middle_walls.py",
+        "tools/history/draracle/lol2_verify_draracle_connectors.py",
+        "tools/history/draracle/lol2_verify_draracle_slopes.py",
+        "tools/history/draracle/lol2_verify_flat_wall_spans.py",
+        "tools/history/draracle/lol2_verify_floor_setup.py",
+        "tools/history/draracle/lol2_verify_sloped_middle_walls.py",
+        "tools/history/draracle/lol2_verify_sloped_upper_lower_walls.py",
+        "tools/history/draracle/lol2_verify_spatial_constructor.py",
+        "tools/history/draracle/lol2_verify_special_upper_lower_walls.py",
+        "tools/history/draracle/lol2_verify_target_resolver.py",
+        "tools/history/draracle/lol2_verify_upper_lower_walls.py",
+        "tools/history/draracle/lol2_wall_material_checkpoint.py",
+        "tools/history/draracle/lol2_x87_sine_table.c",
+        "tools/history/draracle/run_geometry_pipeline.py",
+        "tools/history/draracle/test_block_sprite_frames.py",
+        "tools/history/draracle/test_cave_entities.py",
+        "tools/history/draracle/test_creature_groups.py",
+        "tools/history/draracle/test_lol2_cache_named_wall_fixture.py",
+        "tools/history/draracle/test_lol2_draracle_geometry.py",
+        "tools/history/draracle/test_lol2_draracle_openings.py",
+        "tools/history/draracle/test_lol2_wall_material_checkpoint.py",
+        "tools/history/draracle/test_prop_sprite_previews.py",
+        "tools/history/draracle/test_special_pixel_table_binding.py",
+        "tools/history/draracle/test_wall_pixel_layout.py",
+        "tools/history/draracle/test_wall_sentinel.py",
+        "tools/history/draracle/verify_chain_rotation.py",
+        "tools/history/draracle/verify_creature_action_lookup.py",
+        "tools/history/draracle/verify_creature_states.py",
+        "tools/history/draracle/verify_executioner_arithmetic.py",
+        "tools/history/draracle/verify_huline_wall_spans.py",
+        "tools/history/draracle/verify_prop_flip_setup.py",
+        "tools/history/draracle/verify_prop_region_height.py",
+        "tools/history/draracle/verify_special_pixel_table_binding.py",
+        "tools/history/draracle/verify_sprite_special_pixels.py",
+        "tools/history/draracle/verify_wall_allocation_request.py",
+        "tools/history/draracle/verify_wall_camera_clip.py",
+        "tools/history/draracle/verify_wall_descriptor_loader.py",
+        "tools/history/draracle/verify_wall_edge_mask.py",
+        "tools/history/draracle/verify_wall_facing.py",
+        "tools/history/draracle/verify_wall_mip_ids.py",
+        "tools/history/draracle/verify_wall_neighbor_constructor.py",
+        "tools/history/draracle/verify_wall_neighbor_mask.py",
+        "tools/history/draracle/verify_wall_neighbor_mode.py",
+        "tools/history/draracle/verify_wall_orientation.py",
+        "tools/history/draracle/verify_wall_projection.py",
+        "tools/history/draracle/verify_wall_screen_bounds.py",
+        "tools/history/draracle/verify_wall_uv_inputs.py",
+        "tools/history/draracle/verify_wall_uv_wrap.py",
+        "tools/history/draracle/verify_wall_visibility.py",
+        "tools/history/draracle/verify_wall_visibility_helper.py",
+        "tools/history/draracle/wall_uv_addressing.py",
+        "tools/history/lol2_extract_segments.py",
+        "tools/history/lol2_geometry_cracker.py",
+        "tools/history/lol2_lcw.py",
+        "tools/history/lol2_verify_entry1_runtime_witness.py",
+        "tools/history/lol2_verify_wall_atlas_candidate.py",
+        "tools/history/lol2_vqa_decode.py",
+        "tools/history/lol2_wall_mesh.py",
+        "tools/history/lol2_wall_texture_extract.py"
+      ]
+    }
+  ]
+}
