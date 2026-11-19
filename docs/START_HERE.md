@@ -8,7 +8,7 @@ own copy of *Lands of Lore: Guardians of Destiny*. Point the tools at its
 
 ```bash
 export LOL2_DAT=/path/to/your/LOL2/DAT
-python3 tools/check_all.py         # the last line should read ALL 33 CHECKS PASSED
+python3 tools/check_all.py         # the last line should read ALL 34 CHECKS PASSED
 ```
 
 Words you do not know are in the [glossary](GLOSSARY.md). Short worked commands, with the first lines they print, are in the [cookbook](COOKBOOK.md). What is known and checked is in [STATUS.md](STATUS.md). Examples that write files (pictures, JSON) should write outside the clone, so nothing from your game ends up in the repository. To contribute, see [CONTRIBUTING](../CONTRIBUTING.md).
@@ -24,6 +24,7 @@ Follow the engine from startup to saving in [How Lands of Lore II works](HOW_THE
 ## I want to understand the levels
 
 - [lol2-level-graph.md](lol2-level-graph.md): the 15 levels, the room archives and the exits.
+- [Progression](PROGRESSION.md): each exit command and the shared or local slot it tests.
 - Options interface shapes in `LOCAL.MIX`: `python3 tools/lol2_decompress_sphere.py --check`.
 - Objects in each level: `python3 tools/lol2_entity_field_analyzer.py --out entities.json`.
 

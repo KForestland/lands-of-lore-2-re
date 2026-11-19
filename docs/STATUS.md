@@ -2,7 +2,7 @@
 
 What is documented about the original game, which tool reads it, what the tools check on the game files, and what is open. This table replaces the "almost fully understood" summary of earlier pages: those pages ([understanding (history)](lol2-understanding-2026-11.md), [current status (history)](lol2-current-status.md), [closure summary (history)](closure-summary.md), [final closure memo (history)](final-closure-memo.md)) are kept as history.
 
-Run the checks: `python3 tools/check_all.py` with `$LOL2_DAT` set: 33 checks, all pass on the English DOS 1.30 copy with the listed requirements.
+Run the checks: `python3 tools/check_all.py` with `$LOL2_DAT` set: 34 checks, all pass on the English DOS 1.30 copy with the listed requirements.
 
 **Running-game results.** Answered probes are counted in the rating; which ones and how: [NEEDS_A_RUNNING_GAME](NEEDS_A_RUNNING_GAME.md#answered-probes). Runs on hand-edited copies of a game-written save: [edited saves](EDITED_SAVES.md).
 
@@ -12,7 +12,7 @@ Run the checks: `python3 tools/check_all.py` with `$LOL2_DAT` set: 33 checks, al
 
 <!-- rating:begin -->
 - **Files read:** 83 of 83 files in `DAT` (1,915.6 of 1,915.6 MiB) have their whole layout read by a tool here: every byte belongs to a known header, directory, entry, chunk, segment or resource, or to zero padding between them; the DOS part of `SETUP.EXE` is counted by its length (what is inside an entry may still be only partly understood).
-- **Rules traced:** the pages mark 716 statements CONFIRMED (proved from the program code or the files) and 169 UNCONFIRMED (a reading not yet proved), on 114 current pages; old notes kept as history are not counted.
+- **Rules traced:** the pages mark 716 statements CONFIRMED (proved from the program code or the files) and 171 UNCONFIRMED (a reading not yet proved), on 115 current pages; old notes kept as history are not counted.
 - **Seen in the running game:** 4 of 9 probes that need the original game running are answered (a question can have more than one probe); 0 of them rest on edited saves only.
 - **Open questions:** 20 numbered questions: 5 answered, 14 mostly answered, 1 partly answered.
 <!-- rating:end -->
@@ -26,7 +26,7 @@ Run the checks: `python3 tools/check_all.py` with `$LOL2_DAT` set: 33 checks, al
 | Entry names and keys | [texture container](lol2-level-texture-container.md#entry-name-and-key-proven) | `lol2_westwood_hash`: the texture entry name is a key in 15/15 level archives, the room module name in 47 room archives | Q3 |
 | Compression | [compression](formats/compression.md), [options shapes](formats/room-sections.md) | `LOCAL.MIX` entry 1: all 39 `options.shp` shapes reach their expected lengths and dimensions (`lol2_decompress_sphere`). Westwood LZ77 at VA `0x158D58`: self-test passes; no size-prefixed MIX entry decodes; all eleven callers' buffers mapped, source filenames open | Q1 |
 | Level geometry | [geometry format page](formats/geometry.md), [draracle-restoration](draracle-restoration.md), [native wall verification](native-wall-verification.md) | one geometry entry per level archive, 15/15 (`lol2_source_format`); 52,669 regions, all vertex and neighbour indices in range, 99.5% of 178,728 portal links reciprocal (`lol2_level_report`) | Q16 |
-| Levels, rooms, exits | [level sheets](levels/README.md), [level graph](lol2-level-graph.md) | `lol2_level_report`: 15/15 level archives read, texture container found by name hash in 15, 72 level-transition commands (same as the level graph's exit table); 253 held-item identity tests across the four main tables. The placed-item table yields another 57 group references | Q3, Q18 |
+| Levels, rooms, exits | [level sheets](levels/README.md), [level graph](lol2-level-graph.md), [progression](PROGRESSION.md) | `lol2_level_report`: 15/15 level archives read, texture container found by name hash in 15, 72 level-transition commands (same as the level graph's exit table); 253 held-item identity tests across the four main tables. The placed-item table yields another 57 group references | Q3, Q18 |
 | Level scripts | [opcode reference](lol2-script-opcodes.md), [events, timers, predicates](lol2-script-events.md), [script format](lol2-level-script-format.md), [engine facts](lol2-script-engine-facts-2026-10.md), [addendum](lol2-script-engine-facts-2026-10-addendum.md) | `lol2_disassemble_scripts`: 15/15 levels, 42,594 commands, 32 observed opcodes, 0 unsupported; handlers of all 37 opcodes located | Q4–Q7, Q17 |
 | Entities and objects | [entity object map](lol2-entity-object-map.md), [object state word](lol2-object-state-word.md), [cave object catalogue](cave-object-catalogue.md) | 128 entity records of 62 types in 15/15 level archives (`lol2_entity_field_analyzer`); 29 B_HUMAN/WORM records in 12 levels | Q18 |
 | Items | [Item format](formats/items.md), [grants and effects](lol2-item-effects.md), [item handlers](lol2-item-handlers.md) | [Grant census command](lol2-item-effects.md#reproduce-the-grant-census) checks 876 grants against the 170 item identities in the definitions | Q8 |

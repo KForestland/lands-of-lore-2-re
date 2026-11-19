@@ -78,7 +78,7 @@ Level-transition commands are `02 01 00 00 1C xx`: destination level = `xx & 31`
 | L20_BB | L19_BC/2 x10 |
 
 In this table only the command bytes are decoded. It does not show which object or region runs each
-command, under which predicate, or whether the player can reach it. Some commands could be unused.
+command, under which predicate, or whether the player can reach it. Some commands could be unused. The [progression page](PROGRESSION.md) adds, for each command, the record that runs it and that record's predicate.
 
 L8_SJ is the hub after Act 1: it links to L4_HJ, L9_DR, L10_DC, L12_CM and L14_HT, and all five link
 back to it. L16_CA -> L17_HC -> L19_BC -> L20_BB form a chain with links back.
