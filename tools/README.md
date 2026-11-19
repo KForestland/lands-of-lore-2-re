@@ -149,7 +149,7 @@ Re-read the movie scene ids, one sound-bank row, the music stem hashes and the 4
 
 ```
 $ python3 tools/lol2_media_check.py --data /path/to/DAT --check
-CHECK media: scene limit 85; L12 opcode 21/20/210 at 9823886/9821090/9823696; citadel L12_CMI entry 21; lolg MOVIES entry 2; bank 1179 row 1049 0190108e.aud; 32 table stems and CREDITS in both formats; 46/46 room archives carry the code banner
+CHECK media: scene limit 85; L12 opcode 21/20/210 at 9823886/9821090/9823696; citadel L12_CMI entry 21; lolg MOVIES entry 2; bank 1179 row 1049 0190108e.aud; 32 table stems and CREDITS in both formats; 46/46 room archives carry the code banner; 15 global texture books
 ```
 
 ### `lol2_text_tables.py`

@@ -61,10 +61,29 @@ structures accessed by the indicated caller.
 | `0x1727F1` | Same VQA node +0x24 stream and +8 destination, this time from the frame-preparation path. | Movie context +0x75A; result length at node +0x28 (`0x1727D9–0x172802`). |
 | `0x172838` | Compressed VQA pointer payload at `node[+0] + node[+0x20]`. Destination is node +0's pointer or the separate buffer at movie context +0x6E6. | Movie context +0x762. The [original intro trace](vqa.md#native-short-copy-runtime-control) reached this call (`0x172805–0x172845`). |
 
+The global texture file supplies a named witness for `0x67052`.
+`0x9E305–0x9E32D` opens `global\global.tex` from
+`LOLG.DAT+0x1C1C90`. The original file name hashes to `0xEF88C09F`,
+`LOCAL.MIX` entry 50 at `+0x4E6`. The loader reads the secondary
+base at member +0x298 (`0x9E332–0x9E358`), then seeks to its
+section-9 table (`0x9E689–0x9E6A0`). In the original member the
+secondary base is `0x18AE18`; its offset +0x2A4 gives 15 rows.
+The read at `0x9E6BE` uses three dwords per row. The call
+`0x9E6ED → 0x66E8C` stores their source offset (relative to that
+secondary base), capacity and packed length in resource +4, +8
+and +0xC (`0x66EA7–0x66EBC`). For a texture with mask `0x1000`,
+the class-3 resource path asks for the companion at `0x132835`,
+and the resource reader takes the packed arm at `0x67022–0x67052`.
+
+The first row at `LOCAL.MIX+0x339FA5` names the stream at
+`+0x2BCFA5`, packed size 11,476 and capacity 32,000. It emits
+27,536 bytes. `lol2_media_check.py --check` checks all 15 rows
+and reproduces 466,864 bytes in total, in 16-byte groups.
+
 **UNCONFIRMED.** The complete set of original filenames reaching the
 conditional resource branches at `0x67052`, `0x15BEE1`, `0x15C50D` and
 `0x15CAD4`, and the shape data reaching `0x15204F` and `0x15A604`. For the first branch, inspect the row builder callers
-`0x9DDBB`, `0x9DE84`, `0x9E5D2`, `0x9E66D` and `0x9E6ED`
+`0x9DDBB`, `0x9DE84`, `0x9E5D2` and `0x9E66D`
 for a nonzero packed length. For the shape and resource loaders, follow the
 handle passed to the read at `0x118820` back to its open, then verify the packed span
 against that file. The CLI's leading-u32 experiment does not detect

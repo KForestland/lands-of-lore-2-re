@@ -15,6 +15,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from lol2_cli import tool_args  # noqa: E402
+from lol2_decompress_westwood import decompress_westwood  # noqa: E402
 from lol2_hmi_midi import credits_paths  # noqa: E402
 from lol2_source_format import SIZES  # noqa: E402
 from lol2_westwood_hash import ww_hash_v1, ww_hash_v2  # noqa: E402
@@ -145,6 +146,32 @@ def scene_names(dat_dir):
     return image, names
 
 
+def check_global_texture_books(image, local, entries):
+    name = cstr(image, OBJ5 + 0xC6C)
+    key = ww_hash_v1(name)
+    entry = next((row for row in entries if row["key"] == key), None)
+    if key != 0xEF88C09F or entry is None or entry["index"] != 50:
+        raise ValueError("global texture archive entry")
+    member = read_at(local, entry["offset"], entry["size"])
+    base = u32(member, 0x298)
+    table = base + u32(member, base + 0x2C)
+    count = u32(member, base + 0x2A4)
+    if (base, entry["offset"] + table, count) != (0x18AE18, 0x339FA5, 15):
+        raise ValueError("global texture book directory")
+    decoded_bytes = 0
+    for i in range(count):
+        relative, capacity, packed = struct.unpack_from("<III", member, table + 12 * i)
+        start = base + relative
+        if not 0 < packed <= capacity or not start + packed <= table:
+            raise ValueError("global texture book extent")
+        data, errors, used = decompress_westwood(member[start:start + packed], capacity)
+        if errors or used != packed or not 0 < len(data) <= capacity or len(data) % 16:
+            raise ValueError("global texture book profile")
+        decoded_bytes += len(data)
+    if decoded_bytes != 466864:
+        raise ValueError("global texture book count")
+
+
 def check(dat_dir):
     image, names = scene_names(dat_dir)
     formats = image[OBJ5 + 0x2C84:OBJ5 + 0x2CC0]
@@ -246,6 +273,7 @@ def check(dat_dir):
         raise ValueError("badfile hashed into DMUSIC")
     local = parent_file(dat_dir, "LOCAL.MIX")
     _size, _body, lentries = mix_dir(local)
+    check_global_texture_books(image, local, lentries)
     local_keys = {e["key"] for e in lentries}
     hmi_hits = 0
     for stem in stems:
@@ -334,7 +362,7 @@ def check(dat_dir):
     return ("CHECK media: scene limit 85; L12 opcode 21/20/210 at 9823886/9821090/9823696; "
             "citadel L12_CMI entry 21; lolg MOVIES entry 2; bank 1179 row 1049 0190108e.aud; "
             "32 table stems and CREDITS in both formats; "
-            "46/46 room archives carry the code banner")
+            "46/46 room archives carry the code banner; 15 global texture books")
 
 
 def main(argv):
