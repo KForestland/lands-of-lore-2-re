@@ -87,8 +87,8 @@ The item and list-node evidence is below.
 | 23 | `[0x2B504]` | 4 × [0x2B508] | 4 | 0x7 | `0xE8C8A` | — |
 | 24 | `[0x26E54]` | [0x26E5C] | 1 | 0x7 | `0xE8CAD` | Local script bytes |
 | 25 | `elements(0x968F8)` | pool length | pool stride | 0x7 | `0xE8CCD` | Placed item objects |
-| 26 | `[0x22D44]` | 24 × [0x22D64] | 24 | 0x7 | `0xE8CF2` | — |
-| 27 | `[0x22D54]` | 8 × [0x22D74] | 8 | 0x7 | `0xE8D1F` | — |
+| 26 | `[0x22D44]` | 24 × [0x22D64] | 24 | 0x7 | `0xE8CF2` | [ODF surface presets](lol2-save-field-witnesses.md#surface-presets-and-texture-animations) |
+| 27 | `[0x22D54]` | 8 × [0x22D74] | 8 | 0x7 | `0xE8D1F` | [Texture animation rows](lol2-save-field-witnesses.md#surface-presets-and-texture-animations) |
 | 28 | `0xB7D6C` | 0x4 | 0x4 | 0x1 | `0xE8D42` | First world-list head |
 | 29 | `0xB7D70` | 0x4 | 0x4 | 0x1 | `0xE8D5D` | Second world-list head |
 | 30 | `0x26B4C` | 0x30 | 0x30 | 0x7 | `0xE8D78` | — |

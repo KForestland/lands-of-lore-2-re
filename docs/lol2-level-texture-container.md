@@ -62,7 +62,11 @@ Sections used here:
 | 3 | Material payload records, addressed by descriptor offsets | PROVEN |
 | 4 | Shade rows, 256 bytes each, up to section 5 (66 rows in L1_DC and L20_BB) | PROVEN |
 
-Other sections are not interpreted in this note.
+**CONFIRMED.** Texture animation rows start at section 6 (header u32
++0x20). Header u32 +0x5C gives the byte length. The native loader seeks
+there at `0x9DCAC` and reads eight bytes per row
+(`0x9DCB4–0x9DCE2 → 0x110724`). The rows supply the texture animation
+state saved in level section 27. [Field map and saved example](lol2-save-field-witnesses.md#surface-presets-and-texture-animations)
 
 ## Material descriptor (`'<6H11I'`, 56 bytes)
 

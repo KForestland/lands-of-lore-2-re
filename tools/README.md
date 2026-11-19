@@ -176,7 +176,10 @@ CHECK speech: format at file 0x1C427A; switch at 0xF133C enters eight arms throu
 
 ### `lol2_save_native.py`
 
-Re-reads the native save and clock instructions cited on the [timer page](../docs/lol2-timer-clock.md#save-restore-and-menu-pause): the section selector calls, the section-67 XOR restore, the 62/64 pointer rebase arms, the frame index and the menu clock restart. Part of `check_all.py`.
+Re-reads native save selector, restore and clock instructions. Also checks
+the bounds and enabled modes of the ODF surface presets and texture
+animation rows behind save sections 26 and 27 in all 15 levels. Part of
+`check_all.py`. [Native field witnesses](../docs/lol2-save-field-witnesses.md#surface-presets-and-texture-animations)
 
 ### `lol2_cache_seed.py`
 

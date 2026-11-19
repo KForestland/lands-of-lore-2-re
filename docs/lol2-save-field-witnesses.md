@@ -124,7 +124,7 @@ Both loaders apply section-specific fixups after the read
 | L15 | 12-byte rows | `0xE8B5D` | `0xE2AD3–0xE2AE2` | A u16 index selects a row (index × 12 at `0xE2ACC`, although the selector reports stride 8) and the initializer installs its address at +4 of an audio-side record. Row semantics **UNCONFIRMED**. |
 | L18 | prop pool | `0x9D254`, `0xE8BD3` | `0xADEDC`, `0xEA133` entry 18 | **CONFIRMED.** Prop pool `[0xDB590]`, separate from L21 actors. Selector 3 accesses it at `0x5FC43`. The level loader at `0xF2128–0xF216D` reads the 37-byte prop placements and calls `0xF2064` on each allocation. |
 | L20/L23 | offset-selected bytes | `0x5B7CD`, `0x63151` | `0x5DA2A`, `0x644A6` | Controls and movables select the byte address by adding their u16 +0x36. Full row formats **UNCONFIRMED**. |
-| L26/L27 | 24-byte and 8-byte rows | `0xE8CF2`, `0xE8D1F` | `0xA053E`, `0xA0553` | Frame update takes each table pointer with its count. Detailed fields **UNCONFIRMED**. |
+| L26/L27 | 24-byte and 8-byte rows | `0xE8CF2`, `0xE8D1F` | `0xA053E`, `0xA0553` | **CONFIRMED.** Surface presets from the ODF and animation rows from the level texture stream. Both hold frame update state. [Field map and saved examples](#surface-presets-and-texture-animations). |
 | L30 | 0x30-byte context at `0x26B4C` | `0xE8D78` | instructions `0xE05C8`, `0xE05E1` (operand bytes `0xE05C9`, `0xE05E2`); initializer reference `0x9C8A8` (`push 0x26B4C; call 0x115628`) | The call at `0xD36FE` passes the address alongside the player, but callee `0x115D6C` returns zero without reading either argument. Subfields **UNCONFIRMED**. |
 | L33 | dword at `0x969A4` | `0xA7245`; cleared at `0xA24A6` | `0xAA5E9` | **CONFIRMED.** In the creature hit handler `0xA6AE0`, the creature is saved (and its +0xB5 bit 0x80 set) when the hit record's +8 (the hit source) equals the player address `0x22574`. The script test at `0xAA5E9–0xAA5F2` compares the current object for identity with that saved pointer and returns the equality result to the common predicate tail. |
 | L34 | dword at `0x96A28` | `0xA65D3/0xA65F6` | `0xAAC06–0xAAC59` | Optional pointer to a row in `[0x22D1C]`, chosen by the command's u16 +6 or cleared by 0xFFFF. Consumer uses row position and its +6 reach byte. |
@@ -172,11 +172,67 @@ The following probes isolate the residual table cells.
 | G7/G9/G10 | Log the index supplied to `0xEF39B` at each cue/scene caller, then find the matching set and clear. For G9, trace row-indexed readers of the byte array from `0x9567B` for any mask other than 1. For G10, sample the globals selected at `0xE87E2` on either side of one `0xE0A67` frame. |
 | L0–2, L3/4 and L5/6 | Trace each input passed to the selector arms `0xE8940–0xE89B8` back to the level initializer, allowing indexed/structure-relative writes. Follow pointer and count from the two 0x1C-byte headers through the reader at `0x66474` and observe one selected 8-byte row. |
 | L15/L20/L23 | Follow the installed audio pointer at `0xE2AE2` to the first actual row read. For the variable chunks in L20 and L23, start at `0x5DA2A` and `0x644A6` and decode the byte consumers before naming the subfields. |
-| L26/L27/L30 | Follow the active-row branches after the bit-0 checks at `0x67489` and `0x11077D`; compare the same row before and after one update. For L30 start at the instructions `0xE05C8`/`0xE05E1`, the initializer reference `0x9C8A8` and the field read in `0x115D70` (+2 dword minus `[0x22C54]`); the player-call stub cannot identify the fields. |
+| L30 | Start at the instructions `0xE05C8`/`0xE05E1`, the initializer reference `0x9C8A8` and the field read in `0x115D70` (+2 dword minus `[0x22C54]`). |
 | L46/L47 and L57–L59 | Watch the link and flag at `0x10C2B7`/`0x10D31C` across one allocation, update and release. For the counters, log the comparing branch at `0x10216A` or `0x100747` and subsequent event request. At `0x971B8`, record the pool row found by the L59-dependent lookup. |
 | L60/L65 | On one voice resume, follow each affected cell beyond the +0x2B38 table at `0xE376C`. On one frame dispatch read the active L65 +0x18 pair and selected backend at `0xACFF6–0xAD026`. |
 
 `python3 tools/lol2_save_native.py --check --data /path/to/DAT` (part of
-`check_all.py`) re-reads eight selector arms (G4, 7, 9, 10 and L7, 9, 36,
-60), the writer and loader route calls and the timer witness
-instructions; the other table cells are cited, not machine-checked.
+`check_all.py`) re-reads ten selector arms (G4, 7, 9, 10 and L7, 9, 26,
+27, 36, 60), writer and loader calls, selected timer instructions and
+the source frames for sections 26 and 27.
+
+## Surface presets and texture animations
+
+**CONFIRMED.** The ODF loader seeks to header u32 +4 and reads 24 ×
+u32(+0x3C) bytes into the level context at +0x6C
+(`0x9E037–0x9E05B → 0x67424`). The count is stored at context +0x8C.
+The texture loader opens the `.tex` resource through `0x9C39E → 0x9C3E8`.
+On the expanded [`.TE_` stream](lol2-level-texture-container.md), it seeks
+to header u32 +0x20, then divides the byte length at +0x5C by eight and
+records the count and allocated pointer at context +0x9C and +0x7C
+(`0x9DC9D–0x9DCE2 → 0x110724`). The load call at `0xE68EA–0xE68EF`
+passes context `0x22CD8` to `0x9BDC4`, which forwards it at `0x9C0CF`
+to the callers of those two readers. The fields correspond to
+object-5 cells `0x22D44/0x22D64` and `0x22D54/0x22D74` in the frame
+caller (`0xA0530–0xA0558`) and the save selectors
+(`0xE8CF2–0xE8D3D`). The 8-byte ODF rows at header +0x54 instead load
+to context +0x80 (`0x9E05E–0x9E091`).
+
+**CONFIRMED.** The frame update uses the following fields. Signed word
+arithmetic wraps to 16 bits where the routine writes a word.
+
+| L26 offset | L27 offset | Native role and evidence |
+|---|---|---|
+| +0x04 | +0x00 and +0x07 | L26 signed +4 selects a 12-byte material descriptor at `[0x22D78]`. A negative index selects L27 row `abs(index)`, whose u16 +0 and current frame u8 +7 sum to the descriptor index. Region preset selection and the join are at `0xF6556–0xF65DC`. A wall's own signed material uses the same L27 join at `0x11491E–0x11495C`. The updates write L26 +4 or L27 +7 at `0x676E7` or `0x1109C2`. |
+| +0x0C | +0x02 | Countdown word. The high nibble of the mode chooses the source subtracted each frame. Values `0x00/0x20` take 8.8 elapsed time at `[0x22C58]`; `0x10/0x30` take the low word of whole ticks at `[0x22C5A]`. The signed result triggers an advance only below zero (`0x674A1–0x675DF`, `0x110795–0x1108BF`). |
+| +0x0E | +0x04 | Period byte. Modes `0x20/0x30` add `period × 256` or `period × u16([0x223A8])` until the countdown is nonnegative, counting each advance. Modes `0x00/0x10` draw one new delay through `0x12415C` and advance once after expiry (`0x674BC–0x675A9`, `0x1107AF–0x11088C`). |
+| +0x0F | +0x05 | High nibble selects countdown handling above. Low nibble 1 wraps the frame in the current direction, 2 chooses a different random frame within the range, and 3 reverses direction at either end (`0x67645–0x676E7`, `0x11090C–0x1109C2`). L27's frame range is 0 through descriptor byte +8 minus one. For L26 the lower end is current index minus descriptor byte +9 and the upper end is lower end plus byte +8 minus one. |
+| +0x10 | +0x06 | Bit 0 enables the update (`0x67486–0x6748B`, `0x11077A–0x11077F`). Bit 1 selects the advancing direction and changes at the endpoints in low mode 3 (`0x67661–0x676BB`, `0x110938–0x1109B1`). |
+| +0x06, +0x08, +0x0A; +0x11–+0x13; +0x17 | — | Each advance adds signed bytes +0x11/+0x12 to words +8/+0x0A, and signed byte +0x13 × 32 to word +6. The updater clears +0x17 once per enabled row and increments it for advances that apply these changes (`0x675DF`, `0x676EB–0x67745`). The surface setup at `0x67754–0x677B6` passes the words or their low bytes into the render path. |
+| +0x14–+0x16 | — | Setup copies the low two bits of +0x14 to the top two bits of draw word +0x3E (`0x677BC–0x677CE`). The region initializer copies +0x15 to region +0x27 (`0xF3A07–0xF3A17`). Byte +0x16 selects surface-dependent branches such as `0xD3C54–0xD3C66` and indexes a flag table at `0xD3983–0xD3991`. |
+
+**CONFIRMED.** The original corpus contains 428 L26 and 36 L27 source
+rows by the header fields above, with 95 and 19 enabled respectively.
+All 100 nonempty L26 saves and 54 nonempty L27 saves in the 27-slot
+reference set have decoded lengths matching their level assets. Both
+sections store compressed XOR deltas (flags 7 at `0xE8D14` and
+`0xE8D37`), with no row pointer fixups. Both adjuster entries at
+`LOLG.DAT+0x120640/+0x120644` jump to the status return `0xE97AC`.
+
+**CONFIRMED.** For the reference slot with SHA-256 prefix `a97f9c4782d4`,
+L26 at slot `+0x1945E` decodes to 504 bytes and L27 at `+0x194D9`
+decodes to 24. The `L1_DC.IMG` baseline slices at `+0x4AA02` and
+`+0x4ABFA` match the original ODF at `L1_DC.MIX+0x70C354` and the
+expanded texture stream at `+0xC67AFB`, byte for byte. Applying the
+deltas gives L26 row 8 material 29 → 33 and countdown 0 → 264.
+L27 row 1 at expanded `+0xC67B03` changes its countdown 0 → 264 and
+frame 0 → 9. The section offsets and decoded lengths are in level block
+`0x6EA8` at +0xD8 and +0x1E8, indexed by section number.
+
+**UNCONFIRMED.** Full meanings of L26 +0–+3, its surface classification
+values at +0x16 and unobserved flag bits. The ODF loader copies all 24
+bytes, and the frame loop and surface setup establish the reads above.
+Trace +0–+3 after the `0x67424` copy, and pair a chosen +0x16 value
+with its switch arm at `0xD3C66` and the resulting contact effect. For flag
+bits beyond 0 and 1, log a test of the original flag byte in a consumer
+of either row before assigning meaning.
