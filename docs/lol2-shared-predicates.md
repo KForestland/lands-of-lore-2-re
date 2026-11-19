@@ -76,25 +76,25 @@ root predicate offset and linked command site.
 
 ## Exit predicate census
 
-**CONFIRMED.** The 15 level command streams contain 72 level-transition
+**CONFIRMED.** The command streams of the 15 levels contain 72 level-transition
 commands with prefix `02 01 00 00 1c`. Each links directly to one
 original event among the four principal object tables and region lists.
 Twenty-four of those pairs have a kind-19 predicate trailer. Following
 every type-4 predicate edge from those roots, the only type-2
-shared-array slot is 52. It occurs twice, for the two L19_BC arrivals
-in the table above. The recheck uses geometry header +0x38/+0x40 for event
+shared-array slot is 52. It occurs twice, for the two L19_BC exits (to L20 arrivals 1 and 2)
+in the table above. `lol2_level_report.py --check` uses geometry header +0x38/+0x40 for event
 blobs, +0x3C/+0x44 for commands and +0xBC for predicate rows. It pins both
 event and command offsets. Recursive operand readers are `0x66B47` and
 `0x66BEC`, with shared reads at `0x66B2A` and `0x66BAF`.
 The check covers the directly linked exit commands. Other plot
 branches can use shared slots elsewhere in the scripts.
 
-## Slot 37 reset continuation
+## The slot-37-guarded event
 
 **CONFIRMED.** The player subcommand `0x26` at `0xD7ABC` passes
 argument 1 to `0xD0138`. That argument clears player bytes +0x1B6
 through +0x1BD. The common tail clears +0x22/+0x23, +0x1BE through
-+0x1C1, +0x20A and the low ten bits of word +0x226. It clears
++0x1C1, word +0x20A and the low ten bits of word +0x226. It clears
 +0x22A bit 1 (`0xD0144–0xD01CB`). If player +0x229 contains bit
 `0x04` or `0x08`, and +0x85 is null, it also sends signed words at
 +0x206 and +0x208 to `0x151DAE` (`0xD01D3–0xD01FA`). The latter
@@ -102,8 +102,9 @@ clamps the coordinates to the current bounds at context
 +0x42B/+0x42F and +0x433/+0x437. Its native mouse-service branch
 requests DOS mouse function 4 through the DPMI wrapper
 (`0x151B88–0x151C11`, interrupt `0x31`, simulated interrupt `0x33`).
-The slot-37 event includes a player input-state reset and a conditional
-pointer-position write.
+The slot-37-guarded event clears player bytes +0x1B6–+0x1C1 and the
+low bits of +0x226 and can write the pointer position; reading this as
+an input reset is an interpretation (**UNCONFIRMED**).
 
 **UNCONFIRMED.** The user-facing change of the original L9 prop and
 the other plot branches. For slot 37, trace the first subsequent read

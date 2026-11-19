@@ -134,11 +134,11 @@ according to whether +0x34 remains non-null and clears +0xB5
 bit `0x10` and +0xB8 bit 1 (`0xA2890–0xA28C4`). When
 that mask is clear, it sets +0x64 to `0xFF` and sets +0xB8
 bit 1 (`0xA28C9–0xA28DB`). The flags coexist in
-`L13_RC.MIX+0x68EFEA`, placement 27 (u16 +0x21 = `0x0035`,
+`L13_RC.MIX+0x68EFEA`, actor placement 27 (u16 +0x21 = `0x0035`,
 initial behavior 14). This record proves the original values at load.
 
 **CONFIRMED.** In mode 8's zero-observation continuation at `0xA2DEE`,
-a set +0xB9 bit 0 refreshes the +0x40 coordinate triplet from the target,
+a set +0xB9 bit 0 refreshes the +0x40 coordinate triplet from the target at +0x38,
 sets +0xB8 bit 4 and clears its bit 5 and the +0xB9 bit. It calls
 `0xA9720(actor, 1, 3)` at `0xA2E2D`. With the +0xB9 bit clear,
 +B8 & `0x30` equal to `0x30` calls
