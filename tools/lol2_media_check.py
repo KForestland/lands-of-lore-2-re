@@ -169,6 +169,44 @@ def room_module_layout(raw, entry_offset=None):
     return body_length, offset, sites
 
 
+def check_conditional_resource_names(image):
+    """Byte 0x223D6 selects the leved names or the shipped global names."""
+    code = 0x37000
+    tex = bytes.fromhex(
+        "8a15d623020083c40884d27417b9430c0000b8580c0000be2e0c0000"
+        "894de88945e0eb15ba7e0c0000bb900c0000be6c0c00008955e8895de06a0156e818a40700"
+    )
+    sounds = bytes.fromhex(
+        "8a1dd623020083c40484db74186868110000e8ac87070083c40485c07419"
+        "687d110000eb05689211000068683c0200e863340400"
+    )
+    if image[0x9E2D7 + code:0x9E2D7 + code + len(tex)] != tex:
+        raise ValueError("global resource name selector")
+    if image[0xA0171 + code:0xA0171 + code + len(sounds)] != sounds:
+        raise ValueError("sounds resource name selector")
+    names = {
+        0xC2E: b"c:\\leved\\-global.tex\x00",
+        0xC43: b"c:\\leved\\-global.odf\x00",
+        0xC58: b"c:\\leved\\-spell.odf\x00",
+        0xC6C: b"global\\global.tex\x00",
+        0xC7E: b"global\\global.odf\x00",
+        0xC90: b"global\\spell.odf\x00",
+        0x1168: b"c:\\leved\\_sounds.efx\x00",
+        0x117D: b"c:\\leved\\_sounds.efx\x00",
+        0x1192: b"global\\sounds.efx\x00",
+    }
+    for cell, text in names.items():
+        if image[OBJ5 + cell:OBJ5 + cell + len(text)] != text:
+            raise ValueError("resource name at %X" % cell)
+    # Direct absolute byte stores. A store through a register stays open.
+    flag = b"\xd6\x23\x02\x00"
+    direct = [b"\xA2" + flag, b"\xC6\x05" + flag]
+    direct += [bytes((0x88, (reg << 3) | 5)) + flag for reg in range(8)]
+    code_obj = image[0x90024:0x1C1024]
+    if any(pattern in code_obj for pattern in direct):
+        raise ValueError("direct store of resource name flag")
+
+
 def check_global_texture_books(image, local, entries):
     name = cstr(image, OBJ5 + 0xC6C)
     key = ww_hash_v1(name)
@@ -376,6 +414,7 @@ def check(dat_dir):
     local = parent_file(dat_dir, "LOCAL.MIX")
     _size, _body, lentries = mix_dir(local)
     check_global_texture_books(image, local, lentries)
+    check_conditional_resource_names(image)
     check_wsa_frames(image, local, lentries)
     local_keys = {e["key"] for e in lentries}
     hmi_hits = 0

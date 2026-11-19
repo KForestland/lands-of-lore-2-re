@@ -290,7 +290,7 @@ CHECK guest_trace_summary: self-test on a synthetic trace passed (no game data n
 
 ### `lol2_media_check.py`
 
-Re-read the movie scene ids, one sound-bank row, the music stem hashes and the 46 room-archive code entries. Writes nothing. Pages: `docs/lol2-movie-scenes.md`, `docs/lol2-sound-cues.md`, `docs/lol2-music-selection.md`, `docs/lol2-room-archives.md`.
+Re-read the movie scene ids, one sound-bank row, the music stem hashes and the 46 room-archive code entries. Also matches the byte at data `0x223D6` selecting the leved or global resource names. Writes nothing. Pages: `docs/lol2-movie-scenes.md`, `docs/lol2-sound-cues.md`, `docs/lol2-music-selection.md`, `docs/lol2-room-archives.md`.
 
 ```
 $ python3 tools/lol2_media_check.py --data /path/to/DAT --check
@@ -308,11 +308,11 @@ CHECK text: help/opt/automap/credits in LOCALLNG, credits also MOVIES entry 28, 
 
 ### `lol2_speech_names.py`
 
-Re-read the spoken-line format, the category switch, two `MCEL.MIX` keys, the MCEL import of the category switch and the cue-table loader, and check all 404 original cue words. Writes nothing unless `--out` is set, and then only the check line. Part of `check_all.py`. Page: `docs/lol2-speech.md`.
+Re-read the spoken-line format, the category switch, two `MCEL.MIX` keys, the MCEL import of the category switch and the cue-table loader, and check all 404 original cue words. Also classifies every direct cue-pointer use as a player call, a cleanup call, a compare, or the shutdown store. Writes nothing unless `--out` is set, and then only the check line. Part of `check_all.py`. Page: `docs/lol2-speech.md`.
 
 ```
 $ python3 tools/lol2_speech_names.py --data /path/to/DAT --check
-CHECK speech: format at file 0x1C427A; switch at 0xF133C enters eight arms through slots at 0xF131C; cue id from table 0x269CC calls 0xE3924; the reader loads 404 footer words from the EFX bank; 532 direct pointer loads and one shutdown store; .aud probe is the other branch; MCEL entries 5 and 7 are 44100 Hz codec 99 (17564 and 21668 bytes); MCEL import +0xFC reaches 0xF133C
+CHECK speech: format at file 0x1C427A; switch at 0xF133C enters eight arms through slots at 0xF131C; cue id from table 0x269CC calls 0xE3924; the reader loads 404 footer words from the EFX bank; 533 direct cue-pointer uses: 499 player calls (14 after a jmp), 11 cleanup calls, 21 word compares, 1 null test, 1 shutdown store; .aud probe is the other branch; MCEL entries 5 and 7 are 44100 Hz codec 99 (17564 and 21668 bytes); MCEL import +0xFC reaches 0xF133C
 ```
 
 ### `lol2_save_native.py`
@@ -324,7 +324,7 @@ animation rows behind save sections 26 and 27 in all 15 levels. Part of
 
 ### `lol2_cache_seed.py`
 
-Joins the 15 shipped `CDCACHE.LS_` rows to the level texture banks by name and compares the seed sizes with each bank's first dword; also reads `CACHEBAK.MIX`. Part of `check_all.py`. Page: `docs/lol2-cache-initializer.md`.
+Joins the 15 shipped `CDCACHE.LS_` rows to the level texture banks by name and compares the seed sizes with each bank's first dword; also reads `CACHEBAK.MIX`. Also reads the executable's version and date strings `DOS 1.30` / `Dec 03 1997 17:51:02`, the seed's 15 name strings, and the art and leved folder in each bank's first block. Part of `check_all.py`. Page: `docs/lol2-cache-initializer.md`.
 
 ### `example_images.py`
 

@@ -79,6 +79,29 @@ struct `0x22CD8` + 0xB0, index base `[0x22DA0]`) asks for the companion
 at `0x1327B1`,
 and the resource reader takes the packed arm at `0x67022–0x67052`.
 
+**CONFIRMED.** The byte at data `0x223D6` selects which names that
+open uses. `0x9E2D7` reads it. Nonzero loads `c:\leved\-global.tex`
+(cell `0xC2E`), `c:\leved\-global.odf` (`0xC43`) and
+`c:\leved\-spell.odf` (`0xC58`). Zero loads `global\global.tex`
+(`0xC6C`), `global\global.odf` (`0xC7E`) and `global\spell.odf`
+(`0xC90`). `0x9E310` then pushes the selected texture name and calls
+`0x118730`. The zero arm is `0x9E2FB–0x9E30D`; the open at
+`0x9E310–0x9E32D` is shared by both arms. The two `.odf` names are
+opened through `0x118730` at `0x9E75C` and `0x9E851`. The byte lies
+past the stored data (file offset `0x1E33FA`, file size `0x1E2AAF`),
+so it starts at zero and the global arm is the default. No writer was
+found: the relocation table holds exactly 66 fixups to `0x223D6`, and
+all 66 instructions are reads (`cmp byte` or `mov reg8`). No fixup
+targets `0x223D1–0x223D3`, `0x223D4` is never written, `0x223D5` has
+byte writes only (`0xA0EF8`, `0x14EFF7`) and the dword writes to
+`0x223D0` end at `0x223D3`. The code object (file `0x90024` through
+`0x1C1024`) also contains none of the direct absolute byte stores
+(the `A2`, `C6 05` and `88 /r` disp32 forms). A store through a
+register is still open.
+`lol2_media_check.py --check` matches the instruction bytes, the six
+names and that store scan. The same byte selects the sounds file
+([sound cues](../lol2-sound-cues.md)).
+
 The first row at `LOCAL.MIX+0x339FA5` names the stream at
 `+0x2BCFA5`, packed size 11,476 and capacity 32,000. It emits
 27,536 bytes. `lol2_media_check.py --check` checks all 15 rows
@@ -119,9 +142,13 @@ callers, e.g. `0x72E59`), and the table indexes (`[ebx+0x414]` from
 code; an index of 8 or more in the `0xC4D8` table would read past it.
 To settle it, show that every object reaching `0x15C116` comes from
 `0x15BB9C` and bound the index arguments at their producers. Also open:
-the complete set of filenames reaching `0x67052` and
-`0x15CAD4`, and the shape data reaching `0x15204F` and `0x15A604`.
-For the first branch, inspect the row builder callers
+the writer of the byte at `0x223D6` (including a store through a
+register), filenames other than `global\global.tex` and
+`c:\leved\-global.tex` reaching `0x67052`, any filename for
+`0x15CAD4` (the type-byte-4 arm of the helper at `0x15CAB4`; the packed
+bytes are read at `0x15CA8F` and that arm carries no filename
+immediate), and the shape data reaching `0x15204F` and `0x15A604`.
+For the other resource rows, inspect the row builder callers
 `0x9DDBB`, `0x9DE84`, `0x9E5D2` and `0x9E66D`
 for a nonzero packed length. For the shape and resource loaders, follow the
 handle passed to the read at `0x118820` back to its open, then verify the packed span

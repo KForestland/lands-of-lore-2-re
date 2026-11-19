@@ -149,15 +149,27 @@ display-object value. The subsequent overlay draw
 in each 24-byte row (`0xF00FC–0xF0118`). None of these
 arguments uses the cue or its array index.
 
-**UNCONFIRMED.** A text reader keyed by the cue. The confirmed
-consumers above use the cue for sound playback and completion checks.
-A search for direct stores to the cue table pointer found the
-shutdown store above. The five known TRR tables from
-`0xCF014` also have different row counts from the
-1,179-row EFX bank. To settle a separate text path, follow
-indirect calls from the other room modules and trace any
-text reader invoked while the cue is active. Match the
-index it reads to voice +4 or the table index from
-`0xEEB17`. The loaded table links to the bank rows at the
-offsets above. A text consumer would need its own code or
-data witness.
+**CONFIRMED.** Of the 533 direct uses of the cue-table pointer, 499
+pass the loaded word to `0xE3924` (14 of them after a `jmp`; at
+`0xA738E` and `0xD5F2B` the word reaches the call past an unrelated
+`test`), 11 call `0xE4004`, 21 compare the loaded word with voice +4
+(`cmp` with `[reg+4]`) and branch, one tests the pointer for zero at
+`0x14EA84`, and one is the shutdown store at `0x14EA9C`.
+A straight walk of the player from `0xE3924` through the return at
+`0xE3AA6` calls only `0xE529C` (at `0xE39A3`), `0x605F0` (at `0xE39DD`
+and `0xE39E7`) and `0xE4F1C` (at `0xE3A92`). `0xE529C` and `0x605F0`
+contain no further call. A straight walk of `0xE4F1C` through the
+return at `0xE5299` calls only `0xB3B8C` (at `0xE4FBE`) and `0xB7144`
+(at `0xE50D7`). `lol2_speech_names.py --check` recounts the four groups
+and those calls, and prints the five groups. The 532 loads and one store are the census already
+on this page. None of these direct uses reads text for the cue.
+
+**UNCONFIRMED.** A text reader keyed by the cue after it is stored on
+the voice. The 533 direct uses above are the player, the cleanup call,
+a compare with voice +4, the null test or the shutdown store, and are
+not that reader. The five
+known TRR tables from `0xCF014` also have different row counts from the
+1,179-row EFX bank. To settle it, follow indirect calls from the other
+room modules and match an index to voice +4 or the table index from
+`0xEEB17`. The loaded table links to the bank rows at the offsets
+above. A text consumer would need its own code or data witness.

@@ -126,9 +126,35 @@ old values with the bank's first dword (its decoded size) on the unpack path.
 The full comparison is repeatable with
 `python3 tools/lol2_cache_seed.py --check --data /path/to/DAT` (part of `check_all.py`).
 
+**CONFIRMED.** This executable holds the version and date strings
+`DOS 1.30` at `LOLG.DAT+0x1C4714` and `Dec 03 1997` then `17:51:02` at
+`LOLG.DAT+0x1C4749`. They are string literals reached through the data
+pointers at `0xEE54`, `0xEE5C` and `0xEE60`, not a header field (the LE
+header has no time stamp). `0xB9BD0` loads the `DOS 1.30` pointer and
+passes it to `0x159EDC`. `0x60AD5` and `0x60B80` copy the date and the
+time string into the buffer at `0x21A9C` and read them with the string
+helpers at `0x153B96` and `0x153BB9`. The program holds other dates:
+`VQA playback 4.2 (Sep 05 1997 13:11:59)` at file `0x1C5AC8` and the
+DOS/4G `Apr 03 1996 15:01:07` at file `0x33364`, so `Dec 03 1997` is
+not the date of every part of the program. The seed's
+only printable runs of four or more bytes are the 15 level names, in
+that order, and the seed stores no date. Each of the 15 banks' first
+decoded block names `PROJECTS\LOL_2\ART\WALLSETS\` plus an art folder
+and `PROJECTS\LOL_2\LEVED\` plus a leved folder. The art folder in
+`L3_DH` is `SPHERE1\L2&3` and its leved folder is `sphere1\l3_dh`.
+The other fourteen art folders match the bank stem (`SPHERE1\L1_DC`,
+`SPHERE2\L8_SJ`, `SPHERE3\L16_CA` and the rest). Drive-letter case and
+the case of `LEVED` vary. Those names identify the export tree of the
+shipped banks. The twelve seed sizes are not a version field in the
+executable. `lol2_cache_seed.py --check` re-reads the version and date strings with their pointers and readers, the
+fifteen seed strings and the fifteen folder pairs.
+
 **UNCONFIRMED.** The exact build or original members that produced
-the 12 differing values. The two supplied seed files and all 15
-named shipped banks were compared. To settle provenance, compare
-another genuine edition's `.te_` first dwords and its installer
-seed rows by the same name hash. A new writable cache records the
-current bank sizes.
+the 12 differing values, and what the date strings record (which
+build step or source module they date). The version and date strings
+and the folder names above identify this executable and the shipped
+banks. They do not name the older
+sizes. The two supplied seed files and all 15 named shipped banks were
+compared. To settle provenance, compare another genuine edition's
+`.te_` first dwords and its installer seed rows by the same name hash.
+A new writable cache records the current bank sizes.

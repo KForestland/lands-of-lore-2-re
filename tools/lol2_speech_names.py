@@ -12,6 +12,8 @@ import os
 import struct
 import sys
 
+import capstone
+
 import lol2_cli
 from lol2_mix_parser import read_mix_with_hashes
 from lol2_westwood_hash import ww_hash_v1
@@ -92,6 +94,136 @@ def check_cue_pointer_references(image):
                 raise ValueError(f"cue pointer instruction at file 0x{site:X}")
     if loads != 532 or stores != [0x14EA9C]:
         raise ValueError("cue pointer reference census")
+    return check_cue_pointer_uses(image)
+
+
+def check_cue_pointer_uses(image):
+    """Every direct use of the cue table is a player call, a cleanup call, a compare of the loaded word,
+    the null test before shutdown, or the shutdown store. Returns the counts."""
+    le = 0x3BCB4
+    page_table, record_table = struct.unpack_from("<II", image, le + 0x68)
+    page_size = struct.unpack_from("<I", image, le + 0x28)[0]
+    first, count = struct.unpack_from("<II", image, 0x3BD90 + 0xC)
+    record_lengths = {(2, 0): 5, (7, 0): 7, (7, 16): 9, (19, 0): 7}
+    decoder = capstone.Cs(capstone.CS_ARCH_X86, capstone.CS_MODE_32)
+    kinds = {"player": 0, "cleanup": 0, "compare": 0, "null test": 0, "store": 0}
+    via_jump = 0
+    for page in range(first, first + count):
+        start, end = struct.unpack_from("<II", image, le + page_table + 4 * (page - 1))
+        at = le + record_table + start
+        stop = le + record_table + end
+        while at < stop:
+            length = record_lengths.get(tuple(image[at:at + 2]))
+            if length is None or at + length > stop:
+                raise ValueError("cue use relocation")
+            record = image[at:at + length]
+            at += length
+            if len(record) < 7 or record[4] != 5 or int.from_bytes(record[5:], "little") != 0x269CC:
+                continue
+            file_at = CODE_BIAS + RELOC + page_size * (page - first)
+            file_at += struct.unpack_from("<h", record, 2)[0]
+            if image[file_at - 2:file_at] == b"\x89\x3d":
+                kinds["store"] += 1
+                continue
+            opcode = image[file_at - 2:file_at]
+            va = file_at - (1 if opcode[1] == 0xA1 else 2) - CODE_BIAS
+            kind, jumped = _cue_use_kind(decoder, image, va)
+            if kind not in kinds:
+                raise ValueError("cue pointer use at %X is %s" % (va, kind))
+            kinds[kind] += 1
+            via_jump += jumped and kind == "player"
+    expected = {"player": 499, "cleanup": 11, "compare": 21, "null test": 1, "store": 1}
+    if kinds != expected or via_jump != 14:
+        raise ValueError("cue pointer uses %s, %d player calls through a jmp" % (kinds, via_jump))
+    for va, target in (
+        (0xE39A3, 0xE529C), (0xE39DD, 0x605F0), (0xE39E7, 0x605F0),
+        (0xE3A92, 0xE4F1C), (0xE4FBE, 0xB3B8C), (0xE50D7, 0xB7144),
+    ):
+        if image[va + CODE_BIAS] != 0xE8 or rel_target(image, va) != target:
+            raise ValueError("cue player call at %X" % va)
+    if image[0xE529C + CODE_BIAS:0xE52F6 + CODE_BIAS].find(b"\xE8") != -1:
+        raise ValueError("0xE529C calls out")
+    if image[0x605F0 + CODE_BIAS:0x6061C + CODE_BIAS].find(b"\xE8") != -1:
+        raise ValueError("0x605F0 calls out")
+    if _calls_until(decoder, image, 0xE3924, 0xE3AA6) != [
+        (0xE39A3, 0xE529C), (0xE39DD, 0x605F0), (0xE39E7, 0x605F0), (0xE3A92, 0xE4F1C),
+    ]:
+        raise ValueError("cue player body")
+    if _calls_until(decoder, image, 0xE4F1C, 0xE5299) != [
+        (0xE4FBE, 0xB3B8C), (0xE50D7, 0xB7144),
+    ]:
+        raise ValueError("cue player helper body")
+    return kinds
+
+
+_FAMILIES = {r: f for f, regs in {
+    "eax": ("eax", "ax", "al", "ah"), "ebx": ("ebx", "bx", "bl", "bh"), "ecx": ("ecx", "cx", "cl", "ch"),
+    "edx": ("edx", "dx", "dl", "dh"), "esi": ("esi", "si"), "edi": ("edi", "di"), "ebp": ("ebp", "bp"),
+}.items() for r in regs}
+
+
+def _regs(text):
+    return {_FAMILIES[w] for w in text.replace(",", " ").replace("[", " ").replace("]", " ").replace("*", " ").split()
+            if w in _FAMILIES}
+
+
+def _cue_use_kind(decoder, image, va):
+    """Follow the register loaded from the cue pointer at va to its first use that decides.
+
+    A call to 0xE3924 or 0xE4004 is a player or cleanup call; a cmp on a register that holds the
+    pointer or a word read through it is a compare; test of the pointer register against itself is the
+    null test. A conditional jump on an unrelated register falls through; an unconditional jmp is
+    followed (at most two). Returns (kind, whether a jmp was followed)."""
+    first = next(decoder.disasm(image[va + CODE_BIAS:va + CODE_BIAS + 16], va))
+    pointer = _FAMILIES[first.op_str.split(",")[0].strip()]
+    tracked = {pointer}
+    cur = first.address + first.size
+    jumps = 0
+    decided = False
+    for _ in range(40):
+        insn = next(decoder.disasm(image[cur + CODE_BIAS:cur + CODE_BIAS + 16], cur), None)
+        if insn is None:
+            break
+        m, ops = insn.mnemonic, insn.op_str
+        if m == "call" and ops.startswith("0x"):
+            return {0xE3924: "player", 0xE4004: "cleanup"}.get(int(ops, 16), ops), jumps > 0
+        if m == "jmp" and ops.startswith("0x") and jumps < 2:
+            cur = int(ops, 16)
+            jumps += 1
+            continue
+        if m == "cmp" and _regs(ops) & tracked:
+            decided = "compare"
+        elif m == "test" and ops == "%s, %s" % (pointer, pointer) and pointer in tracked:
+            decided = "null test"
+        elif m.startswith("j") and decided:
+            return decided, jumps > 0
+        elif m.startswith("mov") and "," in ops:
+            dest, src = ops.split(",", 1)
+            dest_regs = _regs(dest) if "[" not in dest else set()
+            if _regs(src) & tracked:
+                tracked |= dest_regs
+            else:
+                tracked -= dest_regs
+        cur = insn.address + insn.size
+    return None, jumps > 0
+
+
+def _calls_until(decoder, image, start, ret_at):
+    """Call targets in one straight walk from start through the return at ret_at."""
+    calls = []
+    cur = start
+    end = ret_at + 1
+    while cur < end:
+        insns = list(decoder.disasm(image[cur + CODE_BIAS:cur + CODE_BIAS + 16], cur))
+        if not insns or insns[0].address != cur:
+            raise ValueError("disassembly at %X" % cur)
+        insn = insns[0]
+        if insn.mnemonic == "call" and insn.op_str.startswith("0x"):
+            calls.append((cur, int(insn.op_str, 16)))
+        cur = insn.address + insn.size
+    if cur != end:
+        raise ValueError("walk ended at %X" % cur)
+    return calls
 
 
 def check_cue_table(dat_dir, image):
@@ -141,7 +273,7 @@ def check(dat_dir):
     image = open(parent_file(dat_dir, "LOLG.DAT"), "rb").read()
     if len(image) != 1977007:
         raise ValueError("LOLG.DAT length %s" % len(image))
-    check_cue_pointer_references(image)
+    uses = check_cue_pointer_references(image)
     check_cue_table(dat_dir, image)
     format_at = FORMAT_VA + DATA_BIAS
     suffix_at = SUFFIX_VA + DATA_BIAS
@@ -228,8 +360,9 @@ def check(dat_dir):
     return ("CHECK speech: format at file 0x1C427A; switch at 0xF133C enters "
             "eight arms through slots at 0xF131C; cue id from table 0x269CC "
             "calls 0xE3924; the reader loads 404 footer words from the EFX bank; "
-            "532 direct pointer loads and one shutdown store; .aud probe is the other branch; "
-            "MCEL entries 5 and 7 are 44100 Hz codec 99 (17564 and 21668 bytes); MCEL import +0xFC reaches 0xF133C")
+            "533 direct cue-pointer uses: %(player)d player calls (14 after a jmp), %(cleanup)d cleanup calls, "
+            "%(compare)d word compares, %(null test)d null test, %(store)d shutdown store; .aud probe is the other branch; "
+            "MCEL entries 5 and 7 are 44100 Hz codec 99 (17564 and 21668 bytes); MCEL import +0xFC reaches 0xF133C" % uses)
 
 
 def main(argv):

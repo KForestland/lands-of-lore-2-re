@@ -44,11 +44,16 @@ Opcode `0x14`. Bytes 2–3 are `0x0004` and are not read here. The word at bytes
 
 ## Native bank join
 
-The bank is `LOCALLNG.MIX` entry 4 (25,010,232 bytes): `ww_hash_v1("global\sounds.efx")` = 1570429112 names it, and no other MIX holds that key. The loader opens `c:\leved\_sounds.efx` instead when that file exists (`0xA017E–0xA0194`).
+The bank is `LOCALLNG.MIX` entry 4 (25,010,232 bytes): `ww_hash_v1("global\sounds.efx")` = 1570429112 names it, and no other MIX holds that key.
 
-**CONFIRMED.** Startup passes `global\sounds.efx` (string
-at `LOLG.DAT+0x1C21B6`) and object `0x23C68` to
-`0xE3608` at `0xA0196–0xA01A0`. That loader reads the first
+**CONFIRMED.** The byte at data `0x223D6`, the same byte that selects
+the texture names, selects this bank at `0xA0171`. Nonzero probes
+`c:\leved\_sounds.efx` (cell `0x1168`) at `0xA017E` through `0x118934`.
+If that probe returns nonzero, `0xA018F` passes the second copy of the
+same string (cell `0x117D`) to `0xE3608`. If the probe returns zero,
+the loader is skipped. If the flag byte is zero, startup passes
+`global\sounds.efx` (string at `LOLG.DAT+0x1C21B6`, cell `0x1192`) and
+object `0x23C68` to `0xE3608` at `0xA0196–0xA01A0`. That loader reads the first
 0x264 bytes and writes the dword from +0x258 to object +0x1C
 (`0xE364A–0xE3659`, `0xE36AE–0xE36B9`). It seeks to the
 dword from +0x25C and reads 60-byte rows in index order
