@@ -72,7 +72,39 @@ adds the scaled sums and clamps to 0 through `0x3F0000`
 magnitude +0xA zero, the value helper returns 0, so this row adds
 nothing while +0xA stays 0. **UNCONFIRMED.** Colour channel and
 surface selection for this particular object. Trace the values returned
-by `0x1319B4` and the three-channel routine `0x131D58` into the final shade-table index for it.
+by `0x1319B4` and the three-channel routine `0x131D58` into the first
+render primitive whose source is that actor's view or surface.
+
+### Scalar shade row and packed colour
+
+**CONFIRMED.** In the scalar caller at `0x129C23`, the shade-row
+offset from the clamped 16.16 return `S` is `(S >> 8) & 0xFF00`.
+The arithmetic and store at `0x129C28–0x129C33` make this the
+256-byte row offset for index `S >> 16`, in 0–63. The draw call at
+`0x129C48` passes the local primitive at stack +0x60 before the push,
+so the computed field is primitive +0x28. Its consumer
+`0x12AA4B–0x12AA6E` selects the shaded branch for a nonzero offset,
+and the lookup at `0x12AA89–0x12AAA8` inserts the source pixel into
+the low address byte before fetching the translated palette index.
+The other three direct scalar callers at `0x126E82`, `0x127BD6` and
+`0x1288DA` store a result per 24-byte vertex before clipping through
+`0x133C68` and `0x133FF4`. Their final span-row interpolation remains
+**UNCONFIRMED**. To settle it, track the first surviving clipped
+vertex's shade into its span setup and compare the first byte lookup.
+
+**CONFIRMED.** The parallel `0x131D58` path packs three channel values.
+At `0x132178–0x1321E8` it scales the first sum triplet by the
+view-dependent factor and scales the second by the global factor at
+`0xFD8A8`. It adds channel pairs, arithmetically shifts each sum right
+14 and clamps it to 0–255 (`0x1321EC–0x13227F`). The stores at
+`0x13227F–0x132297` put the first, second and third values in return
+bits 24–31, 16–23 and 8–15. Direct callers at `0x139254`, `0x13A732`
+and `0x13BD50` store the packed dword per vertex before clipping;
+`0x13C845` stores a single result before its draw setup at `0x13C872`.
+For the actor-4 witness at `L10_DC.MIX+0xC8296B`, zero contribution
+from that row alone leaves the total from other rows and view terms
+undetermined. Match one original primitive's coordinate and excluded
+object key at `0x129C23` or `0x13C845` before assigning it a shade.
 
 ## Confirmed event sources
 

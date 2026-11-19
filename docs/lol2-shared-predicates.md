@@ -89,6 +89,33 @@ event and command offsets. Recursive operand readers are `0x66B47` and
 The check covers the directly linked exit commands. Other plot
 branches can use shared slots elsewhere in the scripts.
 
+### Shared predicates outside exits
+
+**CONFIRMED.** The same 15 geometry headers and the same four object
+tables and region lists yield 289 distinct event offsets linked to
+287 groups per level and stream in aggregate, after excluding groups
+that contain a level transition. Their kind-19 predicate roots refer
+to 28 distinct shared slots through evaluator reads `0x66B2A` and
+`0x66BAF`. The counts are per stored event record, deduplicating
+object lists that point to the same record. `lol2_level_report.py --check`
+rebuilds the counts and checks the four joins below.
+
+| Original event | Shared part of guard and other relevant inputs | Linked non-exit action |
+|---|---|---|
+| `L1_DC.MIX+0x6FDB2F`, group 432 | Root 51 at +0x7062BC checks shared form 45 = 0 (leaf +0x7062B2) and local 34 = 0 (+0x7062B7). | At +0x6FD293, set local 34 to 1; +0x6FD299 and +0x6FD2A1 run creature opcode 13 subcommands 13 and 7 on actor 39. |
+| `L8_SJ.MIX+0xCD7FDA`, group 13416 | Root 108 at +0xD11095 reduces to Dawn 12 ≥ 1, Bacatta 13 ≥ 1 and translated-runes slot 46 = 1 (leaves +0xD11077, +0xD11234 and +0xD1121B). | At +0xCD4A50 actor 20 gets creature opcode 13 subcommand 4 with argument 9. At +0xCD4A5E opcode 16 writes actor +0x25 = 1. |
+| `L12_CM.MIX+0x95FC40`, group 5510 | Root 7 at +0x98CB63 checks Dawn 12 = 0 (+0x98CB59) and bound object byte +0x25 = 0 (+0x98CF46). | At +0x95F11C actor 35 gets +0x25 = 1. At +0x95F128 player opcode 2 subcommand 0x26 enters the clear path documented below. |
+| `L20_BB.MIX+0xECE1E3`, group 6886 | Root 1 at +0xEE12BF compares shared soul 0 against 5 with operator 5 (less than). | At +0xEC79D5 and +0xEC79DB opcode 198 sets local 6 to 2 and local 4 to 1. |
+
+The archive name for slot 46 is at `GLOBAL.MIX+0x668376`. The other
+names are in the shared-index table above. Operator comparisons are
+listed in the [predicate reference](lol2-script-events.md#predicates-and-shared-bytes).
+The encounter reachability of these branches remains **UNCONFIRMED**.
+For each row, compare the live shared and bound-object operands at
+`0x66AB0` with the archive predicate and record whether the named group
+enters `0x646EC`. The placed-item directory and other indirect group
+producers need their own admission witness.
+
 ## The slot-37-guarded event
 
 **CONFIRMED.** The player subcommand `0x26` at `0xD7ABC` passes

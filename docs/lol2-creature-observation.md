@@ -137,6 +137,34 @@ bit 1 (`0xA28C9–0xA28DB`). The flags coexist in
 `L13_RC.MIX+0x68EFEA`, actor placement 27 (u16 +0x21 = `0x0035`,
 initial behavior 14). This record proves the original values at load.
 
+**CONFIRMED.** The same placement mask 0x10 also selects actor +0x64
+on mode 3's other item continuation. After the request at `0xA2A6F`,
+the continuation clears actor +0xB5 bit 0x10 and writes +0x64 = 0 with
+the placement bit set, or 0xFE if clear (`0xA2A8D–0xA2AB0`). This
+path also selects secondary state 9. Across the actor rows read by
+`0xA2283`, 86 carry mask 0x10, 373 carry mask 0x20, and 57 carry both.
+The census uses u16 +0x21 of the 1,028 rows in the 15 geometry entries.
+
+**CONFIRMED.** Modes 4 and 5 use two derived definition thresholds
+in the branch requiring actor +0xB9 bit 0x10 (`0xA3681–0xA3688`,
+`0xA36FB–0xA372A`). With unsigned definition words +0x55 and
++0x59, the loader sets +0x6B to `floor(7*max(+0x55,+0x59)/8)`
+(`0xA1CC6–0xA1D04`). Let `T` be that result and `R` the signed
+live word +0x61 after `0xA1CB5–0xA1CC0` adds 0x80. It sets +0x69
+to `floor(T/2)` if `R > T`, otherwise `R + floor((T-R)/2)`
+(`0xA1D08–0xA1D24`). The mode path reads these two words and
+compares them with the current horizontal distance shifted right
+16, from `0xA4E4C–0xA4E5A`. Its substate at actor +0xB9 bits
+5–6 selects the branch at `0xA3941–0xA396A`. For the EXEC definition
+at `L5_HC.MIX+0x5BF25A`, the three stored input words are 0, 400 and
+0, giving `R=128`, `T=350` and a shorter threshold of 239.
+The nearby alternative branch at `0xA39AB–0xA39E9` compares definition
+u8 +0x74 (75 in that row) shifted left 16 with the distance after
+subtracting both object radii (`0xA4EFA–0xA4F20`). These reads establish
+the numeric gates. Which original encounter sets the live flags for
+each gate remains open; record +0xB4/+0xB7/+0xB9 at `0xA36FB`
+and check the dispatch against the definition installed at `0xA22DB`.
+
 **CONFIRMED.** In mode 8's zero-observation continuation at `0xA2DEE`,
 a set +0xB9 bit 0 refreshes the +0x40 coordinate triplet from the target at +0x38,
 sets +0xB8 bit 4 and clears its bit 5 and the +0xB9 bit. It calls

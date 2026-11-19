@@ -236,7 +236,7 @@ def placed_item_groups(raw, scripts):
 
 
 def exit_predicates(scripts):
-    """Join exit commands to serialized event predicates and resolve shared leaves."""
+    """Join exit and other serialized event predicates to shared leaves."""
     predicates = [bytes.fromhex(row) for row in scripts["predicate_table"]["entries"]]
 
     def shared_slots(index, ancestors):
@@ -262,8 +262,11 @@ def exit_predicates(scripts):
                 by_group[key][event["file_offset"]] = event
     direct = guarded = 0
     shared = []
+    exit_groups = set()
     for command in scripts["transitions"]:
-        events = by_group[(command["stream"], command["group"])]
+        key = (command["stream"], command["group"])
+        exit_groups.add(key)
+        events = by_group[key]
         direct += bool(events)
         for event in events.values():
             predicate = event.get("predicate")
@@ -273,7 +276,30 @@ def exit_predicates(scripts):
             slots = shared_slots(predicate["index"], set())
             if slots:
                 shared.append((command["file_offset"], event["file_offset"], sorted(slots)))
-    return direct, guarded, shared
+    other = []
+    for key, events in by_group.items():
+        if key in exit_groups:
+            continue
+        for event in events.values():
+            predicate = event.get("predicate")
+            if predicate is not None:
+                slots = shared_slots(predicate["index"], set())
+                if slots:
+                    other.append((key, event["file_offset"], predicate["index"], tuple(sorted(slots))))
+    return direct, guarded, shared, other
+
+
+def check_shade_routes(image):
+    for address, sequence in (
+        (0x129C23, "e88c7d0000c1f80883c40c2500ff000089842488000000"),
+        (0x12AA4B, "8b512883fa000f8421ffffff"),
+        (0x12AA90, "8a5c05008a540d00"),
+        (0x13227F, "8a442424884424578a442428884424568a44242c884424558b442454"),
+    ):
+        expected = bytes.fromhex(sequence)
+        start = address + 0x37000
+        if image[start:start + len(expected)] != expected:
+            raise ValueError(f"shade route at {address:#x}")
 
 
 def check_l8_controls(data_dir):
@@ -511,12 +537,28 @@ def main():
     if a.check:
         exits = sum(len(L["scripts"]["transitions"]) for L in levels)
         exit_checks = [exit_predicates(L["scripts"]) for L in levels]
-        direct_exits = sum(direct for direct, _, _ in exit_checks)
-        guarded_exits = sum(guarded for _, guarded, _ in exit_checks)
-        shared_exits = [row for _, _, rows in exit_checks for row in rows]
+        direct_exits = sum(direct for direct, _, _, _ in exit_checks)
+        guarded_exits = sum(guarded for _, guarded, _, _ in exit_checks)
+        shared_exits = [row for _, _, rows, _ in exit_checks for row in rows]
+        nonexit_shared = [row for _, _, _, rows in exit_checks for row in rows]
+        nonexit_group_count = sum(len({key for key, *_ in rows}) for _, _, _, rows in exit_checks)
+        nonexit_slots = {slot for _, _, _, slots in nonexit_shared for slot in slots}
+        try:
+            check_shade_routes((Path(a.data).resolve().parent / "LOLG.DAT").read_bytes())
+        except (OSError, ValueError) as error:
+            bad.append(str(error))
         expected_shared = [(0x5E93F4, 0x5EC32A, [52]), (0x5E93FA, 0x5EC336, [52])]
         if len(stems) == 15 and (direct_exits, guarded_exits, shared_exits) != (72, 24, expected_shared):
             bad.append("exit predicate census changed")
+        expected_nonexit = {
+            ((0, 432), 0x6FDB2F, 51, (45,)), ((1, 13416), 0xCD7FDA, 108, (12, 13, 46)),
+            ((1, 5510), 0x95FC40, 7, (12,)), ((1, 6886), 0xECE1E3, 1, (0,)),
+        }
+        if len(stems) == 15 and (
+            (len(nonexit_shared), nonexit_group_count, len(nonexit_slots)) != (289, 287, 28)
+            or not expected_nonexit.issubset(nonexit_shared)
+        ):
+            bad.append("non-exit shared predicate census changed")
         tex = sum(1 for L in levels if L["tex"])
         ent = sum(1 for L in levels if L["records"])
         uns = sum(len(L["scripts"]["unsupported"]) for L in levels)
@@ -554,7 +596,8 @@ def main():
         print(f"CHECK level_report: {len(levels)}/{len(stems)} level archives read (level data entry, scripts framed, "
               f"{uns} commands outside the size table); texture container found by name hash in {tex}; entity records in "
               f"{ent}; {exits} level-transition commands ({direct_exits} directly linked, {guarded_exits} predicate links, "
-              f"{len(shared_exits)} with shared bytes); regions {sum(L['geom']['regions'] for L in levels):,}, "
+              f"{len(shared_exits)} with shared bytes); {len(nonexit_shared)} other shared predicate records; "
+              f"regions {sum(L['geom']['regions'] for L in levels):,}, "
               f"out-of-range vertex/neighbour indices {gb}, portal links {gl:,} (reciprocal {gr:,}, sharing the side's vertices "
               f"{gs:,}); wall rows {wr:,}, partition faults {wb}, {special} special ({based} with earlier base); event records {sum(ev.values()):,} (kinds without a documented matcher: {unknown_kinds or 'none'}); "
               f"opcode-21 movie commands {sum(sp.values())} naming {len(sp)} scene ids (outside the scene table: {bad_scene or 'none'}); held-item tests (kind 4 mode 3) {len(tests)}, identity not in the item table: "
