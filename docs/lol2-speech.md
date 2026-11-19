@@ -69,6 +69,22 @@ not supply one. The indexed bank lookup at `0xE4CEF–0xE4CF8`
 reads the payload for that cue from the EFX bank. The shutdown
 path frees the table pointer at `0x14EA84–0x14EA9C`.
 
+**CONFIRMED.** The separate consumer at `0xF0B98–0xF0C29`
+uses the saved handle and index for voice cleanup. If the
+voice is active and its +4 matches the mapped cue, the call
+at `0xF0C0E` passes the handle, mapped cue and a zero argument
+to `0xE4004`. The matching arm there updates the voice flags
+and requests a stop (`0xE40E6–0xE4157`). The caller then writes
+zero to +0x94 and −1 to +0x90. Those fields feed the audio
+selector in this path.
+
+**CONFIRMED.** The LE main code object (file `0x3BD90`, logical
+pages 2 through 305) has 533 direct relocations to data `0x269CC`.
+532 load the pointer and the sole direct store clears it on shutdown
+(instruction `0x14EA9C`, LE fixup file offset `0x74154`).
+`lol2_speech_names.py --check` walks those relocation pages and
+checks that instruction census and the cleanup call above.
+
 ### Room callbacks during the cue
 
 **CONFIRMED.** The original MCEL WOM provides an external caller of the category
@@ -91,13 +107,15 @@ display-object value. The subsequent overlay draw
 in each 24-byte row (`0xF00FC–0xF0118`). None of these
 arguments uses the cue or its array index.
 
-**UNCONFIRMED.** A text reader keyed by the cue. The category
-call-through, its two completion loops, the sound admission
-and cleanup branches, and these callback arguments provide
-no cue-to-text join. The five known TRR tables from
+**UNCONFIRMED.** A text reader keyed by the cue. The confirmed
+consumers above use the cue for sound playback and completion checks.
+A search for direct stores to the cue table pointer found the
+shutdown store above. The five known TRR tables from
 `0xCF014` also have different row counts from the
 1,179-row EFX bank. To settle a separate text path, follow
 indirect calls from the other room modules and trace any
 text reader invoked while the cue is active. Match the
 index it reads to voice +4 or the table index from
-`0xEEB17`.
+`0xEEB17`. A write watch on data `0x269CC` from the original
+startup would also identify the table's initial producer if it
+is written through a computed address.

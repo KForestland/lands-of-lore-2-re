@@ -20,7 +20,7 @@ One line per question: its state and what would settle what is left.
 | Q10 | Mostly | Bind the remaining mode decisions to original encounters and trace the remaining definition and placement masks |
 | Q11 | Mostly | Answered for a dropped-item pickup; trace the remaining unnamed save fields and section payloads through the native writer and loader |
 | Q12 | Mostly | The indexed pointer stream is mapped. Capture the destination history for the two exceptional pointer-table frames, and test transparent output after seeks. |
-| Q13 | Partly | The MCEL callbacks give no cue-to-text join; follow indirect calls from the other room modules for a text reader active with the cue and match its index to voice +4 or the table index from `0xEEB17` |
+| Q13 | Partly | Find a text reader keyed by the same cue the category arms pass to `0xE3924`, and identify the initializer of its table pointer at `0x269CC`. The traced +0x90/+0x94 reader at `0xF0B98` uses the fields for voice cleanup. |
 | Q14 | Mostly | Verify the live `0x02AC` branch, span flags and 190 references into one underfilled vector book. |
 | Q15 | Answered | All 33 HMI scores framed and named. `0x1305A4F0` is `MUSIC\CREDITS.HMI`. |
 | Q16 | Mostly | Follow the Huline Temple quads through screen clipping, material selection and UV setup |

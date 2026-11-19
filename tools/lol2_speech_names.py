@@ -55,10 +55,49 @@ def rel_target(image, va):
     return (va + 5 + rel) & 0xFFFFFFFF
 
 
+def check_cue_pointer_references(image):
+    """Classify relocations in the retail LE code object targeting data 0x269CC."""
+    le = 0x3BCB4
+    page_table, record_table = struct.unpack_from("<II", image, le + 0x68)
+    page_size = struct.unpack_from("<I", image, le + 0x28)[0]
+    first, count = struct.unpack_from("<II", image, 0x3BD90 + 0xC)
+    # Internal selector, offset32 with word or dword target, and relative32.
+    record_lengths = {(2, 0): 5, (7, 0): 7, (7, 16): 9, (19, 0): 7}
+    loads = 0
+    stores = []
+    for page in range(first, first + count):
+        start, end = struct.unpack_from("<II", image, le + page_table + 4 * (page - 1))
+        at = le + record_table + start
+        stop = le + record_table + end
+        while at < stop:
+            length = record_lengths.get(tuple(image[at:at + 2]))
+            if length is None or at + length > stop:
+                raise ValueError(f"unsupported LE relocation at file 0x{at:X}")
+            record = image[at:at + length]
+            at += length
+            if record[4] != 5 or int.from_bytes(record[5:], "little") != 0x269CC:
+                continue
+            site = CODE_BIAS + RELOC + page_size * (page - first)
+            site += struct.unpack_from("<h", record, 2)[0]
+            if record[:2] != bytes((7, 16)) or image[site:site + 4] != b"\xCC\x69\x02\x00":
+                raise ValueError(f"cue relocation at file 0x{site:X}")
+            if image[site - 1] == 0xA1 or image[site - 2:site] in (
+                b"\x8B\x0D", b"\x8B\x15", b"\x8B\x1D", b"\x8B\x35"
+            ):
+                loads += 1
+            elif image[site - 2:site] == b"\x89\x3D":
+                stores.append(site - CODE_BIAS - 2)
+            else:
+                raise ValueError(f"cue pointer instruction at file 0x{site:X}")
+    if loads != 532 or stores != [0x14EA9C]:
+        raise ValueError("cue pointer reference census")
+
+
 def check(dat_dir):
     image = open(parent_file(dat_dir, "LOLG.DAT"), "rb").read()
     if len(image) != 1977007:
         raise ValueError("LOLG.DAT length %s" % len(image))
+    check_cue_pointer_references(image)
     format_at = FORMAT_VA + DATA_BIAS
     suffix_at = SUFFIX_VA + DATA_BIAS
     if image[format_at:format_at + 23] != b"WOMS\\%s\\%02d%03d%02d%c\x00":
@@ -78,6 +117,9 @@ def check(dat_dir):
         (0xEEABE, "a801"),
         (0xEEAC5, "8b15cc69020001c001d031d2668b10"),
         (0xEEAF9, "e8264effff"),
+        (0xF0B98, "8b8690000000668b9694000000"),
+        (0xF0BFE, "668b044325ffff0000505268683c0200"),
+        (0xF0C16, "66c786940000000000c78690000000ffffffff"),
         (0xEEC35, "833dc8b40d00000f85fb000000"),
         (0xEEC42, "be6d320000"),
         (0xF133C, "535657"),
@@ -90,7 +132,7 @@ def check(dat_dir):
         if image[va + CODE_BIAS:va + CODE_BIAS + len(raw)] != raw:
             raise ValueError("bytes at %X" % va)
     if (rel_target(image, 0xEE7D0) != 0x150158 or rel_target(image, 0xEEAF9) != 0xE3924
-            or rel_target(image, 0xF1389) != 0x12415C):
+            or rel_target(image, 0xF0C0E) != 0xE4004 or rel_target(image, 0xF1389) != 0x12415C):
         raise ValueError("call target")
     arms = []
     for va, hex_bytes in ARMS:
@@ -140,7 +182,7 @@ def check(dat_dir):
         raise ValueError("alias hash")
     return ("CHECK speech: format at file 0x1C427A; switch at 0xF133C enters "
             "eight arms through slots at 0xF131C; cue id from table 0x269CC "
-            "calls 0xE3924; .aud probe is the other branch; "
+            "calls 0xE3924; 532 direct pointer loads and one shutdown store; .aud probe is the other branch; "
             "MCEL entries 5 and 7 are 44100 Hz codec 99 (17564 and 21668 bytes); MCEL import +0xFC reaches 0xF133C")
 
 
