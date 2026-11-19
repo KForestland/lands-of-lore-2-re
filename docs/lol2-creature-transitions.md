@@ -60,12 +60,28 @@ fixed up at `LOLG.DAT+0x7F0BA` to `0xA4934`.
 `LOLG.DAT+0x7EDC3` to `0xA62F4`. Opcode 13 can call this slot
 via the low script dispatcher `0xB5937`. Creature opcode 13 first
 checks for behavior 0x0F at `0xA6348`, then uses command +4 to
-select the secondary dispatch at `0xA678B`.
+select the secondary dispatch at `0xA678B` for values 0–22. Behavior
+0x0F returns 1 (`0xA6359`), and a larger +4 instead goes to
+`0xA6388` to clear actor word +0x7C. The 23 table entries begin
+at `LOLG.DAT+0xDD26C` (object-2 offset `0x4D248`).
 
 | Command +4 | Active fields written | Evidence |
 |---:|---|---|
 | 0 | +0xA8 and +0xA9 get u8 command +5. Set +0xB8 bit 0 and clear +0x7C. | `0xA6365–0xA6388` |
 | 1 | +0xAA and +0xAB get u8 command +5. Clear +0x7C. | `0xA639A–0xA63AE` |
+| 2 | If actor +0xB5 bit 0 is clear, look up signed command +5 as an action. Install a valid result with `0xA7DC4`. | `0xA63C0–0xA63F9` |
+| 3, 4 | Pass +5 to `0xF2814` (3) or actor vtable +0xB0 with an extra zero (4). | `0xA640B–0xA6444` |
+| 5 | Command +5 nonzero clears bit 1 of actor +0xB5; zero sets it. | `0xA6456–0xA6480` |
+| 6, 7 | Set or clear bit 0 of actor +0xB5, respectively. | `0xA6492`, `0xA64AB` |
+| 8–10 | Clear masks 0x04, 0x08 and 0x0C of actor +0xB5. | `0xA64C4`, `0xA64DD`, `0xA64F6` |
+| 11–13 | Set masks 0x04, 0x08 and 0x0C of actor +0xB5. | `0xA650F`, `0xA6528`, `0xA6541–0xA6555` |
+| 14, 15 | Resolve object selector +5 and index u16 +6 through `0x5FBC8`. Store the pointer at actor +0x38 (14) or +0x34 (15). | `0xA656D–0xA6585`, `0xA6597–0xA65AF` |
+| 16 | Store waypoint pointer `[0x22D1C] + 8*u16(+6)` at `0x96A28`, or clear it for 0xFFFF. | `0xA65C1–0xA65FB` |
+| 17, 18 | Run `0xA7544` with argument 0 or 2, respectively, then clear +0x7C. | `0xA660D–0xA6635` |
+| 19 | Copy command +5/+6 to actor +0xA4/+0xA5 and clear mask 0x30 at actor +0xB8. | `0xA6647–0xA6660` |
+| 20 | Enter `0xA6828`. Copies 0xBC bytes from the requested actor to the first available pool row with +0x16 bit 7 set, preserving the destination +0x78 pointer. | `0xA6723`, `0xA6828–0xA688C` |
+| 21 | Mask actor +0xB5 with 0xF2 and set bit 0. Write +0xAA = 9 and clear update bytes `0x9699D/0x9699F`. | `0xA6672–0xA66E8` |
+| 22 | Walk actor +0x78 until null, replacing the head with `0x9BA54`'s return and passing each removed object to `0x95C24`. | `0xA673D–0xA6768` |
 
 For example, `L1_DC.MIX+0x6E65C3` holds
 `0D 02 26 00 00 0A 00 00`. The actor selector resolves index 38 via

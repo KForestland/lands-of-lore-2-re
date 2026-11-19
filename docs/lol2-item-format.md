@@ -106,5 +106,5 @@ No random-number call appears on this path before the descriptor callbacks.
 ## Still open
 
 - Mapping individual definition descriptors to their assembled hit contributions.
-- Effects of most of the 107 handlers.
-- The remaining undecoded record bytes.
+- The [108 handler slots](lol2-item-handlers.md) now have native modes and effect routes. Trace the remaining outward effects from handler 2’s instance +5 store at `0x960EA–0x96111` to the object consumer.
+- For unresolved definition bytes, begin with the exact row returned by `0x9EB5C` and compare its first access with the offsets in the field table above.

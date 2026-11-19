@@ -546,9 +546,18 @@ def verify_reader_anchors(image):
         (0xEC8A4, 0xB5937 - 0x59024),  # opcode 3
         (0xEC8C8, 0xB5AA2 - 0x59024),  # opcode 12
         (0xEC8CC, 0xB5937 - 0x59024),  # opcode 13
+        (0xDD2F0, 0xA6348 - 0x59024),  # creature opcode 13
     ):
         require(struct.unpack_from('<I', image, file_offset)[0] == expected,
                 f'wrong native slot at {file_offset:#x}')
+    creature_actions = (
+        0xA6365, 0xA639A, 0xA63C0, 0xA640B, 0xA642F, 0xA6456, 0xA6492, 0xA64AB,
+        0xA64C4, 0xA64DD, 0xA64F6, 0xA650F, 0xA6528, 0xA6541, 0xA656D, 0xA6597,
+        0xA65C1, 0xA660D, 0xA662A, 0xA6647, 0xA6722, 0xA6672, 0xA673D,
+    )
+    require(struct.unpack_from('<23I', image, 0xDD26C)
+            == tuple(address - 0x59024 for address in creature_actions),
+            'creature opcode 13 switch changed')
     for address, expected in (
         (0xF20C3, b'\xc7\x40\x28\x48\xa8\x00\x00'),
         (0xF21C6, b'\x80\x48\x36\x05'),

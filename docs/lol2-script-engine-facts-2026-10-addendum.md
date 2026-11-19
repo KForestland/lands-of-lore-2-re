@@ -27,7 +27,7 @@ LIKELY / INTERPRETATION (a reading of proven calls), UNKNOWN.
   - right type 0 = the literal in byte 4;
   - left type 5 = the byte at `[[0xB7D80] + 0x25]` (byte 2 is not read). So `00 05 00 00 NN` is true when
     that byte equals NN. Opcode 16 writes this same object byte (+0x25), but which object 0xB7D80 holds
-    during a given walk depends on its binding call. Timer walkers store the object at `0xB8BD3`. The +0xB8 slot of every class vtable (`0x5484`, `0x573C`, `0x58D0`, `0x59C8`, `0x5AD8`, `0xA848`) is `0xB71A0`, which stores it at `0xB71B2` when object +0x15 bit 0x10 is clear. Other producers of the binding remain UNKNOWN; for each matcher, trace its preceding vtable +0xB8 call to a store in `0xB7D80`;
+    during a given walk depends on its binding call. Timer walkers store the object at `0xB8BD3`. The +0xB8 slot of every class vtable (`0x5484`, `0x573C`, `0x58D0`, `0x59C8`, `0x5AD8`, `0xA848`) is `0xB71A0`, which stores it at `0xB71B2` when object +0x15 bit 0x10 is clear. **CONFIRMED.** The LE direct-fixup census for `0xB7D80` gives these two stores and five readers at `0x5FD29`, `0x66BD2`, `0x66B3B`, `0xADEB9` and `0xAE3D4`.
   - left type 3 = the byte at `[cell 0x26E54 + byte 2]`. The cell's name stays LIKELY at most.
 - **CONFIRMED.** The [predicate reference](lol2-script-events.md#predicates-and-shared-bytes) verifies all eight operator arms at `0x66C10–0x66CA3`, the two array readers and recursive operands. Operand types 1 and 6 (and right type 7) assign nothing; that row keeps their use **UNCONFIRMED** and gives the archive search that would settle it. No producer test exists yet.
 
@@ -114,7 +114,7 @@ Length 8. Handled in `0x64770` at 0x647B3, entered only for 0xCC; the second arg
 
 **CONFIRMED.** `0x22D08` is the [8-byte wall table](formats/walls.md) selected at `0xF4370–0xF438E`; `0x22D0C` is the 44-byte region table (`0x5FCE6`). The 24-byte table at `0x22D44` provides the byte for region +0x27 and is updated at `0xA053E → 0x67460`. Its remaining fields are UNKNOWN; follow the active row after the bit-0 gate at `0x67489`. Opcode 204 has 1,348 uses across the 15
 levels; opcode 13 has 1,452 and opcode 3 has 1,086. Opcodes 13 and 3 share the low-table handler 0xB5937,
-which calls the object's `vtable+0xAC`. **CONFIRMED.** Props constructed by `0xF20C3` use `0xF22B4`, which returns immediately unless the command begins with byte 8. Other class implementations are UNKNOWN. Read each constructor's vtable slot +0xAC, then trace the command byte through its callee.
+which calls the object's `vtable+0xAC`. **CONFIRMED.** Props constructed by `0xF20C3` use `0xF22B4`, which returns immediately unless the command begins with byte 8. The [current opcode table](lol2-script-opcodes.md) covers the other named opcode-13 class slots. Follow command 3 through each +0xAC callee for its remaining encounters.
 
 ## Other opcode effects proven in the same pass
 
