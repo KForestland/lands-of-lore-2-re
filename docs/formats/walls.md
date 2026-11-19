@@ -103,7 +103,7 @@ table pointers and reports the constructor output. Heights below are in
 map units. X/Z positions are shown as stored 16.16 integers.
 
 ```bash
-python3 tools/draracle/verify_huline_wall_spans.py --data DAT --check
+python3 tools/history/draracle/verify_huline_wall_spans.py --data DAT --check
 ```
 
 This check requires Capstone. It writes nothing.
@@ -164,6 +164,6 @@ UVs with the span setup rather than using the normal as an offset.
 
 ## Open ([Q16](../OPEN_QUESTIONS.md))
 
-- The other row bytes: bytes 0–1 look like a texture or resource word, bytes 2–4 hold setup values the constructor copies (replayed on L1_DC by `tools/draracle/lol2_extract_wall_records.py`), and bytes 6–7 hold flags (bit 7 of byte 6 selects connector endpoints for classes 0/8 and the height source for classes 4/12, as traced above).
+- The other row bytes: bytes 0–1 look like a texture or resource word, bytes 2–4 hold setup values the constructor copies (replayed on L1_DC by `tools/history/draracle/lol2_extract_wall_records.py`), and bytes 6–7 hold flags (bit 7 of byte 6 selects connector endpoints for classes 0/8 and the height source for classes 4/12, as traced above).
 - For the [sampled L20_BB span](../lol2-wall-material-provenance.md), the archive descriptor and shade row are known. Whether the Huline opening reaches the same sampler is **UNCONFIRMED**. Use the callback and clipped-vertex test above on each Huline quad.
 - The alternate constructor `0x115250` is selected when region +0x1C bit 7 is set (`0x1145CE–0x1145DC`, call at `0x114710`); none of the 67 special rows sits in such a region. Its behaviour remains UNCONFIRMED. Select a retail wall in a region whose +0x1C bit 7 is set, record the five incoming arguments at `0x114710`, and compare the emitted spans with the ordinary constructor’s endpoints.

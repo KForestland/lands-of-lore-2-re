@@ -45,7 +45,7 @@ Follow the engine from startup to saving in [How Lands of Lore II works](HOW_THE
 
 ## I want walls and textures
 
-- [lol2-level-texture-container.md](lol2-level-texture-container.md), [lol2-wall-material-provenance.md](lol2-wall-material-provenance.md), [draracle-restoration.md](draracle-restoration.md) and the pipeline in `tools/draracle/`.
+- [lol2-level-texture-container.md](lol2-level-texture-container.md), [lol2-wall-material-provenance.md](lol2-wall-material-provenance.md), [draracle-restoration.md](draracle-restoration.md) and the pipeline in `tools/history/draracle/`.
 
 ## I want to help
 

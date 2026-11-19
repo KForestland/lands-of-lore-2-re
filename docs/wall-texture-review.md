@@ -3,7 +3,7 @@
 Run from the repository root:
 
 ```sh
-python3 tools/draracle/extract_wall_texture_review.py --game-root /path/to/lol2 --out /path/to/wall-review
+python3 tools/history/draracle/extract_wall_texture_review.py --game-root /path/to/lol2 --out /path/to/wall-review
 ```
 
 Requires the pinned populated cache used by the cave asset pipeline. Open

@@ -102,7 +102,7 @@ untouched file (2,021 of 2,021 frames). Decoding from every `VQFL` snapshot repr
 58 seek points in 12 clips. A model of FFmpeg's behaviour reproduced FFmpeg's damaged frames apart from 11
 pixels in two frames. This decoder is a reimplementation, not an execution of the original player.
 
-## Difference from `tools/lol2_vqa_decode.py`
+## Difference from `tools/history/lol2_vqa_decode.py`
 
 `lol2_vqa_decode.py` is a chunk inspector: it lists `VQHD` fields and the chunk types (codebook, pointer,
 palette and audio chunks) of every VQA entry in a MIX, and does not produce pixels. `lol2_vqa_v2_decode.py`

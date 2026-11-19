@@ -60,7 +60,7 @@ These words mean the same thing in the notes for all three Lands of Lore games.
 | MIDI | A standard music file (`.mid`). The music tools can write one; they do not play it. |
 | Chunk, FORM | A named block inside a larger file. FORM is the header some of this game's music files use. |
 | `LOLG.DAT` | The game's main program despite its name: an MZ stub with a DOS/4G-style extender and a 32-bit LE program (signature `LE` at file offset 0x3BCB4 in the copy read). Addresses are cited as virtual addresses (VA). |
-| Draracle | The first cave level (`L1_DC`) is the Draracle's cave; `tools/draracle/` holds the geometry and wall checks first written for it. |
+| Draracle | The first cave level (`L1_DC`) is the Draracle's cave; `tools/history/draracle/` holds the geometry and wall checks first written for it. |
 | Region, portal | A part of a level the game tracks separately. Here it is a four-sided floor and ceiling polygon; a side that names a neighbour is a portal, and a side that does not is a wall ([geometry](formats/geometry.md)). Height values grow upward: the ceiling word is at least the floor word in 52,495 of 52,669 regions. |
 | Connector, subdivision | Special region links that do not share the side's two vertices: short connector regions between rooms, and floor subdivisions owned by a parent region ([cave page](draracle-restoration.md)). |
 | Room archive, WOM | One of the archives the executable opens by room name (46 names, plus `ARENA`); each carries a `WOMS\<ROOM>_.WOM` entry ([room archives](lol2-room-archives.md)). |

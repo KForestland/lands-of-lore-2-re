@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Historical research helper. See tools/history/README.md.
 """Make frame-count-checked Theora/Vorbis review clips for the modern engine."""
 import argparse,json,struct,subprocess,hashlib
 from pathlib import Path

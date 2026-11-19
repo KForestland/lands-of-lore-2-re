@@ -36,7 +36,7 @@ Out of scope for this repo:
 
 ## Checks without game files
 
-Run `python3 -m unittest`, `python3 -m unittest discover -s tools/draracle` (the Draracle geometry tests) and `python3 tools/repo_guard.py --check`
+Run `python3 -m unittest`, `python3 -m unittest discover -s tools/history/draracle` (the Draracle geometry tests) and `python3 tools/repo_guard.py --check`
 from the repository root. The tests build their own fixtures in memory or
 in a temporary directory. GitHub Actions runs these same commands on
 pushes and pull requests. CI uses the runner's Python (3.12); the minimum version in the README is not tested there.

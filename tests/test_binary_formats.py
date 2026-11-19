@@ -7,14 +7,14 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))
 
-from draracle.lol2_cache_named_wall_fixture import parse_records
+from history.draracle.lol2_cache_named_wall_fixture import parse_records
 from lol2_aud_decode import CHUNK_MAGIC, decode_aud
 from lol2_decompress_sphere import parse_entry1
 from lol2_disassemble_scripts import operands
 from lol2_entity_field_analyzer import BODY_SIZE, RECORD_SIZE, extract_entities, locate_entity_table
 from lol2_hmi_midi import convert_song, read_vlq, write_vlq
 from lol2_item_labels import ITEMS_KEY, STRIDE, item_layout
-from lol2_lcw import decompress_f80
+from history.lol2_lcw import decompress_f80
 from lol2_level_report import geometry_stats, wall_stats
 from lol2_loose import describe_wave
 from lol2_media_check import mix_dir

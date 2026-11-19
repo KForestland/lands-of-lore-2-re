@@ -7,7 +7,7 @@ import re
 import struct
 from pathlib import Path
 
-from draracle.lol2_cache_named_wall_fixture import parse_records
+from history.draracle.lol2_cache_named_wall_fixture import parse_records
 from lol2_texture_container import _lzo_decompress_fn, find_texture_entry
 
 # Art folder and leved folder named in each bank's first decoded block.

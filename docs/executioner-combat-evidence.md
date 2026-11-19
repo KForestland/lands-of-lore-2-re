@@ -32,7 +32,7 @@ Install Python3 and Capstone, then use your own matching game installation:
 
 ```sh
 python3 -m pip install capstone
-python3 tools/draracle/verify_executioner_arithmetic.py \
+python3 tools/history/draracle/verify_executioner_arithmetic.py \
   --game-root /path/to/game \
   --out restoration-output/executioner-arithmetic.json
 ```

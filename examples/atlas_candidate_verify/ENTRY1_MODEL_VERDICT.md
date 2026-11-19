@@ -40,7 +40,7 @@ The atlas verifier reproduces the repo example exactly:
 
 Artifacts:
 
-- [lol2_verify_wall_atlas_candidate.py](../../tools/lol2_verify_wall_atlas_candidate.py)
+- [lol2_verify_wall_atlas_candidate.py](../../tools/history/lol2_verify_wall_atlas_candidate.py)
 - [report.json](../../examples/atlas_candidate_verify/report.json)
 - [ENTRY1_RUNTIME_BUFFER_CHECK_2026-04-02.md](../../examples/atlas_candidate_verify/ENTRY1_RUNTIME_BUFFER_CHECK_2026-04-02.md)
 - [entry1_runtime_witness_check.json](../../examples/atlas_candidate_verify/entry1_runtime_witness_check.json)

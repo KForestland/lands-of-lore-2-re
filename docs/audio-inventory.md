@@ -101,7 +101,7 @@ VQA files contain embedded SND0/SND1/SND2 audio chunks. A VQA decoder exists (`l
 ## Extraction Status
 
 - **Verified**: 1 music track decoded and verified from DMUSIC.MIX; the LOCALLNG.MIX sound bank layout is proven and all 1008 clips pass header and chunk checks. Bulk extraction of the 33 music tracks has not been run and verified.
-- **Tooling published**: `tools/lol2_aud_decode.py` (Westwood AUD → WAV), `tools/lol2_sound_bank.py` (LOCALLNG.MIX bank list/extract), `tools/lol2_mix_parser.py`, `tools/lol2_vqa_decode.py`
+- **Tooling published**: `tools/lol2_aud_decode.py` (Westwood AUD → WAV), `tools/lol2_sound_bank.py` (LOCALLNG.MIX bank list/extract), `tools/lol2_mix_parser.py`, `tools/history/lol2_vqa_decode.py`
 - **Still needed**: AdLib BNK parser, a full cue-to-row map for the sound bank
 
 ## Open Items

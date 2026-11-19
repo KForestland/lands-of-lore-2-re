@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Historical research helper. See tools/history/README.md.
 """Verify the current LOCAL.MIX wall-atlas candidate model.
 
 This is a repo-first verifier, not a new extraction theory.
@@ -18,6 +19,11 @@ The script intentionally does not claim runtime provenance closure.
 """
 
 from __future__ import annotations
+
+from pathlib import Path as _ToolsPath
+import sys as _tools_sys
+
+_tools_sys.path.append(str(_ToolsPath(__file__).resolve().parents[1]))
 
 from cli_errors import ReaderArgumentParser, run_cli
 import hashlib
@@ -40,7 +46,7 @@ from lol2_lcw import decompress_f80  # noqa: E402
 
 DEFAULT_LOL2_ROOT = "lol2_game/"
 DEFAULT_EXAMPLE = os.path.join(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+    str(_ToolsPath(__file__).resolve().parents[2]),
     "examples",
     "L1_wall_texture_000.png",
 )

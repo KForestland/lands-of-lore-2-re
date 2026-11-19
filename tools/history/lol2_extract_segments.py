@@ -1,6 +1,12 @@
 #!/usr/bin/env python3
+# Historical research helper. See tools/history/README.md.
 """Extract code/data segments from LOLG.DAT (DOS4GW LE executable).
 LE header at 0x3BCB4, 5 objects, 4096-byte pages."""
+
+from pathlib import Path as _ToolsPath
+import sys as _tools_sys
+
+_tools_sys.path.append(str(_ToolsPath(__file__).resolve().parents[1]))
 
 from cli_errors import ReaderArgumentParser, run_cli
 import os as _os, sys as _sys

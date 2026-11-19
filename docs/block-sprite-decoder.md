@@ -14,7 +14,7 @@ source structure and coherent output, not a replay of the resource loader.
 The middle triple value is a storage allocation, not decoded length.
 
 ```sh
-python3 tools/draracle/extract_block_sprite_frames.py --game-root /path/to/lol2 --out /tmp/block-sprites
+python3 tools/history/draracle/extract_block_sprite_frames.py --game-root /path/to/lol2 --out /tmp/block-sprites
 ```
 
 Results:1324 frames,17 codebooks. Header size follows record length minus22.

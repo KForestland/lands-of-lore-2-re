@@ -1,6 +1,6 @@
 # Cave object catalogue
 
-Run `python3 tools/draracle/catalogue_cave_objects.py --game-root GAME --out OUT`
+Run `python3 tools/history/draracle/catalogue_cave_objects.py --game-root GAME --out OUT`
 (its `--walk` option takes an optional floor list from your own extraction). Output includes grouped Markdown, placement CSV and JSON.
 
 The pinned cave has 1,559 spatial placements using 94 template IDs. Positions,

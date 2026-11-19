@@ -16,7 +16,7 @@ justify turning the opening span into a solid wall. Winding, visibility, texture
 UVs, native collision and loader-to-global provenance remain outside this result.
 
 ```sh
-python3 tools/draracle/lol2_verify_flat_wall_spans.py --game-root /path/to/lol2 --out /path/to/flat-wall-evidence
+python3 tools/history/draracle/lol2_verify_flat_wall_spans.py --game-root /path/to/lol2 --out /path/to/flat-wall-evidence
 ```
 
 The geometry pipeline runs this check too. Outputs contain per-record fixed-point

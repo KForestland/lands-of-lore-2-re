@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Historical research helper. See tools/history/README.md.
 """
 Decode VQA (Vector Quantization Animation) texture files from LoL2 MIX archives.
 Parses the IFF FORM/WVQA chunk structure: VQHD headers, FINF frame indices,
@@ -8,6 +9,11 @@ palette (CPL0), and audio chunks (SND0/SND1/SND2).
 Environment variables:
   LOL2_DAT   - path to the LoL2 DAT directory (default: current directory)
 """
+from pathlib import Path as _ToolsPath
+import sys as _tools_sys
+
+_tools_sys.path.append(str(_ToolsPath(__file__).resolve().parents[1]))
+
 from cli_errors import ReaderArgumentParser, run_cli
 import struct, os, sys
 from collections import defaultdict

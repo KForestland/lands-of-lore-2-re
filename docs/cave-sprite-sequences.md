@@ -7,7 +7,7 @@ Each variant carries its own payload length; descriptor size describes the
 first variant, so multiplying it by the variant count is incorrect.
 
 ```sh
-python3 tools/draracle/extract_cave_sprite_sequences.py --game-root /path/to/lol2 --out /tmp/cave-sequences
+python3 tools/history/draracle/extract_cave_sprite_sequences.py --game-root /path/to/lol2 --out /tmp/cave-sequences
 ```
 
 Verified against the pinned named cave texture cache:750 images,56732 rows.

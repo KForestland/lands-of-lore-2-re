@@ -9,7 +9,7 @@ Addresses are static analysis addresses, not DOSBox guest addresses.
 Run from the repository root:
 
 ```sh
-python3 tools/draracle/verify_prop_flip_setup.py --game-root /path/to/lol2 --out /tmp/prop-flip
+python3 tools/history/draracle/verify_prop_flip_setup.py --game-root /path/to/lol2 --out /tmp/prop-flip
 ```
 
 The hash-pinned bounded instruction replay checks all 256 flag values on

@@ -48,8 +48,8 @@ The wall consumer binding check remains a reported local result.
 Use Python 3.10+ and install the repository requirements. From the repository:
 
 ```sh
-python3 tools/draracle/run_geometry_pipeline.py --game-root /path/to/your/lol2 --out /path/to/local-output
-python3 -m unittest discover -s tools/draracle -p 'test_*.py'
+python3 tools/history/draracle/run_geometry_pipeline.py --game-root /path/to/your/lol2 --out /path/to/local-output
+python3 -m unittest discover -s tools/history/draracle -p 'test_*.py'
 ```
 
 The game root must contain `DAT/L1_DC.MIX` and `LOLG.DAT`. Paths are configurable;

@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Historical research helper. See tools/history/README.md.
 """
 Generate 3D wall meshes (OBJ format) from LoL2 level geometry.
 Reads the 18-sub-entry geometry block from a level MIX file, extracts
@@ -15,6 +16,11 @@ Environment variables:
   LOL2_DAT   - path to the LoL2 DAT directory (default: current directory)
   LOL2_OUT   - output directory (default: current directory)
 """
+from pathlib import Path as _ToolsPath
+import sys as _tools_sys
+
+_tools_sys.path.append(str(_ToolsPath(__file__).resolve().parents[1]))
+
 from cli_errors import ReaderArgumentParser, run_cli
 import os as _os, sys as _sys
 _sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))

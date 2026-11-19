@@ -8,7 +8,7 @@ and a shared candidate name hash. These are source invariants; they do not
 identify state names, viewing directions or timing.
 
 ```sh
-python3 tools/draracle/build_creature_group_review.py --game-root /path/to/lol2 --frames /path/to/decoded-block-sprites
+python3 tools/history/draracle/build_creature_group_review.py --game-root /path/to/lol2 --frames /path/to/decoded-block-sprites
 ```
 
 Run after extract_block_sprite_frames.py. The generated groups.html offers

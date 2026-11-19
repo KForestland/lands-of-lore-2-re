@@ -12,7 +12,7 @@ This corrects the older inferred `f23 low = entity slot` label for this
 source fixture. Entry byte meanings still require native consumer tracing.
 
 ```sh
-python3 tools/draracle/catalogue_cave_entities.py --game-root /path/to/lol2 --out /tmp/cave-entities
+python3 tools/history/draracle/catalogue_cave_entities.py --game-root /path/to/lol2 --out /tmp/cave-entities
 ```
 
 The tool also decodes all five mips of resource966 with the checked28E

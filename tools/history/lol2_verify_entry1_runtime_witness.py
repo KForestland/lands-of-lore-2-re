@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Historical research helper. See tools/history/README.md.
 """Check whether LOCAL.MIX entry 1 record 0 appears directly in runtime wall buffers.
 
 This is a narrow verifier for the surviving Entry 1 witness:
@@ -15,6 +16,11 @@ question the evidence can answer:
 """
 
 from __future__ import annotations
+
+from pathlib import Path as _ToolsPath
+import sys as _tools_sys
+
+_tools_sys.path.append(str(_ToolsPath(__file__).resolve().parents[1]))
 
 from cli_errors import ReaderArgumentParser, run_cli
 import json

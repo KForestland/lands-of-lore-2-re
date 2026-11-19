@@ -66,7 +66,7 @@ class ReaderErrors(unittest.TestCase):
                 self.assert_bad("lol2_inspect.py", "--data", self.data, "trr", "help")
 
     def test_cave_geometry_pipeline(self):
-        tool = "draracle/run_geometry_pipeline.py"
+        tool = "history/draracle/run_geometry_pipeline.py"
         args = ("--game-root", self.root, "--out", self.root / "output")
         self.assert_bad(tool, *args)
         dat = self.root / "DAT"
