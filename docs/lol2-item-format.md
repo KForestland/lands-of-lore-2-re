@@ -39,7 +39,7 @@ class byte 0x44 or 0x48.
 | others | | +0x1C, +0x20, +0x29..+0x2D, +0x40, +0x46 and the rest | **UNCONFIRMED.** Track the defined row through the definition lookup at `0x9EB5C` and a relevant virtual call, then compare each observed dereference with the 91-byte archive stride. |
 
 Class byte values seen: 0x44 hand weapons, 0x48 thrown/ranged, 0x50/0x53 shields and bracers, 0x60 body
-armour, 0x43 rings/amulets/gauntlets, 0x40 other (grouping by item, INTERPRETATION; **CONFIRMED.** Equipment selection at `0x8FE2A–0x8FE39` checks class +0x3F against `1 << slot` when the mode-16 handler did not override it).
+armour, 0x43 rings/amulets/gauntlets, 0x40 other (grouping by item, INTERPRETATION; **CONFIRMED.** Equipment selection at `0x8FE2A–0x8FE39` checks class +0x3F against `1 << slot` after the mode-16 category conflict check at `0x8FDB3–0x8FE1E`: a nonzero mode-16 category already worn in another slot rejects the slot before the mask test).
 
 ## Item-use dispatcher 0x95840 (PROVEN)
 
@@ -100,7 +100,7 @@ Consequence: two weapons with the same +0x3B / +0x3D words get the same damage f
 that differ between them (+0x1C, +0x20, +0x29..+0x2D, +0x39, +0x40, +0x46) are not read on it. (PROVEN for
 the slice)
 
-**CONFIRMED.** `0xB7FB2` is the clamped difficulty byte (`0xCC0C3–0xCC0F7`, `0xCCD5C–0xCCD61`). `0x22C5A` holds whole elapsed ticks (`0xE0CBA–0xE0CF3`). Which value of `0x23C2D` reaches a particular strike is **UNCONFIRMED**. Record it at the strike caller and trace the preceding writer in the same input sequence.
+**CONFIRMED.** `0xB7FB2` is the clamped difficulty byte (`0xCC0C3–0xCC0F7`, `0xCCD5C–0xCCD61`). `0x22C5A` holds the whole ticks of each frame's delta, with the fraction carried to the next frame (`0xE0CBA–0xE0CF3`). Which value of `0x23C2D` reaches a particular strike is **UNCONFIRMED**. Record it at the strike caller and trace the preceding writer in the same input sequence.
 No random-number call appears on this path before the descriptor callbacks.
 
 ## Still open

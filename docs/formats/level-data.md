@@ -28,7 +28,7 @@ All offsets relative to the start of the entry; "offset / count".
 | +0xA4 | +0xAC | 26 | region descriptors |
 | +0xBC | +0xB8 | 5 | predicate table (offset field after the count field) |
 
-Source and checks: [lol2-level-script-format.md](../lol2-level-script-format.md#header-fields-proven-by-consistent-reading-on-all-15-levels). Other header dwords remain **UNCONFIRMED**. Follow the geometry-header copies across the seek calls at `0x9D3C0`, `0x9D3EC` and `0x9D43C`; for a remaining dword require an actual call argument or count before naming it.
+Source and checks: [lol2-level-script-format.md](../lol2-level-script-format.md#header-fields-proven-by-consistent-reading-on-all-15-levels). Other header dwords remain **UNCONFIRMED**. Follow the geometry-header copies across the seek calls at `0x9D3C1`, `0x9D3EC`, `0x9D417` and `0x9D442`; for a remaining dword require an actual call argument or count before naming it.
 
 ## Worked example
 

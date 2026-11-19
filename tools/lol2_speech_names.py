@@ -102,14 +102,20 @@ def check_cue_table(dat_dir, image):
         if image[va + CODE_BIAS] != 0xE8 or rel_target(image, va) != target:
             raise ValueError(f"cue table call at {va:#x}")
     for va, encoding in (
-        (0xA019B, "68683c0200"), (0xE3629, "6828030000"),
+        (0xE34FB, "c780642d000000000000"),  # constructor clears object +0x2D64
+        (0xA0196, "6892110000"), (0xA019B, "68683c0200"),  # name at data 0x1192, object 0x23C68
+        (0xE3614, "8b7514"),  # esi = the object argument
+        (0xE3629, "6828030000"),
         (0xE363C, "8986642d0000"), (0xE3725, "6a0268d8fcffff"),
-        (0xE3735, "68280300008b9e642d0000"),
+        (0xE3735, "68280300008b9e642d00005357"),  # 0x328, buffer [esi+0x2D64], handle
     ):
         start = va + CODE_BIAS
         raw = bytes.fromhex(encoding)
         if image[start:start + len(raw)] != raw:
             raise ValueError(f"cue table argument at {va:#x}")
+    name = b"global\\sounds.efx\x00"
+    if image[0x1192 + DATA_BIAS:0x1192 + DATA_BIAS + len(name)] != name:
+        raise ValueError("cue table name at data 0x1192")
 
     bank, entries, base = read_mix_with_hashes(parent_file(dat_dir, "LOCALLNG.MIX"))
     key = ww_hash_v1("global\\sounds.efx")

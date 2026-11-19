@@ -104,7 +104,7 @@ Messages 0x25 and 0x26 call helper `0x8651C` with IDs 6 and 1
 school ID and increments the count (`0x86455–0x86473`). It suppresses
 a duplicate ID 5 (`0x86423–0x86450`). **CONFIRMED.** Message update consumes the frame delta at `0x81C35`; the half-length branch at `0x81C79` leads to the acquisition dispatch at `0x81DF4`. **UNCONFIRMED.** The first nonzero writer of the player +0x185 timer that expires at `0xD2E57`. Trace that field from level entry or a scroll grant to its first store.
 The [lesson producers](lol2-spell-dispatch.md#lessons-from-native-producers)
-page traces two additional message paths and the update threshold.
+page traces two additional message paths and the update threshold, and it covers the producers of these acquisitions.
 The [item effects](lol2-item-effects.md#selected-item-use-handlers)
 page documents the original scroll calls individually.
 

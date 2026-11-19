@@ -4,7 +4,8 @@ Message tables are a different container ([message tables](lol2-text-tables.md))
 
 `tools/lol2_speech_names.py --check` re-reads the format bytes, switch,
 eight arms, two archive keys, MCEL category-switch import and the
-cue-table loader. It also checks all 404 original cue words, including
+cue-table loader (constructor clear, startup call and its name string,
+allocation, store, seek and read). It also checks all 404 original cue words, including
 the eight category values below. `check_all.py` includes this check.
 
 `LOLG.DAT` in this note is the 1,977,007-byte image whose sha256 begins `b27a3534`. A code address is a file offset minus `0x37000`. A data address is a file offset minus `0x1C1024`. An object-2 slot stored in the file plus `0x59024` is the address used below.
@@ -46,9 +47,11 @@ VA `0xEEC42` is the other branch. It copies data `0x326D` onto the formatted nam
 
 ### Where the cue table is loaded
 
+The bank rows these cue words select are described in [sound cues](lol2-sound-cues.md).
+
 **CONFIRMED.** The sound object constructor clears +0x2D64 at
 `0xE34FB`. Startup supplies object `0x23C68` and
-`global\\sounds.efx` to `0xE3608` at `0xA0196–0xA01A0`.
+`global\sounds.efx` to `0xE3608` at `0xA0196–0xA01A0`.
 The loader allocates 0x328 bytes at `0xE3629–0xE362E`
 and stores the pointer through object +0x2D64 at `0xE363C`.
 That lands at `0x23C68 + 0x2D64 = 0x269CC`. The store

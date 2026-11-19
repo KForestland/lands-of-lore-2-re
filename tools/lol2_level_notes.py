@@ -23,7 +23,7 @@ import lol2_cli
 from lol2_disassemble_scripts import EXPECTED_LEVELS, select_archive, verify
 from lol2_export_scripts import SourceError, export, require
 from lol2_level_report import item_identities
-from lol2_media_check import scene_names
+from lol2_media_check import OBJ5, cstr, scene_names, u32
 
 
 # All instruction addresses use the retail 1.30 analysis convention from
@@ -43,7 +43,7 @@ OPCODE_EVIDENCE = {
     8: ('call object command vtable +0xAC', 0xB5A1B),
     9: ('submit object property', 0xB50C0),
     11: ('submit indexed request', 0xA1A74),
-    12: ('submit resource or audio request', 0xED6D0),
+    12: ('open room archive through 0xED470', 0xED6D0),
     13: ('call object command vtable +0xAC', 0xB5937),
     15: ('submit secondary-object request', 0xB5C82),
     22: ('submit an audio request using sequence parameters', 0xB5C3B),
@@ -89,7 +89,7 @@ def signed(value, bits=8):
     return value if value < (1 << (bits - 1)) else value - (1 << bits)
 
 
-def effect(row, items, scenes):
+def effect(row, items, scenes, rooms):
     raw = bytes.fromhex(row['raw_hex'])
     opcode, kind, index = row['opcode'], row['kind'], row['target']
     target = None
@@ -101,9 +101,12 @@ def effect(row, items, scenes):
     if opcode == 2 and raw[1:5] == b'\x01\x00\x00\x1c':
         return f'request level {raw[5] & 31}, arrival {raw[5] >> 5}', 0xD8797, True, ['exit', raw[5] & 31, None]
     if opcode == 2 and raw[4] == 4 and raw[5] == 0:
-        return 'request player form 0 if conversion is enabled', 0xD7F58, True, None
+        return ('if player +0x228 bit 0x10 is clear, call 0x80064(0x23819, 1) (0xD7EE0); otherwise, '
+                'if player byte +0x1AB is nonzero, call the player-state helper 0xD6B20(player, 0, 0)'), 0xD7F58, True, None
     if opcode == 2 and raw[4] == 0x13:
-        return 'request a different random player form if conversion is enabled', 0xD7FB7, True, None
+        return ('if player +0x228 bit 0x10 is clear, call 0x80064(0x23819, 1) (0xD7EE0); otherwise, pass a '
+                'value from 0x12415C(0x221D8, 0, 2), stepped against player bytes +0x1AB/+0x1AC, to the '
+                'player-state helper 0xD6B20'), 0xD7FB7, True, None
     if opcode == 2:
         return f'submit game subcommand {raw[4]}, argument {raw[5]}', 0xB5BAC, False, None
     if opcode == 3 and kind in (1, 2):
@@ -112,6 +115,14 @@ def effect(row, items, scenes):
         address = 0xD78D9 if kind == 1 else 0xA6334
         return (f'grant {recipient} item definition {items[identity]}, instance byte +4 = {raw[8]}',
                 address, True, ['item_definition', items[identity], 0x95B80])
+    if opcode in (1, 3, 13) and kind == 3:
+        return (f'no effect: prop slot +0xAC 0xF22B4 returns 1 because command byte {opcode} is not 8',
+                0xF22B4, True, target)
+    if opcode == 12:
+        room = raw[4]
+        require(room < len(rooms), f'room selector {room} outside the original table')
+        return (f'open room archive {room} `{rooms[room]}` through 0xED470 when [0x2279A] bit 25 is clear',
+                0xED6D0, True, ['room', room, None])
     if opcode == 13 and kind == 2 and raw[4] in (0, 1):
         label = 'behavior' if raw[4] == 0 else 'secondary action'
         address = (0xA6365, 0xA639A)[raw[4]]
@@ -135,7 +146,8 @@ def effect(row, items, scenes):
         return (f'copy {secondary} coordinates, offset Z by its height byte and apply action {raw[4]}',
                 0xB5C82, False, target)
     if opcode == 6 and raw[4] == 1:
-        return 'for an admitted object, reset kind-1 render state and submit its region’s secondary index twice', 0xB3F5C, True, target
+        return ('for an admitted object, call 0x9F584 on the object’s +0xB8 event-list head and submit its '
+                'region’s secondary index twice'), 0xB3F5C, True, target
     if opcode == 18:
         immediate = bool(word(raw, 0xA) & 0x20)
         description = ('reset sequence progress, clear slot and send kind 6 value 6' if immediate
@@ -242,7 +254,7 @@ def event_fields(kind, raw, items):
     return {}
 
 
-def make_index(level, items, scenes):
+def make_index(level, items, scenes, rooms):
     """Build group rows plus placements, unique list starts and event records."""
     triggers = defaultdict(set)
     source_rows, lists, records = [], {}, {}
@@ -277,7 +289,7 @@ def make_index(level, items, scenes):
         stream, index = group['stream'], group['group']
         commands = []
         for command in group['commands']:
-            description, address, confirmed, target = effect(command, items, scenes)
+            description, address, confirmed, target = effect(command, items, scenes, rooms)
             commands.append([command['file_offset'], command['opcode'], command['kind'], command['target'],
                              target, description, address, 'CONFIRMED' if confirmed else 'UNCONFIRMED'])
         group_rows.append(dict(stream=stream, group=index, offset=group['file_offset'],
@@ -484,11 +496,11 @@ EXCERPT_LEVEL = 'L1_DC'
 EXCERPT_GROUPS = 20
 
 
-def summary_files(data, name, items, scenes):
+def summary_files(data, name, items, scenes, rooms):
     """The small per-level summary kept in the repository, plus the one worked excerpt."""
     level = export(select_archive(data, name))
     verify(level)
-    groups, events = make_index(level, items, scenes)
+    groups, events = make_index(level, items, scenes, rooms)
     name = level['area']
     page, details = notes(level, groups, events, {}, {}, full=False)
     files = {f'{name}.md': page}
@@ -502,15 +514,22 @@ def summary_files(data, name, items, scenes):
     return files
 
 
-def render(data, name, items, scenes):
+def render(data, name, items, scenes, rooms):
     level = export(select_archive(data, name))
     verify(level)
-    groups, events = make_index(level, items, scenes)
+    groups, events = make_index(level, items, scenes, rooms)
     name = level['area']
     group_files = jsonl_files(name, 'groups', groups)
     event_files = jsonl_files(name, 'events', events)
     page, part_files = notes(level, groups, events, group_files, event_files)
     return {f'{name}.md': page, **group_files, **event_files, **part_files}
+
+
+def room_names(image):
+    """The 46-name room table at data 0xEA6C that 0xED470 indexes."""
+    names = [cstr(image, OBJ5 + u32(image, OBJ5 + 0xEA6C + 4 * i)) for i in range(46)]
+    require(names[0] == 'pool_' and names[44] == 'text_' and names[45] == 'altar_', 'room-name table moved')
+    return names
 
 
 def verify_reader_anchors(image):
@@ -522,6 +541,11 @@ def verify_reader_anchors(image):
         (0x1CB920, 0xF21A4 - 0x59024),  # prop +0xB4
         (0x1CB924, 0xB71A0 - 0x59024),  # prop +0xB8
         (0x129178, 0xF21C6 - 0x59024),  # prop action 0
+        (0x1CB918, 0xF22B4 - 0x59024),  # prop +0xAC
+        (0xEC89C, 0xB5937 - 0x59024),  # opcode 1
+        (0xEC8A4, 0xB5937 - 0x59024),  # opcode 3
+        (0xEC8C8, 0xB5AA2 - 0x59024),  # opcode 12
+        (0xEC8CC, 0xB5937 - 0x59024),  # opcode 13
     ):
         require(struct.unpack_from('<I', image, file_offset)[0] == expected,
                 f'wrong native slot at {file_offset:#x}')
@@ -529,6 +553,15 @@ def verify_reader_anchors(image):
         (0xF20C3, b'\xc7\x40\x28\x48\xa8\x00\x00'),
         (0xF21C6, b'\x80\x48\x36\x05'),
         (0xB5393, b'\x80\x63\x16\xfd'),
+        (0xB593C, b'\xff\x90\xac\x00\x00\x00'),  # opcodes 1/3/13: call slot +0xAC
+        (0xF22BD, b'\x8a\x00\x3c\x08\x74\x07\xb8\x01\x00\x00\x00'),  # prop +0xAC: byte 8 or return 1
+        (0xB5AA4, b'\x8a\x46\x04\x50\xe8\x23\x7c\x03\x00'),  # opcode 12 -> 0xED6D0(u8 +4)
+        (0xED6DB, b'\xa1\x9a\x27\x02\x00\xc1\xe0\x06\xc1\xe8\x1f'),  # [0x2279A] bit 25
+        (0xED729, b'\x56\xe8\x41\xfd\xff\xff'),  # 0xED470(index)
+        (0xB4108, b'\xff\x90\xb8\x00\x00\x00'),  # opcode 6: list head from slot +0xB8
+        (0xB3F5C, b'\x53\xe8\x22\xb6\xfe\xff'),  # opcode 6 arm 1: 0x9F584(head)
+        (0xD7F5D, b'\xf6\x83\x28\x02\x00\x00\x10\x0f\x84\x76\xff\xff\xff'),  # opcode 2 arm 4
+        (0xD7EE0, b'\x6a\x01\x68\x19\x38\x02\x00\xe8\x78\x81\xfa\xff'),  # 0x80064(0x23819, 1)
     ):
         start = address + 0x37000
         require(image[start:start + len(expected)] == expected, f'wrong native store at {address:#x}')
@@ -543,18 +576,19 @@ def main():
     try:
         items = item_identities(data)
         image, scenes = scene_names(data)
+        rooms = room_names(image)
         if args.check:
             if args.level or args.out or args.summary:
                 parser.error('--check re-derives the committed summaries without writing')
             root = Path(__file__).resolve().parents[1] / 'docs' / 'levels' / 'notes'
             verify_reader_anchors(image)
             groups = commands = 0
-            rooms = 0
+            room_requests = 0
             for name in EXPECTED_LEVELS:
-                for filename, content in summary_files(data, name, items, scenes).items():
+                for filename, content in summary_files(data, name, items, scenes, rooms).items():
                     require((root / filename).read_text(encoding='utf-8') == content, f'stale summary: {filename}')
                 level = export(select_archive(data, name))
-                g, _ = make_index(level, items, scenes)
+                g, _ = make_index(level, items, scenes, rooms)
                 require(len(g) == level['counts']['groups'], f'{name}: group count')
                 groups += len(g)
                 commands += sum(len(x['commands']) for x in g)
@@ -563,8 +597,8 @@ def main():
                         if command['opcode'] == 12:
                             require(bytes.fromhex(command['raw_hex'])[4] < 46,
                                     f'{name}: room selector outside original table')
-                            rooms += 1
-            require(rooms == 174, f'wrong opcode-12 room count: {rooms}')
+                            room_requests += 1
+            require(room_requests == 174, f"wrong opcode-12 room count: {room_requests}")
             print(f'CHECK level_notes: {len(EXPECTED_LEVELS)} level summaries and the {EXCERPT_LEVEL} excerpt reproduced '
                   f'byte-for-byte; {groups:,} groups with {commands:,} commands re-derived (full listings are tool output, '
                   'not tracked)')
@@ -572,7 +606,7 @@ def main():
             output = Path(args.summary)
             output.mkdir(parents=True, exist_ok=True)
             for name in EXPECTED_LEVELS:
-                for filename, content in summary_files(data, name, items, scenes).items():
+                for filename, content in summary_files(data, name, items, scenes, rooms).items():
                     (output / filename).write_text(content, encoding='utf-8')
             print(f'wrote {len(EXPECTED_LEVELS)} summaries to {output}')
         elif args.out:
@@ -581,7 +615,7 @@ def main():
                     'output must be outside the game directory')
             output.mkdir(parents=True, exist_ok=True)
             for name in ([args.level] if args.level else EXPECTED_LEVELS):
-                for filename, body in render(data, name, items, scenes).items():
+                for filename, body in render(data, name, items, scenes, rooms).items():
                     (output / filename).write_text(body, encoding='utf-8')
             print(f'wrote the full notes to {output}')
         else:

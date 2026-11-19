@@ -56,7 +56,7 @@ All offsets are relative to the start of the geometry entry. Each table is "offs
 Checks behind the strides: on L1_DC and L7_DH the prop table ends exactly where the control table starts,
 and stream 1, the object event lists and the prop table are back to back. All object list offsets and region
 descriptor list offsets land on valid, terminated lists. The geometry region count (+0x58) matches the
-region counts in the Act 2 survey. Other header dwords remain UNKNOWN. Use the loader’s original seek/call sites at `0x9D3C0`, `0x9D3EC` and `0x9D43C` to associate each copied stack slot with its original header offset and destination reader.
+region counts in the Act 2 survey. Other header dwords remain UNKNOWN. Use the loader’s original seek calls (to `0x118BEC`) at `0x9D3C1`, `0x9D3EC`, `0x9D417` and `0x9D442` to associate each copied stack slot with its original header offset and destination reader.
 
 The predicate table offset and count were proven from the loader: it passes header +0xBC as a file offset
 and +0xB8 as a count to 0x669D4, which reads count x 5 bytes and stores the pointer at 0x2B548 (PROVEN).

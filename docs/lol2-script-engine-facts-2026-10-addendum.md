@@ -27,9 +27,9 @@ LIKELY / INTERPRETATION (a reading of proven calls), UNKNOWN.
   - right type 0 = the literal in byte 4;
   - left type 5 = the byte at `[[0xB7D80] + 0x25]` (byte 2 is not read). So `00 05 00 00 NN` is true when
     that byte equals NN. Opcode 16 writes this same object byte (+0x25), but which object 0xB7D80 holds
-    during a given walk depends on its binding call. Timer walkers store the object at `0xB8BD4` and the prop reader does so at `0xB71B2`. Other producers of the binding remain UNKNOWN; for each matcher, trace its preceding vtable +0xB8 call to a store in `0xB7D80`;
+    during a given walk depends on its binding call. Timer walkers store the object at `0xB8BD3`. The +0xB8 slot of every class vtable (`0x5484`, `0x573C`, `0x58D0`, `0x59C8`, `0x5AD8`, `0xA848`) is `0xB71A0`, which stores it at `0xB71B2` when object +0x15 bit 0x10 is clear. Other producers of the binding remain UNKNOWN; for each matcher, trace its preceding vtable +0xB8 call to a store in `0xB7D80`;
   - left type 3 = the byte at `[cell 0x26E54 + byte 2]`. The cell's name stays LIKELY at most.
-- **CONFIRMED.** The [predicate reference](lol2-script-events.md#predicates-and-shared-bytes) verifies all eight operator arms at `0x66C10–0x66CA3`, the two array readers and recursive operands. Other unused operand handlers and their producer tests are listed there.
+- **CONFIRMED.** The [predicate reference](lol2-script-events.md#predicates-and-shared-bytes) verifies all eight operator arms at `0x66C10–0x66CA3`, the two array readers and recursive operands. Operand types 1 and 6 (and right type 7) assign nothing; that row keeps their use **UNCONFIRMED** and gives the archive search that would settle it. No producer test exists yet.
 
 ## Kind-19 trailer
 
@@ -74,7 +74,7 @@ is the player, a kind-5 event chosen by the hit kind: 1 -> event 2 value 0xFF, 2
   after the hit (`ctx+0x26`) <= the threshold. (PROVEN) Mode 3 = cumulative damage, remainder stored back
   in byte +8 (INTERPRETATION from the record series). Mode 2 = hit points crossed the threshold downward
   (INTERPRETATION). A cleared mode byte (0) does not admit (stated as PROVEN in the 2026-10-31 walk rule;
-  an earlier contract predates the native branch at `0xAE2C8`).
+  natively, entry 0 of the mode table at `0xAE2B4`, used by the jump at `0xAE44E`, is `0xAE369`, which does not admit the record and moves on to the next one).
 - One hit enqueues at most one kind-9 record of a list, in list order: the scanner stops at the first record
   that fires, so later records and their predicates are not consulted. (PROVEN)
 - When the byte at 0x23331 is 5 (read as the level index, i.e. the Hive) and the attacker is in pool 0xDB590, a
@@ -93,7 +93,7 @@ stores nothing itself and returns the callee's result. (PROVEN)
   in a table whose base dword is at 0x22D0C. (PROVEN) No bound check on the word. The selector and stride identify the geometry region table (`0x5FCE6`).
 - It uses command bytes +4 (signed word), +6 (flag bits 0, 2, 3, 4), +7, +8 (word) and +0xA (signed word),
   and the word at record +0x28 (bits 0x40 / 0x80), +0x12..+0x16 and byte +0x27. It also scans other
-  queued opcode-196 commands (through 0x664E4 over a list at 0x26E88) with the same record index. (PROVEN)
+  queued opcode-196 commands (through 0x664E4 over a list at 0x26E88; call site `0x64EDA–0x64EDF`) with the same record index. (PROVEN)
 - It returns 1 or 0; every return path is PROVEN (for example, the tail returns 1 when the word at
   command +0xA is 0 and 0 when it is not).
 - The gameplay meaning is open. **CONFIRMED.** `0x22D0C` is the region table (`0x5FCE6`), `0x22C54` holds the frame delta at `0xE0C5C–0xE0C73`, and `0x9CC23` initializes the list header at `0x26E6C`. Queue iteration at `0x664E4` consumes the header at `0x26E88`. To resolve the remaining queue element roles, compare the entry at `0x664E4` with the allocation written by the command buffer setup.

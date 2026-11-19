@@ -74,4 +74,4 @@ The opcode forwards its event object in EBX to voice +0
 (`0xB5C02–0xB5C0D`, `0xE39F8–0xE3A08`). The
 voice cleanup can pass that object's list and the same cue ID
 to the kind-8 matcher (`0xE3824–0xE3841`).
-The remaining voice-control branches are **UNCONFIRMED**. Compare the first writes to voice +0x21 and +0x26 at admission with reads in the stop branch at `0xE3818–0xE384C` for one voice per flag combination.
+The remaining voice-control branches are **UNCONFIRMED**. Compare the first writes to voice +0x21 and +0x26 at admission with reads in the cleanup branch at `0xE3818–0xE384C` for one voice per flag combination.

@@ -42,4 +42,4 @@ The table shows **CONFIRMED** static effects at admitted command sites. For a ro
 
 **UNCONFIRMED.** The annotated archive data identify the exact dispatch sites and operands below any unresolved effects. An empty direct-trigger list leaves the producer open. For virtual calls, resolve the target placement’s runtime class and its table slot, then trace that implementation. For unresolved event IDs, trace callers to the matcher addresses listed above.
 
-Opcode sites with effects still open: 1 ×95, 2 ×47, 5 ×113, 6 ×34, 8 ×45, 9 ×49, 12 ×107, 13 ×15, 15 ×18, 210 ×2.
+Opcode sites with effects still open: 1 ×95, 2 ×47, 5 ×113, 6 ×34, 8 ×45, 9 ×49, 13 ×15, 15 ×18, 210 ×2.

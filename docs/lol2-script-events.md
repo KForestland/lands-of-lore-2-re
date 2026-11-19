@@ -67,7 +67,7 @@ from the parallel list to `[0xB7D80]` and skips records with +5 bit 0 set.
 Flags are u8 +4, status is u8 +5, reload parameters are u8 +6/+7, and the
 countdown is u16 +8. The service reads an elapsed quantity `D` from dword
 `[0x22C5A]` when flags & 0x90 is nonzero, otherwise from sign-extended
-word `[0x22C58]` (`0xB8BD4–0xB8C1C`). Let `C` be the stored
+word `[0x22C58]` (`0xB8BD3–0xB8C1C`). Let `C` be the stored
 countdown. An unsigned `C > D` stores `C-D` without firing. Otherwise the
 service obtains the low word `R` of a reload and stores the low word of
 `C+R-D` when `R > D`, or zero. The predicate then gates dispatch of
@@ -143,7 +143,7 @@ signed ≤ (`0x66C6B`), ≥ (`0x66C7F`), > (`0x66C8F`),
 `0x64BB4` and `0x64B1C`. These are the same pointer cells used by
 the evaluator. The per-level save switch `0xE8914` uses `0x26E54` in
 section 24, and the global save switch `0xE867C` uses `0x26E58` in
-section 1. Object binding is explicit in the timer service at `0xB8BD4`. Binding at each other dispatch caller needs a separate check.
+section 1. Object binding is explicit in the timer service at `0xB8BD3`. Binding at each other dispatch caller needs a separate check.
 
 **CONFIRMED.** The native name lookups for shared and local slots are
 `0x61514` and `0x61560`. They step 41-byte name rows at
