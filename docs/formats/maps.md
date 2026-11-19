@@ -7,6 +7,13 @@
 
 The picture is a plot of numbers from the level data entry and contains no game pixels.
 
+For a view with numbered creatures and items, use
+[`lol2_level_schematic.py`](../../tools/lol2_level_schematic.py).
+Amber marks denote linked sides where either flat region has equal
+floor and ceiling words (region +0x14/+0x16, read at `0xF4504`).
+The condition identifies doorway candidates. A known height-changing
+example is shown on the [schematic page](../../examples/README.md#level-5-schematic).
+
 ```bash
 python3 tools/lol2_level_map.py --data <DAT> --level 1 --size 900 --out l1_map.png   # the picture below
 python3 tools/lol2_level_map.py --check --data <DAT>

@@ -20,6 +20,9 @@ ROOT = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)),
 # repository path -> (tool, arguments; the tool writes the file named by --out)
 IMAGES = {
     "docs/images/l1_dc_regions.png": ("lol2_level_map.py", ["--level", "1", "--size", "900"]),
+    "examples/l5_hc_schematic.png": ("lol2_level_schematic.py", [
+        "--level", "5", "--focus", "792", "--radius", "360", "--size", "660",
+    ]),
 }
 
 
@@ -66,7 +69,7 @@ def main():
         if stale or unlisted:
             print(f"CHECK example_images: FAIL stale {stale or 'none'}, not made by a listed command {unlisted or 'none'}")
             return 1
-        print(f"CHECK example_images: {len(IMAGES)} shown image equals today's tool output pixel for pixel")
+        print(f"CHECK example_images: all {len(IMAGES)} shown images match today's tool output pixel for pixel")
     return 0
 
 

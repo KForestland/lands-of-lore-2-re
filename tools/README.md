@@ -33,8 +33,8 @@ when those rules do not have a standalone file layout.
 | [Cache seed and old cache rows](../docs/lol2-cache-initializer.md) | `lol2_cache_seed.py` | Joins shipped seed rows to texture entries | **Gap:** row-by-row seed and backup inventory |
 | [Room archives and WOM relocations](../docs/lol2-room-archives.md) | `lol2_media_check.py` | Original module framing and relocations | **Gap:** select one module for a section and relocation summary |
 | [Level data directories](../docs/formats/level-data.md) | `lol2_source_format.py`, `lol2_level_report.py` | Geometry found and sections checked across all levels | Level reports |
-| [Regions and portals](../docs/formats/geometry.md), [walls](../docs/formats/walls.md), [automap inputs](../docs/formats/maps.md) | `lol2_level_report.py`, `lol2_level_map.py` | Region links, wall ranges and polygon checks | Region map. **Gap:** combined wall, door and placement schematic |
-| [ODF definitions](../docs/formats/entity-records.md), [placed objects and controls](../docs/lol2-l8-controls.md) | `lol2_entity_field_analyzer.py`, `lol2_level_report.py` | Definition framing and selected placement joins | Entity summary and level report. **Gap:** placements on the schematic |
+| [Regions and portals](../docs/formats/geometry.md), [walls](../docs/formats/walls.md), [automap inputs](../docs/formats/maps.md) | `lol2_level_report.py`, `lol2_level_map.py`, `lol2_level_schematic.py` | Region links, wall ranges, polygons and door-candidate geometry | Wall, portal, door-candidate and placement schematic |
+| [ODF definitions](../docs/formats/entity-records.md), [placed objects and controls](../docs/lol2-l8-controls.md) | `lol2_entity_field_analyzer.py`, `lol2_level_report.py`, `lol2_level_schematic.py` | Definition framing, placement rows and selected joins | Entity summary, level report and numbered item and creature marks |
 | [Script framing and opcode dispatch](../docs/lol2-script-opcodes.md) | `lol2_disassemble_scripts.py` | All 15 command streams by level, with native opcode sizes | Full listing. **Gap:** per-group meaning and trigger summary |
 | [Trigger and predicate tables](../docs/lol2-script-events.md), [shared predicates](../docs/lol2-shared-predicates.md), [level exits](../docs/lol2-level-graph.md) | `lol2_disassemble_scripts.py`, `lol2_level_report.py`, `lol2_level_notes.py` | Event and predicate joins and exit census | Raw links, level notes. **Gap:** event browser |
 | [Script motion](../docs/lol2-script-motion.md), [event producers](../docs/lol2-event-producers.md), [timers and clocks](../docs/lol2-timer-clock.md) | Native evidence in linked tables; `lol2_save_native.py` for clock witnesses | Selected native reads and calls | **Gap:** topic view of cited readers and rules |
@@ -62,7 +62,7 @@ Run each `--check` and print one line each, then a summary.
 $ python3 tools/check_all.py | sed -n '1,2p;$p'
 CHECK repo_guard: N tracked files; game files, media, stray images, files over 300 KB, machine paths, words from the local list, or commit identities: none (0); private word list: not present, skipped
 CHECK mix: 81 MIX files, 2905 entries; this reader and lol2_source_format.parse_mix agree and every entry lies inside its file: 81/81; index sorted by signed key: 81/81 (by unsigned key: 20); bad=none
-ALL 29 CHECKS PASSED
+ALL 30 CHECKS PASSED
 ```
 
 ### `doc_links.py`
@@ -124,6 +124,19 @@ Library: strict MIX reader, level geometry entry, opcode lengths. `--check`: all
 ```
 $ python3 tools/lol2_source_format.py --check
 CHECK source_format: 81/81 MIX files pass the strict reader (sizes, bounds, no overlap); one geometry entry (dword 0 = 18, dword 4 = 5300) in 15/15 le...
+```
+
+### `lol2_level_schematic.py`
+
+Draws the regions, walls, portals and numbered placements as a PNG. The
+amber mark means a linked side with a flat, collapsed region. These are
+doorway candidates from geometry. `--focus` selects a zero-based region
+and `--radius` gives map units to either side. Use a focused view for
+crowded placements. [Example and field sources](../examples/README.md)
+
+```text
+$ python3 tools/lol2_level_schematic.py --data /path/to/DAT --check
+CHECK level schematic: 15 levels, 52669 regions, 663 items, 1028 creatures, 2473 collapsed portal sides
 ```
 
 ### `lol2_disassemble_scripts.py`
@@ -255,7 +268,7 @@ Regenerates each image the repository shows (`docs/images/`, `examples/`) with i
 
 ```
 $ python3 tools/example_images.py --data /path/to/DAT --check
-CHECK example_images: 1 shown image equals today's tool output pixel for pixel
+CHECK example_images: all 2 shown images match today's tool output pixel for pixel
 ```
 
 ### `lol2_item_labels.py`

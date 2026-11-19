@@ -7,6 +7,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))
 
 from lol2_decompress_westwood import decompress_westwood
 from lol2_export_scripts import SourceError, frame, group, walk
+from lol2_level_schematic import Placement, bounds, edge_type, parse_geometry
 from lol2_save_header import HEADER_SIZE, parse_header
 from lol2_save_inspect import LEVEL_HEADER, decode_chunks, inspect, level_sections
 from lol2_source_format import parse_mix
@@ -76,3 +77,24 @@ class ReaderTests(unittest.TestCase):
             level_sections(block)
         with self.assertRaises(ValueError):
             decode_chunks(struct.pack("<2I", 8, 100))
+
+    def test_level_schematic_geometry_and_placement(self):
+        raw = bytearray(0x244 + 32 + 44 + 37)
+        vertices_at, regions_at, items_at = 0x244, 0x264, 0x290
+        for header, value in ((4, vertices_at), (0x50, 4), (0x0C, regions_at), (0x58, 1),
+                              (0x20, items_at), (0x6C, 1)):
+            struct.pack_into("<I", raw, header, value)
+        struct.pack_into("<8i", raw, vertices_at, -65536, 0, 0, 0, 0, 65536, -65536, 65536)
+        row = [0, 0, *([0xFFFF] * 4), 0, 1, 2, 3, 0, 48, *([0] * 10)]
+        struct.pack_into("<22H", raw, regions_at, *row)
+        struct.pack_into("<hh", raw, items_at, -1, 0)
+        vertices, regions, marks = parse_geometry(raw)
+        self.assertEqual(marks, [Placement("I", 0, -65536, 0, 0)])
+        self.assertEqual(bounds(vertices, regions, None, 99), (-65536, 0, 0, 65536))
+        closed = row.copy()
+        closed[11] = 0
+        self.assertEqual(edge_type(regions[0], None), "wall")
+        self.assertEqual(edge_type(regions[0], regions[0]), "portal")
+        self.assertEqual(edge_type(regions[0], closed), "door")
+        closed[14] = 4
+        self.assertEqual(edge_type(regions[0], closed), "portal")

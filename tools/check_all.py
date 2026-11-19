@@ -12,7 +12,7 @@ import sys
 TOOLS = ["repo_guard", "lol2_mix_parser", "lol2_source_format", "lol2_disassemble_scripts", "lol2_westwood_hash", "lol2_decompress_westwood",
          "lol2_decompress_sphere", "lol2_cross_level_witnesses", "lol2_entity_field_analyzer", "lol2_l9dr_census",
          "lol2_analyze_disarm_rearm", "lol2_guest_trace_summary", "lol2_aud_decode", "lol2_vqa_v2_decode",
-         "lol2_level_report", "lol2_level_map", "lol2_media_check", "lol2_level_notes", "lol2_text_tables",
+         "lol2_level_report", "lol2_level_map", "lol2_level_schematic", "lol2_media_check", "lol2_level_notes", "lol2_text_tables",
          "lol2_hmi_midi", "lol2_item_labels", "rating", "example_images", "lol2_save_native", "lol2_save_inspect",
          "lol2_cache_seed", "lol2_speech_names", "lol2_loose", "doc_links"]
 
