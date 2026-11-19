@@ -142,7 +142,7 @@ sources are in the [save reference](../docs/lol2-save-format.md) and
 
 ```text
 $ python3 tools/lol2_save_inspect.py --data /path/to/DAT --check
-CHECK save inspector: 27 game-written player saves and 149 level blocks
+CHECK save inspector: 30 game-written player saves and 154 level blocks
 ```
 
 That output is from the reference installation's `SAVEGAME` folder. A
@@ -292,7 +292,7 @@ CHECK guest_trace_summary: self-test on a synthetic trace passed (no game data n
 
 ### `lol2_media_check.py`
 
-Re-read the movie scene ids, one sound-bank row, the music stem hashes and the 46 room-archive code entries. Also matches the byte at data `0x223D6` selecting the leved or global resource names. Writes nothing. Pages: `docs/lol2-movie-scenes.md`, `docs/lol2-sound-cues.md`, `docs/lol2-music-selection.md`, `docs/lol2-room-archives.md`.
+Re-read the movie scene ids, one sound-bank row, the music stem hashes and the 47 room modules. Also matches the byte at data `0x223D6` selecting the leved or global resource names. Writes nothing. Pages: `docs/lol2-movie-scenes.md`, `docs/lol2-sound-cues.md`, `docs/lol2-music-selection.md`, `docs/lol2-room-archives.md`.
 
 ```
 $ python3 tools/lol2_media_check.py --data /path/to/DAT --check
