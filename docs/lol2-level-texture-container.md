@@ -239,7 +239,9 @@ use the following inputs.
 | u32 +8 | Companion key. The class-3 material arm adds it to `[0x22D98]` and loads the resource into `[0x22514]` (`0x132808–0x132843`). |
 
 A run starts with a marker and a block count (one byte each).
-A zero marker gives zero blocks. At the beginning of the band, the
+A zero marker writes `count` zero dwords, and a zero run that reaches
+the row end returns without writing (`0x12617B–0x126193`). At the
+beginning of the band, the
 first zero run instead sets the horizontal offset to four times its
 count (`0x126122–0x126144`).
 A nonzero marker is followed by that many u16 codebook indices.
@@ -251,7 +253,7 @@ The native read is the four consecutive bytes at
 **CONFIRMED from the file join.** The decoded bank's section 9
 contains 12-byte companion rows. At index record +8, the row
 gives a u32 bank source offset in section 8, u32 capacity and
-u32 stored length. The contents read as the original mode-byte
+a stored length (the generic loader reads it as a u16 at +0xC). The contents read as the original mode-byte
 LZ77 format, consistent with the generic resource loader
 `0x67022–0x67052`. The corpus check walks 27,889 mip-0
 records, 1,135,521 band slots (1,762 empty) and 21,231,709
@@ -268,8 +270,10 @@ The next run references three entries `0x027F`, `0x072D`,
 its table row at `+0x25E5BB` and compressed bytes at `+0x2009BB`
 (stored length 19,474 and capacity 32,000).
 
-**UNCONFIRMED.** 190 references in 180 row slots of 30
-`L20_BB.MIX` descriptors exceed the bytes emitted by companion 3.
+**CONFIRMED (count; `--check` asserts the total).** 190 references in
+180 row slots of 30 `L20_BB.MIX` descriptors, all in book 3, exceed the
+bytes emitted by companion 3. **UNCONFIRMED:** what the native read
+returns for them.
 Every one stays within its 32,000-byte allocation. For example,
 descriptor 4473 at decoded bank `+0x1A7897C` uses index 1972,
 but the stream named by section-9 row `+0x52F611` ends after
@@ -298,7 +302,7 @@ descriptors clear bit `0x04` in the **mip header** and hold
 raw bytes. For example, `L10_DC.MIX` descriptor 85 has its
 `0x008F` first mip at `+0x37246F`. The first column at
 `+0x3725F7` starts a 128-byte literal run. The same descriptor's
-96-byte 12×8 last mip has flag `0x008B` at `+0x378FD7`.
+104-byte 12×8 last mip (8-byte header and 96 pixel bytes) has flag `0x008B` at `+0x378FD7`.
 
 **CONFIRMED.** `0x126000` is the separate row-span helper
 for the four span flags above. It advances by four plus the

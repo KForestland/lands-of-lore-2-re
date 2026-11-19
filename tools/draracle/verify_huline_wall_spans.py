@@ -32,7 +32,10 @@ EXPECTED = (
 
 
 def check(data_dir):
-    import capstone
+    try:
+        import capstone  # noqa: F401
+    except ImportError:
+        raise ValueError("requires Capstone (pip install capstone)")
     from lol2_verify_draracle_slopes import EXE_HASH
     from lol2_verify_flat_wall_spans import WallReplay
 
