@@ -5,7 +5,7 @@ The three games share some file formats and design ideas. Their programs store l
 | Area | The Throne of Chaos | Guardians of Destiny | Lands of Lore III |
 |---|---|---|---|
 | Archives and names | PAK directories store filenames | MIX directories store keys made from filenames | WSX directories use the MIX row layout with a different name hash |
-| Compression | Frame4 (LCW) for images and animation data | LZO1X for level textures, an LCW variant for room sections and LCW in VQA | LZO1X for level textures and light maps, LCW in VQA |
+| Compression | Frame4 (LCW) for images and animation data | LZO1X for level textures, Westwood LZ77 for interface shapes and LCW in VQA | LZO1X for level textures and light maps, LCW in VQA |
 | Level representation | A 32 × 32 grid with four wall types per square | Vertices and regions with portals between them | MAP surfaces with vertex and neighbor indices, plus waypoints and paths |
 | Scripts | EMC2 programs and engine function calls | Level events and predicates select command groups | Separate MAP event pools select command groups with a new dispatch table |
 | Saves | Fixed sections with party, items and level snapshots | A directory of global and per-level sections | Global and level directories with compressed sections and optional differences from base data |
@@ -19,7 +19,7 @@ PAK stores the names directly alongside the positions. MIX and WSX keep a numeri
 
 ## Compression
 
-LoL1 uses Frame4 for files such as pictures and the compressed frame deltas in WSA. LoL2 keeps LCW in its movies and uses a related decoder for its room sections. Its level texture banks use a different scheme, LZO1X in blocks. LoL3 retains the LZO1X texture wrapper, also uses LZO1X for its light-map groups and keeps LCW commands in its movies.
+LoL1 uses Frame4 for files such as pictures and the compressed frame deltas in WSA. LoL2 keeps LCW in its movies and uses Westwood LZ77 for interface shapes such as `options.shp`. Its level texture banks use a different scheme, LZO1X in blocks. LoL3 retains the LZO1X texture wrapper, also uses LZO1X for its light-map groups and keeps LCW commands in its movies.
 
 [LoL1 Frame4](https://github.com/KForestland/lands-of-lore-1-re/blob/main/docs/formats/lcw.md) · [LoL2 compression](https://github.com/KForestland/lands-of-lore-2-re/blob/main/docs/formats/compression.md) · [LoL3 textures](https://github.com/KForestland/Lands-of-lore-3-re/blob/main/docs/formats/textures.md) · [LoL3 light maps](https://github.com/KForestland/Lands-of-lore-3-re/blob/main/docs/lol3-lmf-reader.md) · [LoL3 movie compression](https://github.com/KForestland/Lands-of-lore-3-re/blob/main/docs/formats/vqa.md)
 

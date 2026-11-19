@@ -124,8 +124,8 @@ Based on the extraction of 1 texture that visually matches in-game appearance, o
 Note: the current verdict supported by the evidence is narrower than the older atlas
 wording. `LOCAL.MIX` Entry 1 does contain one reproducible raw
 `128x128` image witness that visually matches the Draracle Caverns wall,
-but records `1..38` also parse cleanly under the repo's existing Sphere
-room-section model. So Entry 1 should currently be treated as a
+but records `1..38` also parse cleanly as the `options.shp` interface
+shapes ([shape format](formats/room-sections.md)). So Entry 1 should currently be treated as a
 partially useful candidate container, not a solved 39-texture atlas.
 
 The reproducible structural facts are:

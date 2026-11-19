@@ -750,46 +750,10 @@
         "index": 0,
         "sphere": {
           "decoded_size": 16384,
-          "flags": 0,
+          "flags": 2,
           "height": 128,
           "total_size": 16394,
           "width": 128
-        }
-      },
-      {
-        "atlas": {
-          "flags": 90,
-          "format_byte": 90,
-          "height": 32,
-          "offset": 16554,
-          "total_size": 29,
-          "width": 5
-        },
-        "index": 1,
-        "sphere": {
-          "decoded_size": 160,
-          "flags": 23130,
-          "height": 32,
-          "total_size": 29,
-          "width": 5
-        }
-      },
-      {
-        "atlas": {
-          "flags": 0,
-          "format_byte": 128,
-          "height": 5,
-          "offset": 16583,
-          "total_size": 22,
-          "width": 32
-        },
-        "index": 2,
-        "sphere": {
-          "decoded_size": 160,
-          "flags": 32768,
-          "height": 5,
-          "total_size": 22,
-          "width": 32
         }
       },
       {
@@ -804,7 +768,7 @@
         "index": 3,
         "sphere": {
           "decoded_size": 157,
-          "flags": 32768,
+          "flags": 0,
           "height": 16,
           "total_size": 56,
           "width": 16
@@ -822,7 +786,7 @@
         "index": 4,
         "sphere": {
           "decoded_size": 157,
-          "flags": 32768,
+          "flags": 0,
           "height": 16,
           "total_size": 52,
           "width": 16
@@ -840,7 +804,7 @@
         "index": 5,
         "sphere": {
           "decoded_size": 157,
-          "flags": 32768,
+          "flags": 0,
           "height": 16,
           "total_size": 65,
           "width": 16
@@ -858,7 +822,7 @@
         "index": 6,
         "sphere": {
           "decoded_size": 157,
-          "flags": 32768,
+          "flags": 0,
           "height": 16,
           "total_size": 47,
           "width": 16
@@ -876,7 +840,7 @@
         "index": 7,
         "sphere": {
           "decoded_size": 204,
-          "flags": 32768,
+          "flags": 0,
           "height": 17,
           "total_size": 140,
           "width": 17
@@ -894,7 +858,7 @@
         "index": 8,
         "sphere": {
           "decoded_size": 217,
-          "flags": 32768,
+          "flags": 0,
           "height": 17,
           "total_size": 152,
           "width": 17
@@ -912,25 +876,60 @@
         "index": 9,
         "sphere": {
           "decoded_size": 206,
-          "flags": 32775,
+          "flags": 0,
           "height": 17,
           "total_size": 143,
           "width": 17
         }
+      },
+      {
+        "atlas": {
+          "flags": 1,
+          "format_byte": 128,
+          "height": 17,
+          "offset": 17260,
+          "total_size": 147,
+          "width": 17
+        },
+        "index": 10,
+        "sphere": {
+          "decoded_size": 217,
+          "flags": 0,
+          "height": 17,
+          "total_size": 147,
+          "width": 17
+        }
+      },
+      {
+        "atlas": {
+          "flags": 0,
+          "format_byte": 128,
+          "height": 29,
+          "offset": 17407,
+          "total_size": 344,
+          "width": 29
+        },
+        "index": 11,
+        "sphere": {
+          "decoded_size": 582,
+          "flags": 0,
+          "height": 29,
+          "total_size": 344,
+          "width": 29
+        }
       }
     ],
-    "interpretation": "LOCAL.MIX entry 1 also parses cleanly as the repo's known Sphere room-section structure. Atlas-like dimensions/sizes alone do not prove these records are texture sub-images.",
+    "interpretation": "LOCAL.MIX entry 1 is options.shp (docs/formats/room-sections.md). The shape reader stores width at header +3 and height at +2, so records whose atlas width and height differ compare unequal here; the shape spans match the atlas sizes. Atlas-like dimensions/sizes alone never proved these records are texture sub-images.",
     "same_count_as_atlas": true,
-    "same_record_count": 39,
-    "same_record_dimensions_and_sizes": true,
+    "same_record_count": 34,
+    "same_record_dimensions_and_sizes": false,
     "section_count": 39
   },
   "status": "candidate-only; not runtime-proven",
   "texture0": {
     "example_compare": {
       "example_path": "<REPO>/examples/L1_wall_texture_000.png",
-      "example_sha256": "8bf2175442bea739e8f97a58b41d1fb5b311be5765020e861b8aa51fca90f8d1",
-      "matches_setup_png": true
+      "present": false
     },
     "flags": 0,
     "format_byte": 0,

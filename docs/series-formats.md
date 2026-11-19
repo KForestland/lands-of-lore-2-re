@@ -22,7 +22,7 @@ This page lines up the formats that recur across them. Every row only restates w
 
 | | LoL1 | LoL2 | LoL3 |
 |---|---|---|---|
-| LCW ("format 80") | classic form, called Frame4: CPS, CMZ, VCN, VMP, WSA and SHP frames ([lcw](https://github.com/KForestland/lands-of-lore-1-re/blob/main/docs/formats/lcw.md)) | a variant in the `LOCAL.MIX` room sections, plus LCW in the movie chunks ([compression](https://github.com/KForestland/lands-of-lore-2-re/blob/main/docs/formats/compression.md), [vqa](https://github.com/KForestland/lands-of-lore-2-re/blob/main/docs/formats/vqa.md)) | open |
+| LCW ("format 80") | classic form, called Frame4: CPS, CMZ, VCN, VMP, WSA and SHP frames ([lcw](https://github.com/KForestland/lands-of-lore-1-re/blob/main/docs/formats/lcw.md)) | LCW in the movie chunks (the `LOCAL.MIX` entry once read as LCW room sections is `options.shp`, Westwood LZ77) ([compression](https://github.com/KForestland/lands-of-lore-2-re/blob/main/docs/formats/compression.md), [vqa](https://github.com/KForestland/lands-of-lore-2-re/blob/main/docs/formats/vqa.md)) | open |
 | LZO1X | — | level texture containers, in 1 MiB blocks ([compression](https://github.com/KForestland/lands-of-lore-2-re/blob/main/docs/formats/compression.md)) | light-map groups in the LMF entries ([lmf](https://github.com/KForestland/Lands-of-lore-3-re/blob/main/docs/formats/lmf.md)) |
 
 ## Sound, music and movies

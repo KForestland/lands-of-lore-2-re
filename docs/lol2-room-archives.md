@@ -60,7 +60,10 @@ The code object has 28 direct calls to archive constructor
 movie-path calls at `0x9BFAC` and `0x9C02B` use a stem from
 `[0xCA20 + 8*i]`; the suffixes at `LOLG.DAT+0x1C1BFE` and
 `+0x1C1C03` are `.MIX` and `I.MIX` (`0x9BE06–0x9BE40`,
-`0x9BFDC–0x9C02B`). The only case-insensitive `arena` text in
+`0x9BFDC–0x9C02B`). These explain 17 of the 28 calls; the other 11
+(including `0x9BCAE`, `0x9BF88`, `0xBDB3C`, `0xC4B0E`, `0xED54A`,
+`0x119C4E`, `0x11A738` and four in `0x14E778–0x14F227`) are not yet
+characterised (**UNCONFIRMED**). The only case-insensitive `arena` text in
 `LOLG.DAT` is the movie stem `arenaapr` at `+0x1C3D1A`.
 Room-related external literals survive in `SHAMAN.MIX+0x248B`,
 `SETTLE1.MIX+0x73C` and `L8_SJ.MIX+0xD10AD9`; they are parts of

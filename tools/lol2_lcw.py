@@ -5,7 +5,7 @@ It is the function from the retired lol2_sprite_decode.py, unchanged. It is NOT 
 Westwood LCW ("format 80"): it reads 0x80 as a u16 count + u16 absolute copy (classic:
 end of stream), masks 0xC0-0xFD counts with 0x1F (classic: 0x3F) and treats 0xFF as a
 fill that ends the stream (classic: long absolute copy). Do not use it for new work; the
-LOCAL.MIX room sections use lol2_decompress_sphere.py.
+LOCAL.MIX entry 1 holds options.shp shapes, read by lol2_decompress_sphere.py.
 """
 import struct
 

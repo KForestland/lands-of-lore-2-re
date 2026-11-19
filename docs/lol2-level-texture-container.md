@@ -213,7 +213,7 @@ word is 65,369, which still equals the record length 65,377 minus 8.
 
 One payload of each of these flags was given to the movie LCW decoder and
 to the mode-byte LZ77 decoder. Neither produced `width * height` bytes.
-The room-section decoder always returns a buffer of the size it was asked
+The former room-section decoder (now the `options.shp` shape reader) always returns a buffer of the size it was asked
 for, so a full buffer from it is not evidence. `L10_DC.MIX` descriptor 1
 (flag `0x028E`, 320×200, record 7,659) begins its payload with the 16-bit
 pair (`0x0140`, `0x0000`) 37 times; `0x0140` is the width. That pattern

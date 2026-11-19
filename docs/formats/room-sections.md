@@ -5,7 +5,7 @@
 Westwood name hash of `options.shp` is `0x8248262E`. `LOLG.DAT`
 contains that name at file offsets `+0x1C1614`, `+0x1C1620` and
 `+0x1C2455`. The options code loads it with `0x118AC8` at
-`0x6FDDF–0x6FDF6` and `0xB93D9–0xB93EB`. The pointer from
+`0x6FDD8–0x6FDF6` and `0xB93D9–0xB93EB`. The pointer from
 `[0x9679C]` or `[0xB7EEC]` goes to the interface draw helper
 `0xC9D94` (`0x70919–0x7095B`, `0xB9A63–0xB9A9E`). That helper
 looks up shape 0 at `0xC9DA6` and draws it at `0xC9DFB`.
@@ -19,7 +19,7 @@ below is relative to that sum.
 
 | Header offset | Type | Meaning and evidence |
 |---|---|---|
-| +0 | u16 | Flags. Bit 1 selects stored data (`0x15A457–0x15A475`, `0x15A5ED–0x15A604`). |
+| +0 | u16 | Flags. Mask 2 selects stored data; the tests are at `0x15A5ED` (draw path) and `0x151FA3` (copy path), after the header read at `0x15A457–0x15A475`. |
 | +2 | u8 | Height (`0x15A263–0x15A26C`, draw setup `0xC9DB5–0xC9DE3`). |
 | +3 | u16 | Width (`0x15A258–0x15A262`). |
 | +5 | u8 | The saved height, copied back to +2 by `0x15A281–0x15A295`. |
@@ -33,7 +33,7 @@ before the true shape. Counting each span from the true header
 restores the two bytes missing from the end of the old slice.
 The final shape ends exactly at the end of the entry.
 
-| Shape | True header, in LOCAL.MIX | True payload, in LOCAL.MIX | Dimensions | Payload bytes |
+| Shape | True header, in LOCAL.MIX | True payload, in LOCAL.MIX | Dimensions (width × height) | Payload bytes |
 |---|---|---|---|---:|
 | 0 (stored) | `+0x19311D1` | `+0x19311DB` | 128 × 128 | 16,384 |
 | 15 (stored) | `+0x1935AF2` | `+0x1935AFC` | 147 × 155 | 11,960 |

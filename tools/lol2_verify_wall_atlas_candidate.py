@@ -210,9 +210,11 @@ def main() -> None:
         "same_record_dimensions_and_sizes": sphere_equivalent_count == len(textures),
         "examples": sphere_examples,
         "interpretation": (
-            "LOCAL.MIX entry 1 also parses cleanly as the repo's known "
-            "Sphere room-section structure. Atlas-like dimensions/sizes "
-            "alone do not prove these records are texture sub-images."
+            "LOCAL.MIX entry 1 is options.shp (docs/formats/room-sections.md). "
+            "The shape reader stores width at header +3 and height at +2, so "
+            "records whose atlas width and height differ compare unequal here; "
+            "the shape spans match the atlas sizes. Atlas-like dimensions/sizes "
+            "alone never proved these records are texture sub-images."
         ),
     }
 

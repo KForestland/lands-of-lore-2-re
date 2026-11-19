@@ -20,7 +20,7 @@ One line per question: its state and what would settle what is left.
 | Q10 | Partly | Trace the remaining AI mode branches and descriptor flags |
 | Q11 | Mostly | Answered for a dropped-item pickup; trace the remaining unnamed save fields and section payloads through the native writer and loader |
 | Q12 | Partly | Decode the `VPRZ`/`VPTR` stream and explain the two relative copies inside absolute-mode LCW (frames 115 and 492) |
-| Q13 | Partly | Find what reads text for the cue id the category arms pass to `0xE3924` (table at `0x269CC`) |
+| Q13 | Partly | Trace room-module draw callbacks and readers of `[0xDB494]+0x90/+0x94` for a text lookup keyed by the cue that the category arms pass to `0xE3924` (table at `0x269CC`) |
 | Q14 | Mostly | Decode the non-raw payloads (`0x1246` and the payload-length flags) |
 | Q15 | Mostly | Name the stem of key `0x1305A4F0`; the `FORM` entries in `LOCAL.MIX` are a different container |
 | Q16 | Partly | Trace wall spans, UVs and openings beyond the traced span |

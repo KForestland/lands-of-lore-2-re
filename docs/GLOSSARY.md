@@ -34,4 +34,4 @@ Words used across these pages, in plain terms.
 | TRR | A message-table file (help, options, automap, credits, error text; [text tables](lol2-text-tables.md)). |
 | HMI | Human Machine Interfaces' MIDI-like song format used for the music ([music](lol2-music-2026-11.md)). |
 | LSV | A level save file the game writes; evidence comes only from the reference `SAVEGAME` folder ([saves](lol2-save-format.md)). |
-| Sphere | The game's name for a world area: archive paths begin `SPHERE1\`, `SPHERE2\` ...; `lol2_decompress_sphere.py` is named after it and decodes the room sections of `LOCAL.MIX`. |
+| Sphere | The game's name for a world area: archive paths begin `SPHERE1\`, `SPHERE2\` ...; `lol2_decompress_sphere.py` carries the name for historical reasons; it reads the `options.shp` shapes in `LOCAL.MIX`. |

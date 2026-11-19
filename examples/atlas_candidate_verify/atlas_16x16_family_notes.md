@@ -1,5 +1,7 @@
 # LOCAL.MIX Entry 1: 16x16 Compressed Family Notes
 
+> **Historical (2026-04).** Entry 1 is `options.shp`, a set of 39 interface shapes; see [the shape format](../../docs/formats/room-sections.md). The "room section" reading below is superseded.
+
 Date: 2026-04-01
 
 This note records the first structural pass over the

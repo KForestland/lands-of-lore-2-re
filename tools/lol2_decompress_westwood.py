@@ -211,7 +211,7 @@ def main():
             ok = ok and got == want and err == 0
         print(f"CHECK westwood: decoder self-test {'passed' if ok else 'FAILED'}; data scan: {tried} MIX entries "
               f"whose first u32 exceeds the entry size, {clean} of them decode to that size with this decoder. "
-              f"Which LoL2 data uses this compression is an open question (docs/OPEN_QUESTIONS.md).")
+              f"The options.shp shapes in LOCAL.MIX use it; other source files are open (docs/OPEN_QUESTIONS.md Q1).")
         return 0 if ok else 1
     if not (a.mix and a.index is not None and a.out):
         ap.print_help(); return 2
