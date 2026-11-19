@@ -60,27 +60,63 @@ The code object has 28 direct calls to archive constructor
 movie-path calls at `0x9BFAC` and `0x9C02B` use a stem from
 `[0xCA20 + 8*i]`; the suffixes at `LOLG.DAT+0x1C1BFE` and
 `+0x1C1C03` are `.MIX` and `I.MIX` (`0x9BE06–0x9BE40`,
-`0x9BFDC–0x9C02B`). These explain 17 of the 28 calls; the other 11
-(including `0x9BCAE`, `0x9BF88`, `0xBDB3C`, `0xC4B0E`, `0xED54A`,
-`0x119C4E`, `0x11A738` and four in `0x14E778–0x14F227`) are not yet
-characterised (**UNCONFIRMED**). The only case-insensitive `arena` text in
-`LOLG.DAT` is the movie stem `arenaapr` at `+0x1C3D1A`.
-Room-related external literals survive in `SHAMAN.MIX+0x248B`,
-`SETTLE1.MIX+0x73C` and `L8_SJ.MIX+0xD10AD9`; they are parts of
-longer script or module identifiers.
+`0x9BFDC–0x9C02B`). The remaining calls use the following names. File offsets in the
+right column refer to the original executable.
+
+| Constructor call | Name source | File offset |
+|---|---|---|
+| `0x9BCAE`, `0x9BF88` | `GLOBAL.MIX` | `+0x1C1BF1` |
+| `0xBDB3C` | `MOVIES.MIX` | `+0x1C24ED` |
+| `0xC4B0E` | `MOVIES.MIX` | `+0x1C257B` |
+| `0xED54A` | room-table name with the suffix appended in `0xED470` | table `+0x1CFA90` |
+| `0x119C4E` | `CDCACHE.MIX` | `+0x1C493B` |
+| `0x11A738` | `DMUSIC.MIX` | `+0x1C4A01` |
+| `0x14E778` | `LOCAL.MIX` | `+0x1C5352` |
+| `0x14E7C8` | `LOCALLNG.MIX` | `+0x1C5376` |
+| `0x14F081` | `MOVIES.MIX` | `+0x1C54C1` |
+| `0x14F227` | `MOVIES.MIX` | `+0x1C54DE` |
+
+The only case-insensitive `arena` text in `LOLG.DAT` is the movie
+stem `arenaapr` at `+0x1C3D1A`. Room-related external literals
+survive in `SHAMAN.MIX+0x248B`, `SETTLE1.MIX+0x73C` and
+`L8_SJ.MIX+0xD10AD9`. The host passes its callback table at data
+`0xE92C` from `0xEDCC3` and invokes the loaded module with
+selector 0 at `0xEF881`. The Arena module copies the first 53
+entries, starting at module +0x125 (file `ARENA.MIX+0x143`).
+The first external call at file `ARENA.MIX+0x377` takes table
+offset +0x18, which resolves to `0xEF028` via file
+`LOLG.DAT+0x1CF968`. The module's direct absolute-indirect
+instruction sites select host offsets `0x18`, `0x1C`,
+`0x54`, `0x6C` and `0x88`.
 
 **UNCONFIRMED.** Whether the retail game opens `ARENA.MIX` by a
-secondary route. Inspect calls imported by the external WOM modules,
-starting with the modules containing the cited Arena identifiers.
-An import that passes `ARENA.MIX` to the constructor, or a native
-open witness carrying that exact name, would establish the route.
+secondary route. The direct constructor calls and the fixed imports
+above give no such witness. Trace the room-related indirect calls
+from the shipped WOM modules into their host wrappers and record
+whether an archive constructor receives the exact name.
 The archive's presence alone leaves it open.
 
 ## The code entry
 
 CONFIRMED for the banner, the two shared dwords and the four prologue bytes. This pass opened every archive the table names. Each file is `DAT/<name>.MIX` after the trailing `_` is cut off. Each of the 46 archives has exactly one entry whose first 32 bytes are the banner: the 31 characters `This is a linear executable dll` and a newline. After the banner, three little-endian dwords: `0x101`, a middle dword that differs from archive to archive, and `0x34`. At offset `0x64` the bytes are `53 56 57 55`, which is `push ebx` / `push esi` / `push edi` / `push ebp`. That entry is not always member 0.
 
-The middle dword was not shown to be a size. In `TEXT` the banner entry is 2164 bytes and the middle dword is `0x698` (2164 − `0x698` = 476). In `TCEL` the banner entry is 2656 bytes and the middle dword is `0x838` (2656 − `0x838` = 552). `0x34` is not the count of the fourteen dwords that sit in front of the prologue. In the `TEXT` banner entry, 985 of the 2164 bytes are zero and 326 are printable. It is not a string table.
+The native reader checks the version at `0xDF7E2–0xDF7FA`. It
+then reads three dwords, the body length (+0x24), dispatch offset
+(+0x28) and relocation count (+0x2C). It allocates body length plus
+eight and writes a jump whose target is the body start plus the
+dispatch offset (`0xDF80F–0xDF885`). The body begins at member
++0x30. Each four-byte relocation after that body names a position
+where the module base is added to the dword already there
+(`0xDF88D–0xDF8BD`). All 47 modules end exactly after their
+8,469 relocation entries, and all those positions and their stored
+target offsets lie in their bodies. The data includes 46 modules
+with dispatch offset `0x34` and Arena with `0x2C`.
+
+For `TEXT`, body length `0x698` and dispatch offset `0x34` put
+the entry at member +0x64. Its 107 relocation dwords start at
+member +0x6C8. `TCEL` uses body length `0x838` and has 126
+relocations. Arena's dispatch starts at member +0x5C, and
+its 72 relocation dwords start at +0x4C8.
 
 ## Worked example
 
@@ -108,4 +144,4 @@ The movie entries use the same `VQHD` layout as [the movie note](lol2-movie-scen
 
 ## What would settle it
 
-Frame the dword `0x34` from the bytes (a count, an id, or a size), and show one call inside the bytes that follow the prologue landing on an address in `LOLG.DAT`. The entry counts, the banner and the movie tags do not depend on that reading.
+Trace an indirect room callback that supplies the exact name `ARENA.MIX`, or identify an alternate shipped executable whose archive table lists it.

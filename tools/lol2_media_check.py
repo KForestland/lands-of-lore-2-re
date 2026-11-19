@@ -146,6 +146,21 @@ def scene_names(dat_dir):
     return image, names
 
 
+def room_module_fixups(path, member, entry_offset):
+    raw = read_at(path, member["offset"], member["size"])
+    version, body_length, offset, count = struct.unpack_from("<4I", raw, len(BANNER))
+    body_start = len(BANNER) + 16
+    body_end = body_start + body_length
+    if (version != 0x101 or offset != entry_offset or offset >= body_length
+            or body_end + 4 * count != len(raw)
+            or raw[body_start + offset:body_start + offset + 4] != PROLOGUE):
+        raise ValueError(f"{os.path.basename(path)} room module extent")
+    for (site,) in struct.iter_unpack("<I", raw[body_end:]):
+        if site + 4 > body_length or u32(raw, body_start + site) >= body_length:
+            raise ValueError(f"{os.path.basename(path)} room module relocation")
+    return count
+
+
 def check_global_texture_books(image, local, entries):
     name = cstr(image, OBJ5 + 0xC6C)
     key = ww_hash_v1(name)
@@ -339,6 +354,7 @@ def check(dat_dir):
         prefixes.append(cstr(image, OBJ5 + ptr))
     if prefixes[0] != "pool_" or prefixes[16] != "tcel_" or prefixes[44] != "text_" or prefixes[45] != "altar_":
         raise ValueError("room-name table moved")
+    room_fixups = 0
     for prefix in prefixes:
         cut = prefix.find("_")
         if cut <= 0:
@@ -355,14 +371,23 @@ def check(dat_dir):
             words = struct.unpack_from("<III", raw, 32)
             if words[0] != 0x101 or words[2] != 0x34 or raw[0x64:0x68] != PROLOGUE:
                 raise ValueError("code entry shape %s" % prefix)
+            room_fixups += room_module_fixups(path, entry, 0x34)
             hits += 1
         if hits != 1:
             raise ValueError("%s code entries %s" % (prefix, hits))
 
+    arena = os.path.join(dat_dir, "ARENA.MIX")
+    _size, _body, arena_entries = mix_dir(arena)
+    if len(arena_entries) != 2 or arena_entries[1]["key"] != 0x0CBF521D:
+        raise ValueError("Arena room module directory")
+    arena_fixups = room_module_fixups(arena, arena_entries[1], 0x2C)
+    if arena_fixups != 72 or room_fixups + arena_fixups != 8469:
+        raise ValueError("room module relocation census")
+
     return ("CHECK media: scene limit 85; L12 opcode 21/20/210 at 9823886/9821090/9823696; "
             "citadel L12_CMI entry 21; lolg MOVIES entry 2; bank 1179 row 1049 0190108e.aud; "
             "32 table stems and CREDITS in both formats; "
-            "46/46 room archives carry the code banner; 15 global texture books")
+            "47 room modules contain 8469 relocations; 15 global texture books")
 
 
 def main(argv):
