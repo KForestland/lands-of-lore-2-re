@@ -84,9 +84,31 @@ The first row at `LOCAL.MIX+0x339FA5` names the stream at
 27,536 bytes. `lol2_media_check.py --check` checks all 15 rows
 and reproduces 466,864 bytes in total, in 16-byte groups.
 
-**UNCONFIRMED.** The complete set of original filenames reaching the
-conditional resource branches at `0x67052`, `0x15BEE1`, `0x15C50D` and
-`0x15CAD4`, and the shape data reaching `0x15204F` and `0x15A604`. For the first branch, inspect the row builder callers
+### Named WSA animation deltas
+
+**CONFIRMED.** Calls at `0x72E39`, `0x79397`, `0x7AE1E` and `0x7B27D`
+enter the filename-based loader at `0x15BB9C`. The first uses the
+literal `P_LUTHER.WSA` (`LOLG.DAT+0x1C1653`), and the other calls
+use dword pointer tables at `LOLG.DAT+0x1CD4AC`, `+0x1CD4FC` and
+`+0x1CD4DC`, respectively. That loader opens the named file at
+`0x15BBB4`, reads the header through `0x15BBC8`, and expands the
+first delta at `0x15BEE1`. It also calls the per-frame reader
+`0x15C3F4` at `0x15C08A` and `0x15C0B2`; its file-backed arm reads
+a later delta at `0x15C4F2` and expands it at `0x15C50D`.
+
+**CONFIRMED.** All 21 distinct nonempty table names join members of
+`LOCAL.MIX` by the original filename hash. Their u16 +0 is followed
+by dimensions at +6/+8, capacity at +0x0A and flags at +0x0C.
+The dwords at +0x0E form a directory of `u16(+0) + 2` offsets.
+For `P_LUTHER.WSA`, the member starts at `LOCAL.MIX+0x1909B17`,
+and the first span `+0x1909C31..+0x190A0CB` expands to 1,351 bytes
+within the advertised 1,730-byte capacity. All 640 delta spans in
+the 21 entries end at the next offset and decode to 670,607 bytes
+in total. `lol2_media_check.py --check` rechecks the archive and code.
+
+**UNCONFIRMED.** The complete set of filenames reaching `0x67052` and
+`0x15CAD4`, and the shape data reaching `0x15204F` and `0x15A604`.
+For the first branch, inspect the row builder callers
 `0x9DDBB`, `0x9DE84`, `0x9E5D2` and `0x9E66D`
 for a nonzero packed length. For the shape and resource loaders, follow the
 handle passed to the read at `0x118820` back to its open, then verify the packed span

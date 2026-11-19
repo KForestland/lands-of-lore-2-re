@@ -215,6 +215,44 @@ def check_vqa_buffer_callbacks(image):
             raise ValueError(f"movie buffer callback instruction at 0x{address:X}")
 
 
+def check_wsa_frames(image, local, entries):
+    """Join the native panel animation names and consume each compressed delta."""
+    names = set()
+    for cell in range(0xC488, 0xC4F0, 4):
+        pointer = u32(image, OBJ5 + cell)
+        if pointer:
+            name = cstr(image, OBJ5 + pointer)
+            if name:
+                names.add(name)
+    index = {row["key"]: row for row in entries}
+    frames = decoded_bytes = 0
+    for name in sorted(names):
+        row = index.get(ww_hash_v1(name))
+        if row is None or not name.endswith(".WSA"):
+            raise ValueError(f"missing panel animation {name}")
+        member = read_at(local, row["offset"], row["size"])
+        count, _, _, width, height, capacity, flags = struct.unpack_from("<7H", member)
+        offsets = struct.unpack_from(f"<{count + 2}I", member, 14)
+        if flags or min(width, height, capacity) == 0 or offsets[0] != 14 + 4 * len(offsets) or offsets[-1] != len(member):
+            raise ValueError(f"{name}: WSA header or extent")
+        for start, end in zip(offsets, offsets[1:]):
+            if end <= start:
+                raise ValueError(f"{name}: WSA delta extent")
+            delta, errors, used = decompress_westwood(member[start:end], capacity)
+            if errors or used != end - start or not delta:
+                raise ValueError(f"{name}: WSA delta at {start:#x}")
+            frames += 1
+            decoded_bytes += len(delta)
+    if (len(names), frames, decoded_bytes) != (21, 640, 670607):
+        raise ValueError("WSA animation corpus changed")
+    for address, target in ((0x72E39, 0x15BB9C), (0x79397, 0x15BB9C),
+                            (0x7AE1E, 0x15BB9C), (0x7B27D, 0x15BB9C),
+                            (0x15C08A, 0x15C3F4), (0x15BEE1, 0x158D58), (0x15C50D, 0x158D58)):
+        opcode, displacement = struct.unpack_from("<Bi", image, address + 0x37000)
+        if opcode != 0xE8 or address + 5 + displacement != target:
+            raise ValueError(f"WSA call at 0x{address:X}")
+
+
 def check(dat_dir):
     image, names = scene_names(dat_dir)
     check_vqa_buffer_callbacks(image)
@@ -318,6 +356,7 @@ def check(dat_dir):
     local = parent_file(dat_dir, "LOCAL.MIX")
     _size, _body, lentries = mix_dir(local)
     check_global_texture_books(image, local, lentries)
+    check_wsa_frames(image, local, lentries)
     local_keys = {e["key"] for e in lentries}
     hmi_hits = 0
     for stem in stems:
@@ -416,7 +455,7 @@ def check(dat_dir):
     return ("CHECK media: scene limit 85; L12 opcode 21/20/210 at 9823886/9821090/9823696; "
             "citadel L12_CMI entry 21; lolg MOVIES entry 2; bank 1179 row 1049 0190108e.aud; "
             "32 table stems and CREDITS in both formats; "
-            "47 room modules contain 8469 relocations; 15 global texture books")
+            "47 room modules contain 8469 relocations; 15 global texture books; 640 WSA deltas")
 
 
 def main(argv):
