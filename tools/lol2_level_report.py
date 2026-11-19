@@ -211,6 +211,30 @@ def texture_key(stem):
         yield n, key
 
 
+
+def placed_item_groups(raw, scripts):
+    """Check stream-1 references on the placed-item rows loaded by 0x94078."""
+    import struct
+    _, count, items = X.section(raw, 0x20, 0x6C, 37)
+    _, _, events = X.section(raw, *X.OBJECT_EVENTS, 1)
+    groups = {group["group"] for group in scripts["groups"] if group["stream"] == 1}
+    indexed = {event["group"] for obj in scripts["objects"] if obj["table"] != "region"
+               for event in obj["events"] if "group" in event}
+    added = set()
+    for index in range(count):
+        start = struct.unpack_from("<H", items, index * 37 + 0x0C)[0]
+        rows, _ = X.walk(events, start)
+        for offset, record in rows:
+            if record[1] not in X.OBJECT_GROUP_KINDS:
+                continue
+            target = struct.unpack_from("<H", record, 2)[0]
+            if target not in groups:
+                raise ValueError(f"placed item {index} event {offset:#x} names unknown group {target}")
+            if target not in indexed:
+                added.add(target)
+    return count, added
+
+
 def read_level(data_dir, stem):
     path = Path(data_dir) / f"{stem}.MIX"
     b = path.read_bytes()
@@ -237,6 +261,7 @@ def read_level(data_dir, stem):
     gs = geometry_stats(geo_raw)
     gs["groups"] = groups(geo_raw)
     gs["wall_rows"] = wall_stats(geo_raw)
+    gs["placed_item_groups"] = placed_item_groups(geo_raw, scripts)
     return dict(stem=stem, size=len(b), rows=rows, geo=geo, geom=gs, tex=tex, ent_entry=ent_entry, records=records,
                 scripts=scripts, comp=comp)
 
@@ -427,6 +452,13 @@ def main():
         based = sum(L["geom"]["wall_rows"]["special_with_base"] for L in levels)
         if len(stems) == 15 and (special, based) != (67, 45):
             bad.append(f"special wall counts {(special, based)}")
+        item_rows = sum(L["geom"]["placed_item_groups"][0] for L in levels)
+        item_groups = sum(len(L["geom"]["placed_item_groups"][1]) for L in levels)
+        if len(stems) == 15 and (item_rows, item_groups) != (663, 57):
+            bad.append(f"placed-item row/group counts {(item_rows, item_groups)}")
+        l1 = next((L for L in levels if L["stem"] == "L1_DC"), None)
+        if l1 and 13584 not in l1["geom"]["placed_item_groups"][1]:
+            bad.append("placed-item group 13584 missing from L1_DC")
         ev = Counter()
         for L in levels:
             ev.update(event_kinds(L["scripts"]))
@@ -437,7 +469,7 @@ def main():
               f"out-of-range vertex/neighbour indices {gb}, portal links {gl:,} (reciprocal {gr:,}, sharing the side's vertices "
               f"{gs:,}); wall rows {wr:,}, partition faults {wb}, {special} special ({based} with earlier base); event records {sum(ev.values()):,} (kinds without a documented matcher: {unknown_kinds or 'none'}); "
               f"opcode-21 movie commands {sum(sp.values())} naming {len(sp)} scene ids (outside the scene table: {bad_scene or 'none'}); held-item tests (kind 4 mode 3) {len(tests)}, identity not in the item table: "
-              f"{unknown}; bad={bad or 'none'}")
+              f"{unknown}; {item_rows} placed-item rows name {item_groups} additional groups; bad={bad or 'none'}")
         return 0 if not bad and not uns and not unknown and not gb and not wb and not bad_scene else 1
     items = item_identities(a.data)
     scenes = scene_names(a.data)

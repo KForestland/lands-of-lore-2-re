@@ -19,6 +19,7 @@ All offsets relative to the start of the entry; "offset / count".
 | +0x14 | +0x60 | 37 | props |
 | +0x18 | +0x64 | 33 | controls |
 | +0x1C | +0x68 | 56 | actors |
+| +0x20 | +0x6C | 37 | [placed items with event lists](../lol2-event-producers.md#placed-item-event-lists), loader `0x94078` |
 | +0x24 | +0x70 | 41 | movables |
 | +0x38 / +0x80 | bytes | | region event-record lists |
 | +0x3C / +0x84 | bytes | | command stream 0 |
