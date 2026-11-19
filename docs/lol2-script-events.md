@@ -130,7 +130,7 @@ dispatching the operator.
 | 4 | `0x66B47` | `0x66BEC` | Recursive predicate at the argument index. |
 | 5 | `0x66B3B` | `0x66BD2` | u8 at `[0xB7D80]+0x25`, independent of the index. Opcode 16 writes the same field at `0xB5A44`. |
 | 7 | `0x66B5C` | — | Left returns false for predicate index ≥ 1. At index 0, entry `0xBBB8` passes inherited ESI through `0x66A48`. [Type 7 evidence](lol2-shared-predicates.md#type-7). |
-| 1, 6 (and right 7) | `0x66AEB` | `0x66B7B` | Table falls through to the common continuation without assigning that operand. **UNCONFIRMED** usage. |
+| 1, 6 (and right 7) | `0x66AEB` | `0x66B7B` | Table falls through to the common continuation without assigning that operand. **UNCONFIRMED** usage. Search both operands of the archive predicate rows rooted at geometry header +0xBC, then check whether any native producer installs these selectors before `0x66AB0`. |
 
 Operator IDs 0–7 are equality (`0x66C43`), inequality (`0x66C57`),
 signed ≤ (`0x66C6B`), ≥ (`0x66C7F`), > (`0x66C8F`),

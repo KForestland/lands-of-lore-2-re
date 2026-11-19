@@ -17,7 +17,7 @@ The game has 15 level archives, `DAT/L<n>_<xx>.MIX`. Numbers 2, 6, 11, 15 and 18
 except L17_HC has a companion media archive `L<n>_<xx>I.MIX`. Counts are from the archives (actors/props
 from the geometry header, commands from both streams).
 
-| Level | Short name | Actors | Props | Geometry regions | Commands | Longplay (LONGPLAY) |
+| Level | Short name | Actors | Props | Geometry regions | Commands | Longplay (LONGPLAY, binding test below) |
 |---|---|---:|---:|---:|---:|---|
 | L1_DC | Draracle's cave | 57 | 1559 | 1954 | 1982 | 5:06-13:24 |
 | L3_DH | museum / halls | 33 | 393 | 1499 | 1793 | 16:21-32:33 |

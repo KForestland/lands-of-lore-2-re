@@ -211,7 +211,7 @@ initial value `6<<16` (`0x7FF4C–0x7FF8E`).
 `0x80064` writes +0x3BC at `0x80080`. The `0x7FE0C`
 path similarly writes +0x3B4 and +0x2E4, initially `4<<16`
 (`0x7FE24–0x7FE61`). The game-facing names of those
-controller channels are **UNCONFIRMED**.
+controller channels are **UNCONFIRMED**. Compare the first post-cast store to the affected controller fields with the handler arguments at the dispatch call, using one sample per effect.
 
 ### Effect 17 callbacks
 

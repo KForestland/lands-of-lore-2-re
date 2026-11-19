@@ -54,7 +54,7 @@ count of three. The native runner (entry `0x646EC`) reads that count at `0x64715
 **CONFIRMED.** The grant stores an item in the cursor slot. `0xD78C4` passes 1
 as the fourth argument, so `0xD259C` takes mode 1 and skips the first
 swap; when `[0x23C46]` bit 0 is set, `0x8FD40` runs again afterwards
-(effect UNCONFIRMED). The player receive routine calls `0x77ACC` at
+(effect UNCONFIRMED for this item). For that branch, record the old and new slot pointers at `0x8FD40` with the same item and the override bit at `0x23C46` set. The player receive routine calls `0x77ACC` at
 `0xD25EA`. It stores the pointer in the cursor item slot
 `[0x23C57]` at `0x77AEA`. When the cursor override is clear,
 `0x77B00–0x77B2C` takes the sprite ID from definition +0x39

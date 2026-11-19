@@ -26,8 +26,8 @@ offsets describe empty spans. The final level's end is the file size.
 | `0x030`, `0x034` | u32 each | Values 0x12 and 0x66, both checked by `0xEB847–0xEB853`. |
 | `0x038–0x043` | 3 u32 | Global data, spell data and sound data version stamps. The writer copies cells `0xD938C`, `0xD9390`, `0xD9394` at `0xE7738–0xE7758`, and the reader compares them at `0xEB857–0xEB87A`. |
 | `0x044–0x093` | 20 u32 | Per-level version stamp table from `0xD9398`, copied at `0xE775E–0xE7783`. The initializer appends `.ver` (`LOLG.DAT+0x1C414A`) to the level name and reads four bytes per file (`0xE5B7D–0xE5C34`). The level path is the prefix at object-5 `0x23230`, then the level name, then `.ver`. A missing `.VER` file stores 0xFFFFFFFF (`0xE5AC2`, `0xE5B09`, `0xE5B50`, `0xE5B66`). |
-| `0x094` | u32 | Zeroed by the writer at `0xE777D`. Further interpretation is **UNCONFIRMED**. |
-| `0x098–0x0A7` | 4 u32 | Preview descriptor, filled from the writer's argument at `0xE789B–0xE78E3`: `0x098` = 1 (meaning **UNCONFIRMED**); `0x09C`/`0x0A0` = preview width and height (320×200); `0x0A4` = preview data offset (0x25A). |
+| `0x094` | u32 | Zeroed by the writer at `0xE777D`. Further interpretation is **UNCONFIRMED**. Watch the in-memory word immediately after the header read at `0xE687E`; identify the first consuming instruction before assigning a role. |
+| `0x098–0x0A7` | 4 u32 | Preview descriptor, filled from the writer's argument at `0xE789B–0xE78E3`: `0x098` = 1 (meaning **UNCONFIRMED**; watch the field during the preview read after `0xE687E`); `0x09C`/`0x0A0` = preview width and height (320×200); `0x0A4` = preview data offset (0x25A). |
 | `0x0A8–0x177` | 26 u32 bases, 26 u32 lengths | Address-range map used for pointer conversion, populated by `0xE5C48`, passed to the save adjustment routine at `0xE7A15`. |
 | `0x178–0x17B` | u32 | Address-map adjustment status at map +0xD0 (`0xE7A15–0xE7A1C`, `0xE9207`, `0xEB30D`). |
 | `0x17C` | s32 | Active level ID from byte `[0x23331]` at `0xE7887–0xE7895`. |

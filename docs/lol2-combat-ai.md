@@ -31,8 +31,7 @@ the equipped item a mode-5 hook (`0x88F7F`). A zero return takes the
 ordinary hit path. At `0x89045–0x8916D` that path assembles damage
 input from dwords `[0x236DC]+[0x236E4]+[0x236EC]+[0x236F4]` and a
 sign-extended high byte from `[0x2372C]`, places it in +0x16 and
-dispatches target vtable +0x80. The meaning of every summand is
-**UNCONFIRMED**.
+dispatches target vtable +0x80. The full set of summand roles remains **UNCONFIRMED**. Handler 4’s temporary contribution at `0x236E4` is verified at `0x961C7` and `0x9633C`. For the others, follow structure-relative stores to the four dwords and high byte of `0x2372C` before a strike at `0x88D2C`.
 
 **CONFIRMED.** Difficulty uses byte `[0xB7FB2]` read at `0x62868`.
 Its configuration value is clamped to 0–2 at `0xCC0C3–0xCC0F7`

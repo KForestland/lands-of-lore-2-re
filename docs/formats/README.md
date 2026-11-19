@@ -13,7 +13,7 @@ Each page: what the file is, its layout, a worked example with real bytes from t
 | [sound.md](sound.md) | `LOCALLNG.MIX` sound bank, music, movies | `lol2_sound_bank.py`, `lol2_aud_decode.py`, `lol2_vqa_v2_decode.py` | bank, 453 AUD entries in `DAT/` and 64 in the game-folder archives CONFIRMED; Q12, Q15; movies on [vqa.md](vqa.md) |
 | [compression.md](compression.md) | LZO1X blocks, Westwood LZ77 | `lol2_texture_container.py`, `lol2_decompress_westwood.py`, `lol2_decompress_sphere.py` (the `options.shp` shapes) | LZO CONFIRMED on the data; LZ77 code and its eleven callers' buffers CONFIRMED, source files partly open (Q1) |
 | [geometry.md](geometry.md) | vertex and region tables of the level data entry | `lol2_level_report.py` | region neighbours, corners, heights, slope flags CONFIRMED (code + 15 levels); other words open (Q16) |
-| [maps.md](maps.md) | top-down map drawn from the region table | `lol2_level_map.py` | 52,669 polygons CONFIRMED; in-game automap data not located |
+| [maps.md](maps.md) | top-down map drawn from the region table | `lol2_level_map.py` | 52,669 polygons CONFIRMED; native marker input traced at `0x64DB7 → 0x145F2C`; visited-area shading open |
 | [walls.md](walls.md) | wall table of the level data entry | `lol2_level_report.py` | table, runs, code bits CONFIRMED; 88,994 rows partition exactly; Q16 |
 | [vqa.md](vqa.md) | `WVQA` movies | `lol2_vqa_v2_decode.py` | 1,109 pointer tables CONFIRMED; 837 pointer streams open |
 

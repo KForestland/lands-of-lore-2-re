@@ -13,7 +13,7 @@
 | table | 170 x 91 bytes | definition records |
 | after the table | uint32 + rows | count and 16-byte selector rows, then a count and 12-byte view rows, then 30-byte name rows |
 
-Record fields known so far (from [lol2-item-format.md](../lol2-item-format.md#record-fields)): +0x18 identity (u32), +0x37 strike sound, +0x3B mask word, +0x3D flags word, +0x3F class byte, +0x42 handler index into the item-use table, +0x43 magic bits, +0x44 post-hit addend, +0x47 four 5-byte descriptor rows; the rest UNCONFIRMED.
+Record fields known so far (from [lol2-item-format.md](../lol2-item-format.md#record-fields)): +0x18 identity (u32), +0x37 strike sound, +0x3B mask word, +0x3D flags word, +0x3F class byte, +0x42 handler index into the item-use table, +0x43 magic bits, +0x44 post-hit addend, +0x47 four 5-byte descriptor rows; other fields are **UNCONFIRMED** unless named in the definition table. Trace the definition from `0x9EB5C` into the appropriate mode at `0x95865`, taking note of any reads through aliases.
 
 ## Worked example (re-run 2026-11-18)
 
