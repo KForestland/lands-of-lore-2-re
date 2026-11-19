@@ -8,6 +8,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))
 from lol2_decompress_westwood import decompress_westwood
 from lol2_export_scripts import SourceError, frame, group, walk
 from lol2_save_header import HEADER_SIZE, parse_header
+from lol2_save_inspect import LEVEL_HEADER, decode_chunks, inspect, level_sections
 from lol2_source_format import parse_mix
 
 
@@ -49,3 +50,29 @@ class ReaderTests(unittest.TestCase):
         struct.pack_into("<I", header, 0x1BA, end + 1)
         with self.assertRaises(ValueError):
             parse_header(header, end)
+
+    def test_save_inspector_labels_fields_and_retains_unknown_bytes(self):
+        header = bytearray(HEADER_SIZE)
+        block = bytearray(LEVEL_HEADER + 4)
+        struct.pack_into("<3I", header, 0x2C, len(header) + len(block), 18, 102)
+        struct.pack_into("<3I", header, 0x9C, 0, 0, HEADER_SIZE)
+        struct.pack_into("<31I", header, 0x18E, *([HEADER_SIZE] * 12), *([HEADER_SIZE + len(block)] * 19))
+        struct.pack_into("<iI", header, 0x17C, 1, 0xFA)
+        header[0x94] = 0xAA
+        struct.pack_into("<I", header, 0x20A, len(block))
+        struct.pack_into("<I", block, 0, len(block))
+        struct.pack_into("<68I", block, 0xD8, *([LEVEL_HEADER] * 29), *([len(block)] * 39))
+        struct.pack_into("<I", block, 0x1E8 + 28 * 4, 4)
+        struct.pack_into("<I", block, LEVEL_HEADER, 0x1234)
+
+        slot = header + block
+        overview = "\n".join(inspect(slot, level=1))
+        self.assertIn("Slot+0x0094  unknown = aa 00 00 00", overview)
+        self.assertIn("Slot+0x0180  player position dword 0 = 250", overview)
+        selected = "\n".join(inspect(slot, section=28, row=0))
+        self.assertIn("first list head pointer = 4660 (0x00001234)", selected)
+        struct.pack_into("<I", block, 0xD8, 0)
+        with self.assertRaises(ValueError):
+            level_sections(block)
+        with self.assertRaises(ValueError):
+            decode_chunks(struct.pack("<2I", 8, 100))

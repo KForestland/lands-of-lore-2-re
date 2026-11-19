@@ -9,7 +9,11 @@ another player's saves reproduce the layout, not these exact counts),
 with SHA-256 prefix `e2393dbe4d2b`. These are file and
 code observations.
 
-Run [`lol2_save_header.py`](../tools/lol2_save_header.py) on a slot file to list preview, global and level offsets and lengths. It reads the header and writes its report to standard output.
+Run [`lol2_save_inspect.py`](../tools/lol2_save_inspect.py) on a slot file
+to print the header fields and section directories. Select a payload with
+`--level 1 --section 27` or `--global-section 2`. Use
+[`lol2_save_header.py`](../tools/lol2_save_header.py) for just the header
+as JSON. Both print to standard output.
 
 ## Slot header and directory
 

@@ -50,19 +50,19 @@ when those rules do not have a standalone file layout.
 | [VQA movies](../docs/formats/vqa.md), [scene table](../docs/lol2-movie-scenes.md) | `lol2_vqa_v2_decode.py`, `lol2_media_check.py` | Frame framing, sample decodes and native scene witnesses | Movie info. **Gap:** scene lookup and level references in one view |
 | [TRR text tables](../docs/lol2-text-tables.md) | `lol2_text_tables.py` | Named table framing and counts | **Gap:** selected table entries and record offsets |
 | [Loose WAV and NE setup image](../docs/formats/loose.md) | `lol2_loose.py` | WAV chunks and executable sections | Check line. **Gap:** detailed file structure inventory |
-| [Save headers, sections and fields](../docs/lol2-save-format.md) | `lol2_save_header.py`, `lol2_save_native.py` | Native selector and clock checks, slot length check with a supplied save | Header JSON. **Gap:** named save fields and section payload view |
+| [Save headers, sections and fields](../docs/lol2-save-format.md) | `lol2_save_inspect.py`, `lol2_save_header.py`, `lol2_save_native.py` | Native selector witnesses, slot directories and decoded bounds | Field offsets, all directories and selected payloads with named fields and unknown bytes |
 | [Executable LE layout and native tables](../docs/lol2-executable-tables.md) | `lol2_parse_le.py`, focused witness checkers above | Table and relocation witnesses in `check_all.py` | Segment extractor. **Gap:** read-only LE structure and a unified table index |
 
 
 ### `check_all.py`
 
-Run every `--check` (28) and print one line each, then a summary.
+Run each `--check` and print one line each, then a summary.
 
 ```
-$ python3 tools/check_all.py | sed -n "1,2p;29p"
+$ python3 tools/check_all.py | sed -n '1,2p;$p'
 CHECK repo_guard: N tracked files; game files, media, stray images, files over 300 KB, machine paths, words from the local list, or commit identities: none (0); private word list: not present, skipped
 CHECK mix: 81 MIX files, 2905 entries; this reader and lol2_source_format.parse_mix agree and every entry lies inside its file: 81/81; index sorted by signed key: 81/81 (by unsigned key: 20); bad=none
-ALL 28 CHECKS PASSED
+ALL 29 CHECKS PASSED
 ```
 
 ### `doc_links.py`
@@ -81,6 +81,29 @@ Reads `AUTOPLAY.WAV` and `SETUP.EXE` through their last byte. Part of `check_all
 ### `lol2_save_header.py`
 
 Reads one save slot you name (a player save, not a game file) and prints its preview, global and level offsets as JSON. Writes nothing. Pass `--check` with a slot to compare its stored level lengths with the directory.
+
+### `lol2_save_inspect.py`
+
+Prints a player's original slot header, directories and section names to
+stdout. `--level 1` limits the overview to the first level block.
+Use `--level 1 --section 27 --row 1` to inspect one texture animation row,
+or `--global-section 2` to inspect player item records. Section offsets
+are relative to the decoded payload. Unassigned bytes are shown in hex.
+XOR sections show deltas in hex. Supply the matching game-written `.IMG`
+with `--baseline` to recover the selected level's values, including its
+serialized pointer words. Needs `liblzo2` for packed payloads. Field
+sources are in the [save reference](../docs/lol2-save-format.md) and
+[save field witnesses](../docs/lol2-save-field-witnesses.md).
+
+```text
+$ python3 tools/lol2_save_inspect.py --data /path/to/DAT --check
+CHECK save inspector: 27 original slots and 149 level blocks
+```
+
+That output is from the reference installation's `SAVEGAME` folder. A
+fresh installation reports `CHECK save inspector: native save witnesses
+checked; no save slots supplied`. Use `python3 tools/lol2_save_inspect.py
+"$LOL2_SLOT"` with a slot of your own for the field-by-field overview.
 
 ### `lol2_mix_parser.py`
 
