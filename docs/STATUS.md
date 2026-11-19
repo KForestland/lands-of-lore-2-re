@@ -4,7 +4,7 @@
 
 Run the checks: `python3 tools/check_all.py` (with `$LOL2_DAT` set) (32 checks; all pass on the copy read).
 
-**Running-game results** (original program under a debugger, one run each; [procedures and results](NEEDS_A_RUNNING_GAME.md)): the frame-clock writer (Q7) and the save changes of one pickup (Q11) are answered; a creature distance branch (Q10) and the level-8 controls (Q17) are partly answered; the timed message (Q9) and two movie frames (Q12) were not reached.
+**Running-game results.** Answered probes are counted in the rating; which ones and how: [NEEDS_A_RUNNING_GAME](NEEDS_A_RUNNING_GAME.md#answered-probes). Runs on hand-edited copies of a game-written save: [edited saves](EDITED_SAVES.md).
 
 **Short format pages** (one per format, with a worked example from the game files): [formats/](formats/README.md), 13 pages; **level sheets**: [levels/](levels/README.md).
 
@@ -12,7 +12,7 @@ Run the checks: `python3 tools/check_all.py` (with `$LOL2_DAT` set) (32 checks; 
 
 <!-- rating:begin -->
 - **Files read:** 83 of 83 files in `DAT` (1,915.6 of 1,915.6 MiB) have their whole layout read by a tool here: every byte belongs to a known header, directory, entry, chunk, segment or resource, or to zero padding between them; the DOS part of `SETUP.EXE` is counted by its length (what is inside an entry may still be only partly understood).
-- **Rules traced:** the pages mark 703 statements CONFIRMED (proved from the program code or the files) and 169 UNCONFIRMED (a reading not yet proved), on 114 current pages; old notes kept as history are not counted.
+- **Rules traced:** the pages mark 703 statements CONFIRMED (proved from the program code or the files) and 169 UNCONFIRMED (a reading not yet proved), on 112 current pages; old notes kept as history are not counted.
 - **Seen in the running game:** 4 of 9 probes that need the original game running are answered (a question can have more than one probe); 0 of them rest on edited saves only.
 - **Open questions:** 20 numbered questions: 5 answered, 14 mostly answered, 1 partly answered.
 <!-- rating:end -->
@@ -30,7 +30,7 @@ Run the checks: `python3 tools/check_all.py` (with `$LOL2_DAT` set) (32 checks; 
 | Level scripts | [opcode reference](lol2-script-opcodes.md), [events, timers, predicates](lol2-script-events.md), [script format](lol2-level-script-format.md), [engine facts](lol2-script-engine-facts-2026-10.md), [addendum](lol2-script-engine-facts-2026-10-addendum.md) | `lol2_disassemble_scripts`: 15/15 levels, 42,594 commands, 32 observed opcodes, 0 unsupported; handlers of all 37 opcodes located | Q4–Q7, Q17 |
 | Entities and objects | [entity object map](lol2-entity-object-map.md), [object state word](lol2-object-state-word.md), [cave object catalogue](cave-object-catalogue.md) | 128 entity records of 62 types in 15/15 level archives (`lol2_entity_field_analyzer`); 29 B_HUMAN/WORM records in 12 levels | Q18 |
 | Items | [Item format](formats/items.md), [grants and effects](lol2-item-effects.md), [item handlers](lol2-item-handlers.md) | [Grant census command](lol2-item-effects.md#reproduce-the-grant-census) checks 876 grants against the 170 item identities in the definitions | Q8 |
-| Walls and textures | [walls](formats/walls.md), [texture container](lol2-level-texture-container.md), [wall material provenance](lol2-wall-material-provenance.md), [texture map inventory](texture-map-inventory.md) | `lol2_texture_container.py --check` (separate from check_all because it needs the system liblzo2): 15 levels, 38,361 descriptors, 2,039 raw, 881 movie names. The `tools/draracle/` pipeline has its own tests | Q14 payloads, Q16 |
+| Walls and textures | [walls](formats/walls.md), [texture container](lol2-level-texture-container.md), [wall material provenance](lol2-wall-material-provenance.md), [texture map inventory](texture-map-inventory.md), [wall texture review](wall-texture-review.md) | `lol2_texture_container.py --check` (separate from check_all because it needs the system liblzo2): 15 levels, 38,361 descriptors, 2,039 raw, 881 movie names. The `tools/draracle/` pipeline has its own tests | Q14 payloads, Q16 |
 | Sprites | [block sprite decoder](block-sprite-decoder.md), [creature frame groups](creature-frame-groups.md) | — | |
 | Sound and music | [format page](formats/sound.md), [audio inventory](audio-inventory.md), [music](lol2-music-2026-11.md) | `lol2_aud_decode`: 453 AUD entries in 29 `DAT/` archives decode (437 exactly, 16 one sample short). `lol2_hmi_midi`: 33 named songs, including the direct CREDITS path, 438 tracks, standard MIDI in memory | the 33 `FORM` entries in `LOCAL.MIX` |
 | Movies | [VQA format page](formats/vqa.md), [VQA v2](lol2-vqa-v2.md), [movie scenes](lol2-movie-scenes.md) | `lol2_vqa_v2_decode --check`: census and one sample of each layout. `--full`: 1,109 pointer tables pass; 837 pointer-stream codebooks, pixels not expanded; 2 relative-reference frames. `lol2_media_check`: scene table and two worked movies | Q12 pointer stream, two frames in pointer-table movies (absolute-mode LCW) |
@@ -46,6 +46,6 @@ The top-level tools answer `--help`, take `--data` (or `$LOL2_DAT`) and write on
 
 ## Corrections made in this pass (2026-11-18)
 
-1. The game wall texture and decoded tile images in `examples/` were removed (asset policy); the README picture is now drawn by a tool from tile indices.
+1. The game wall texture and decoded tile images in `examples/` were removed (asset policy); the README picture (`docs/images/l1_dc_regions.png`) is now drawn by a tool from the level's region table.
 2. `lol2_l9dr_census.py` reads the whole `L9_DR.MIX` as 147-byte records from offset 0; it is marked exploratory (5,861 of 160,622 slots carry a printable tag). Use `lol2_entity_field_analyzer.py` for the real entity records.
 3. The Westwood LZ77 function is at VA `0x158D58`. A scan that treats a MIX entry's first u32 as an output size still matches no entry. The source, destination and capacity of all eleven direct callers are mapped; which files reach them stays open (Q1).

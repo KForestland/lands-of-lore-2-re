@@ -1,5 +1,7 @@
 # LoL2 Native Runtime Patch Plan
 
+> **History.** A note from an earlier pass, kept as a record. Current pages: [STATUS.md](STATUS.md) and [formats/](formats/README.md); where they differ, the current pages are right.
+
 Date: 2026-04-04
 
 ## Purpose

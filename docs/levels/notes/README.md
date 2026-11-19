@@ -20,6 +20,24 @@ identifiers in JSON are integers in decimal. MIX offsets refer to the level
 archive named by the filename. Instruction addresses use the 1.30
 [executable convention](../../lol2-executable-tables.md).
 
+## Levels
+
+- [L1_DC](L1_DC.md)
+- [L3_DH](L3_DH.md)
+- [L4_HJ](L4_HJ.md)
+- [L5_HC](L5_HC.md)
+- [L7_DH](L7_DH.md)
+- [L8_SJ](L8_SJ.md)
+- [L9_DR](L9_DR.md)
+- [L10_DC](L10_DC.md)
+- [L12_CM](L12_CM.md)
+- [L13_RC](L13_RC.md)
+- [L14_HT](L14_HT.md)
+- [L16_CA](L16_CA.md)
+- [L17_HC](L17_HC.md)
+- [L19_BC](L19_BC.md)
+- [L20_BB](L20_BB.md)
+
 ## Rows
 
 - `<level>.groups.jsonl` has one group per line with `stream`, its stream-relative

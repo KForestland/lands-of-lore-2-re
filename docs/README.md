@@ -23,6 +23,6 @@ Start with **[START_HERE.md](START_HERE.md)** (by goal) or **[How Lands of Lore 
 - [Native texture cache initializer](lol2-cache-initializer.md)
 - [OPEN_QUESTIONS.md](OPEN_QUESTIONS.md) and [GLOSSARY.md](GLOSSARY.md).
 
-The other pages in this folder are older notes, kept as history. Where they disagree with the pages above, the pages above are current.
+[START_HERE.md](START_HERE.md), [STATUS.md](STATUS.md) and the pages above link further current topic pages. Pages that open with a **History** note are older notes, kept as a record; where they disagree with the current pages, the current pages are right.
 
 Formats the three Lands of Lore games share, with links to all three repositories: [series-formats.md](series-formats.md).

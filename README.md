@@ -10,9 +10,13 @@ It contains documentation, tools and small tables of numbers. It contains no gam
 - **What you can do today:** list and unpack every archive, decode sounds, music and movies, read every level's geometry and scripts, follow one event from a click to its result, and look up what each item and spell does in the program.
 - **Start in five minutes:** the [Quick start](#quick-start) below, then [Start here, by goal](docs/START_HERE.md), [How the game works](docs/HOW_THE_GAME_WORKS.md) or the [worked example](docs/tutorial-one-event.md).
 - **Recipes:** [cookbook](docs/COOKBOOK.md), seven short runs with the command and the first lines it prints.
-- **What is still unknown:** the [open questions](docs/OPEN_QUESTIONS.md), counted in the [rating](#rating); most open points are the meaning of specific fields and effects. Some can only be settled by watching the [original game run](docs/NEEDS_A_RUNNING_GAME.md); the clock writer and a pickup's save changes were settled that way, and the rest need saved games from later in the game. Some probes were also tried on [edited saves](docs/EDITED_SAVES.md), copies of a game-written save with a few bytes changed.
+- **What is still unknown:** the [open questions](docs/OPEN_QUESTIONS.md), counted in the [rating](#rating); most open points are the meaning of specific fields and effects. Some can only be settled by watching the original game run. Answered probes are counted in the rating; which ones and how: [NEEDS_A_RUNNING_GAME](docs/NEEDS_A_RUNNING_GAME.md#answered-probes). Some probes were also tried on [edited saves](docs/EDITED_SAVES.md), copies of a game-written save with a few bytes changed.
 - **What changed lately:** [what's new](docs/WHATS_NEW.md), newest first.
 - **The three games:** [LoL1](https://github.com/KForestland/lands-of-lore-1-re) · [LoL2](https://github.com/KForestland/lands-of-lore-2-re) · [LoL3](https://github.com/KForestland/Lands-of-lore-3-re) ([what they share](docs/series-formats.md), [how the engine changed](docs/engine-evolution.md)).
+
+![The first level, L1_DC, drawn from its region table by tools/lol2_level_map.py](docs/images/l1_dc_regions.png)
+
+*The first level (`L1_DC`) drawn from its geometry numbers alone (`tools/lol2_level_map.py --level 1 --size 900`): each region a polygon shaded by floor height, wall sides dark, portal sides light.*
 
 ## Rating
 
@@ -20,7 +24,7 @@ These are counts of work done, not a percentage of how complete the project is. 
 
 <!-- rating:begin -->
 - **Files read:** 83 of 83 files in `DAT` (1,915.6 of 1,915.6 MiB) have their whole layout read by a tool here: every byte belongs to a known header, directory, entry, chunk, segment or resource, or to zero padding between them; the DOS part of `SETUP.EXE` is counted by its length (what is inside an entry may still be only partly understood).
-- **Rules traced:** the pages mark 703 statements CONFIRMED (proved from the program code or the files) and 169 UNCONFIRMED (a reading not yet proved), on 114 current pages; old notes kept as history are not counted.
+- **Rules traced:** the pages mark 703 statements CONFIRMED (proved from the program code or the files) and 169 UNCONFIRMED (a reading not yet proved), on 112 current pages; old notes kept as history are not counted.
 - **Seen in the running game:** 4 of 9 probes that need the original game running are answered (a question can have more than one probe); 0 of them rest on edited saves only.
 - **Open questions:** 20 numbered questions: 5 answered, 14 mostly answered, 1 partly answered.
 <!-- rating:end -->
@@ -79,7 +83,7 @@ Full table with evidence: [`docs/STATUS.md`](docs/STATUS.md).
 | Levels, geometry, walls, textures | Documented for the traced parts; geometry entry found in all 15 levels; wall spans and UVs partly open (Q16) |
 | Level scripts | Opcode dispatch and event layouts documented. Disassembler checks all 15 levels (Q4–Q7). |
 | Entities, items, combat | Item definitions, what items give the player, some item effects and the combat formulas, as the original program does them (Q8, Q10). |
-| Sound, music, movies | AUD sounds, the HMI songs (converted to standard MIDI, Q15) and VQA v2 headers decoded; some movie codebook layouts and the `FORM` music entries open (Q12) |
+| Sound, music, movies | AUD sounds, the HMI songs (converted to standard MIDI, Q15) and VQA v2 headers decoded. Open: two exceptional movie frames (Q12) and the 33 `FORM` entries in `LOCAL.MIX`, which have no numbered question |
 | Spells and saves | Spell costs and some spell effects from the original program; save folders and the save sections mapped so far (Q9, Q11). |
 | Text | Message tables (help, options, automap, credits, errors) documented with a reader; character dialogue open (Q13). |
 
@@ -89,7 +93,7 @@ Full table with evidence: [`docs/STATUS.md`](docs/STATUS.md).
 - [`tools/`](tools/README.md): readers and analysers
 - [`evidence/`](evidence): lists of program addresses and files that back up the pages
 - [`data/`](data): machine-readable inventory summaries
-- [`examples/`](examples/README.md): notes on the example level map (the picture is in `docs/images/` and is checked against today's tool by `example_images.py`)
+- [`examples/`](examples/README.md): an example level schematic (`l5_hc_schematic.png`) with the command that draws it; it and the level map above (`docs/images/l1_dc_regions.png`) are checked against today's tools by `example_images.py`
 
 ## Asset policy
 
