@@ -24,13 +24,22 @@ The tools below follow one set of rules: `--help` changes nothing; the game's `D
 
 ### `check_all.py`
 
-Run every `--check` (27) and print one line each, then a summary.
+Run every `--check` (28) and print one line each, then a summary.
 
 ```
-$ python3 tools/check_all.py | sed -n "1,2p;28p"
+$ python3 tools/check_all.py | sed -n "1,2p;29p"
 CHECK repo_guard: N tracked files; game files, media, stray images, files over 300 KB, machine paths, words from the local list, or commit identities: none (0); private word list: not present, skipped
 CHECK mix: 81 MIX files, 2905 entries; this reader and lol2_source_format.parse_mix agree and every entry lies inside its file: 81/81; index sorted by signed key: 81/81 (by unsigned key: 20); bad=none
-ALL 27 CHECKS PASSED
+ALL 28 CHECKS PASSED
+```
+
+### `doc_links.py`
+
+Resolves every relative link and anchor in `README.md` and under `docs/`. Part of `check_all.py`. A link written inside a fenced example is not followed.
+
+```
+$ python3 tools/doc_links.py --check
+CHECK links: every relative link and anchor in README.md and docs resolves
 ```
 
 ### `lol2_loose.py`
