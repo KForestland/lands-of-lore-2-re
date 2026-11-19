@@ -1,5 +1,7 @@
 # LoL2 Closure Summary
 
+> **History.** A note from an earlier pass, kept as a record. Current pages: [STATUS.md](STATUS.md) and [formats/](formats/README.md); where they differ, the current pages are right.
+
 Current status: [Draracle restoration findings](draracle-restoration.md). This March memo is historical; its asset/provenance discussion is not the latest cave pipeline. The October 2026 results (sound bank, level textures, wall-material source, scripts, items) are in [current status](lol2-current-status.md).
 
 Date: 2026-03-24

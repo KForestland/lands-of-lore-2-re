@@ -1,5 +1,7 @@
 # LoL2 Runtime-To-Renderer Bridge
 
+> **History.** A note from an earlier pass, kept as a record. Current pages: [STATUS.md](STATUS.md) and [formats/](formats/README.md); where they differ, the current pages are right.
+
 Current cave source/material findings: [draracle-restoration.md](draracle-restoration.md). The LOCAL.MIX atlas discussion below is historical and does not establish the current cave material source.
 
 Date: 2026-03-24

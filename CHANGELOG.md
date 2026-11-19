@@ -1,5 +1,7 @@
 # Changelog
 
+Older entries are history: their status percentages and "complete" wording are replaced by the counted rating in [docs/STATUS.md](docs/STATUS.md) ([how we rate](docs/HOW_WE_RATE.md)).
+
 ## 2026-11-11
 
 - New: [LoL2 music](docs/lol2-music-2026-11.md): `DMUSIC.MIX` is 33 Westwood AUD (IMA ADPCM) tracks, all decodable; opcode 210 picks the track by a 34-stem name table; one global byte chooses digital or HMI MIDI. Open: which entry is which stem.

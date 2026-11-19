@@ -1,6 +1,8 @@
 # LoL2 current status
 
-Updated 2026-11-06. **Almost fully understood** — see [LoL2 understanding — November 2026](lol2-understanding-2026-11.md). The October notes below stay as history.
+> **History.** A note from an earlier pass, kept as a record. Current pages: [STATUS.md](STATUS.md) and [formats/](formats/README.md); where they differ, the current pages are right.
+
+Updated 2026-11-06. This page once summed the work up as "almost fully understood"; that summary is replaced by the counted [rating](STATUS.md). See [LoL2 understanding — November 2026](lol2-understanding-2026-11.md). The October notes below stay as history.
 
 ## October 2026 update
 

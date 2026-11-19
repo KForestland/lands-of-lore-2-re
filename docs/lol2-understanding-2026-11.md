@@ -1,5 +1,7 @@
 # LoL2 understanding — November 2026
 
+> **History.** A note from an earlier pass, kept as a record. Current pages: [STATUS.md](STATUS.md) and [formats/](formats/README.md); where they differ, the current pages are right.
+
 Updated 2026-11-06, kept as history; the current state with evidence is in [STATUS.md](STATUS.md). This page
 summarizes what was learned about the original game since the [October update](lol2-current-status.md): the levels and
 story steps in terms of the game's own data, the script opcodes behind them, and engine rules. A list of open points is

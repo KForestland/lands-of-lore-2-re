@@ -6,7 +6,7 @@ You need Python 3.10+, Pillow (`pip install -r requirements.txt`) and your own c
 
 ```bash
 export LOL2_DAT=/path/to/your/LOL2/DAT
-python3 tools/check_all.py         # the last line should read ALL 21 CHECKS PASSED
+python3 tools/check_all.py         # the last line should read ALL 22 CHECKS PASSED
 ```
 
 Words you do not know are in the [glossary](GLOSSARY.md); what is known and checked is in [STATUS.md](STATUS.md). Examples that write files (pictures, JSON) should write outside the clone, so nothing from your game ends up in the repository. To contribute, see [CONTRIBUTING](../CONTRIBUTING.md).
