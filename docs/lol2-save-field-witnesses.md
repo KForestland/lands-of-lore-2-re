@@ -109,10 +109,10 @@ Both loaders apply section-specific fixups after the read
 | Slot +0x094 | u32 | `0xE777D` | Bulk header read at `0xE687E` | **UNCONFIRMED** semantic role. The writer supplies zero. |
 | Slot +0x098 | u32 | `0xE78B1` | Bulk header read at `0xE687E` | **UNCONFIRMED** consumer of value 1. |
 | Slot +0x20A…+0x259 | 80 bytes after directories | Full header at `0xE7CF1` | Bulk header read at `0xE687E` | **UNCONFIRMED** field meanings. The directory write loop stops after 20 offsets. |
-| L block +0xD4 | address-map status | `0xE9719` full path, `0xE83DF` header output | Fixup result at `0xE97AC` | Maps pointer adjustment error state. Source of the short block's residual bytes is **UNCONFIRMED**. |
+| L block +0xD4 | address-map status | `0xE9719` full path, `0xE83DF` header output | Fixup result at `0xE97AC` | **UNCONFIRMED** reading: pointer adjustment error state. Source of the short block's residual bytes is **UNCONFIRMED**. |
 | G4 | +0 and following bytes | `0xE8723` | UI strike callers of `0x88D2C`, e.g. `0x7DAC0` | UI and combat context. Individual fields beyond those joined in the [item note](lol2-item-format.md) remain **UNCONFIRMED**. |
 | G5 | scene movie context +0x10 through +0x3C | `0xE873D` | `0xA02C2`, `0xA03B4–0xA03B7` | Object at `[0x22CE0]`, used by the movie control path. Resume copies its +0x3C byte to +0x4E. Other saved fields **UNCONFIRMED**. |
-| G6 | 12 bytes at `0x22CE4` | `0xE876F` | `0xE6CFC` | **UNCONFIRMED** subfields. This is the span after the movie-context pointer. |
+| G6 | 12 bytes at `0x22CE4` | `0xE876F` | none found (`0xE6CFC` is the generic raw restore) | **UNCONFIRMED** subfields. This is the span after the movie-context pointer. |
 | G7 | 13 dwords at `0xDB4CC` | `0xE878D`; set `0xEF347`, clear `0xEF375` | `0xEF39B` | Bitmap indexed by argument / 32 and argument & 31. Game-facing labels of individual bits are **UNCONFIRMED**. |
 | G8 | 91 bytes at `0x22518` | `0xE87A9` | Menu callers `0xB94F3`, `0xB95A5` | Input/overlay context used by menu open and close. Individual saved fields **UNCONFIRMED**. |
 | G9 | byte per 91-byte definition | `0xE87C3`; set at `0x95697` | `0x9567B–0x956AB` | Bit 0 records that the per-definition branch has already run. The updater computes the row from the definition pointer difference ÷ 91. Other bits are **UNCONFIRMED**. |
@@ -121,7 +121,7 @@ Both loaders apply section-specific fixups after the read
 | L3/4, L5/6 | 0x1C-byte headers and 8-byte arrays | `0x9CC23–0x9CC3B`, `0x9CC78–0x9CC88` | `0x64745`, `0x6474D`, `0xA0523` | Two arrays with allocation, cursor and count fields. Roles of each 8-byte element **UNCONFIRMED**. |
 | L7/8, L9/10 | Two event-data and command-stream pairs | `0x9CF06/0x9CF4B`, `0x9CF90/0x9CFD5` | `0xF2D5C`, `0xAD89E–0xAD8AD`, `0xB71BC–0xB71C7` | Region-side data/commands, and object-side data/commands. Section 9 supplies the placed-item event lists. |
 | L11, L13, L14 | Vertex, secondary region and wall rows | `0xE8AB4`, `0xE8B09`, `0xE8B3A` | `0x5FD1E`, `0x63207`, `0x1147F8` | The level arrays described in [geometry](formats/geometry.md). |
-| L15 | 12-byte rows | `0xE8B5D` | `0xE2AD3–0xE2AE2` | A u16 index selects a row and the initializer installs its address at +4 of an audio-side record. Row semantics **UNCONFIRMED**. |
+| L15 | 12-byte rows | `0xE8B5D` | `0xE2AD3–0xE2AE2` | A u16 index selects a row (index × 12 at `0xE2ACC`, although the selector reports stride 8) and the initializer installs its address at +4 of an audio-side record. Row semantics **UNCONFIRMED**. |
 | L18 | secondary element pool | `0x9D254`, `0xE8BD3` | `0xADEDC`, `0xEA133` entry 18 | Separate pool from L21 actors, with pointer adjustments at `0xE9A1E`. Game-facing role **UNCONFIRMED**. |
 | L20/L23 | offset-selected bytes | `0x5B7CD`, `0x63151` | `0x5DA2A`, `0x644A6` | Controls and movables select the byte address by adding their u16 +0x36. Full row formats **UNCONFIRMED**. |
 | L26/L27 | 24-byte and 8-byte rows | `0xE8CF2`, `0xE8D1F` | `0xA053E`, `0xA0553` | Frame update takes each table pointer with its count. Detailed fields **UNCONFIRMED**. |
@@ -130,8 +130,8 @@ Both loaders apply section-specific fixups after the read
 | L34 | dword at `0x96A28` | `0xA65D3/0xA65F6` | `0xAAC06–0xAAC59` | Optional pointer to a row in `[0x22D1C]`, chosen by the command's u16 +6 or cleared by 0xFFFF. Consumer uses row position and its +6 reach byte. |
 | L35 | 16 eight-byte rows at `0x969A8` | `0xE8E12`, `0xA20D2` | `0xAAED6`, `0xABF02` | **UNCONFIRMED** gameplay identities. |
 | L36 | dynamic effect object pool | `0x9CCA8–0x9CCB0` | `0x10A7ED–0x10A7F4`, `0x10BE79–0x10BE80` | Pool receiving the effect instances. Internal object fields vary by vtable. |
-| L37–40 | limit, step, animation byte copy, selected pointer | `0x10A587`, `0x10A94A`, `0x10A953`, `0x10A5AC` | `0x10A832`, `0x10A838`, `0x10A9C8`, `0x10A804` | Effect-8 path. Its step counter is compared to the loaded animation limit and advances with effect +0x56. |
-| L41–44 | limit, step, animation byte copy, selected pointer | `0x10BBF8`, `0x10BFF9`, `0x10C028`, `0x10BC1D` | `0x10BEBE`, `0x10BEC4`, `0x10C0A0`, `0x10BE90` | Parallel effect path. The update compares the step to the limit and exits when the step reaches it or the target is absent. |
+| L37–40 | limit, step, animation byte copy, selected pointer (role names **UNCONFIRMED**) | `0x10A587`, `0x10A94A`, `0x10A953`, `0x10A5AC` | `0x10A832`, `0x10A838`, `0x10A9C8`, `0x10A804` | Effect-8 path. Its step counter is compared to the loaded animation limit and advances with effect +0x56. |
+| L41–44 | limit, step, animation byte copy, selected pointer (role names **UNCONFIRMED**) | `0x10BBF8`, `0x10BFF9`, `0x10C028`, `0x10BC1D` | `0x10BEBE`, `0x10BEC4`, `0x10C0A0`, `0x10BE90` | Parallel effect path. The update compares the step to the limit and exits when the step reaches it or the target is absent. |
 | L45/L48 | effect admission state | `0x10F068`, `0x10F6A4` | `0x10F661`, `0x10F66E` | Inputs to the effect-2 constructor gate. |
 | L46/L47 | link and flag dwords | `0x10C2B7`, `0x10D31C` | `0x10C2AC`, `0x10D301` | Subsequent effect branches read a link and test a flag for zero. The full lifecycle is **UNCONFIRMED**. |
 | L49 | dword | `0x1060A8/0x106308` | `0xA8FC0`, `0x106300` | Count incremented and decremented by an effect family. |
@@ -147,9 +147,14 @@ Both loaders apply section-specific fixups after the read
 The unresolved cells above were traced through the on-disk selectors and
 read branches first. To settle the remaining field names, follow the
 cited consumer to its vtable or event dispatch, then compare a pair of
-original saves around one instance of that effect. For the unused-looking
-header tail, trace writes into the 0x25A-byte buffer before `0xE7CF1`
-and reads from its match at `0xE687E`.
+original saves around one instance of that effect. For the header
+tail: the writer region `0xE7740–0xE7CF6` has no direct store to buffer
++0x20A…+0x259, and the push of 0x25A at `0xE788C` feeds the file write
+`0x118BEC`, not a buffer clear, so those 80 bytes may be uninitialised
+stack; compare the tails of two saves written in one session to tell
+stack residue from data.
 
-Run `python3 tools/lol2_save_native.py --check --data /path/to/DAT`
-to re-read the original selector, read, write and timer witness instructions.
+`python3 tools/lol2_save_native.py --check --data /path/to/DAT` (part of
+`check_all.py`) re-reads eight selector arms (G4, 7, 9, 10 and L7, 9, 36,
+60), the writer and loader route calls and the timer witness
+instructions; the other table cells are cited, not machine-checked.
