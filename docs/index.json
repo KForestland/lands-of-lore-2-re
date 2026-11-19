@@ -382,6 +382,18 @@
       "tools": []
     },
     {
+      "path": "docs/ROUND_TRIP.md",
+      "title": "Round-trip proof for LoL2",
+      "answers": [],
+      "question_references": [],
+      "tools": [
+        "tools/check_all.py",
+        "tools/lol2_mix_writer.py",
+        "tools/lol2_save_writer.py",
+        "tools/lol2_westwood_writer.py"
+      ]
+    },
+    {
       "path": "docs/START_HERE.md",
       "title": "Start here, by goal",
       "answers": [],

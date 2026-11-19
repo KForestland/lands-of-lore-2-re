@@ -25,7 +25,7 @@ These are counts of work done, not a percentage of how complete the project is. 
 
 <!-- rating:begin -->
 - **Files read:** 83 of 83 files in `DAT` (1,915.6 of 1,915.6 MiB) have their whole layout read by a tool here: every byte belongs to a known header, directory, entry, chunk, segment or resource, or to zero padding between them; the DOS part of `SETUP.EXE` is counted by its length (what is inside an entry may still be only partly understood).
-- **Rules traced:** the pages mark 722 statements CONFIRMED (proved from the program code or the files) and 173 UNCONFIRMED (a reading not yet proved), on 117 current pages; old notes kept as history are not counted.
+- **Rules traced:** the pages mark 725 statements CONFIRMED (proved from the program code or the files) and 173 UNCONFIRMED (a reading not yet proved), on 118 current pages; old notes kept as history are not counted.
 - **Seen in the running game:** 4 of 9 probes that need the original game running are answered (a question can have more than one probe); 0 of them rest on edited saves only.
 - **Open questions:** 20 numbered questions: 5 answered, 14 mostly answered, 1 partly answered.
 <!-- rating:end -->
@@ -74,7 +74,7 @@ What you can look at with your own copy of the game. Run from the clone with `ex
 
 ## What you get
 
-[Walk through one level from its map to its exit](docs/TOUR.md). Search the [JSON documentation index](docs/index.json) by page, question or tool.
+[Walk through one level from its map to its exit](docs/TOUR.md). Search the [JSON documentation index](docs/index.json) by page, question or tool. What each format writer proves, byte-identical or decode-identical, is on one page: [round trip](docs/ROUND_TRIP.md).
 
 - **Format and engine pages** in [`docs/`](docs): archives, level scripts, level geometry, walls and textures, items, sound, music and movies. Short pages, one per format with worked examples: [`docs/formats/`](docs/formats/README.md). One sheet per level, generated from the level archives: [`docs/levels/`](docs/levels/README.md).
 - **Tools** in [`tools/`](tools/README.md): archive reader, name hashing, decompressors, entity and level analysers, audio and video decoders, and the wall and level-geometry tools in `tools/history/draracle/`.
