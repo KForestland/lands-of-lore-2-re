@@ -1,12 +1,22 @@
 # Cookbook
 
-Seven short recipes. Each one uses the tools on your own copy of the original game. Run them from the clone after:
+Each recipe uses the tools on your own copy of the original game. Run them from the clone after:
 
 ```bash
 export LOL2_DAT=/path/to/your/LOL2/DAT
 ```
 
 Pictures, MIDI and written sheets go outside the clone. The examples use `../lol2-out`. A save slot is a game-written player save: a file the game wrote when you saved.
+
+## Write a full report
+
+```bash
+python3 tools/full_report.py --data "$LOL2_DAT" --out ../lol2-out/report
+```
+
+The tool writes `inventory.tsv` with the files in `DAT`, their sizes, the reader used and its result. For an archive, `complete` describes its directory and payload spans.{1: '', 2: ' The two copies of the credits table have separate rows.', 3: ' The report labels the shipped cache seed and PHT files as repeated blocks when the byte-pattern checks pass.'} Open `levels/README.md` for the level sheets. `text-counts.tsv` gives one count per table from the localized and movie archive tables and the shipped loose TRRs.
+
+Choose an output folder outside the game and clone. Use a fresh folder for each report.
 
 ## Draw a level schematic
 
