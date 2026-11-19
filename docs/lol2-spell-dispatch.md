@@ -350,11 +350,11 @@ in the player pool ([release call `0x96FDD`](lol2-item-handlers.md)).
 This exercises use of a lesson whose acquisition ID was already present.
 
 **CONFIRMED for this action.** The little-endian dword at player
-+0x185 was zero at the six traced sites from the handler entry through the effect request, including the cursor lookup at `0x77ACC`. A 20-second hardware watch
-covering the input and following updates saw no value change, and
-the countdown and expiry sites at `0xD2E45`, `0xD2E57` and
-`0xD2E61` were idle. The post-action player read still gave +0x185=0
-and form +0x1AB=0. This lesson use yielded its own feedback without
++0x185 was zero at the six traced sites from the handler entry through the effect request, including the cursor lookup at `0x77ACC`. In a separate run of the
+same restore, a hardware write watch on +0x185 ended without a hit;
+its duration was not recorded. No breakpoints were set at the
+countdown and expiry sites (`0xD2E45–0xD2E61`) in either run, and
+form +0x1AB was not read. This lesson use yielded its own feedback without
 arming timed message 0x26 during the observed interval.
 
 **UNCONFIRMED.** The first nonzero producer of +0x185 remains

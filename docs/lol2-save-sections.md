@@ -205,15 +205,19 @@ Sections 31/32 describe a separate pool.
 
 **CONFIRMED.** A new DOS 1.30 game in a disposable copy,
 with one instance on a private Xvfb display and null audio,
-was walked into L1_DC and saved with F8. The slot used for the pair was taken at the item after
-reloading that run. With an empty cursor, a left click on the loose
+was walked into L1_DC to the loose floor item. The before and after
+slots are copies of the game's own autosave slot (below). With an empty cursor, a left click on the loose
 floor sprite took placement row 16. The row starts at
 `L1_DC.MIX+0x6FBFCE`. Its +0x20 identity is `0xA4C5CBD3`, and its
 +0x24 instance input is zero. The live row at `0x1128C304` held
 the same definition identity (+0x2C indirection then definition +0x18).
 It had the original X/Z pair of −2275/5173 and event-list offset
 0x1ADA, identifying the eighth placement with this identity in
-shipped file order (rows 9–16).
+shipped file order (rows 9–16). The live identity lookup at
+`0x9EB5C` met the eight live rows with this identity in the same
+order, and `0x1128C304` was again the eighth, so the shipped and live
+rows agree. The older plan's breakpoint at `0x93FBC` was not hit in
+this run; the match comes from the `0x9EB5C` lookup.
 At `0x95A64` the row went to the player object. At `0x95A99`
 the allocator returned `0x102F54EC`, the first player element.
 That same world row reached the reusable-flag store at `0x9412C`.

@@ -30,8 +30,9 @@ In a separate restore of the same slot, taking the handler-34 lesson
 and pressing W reached acquisition ID 4 at `0x96FEC`. Its return
 of zero at `0x96FF4` shows that ID 4 was already known. This
 path spawned the feedback effect at `0x97028`.
-Player +0x185 stayed zero at the traced sites and through the
-20-second watch. The expiry call at `0xD2E61` did not run.
+Player +0x185 stayed zero at the six traced sites, and a separate
+write watch on it ended without a hit (duration not recorded).
+The expiry sites were not traced.
 [Lesson, feedback and slot evidence](lol2-spell-dispatch.md#controlled-use-of-the-level-20-lesson)
 
 **UNCONFIRMED.** Which gameplay action arms the timer. Arm a write
