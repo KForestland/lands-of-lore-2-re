@@ -2,7 +2,7 @@
 
 **What:** Westwood's archive format. Almost all game data sits in MIX files: 81 in `DAT/` (levels, rooms, global data) and 6 in the game folder next to `DAT/` (`LOCAL.MIX`, `LOCALLNG.MIX`, `DMUSIC.MIX`, `SETUP.MIX`, `GLOBAL.MIX`, which is a byte-identical copy of `DAT/GLOBAL.MIX`, and `CACHEBAK.MIX`). Entry names are not stored; each entry is found by a 32-bit key computed from its name ([name hash](#keys)). The installer also ships `CDCACHE.LS_` beside those archives. `CDCACHE.MIX` and `CDCACHE.LST` are written when the game runs.
 
-**Read:** the English GOG release (88 archives). Tools: `tools/lol2_mix_parser.py`, `tools/lol2_source_format.py` (strict reader), `tools/lol2_westwood_hash.py`.
+**Read:** the English GOG release (88 archives). Tools: `tools/lol2_mix_parser.py`, `tools/lol2_source_format.py` (strict reader), `tools/lol2_westwood_hash.py`, `tools/lol2_mix_writer.py` (writer).
 
 ## Layout
 
@@ -26,6 +26,17 @@ All little-endian. The file is exactly 6 + 12n + data size bytes; entries lie in
 | `sphere1\l3_dh\l3_dh.te_` | 2 | 41,496,585 | 10,799,733 |
 
 The same three offsets appear in the allocator rows of this copy: the [native initializer](../lol2-cache-initializer.md) puts a 4-byte marker at file offset 66 and 25-byte rows from offset 70. A fourth record on this copy, at file offset 52,296,318 for 37,703,682 bytes, is not a state-2 name. The shipped `CDCACHE.LS_` pointers and lengths are not these values: its `l1_dc` pointer is 5,066, and its `l20_bb` length is 27,801,780. Another written copy (the reference installation, files dated 2026-04-04) differs: two state-2 records, `l1_dc` at 5,070 and `l20_bb` at 13,045,474, and its third 25-byte record is (41,496,585, 48,503,415). These numbers differ between copies. The [native initializer](../lol2-cache-initializer.md) identifies the marker, allocator row layout and 15 shipped lengths. The parser in `tools/history/draracle/lol2_cache_named_wall_fixture.py` reads the 256-byte records.
+
+## Writing
+
+`tools/lol2_mix_writer.py` writes an archive from (key, offset, payload) rows and the data size: the index rows in the order given, then the data with each payload at its offset and any byte no row covers set to zero. It rejects a row outside the data and two rows that overlap.
+
+**CONFIRMED** on the 87 shipped archives: `lol2_mix_writer.py --check --data DAT/` reads each archive, writes it again from its own rows in memory and compares. All 81 in `DAT/` and the 6 shipped ones beside it are byte-identical, 3,463 rows, and the strict reader sees the same rows in the copy. Nothing is written to disk. Two measurements on the same 87 archives (independent script over `lol2_mix_parser.read_mix_with_hashes`, 2026-11-19):
+
+- **Row order is not data order.** Rows follow signed key order (above); the payloads sit in another order in 82 of the 87 archives, so a writer must keep each row's offset and may not lay payloads out in row order. `DAT/L1_DC.MIX` in the [worked example](#worked-example) is one: entry 2 is the first in the data.
+- **No vacant bytes.** No row is empty, no two rows overlap, there is no gap between payloads, the first starts at data offset 0 and the last ends at the data size: the check prints 0 zero-padding bytes. The writer's zero fill is therefore exercised only by the synthetic test (`tests/test_round_trip.py`, a gap before, between and after two out-of-order rows), not by shipped data.
+
+`CDCACHE.MIX` is left out of the check. The game writes it when it runs, and its contents depend on that run (below), so it is not an original to compare against.
 
 ## Keys
 

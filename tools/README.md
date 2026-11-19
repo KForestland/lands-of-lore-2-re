@@ -80,7 +80,7 @@ Run each `--check` and print one line each, then a summary.
 $ python3 tools/check_all.py | sed -n '1,2p;$p'
 CHECK repo_guard: N tracked files; game files, media, stray images, files over 300 KB, machine paths, words from the local list, or commit identities: none (0); private word list: not present, skipped
 CHECK mix: 81 MIX files, 2905 entries; this reader and lol2_source_format.parse_mix agree and every entry lies inside its file: 81/81; index sorted by signed key: 81/81 (by unsigned key: 20); bad=none
-ALL 36 CHECKS PASSED
+ALL 37 CHECKS PASSED
 ```
 
 ### `doc_links.py`
@@ -371,6 +371,8 @@ CHECK repo_guard: N tracked files; game files, media, stray images, files over 3
 ### Container & Compression
 - `lol2_mix_parser.py` — shared Westwood MIX container parser (imported by other tools, also usable standalone)
   - example: `python3 tools/lol2_mix_parser.py --help`
+- `lol2_mix_writer.py` — writes a MIX archive from (key, offset, payload) rows; `--check` rebuilds the 81 `DAT/` archives and the 6 shipped game-folder archives in memory and compares them byte for byte (`CDCACHE.MIX` is skipped, the game writes it; [MIX writing](../docs/formats/mix.md#writing))
+  - example: `python3 tools/lol2_mix_writer.py --check --data /path/to/LoL2/DAT`
 - `lol2_decompress_westwood.py` — Westwood LZ77 decompressor. The function is at VA `0x158D58`. No size-prefixed MIX entry decodes with it; the buffers of its eleven callers are mapped and `options.shp` uses it, other source files are open ([Q1](../docs/OPEN_QUESTIONS.md))
   - example: `python3 tools/lol2_decompress_westwood.py --help`
 - `lol2_decompress_sphere.py` — reads the `options.shp` interface shapes in `LOCAL.MIX` entry 1 ([shape format](../docs/formats/room-sections.md))

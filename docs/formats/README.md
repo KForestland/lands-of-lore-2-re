@@ -4,7 +4,7 @@ Each page: what the file is, its layout, a worked example with real bytes from t
 
 | Page | Files | Tool | State |
 |------|-------|------|-------|
-| [mix.md](mix.md) | `*.MIX` | `lol2_mix_parser.py`, `lol2_westwood_hash.py` | CONFIRMED on all 87 shipped archives (signed key order); `CDCACHE.MIX` is run-time state; the shipped files are `CACHEBAK.MIX` and `CDCACHE.LS_` (Q20) |
+| [mix.md](mix.md) | `*.MIX` | `lol2_mix_parser.py`, `lol2_westwood_hash.py`, `lol2_mix_writer.py` | CONFIRMED on all 87 shipped archives (signed key order; each rebuilds byte for byte); `CDCACHE.MIX` is run-time state; the shipped files are `CACHEBAK.MIX` and `CDCACHE.LS_` (Q20) |
 | [level-data.md](level-data.md) | level data entry in `L<n>_<xx>.MIX` | `lol2_source_format.py`, `lol2_export_scripts.py` | header tables CONFIRMED on 3 levels; rest open (Q4, Q5) |
 | [texture-container.md](texture-container.md) | `<LEVEL>.TE_` | `lol2_texture_container.py` | raw flags and movie-name records CONFIRMED; non-raw payloads open, layout unknown (Q14) |
 | [room-sections.md](room-sections.md) | `LOCAL.MIX` entry 1 | `lol2_decompress_sphere.py` | 39 `options.shp` shapes, including two stored, CONFIRMED (Q2) |
