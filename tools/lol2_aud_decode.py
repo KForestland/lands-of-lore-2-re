@@ -302,10 +302,10 @@ def check(data_dir):
 
 def main():
 
-    parser = ReaderArgumentParser(description="Decode Westwood AUD audio from LoL2 MIX files")
+    parser = ReaderArgumentParser(description="Read Westwood AUD audio files or AUD entries in original LoL2 MIX archives.")
     parser.add_argument("mixfile", nargs="?", help="MIX filename (resolved relative to LOL2_DAT)")
     parser.add_argument("entry", nargs="?", type=int, default=0, help="Entry index (default: 0)")
-    parser.add_argument("-o", "--output", default=None, help="Output WAV file (default: auto-named)")
+    parser.add_argument("-o", "--out", "--output", help="write a WAV to this file")
     parser.add_argument("--raw", action="store_true", help="Treat input as raw AUD file, not MIX")
     parser.add_argument("--info", action="store_true", help="Print header info only, don't decode")
     parser.add_argument("--list", action="store_true", help="List MIX entries and probe AUD headers")
@@ -314,6 +314,8 @@ def main():
     parser.add_argument("--data", default=os.environ.get("LOL2_DAT", "."), help="folder with the MIX files (default $LOL2_DAT)")
 
     args = parser.parse_args()
+    if args.out and (args.check or args.info or args.list):
+        parser.error("--out is only for conversion to WAV")
     if args.check:
         return check(args.data)
     if not args.mixfile:
@@ -370,18 +372,12 @@ def main():
     print(f"  Duration:     {duration:.1f}s")
     print(f"  Entry size:   {len(aud_data)} bytes")
 
-    if args.info:
+    if not args.out:
         return
 
-    print(f"\nDecoding...")
+    out_path = lol2_cli.refuse_repo_output(args.out)
+    print("\nDecoding...")
     hdr, pcm, chunk_count = decode_aud(aud_data)
-
-    # Determine output filename
-    if args.output:
-        out_path = args.output
-    else:
-        base = os.path.splitext(os.path.basename(mix_path))[0]
-        out_path = f"{base}_entry{args.entry}.wav"
 
     write_wav(out_path, pcm, hdr["sample_rate"], channels, sample_width)
 

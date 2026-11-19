@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-"""Westwood LZ77 decompressor for Lands of Lore 2.
+"""Read and decode a LoL2 Westwood LZ77 payload.
+
+Westwood LZ77 decompressor for Lands of Lore 2.
 Reverse-engineered from LOLG.DAT disassembly.
 
 Command format:

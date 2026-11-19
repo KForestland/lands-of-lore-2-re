@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run the LoL2 repository checks against an original DAT folder; one line each.
+"""Read an original LoL2 DAT folder and run the repository checks.
 
   check_all.py --data /path/to/LoL2/DAT     # or set $LOL2_DAT
 Exit code 0 when all pass. Tools that read DOSBox traces run a self-test instead.
@@ -22,6 +22,7 @@ TOOLS = ["repo_guard", "lol2_mix_parser", "lol2_source_format", "lol2_disassembl
 def main():
     ap = ReaderArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--data", default=os.environ.get("LOL2_DAT"), required=os.environ.get("LOL2_DAT") is None)
+    ap.add_argument("--check", action="store_true", help="run all checks (the default)")
     a = ap.parse_args()
     here = os.path.dirname(os.path.abspath(__file__))
     failed = []

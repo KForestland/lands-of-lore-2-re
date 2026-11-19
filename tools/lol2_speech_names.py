@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Spoken-line name format and the category switch.
+"""Read LoL2 cue tables, speech names and native switch code.
 
 --data is the game DAT folder, or $LOL2_DAT. LOLG.DAT sits in the parent of
 that folder. --check re-reads the format bytes, the switch, the eight arms,

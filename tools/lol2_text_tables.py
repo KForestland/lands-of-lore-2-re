@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Message tables: the TRR layout the executable loads by name.
+"""Read the TRR message tables the LoL2 executable loads by name.
 
 --data is the game DAT folder, or $LOL2_DAT. LOCALLNG.MIX and the loose
 TRR files sit in the parent of that folder. MOVIES.MIX, TEXT.MIX and

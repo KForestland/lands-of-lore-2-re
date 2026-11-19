@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""The executable's item label table and the definitions it names.
+"""Read LoL2 executable item labels and the definitions they name.
 
 --data is the game DAT folder, or $LOL2_DAT; LOLG.DAT sits in its parent and
 GLOBAL.MIX in the folder. LOLG.DAT data offset 0xC610 holds 74 pairs of

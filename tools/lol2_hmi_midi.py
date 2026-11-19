@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""HMI-MIDISONG scores in LOCAL.MIX, converted to standard MIDI in memory.
+"""Read HMI-MIDISONG scores in LOCAL.MIX and convert them to MIDI.
 
 --data is the game DAT folder, or $LOL2_DAT. LOCAL.MIX and LOLG.DAT sit in
 the parent of that folder. --check walks all 33 songs, builds one standard

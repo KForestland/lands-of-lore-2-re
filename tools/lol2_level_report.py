@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Write one Markdown sheet per LoL2 level from the original level archives.
+"""Read the LoL2 level archives and write Markdown level sheets.
 
 For each level archive DAT/L<n>_<xx>.MIX (and its companion L<n>_<xx>I.MIX) the
 sheet lists, all read from the files:

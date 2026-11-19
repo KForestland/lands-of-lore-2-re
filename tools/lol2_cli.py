@@ -11,12 +11,14 @@ import os
 DEFAULT_DATA = os.environ.get("LOL2_DAT")
 
 
-def tool_args(doc, data=True, out_help="write the result here (default: print only)"):
+def tool_args(doc, data=True, out_help="write the result here (default: print only)",
+              *, out_aliases=(), writes=True):
     ap = ReaderArgumentParser(description=doc, formatter_class=argparse.RawDescriptionHelpFormatter)
     if data:
         ap.add_argument("--data", default=DEFAULT_DATA, required=DEFAULT_DATA is None,
                         help="the game's DAT folder (default: $LOL2_DAT)")
-    ap.add_argument("--out", help=out_help)
+    if writes:
+        ap.add_argument("--out", *out_aliases, help=out_help)
     ap.add_argument("--check", action="store_true", help="run the tool's check and print one CHECK line; exit 1 on failure")
     return ap
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""LoL2 entity field semantic analyzer.
+"""Read 147-byte definition records from LoL2 level archives.
 
 Scans all level MIX files for entity records (147 bytes: 135-byte body +
 12-byte ASCII tag), extracts the first 24 u16 words (fields f0-f23), and

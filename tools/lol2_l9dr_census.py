@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-"""
+"""Read L9_DR.MIX in 147-byte slots for an exploratory census.
+
+
 LoL2 L9_DR.MIX static census (EXPLORATORY: it reads the whole archive as
 147-byte records from offset 0, ignoring the MIX structure; for the real
 entity records use lol2_entity_field_analyzer.py, which finds their region).

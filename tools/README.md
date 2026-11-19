@@ -422,3 +422,17 @@ CHECK repo_guard: N tracked files; game files, media, stray images, files over 3
 - [`lol2_cli.py`](lol2_cli.py) — Shared rules for paths and explicit outputs
 - [`lol2_numbers.py`](lol2_numbers.py) — Generates and compares the item, spell, creature and form tables
 - [`rating.py`](rating.py) — Recomputes the counted README and status summaries
+
+## Command-line conventions
+
+Set `LOL2_DAT` or pass `--data` for the original game's DAT directory. Run `--help` for the tool's inputs and modes. Use `--check` for the available read-only validation and `--out` to write a result to a path you choose. Read-only listings print to stdout. `check_all.py` runs the whole suite by default. `doc_links.py` and `repo_guard.py` use repository files and need no game data.
+
+| Difference | Why it remains |
+|---|---|
+| `LOL2_DAT`, where LoL1 uses `LOL1_DATA` and LoL3 uses `LOL3_DAT` | Each name follows the game's own folder: LoL1 keeps its files in `DATA`, LoL2 and LoL3 in `DAT`. Shells and scripts already set these names. |
+| A positional archive, executable, save or clip | File tools can inspect one input without a full install. `lol2_parse_le.py` also accepts `LOL2_EXE` for a named program copy. |
+| `--mix` under a texture subcommand | The unpacked bank is selected from one archive. The top-level `--check` scans the whole DAT folder. |
+| `--trace` and `--baseline` | The input is a previously recorded trace or a specific game-written level baseline. |
+| `--summary` for script notes | Summaries contain the checked-in excerpts. `--out` selects the full external listings. |
+| `lol2_aud_decode.py` without `--out` | It prints the AUD header and writes nothing. Before, it wrote `<archive>_entry<N>.wav` into the current folder. A WAV is now written only to an explicit `--out` path, like every other tool. |
+| Older output flags and positional arguments | Old spellings are kept as aliases and shown in `--help`. `lol2_aud_decode.py --output`, `lol2_sound_bank.py --extract`, the image check's `--out-dir` and legacy exporter positional paths still work. The [historical helpers](history/README.md) retain their original switches, including the cave pipeline's `--game-root` for pinned inputs. |

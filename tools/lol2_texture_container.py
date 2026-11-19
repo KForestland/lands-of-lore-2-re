@@ -617,25 +617,19 @@ def check(data_dir):
 
 
 def main(argv=None):
-    argv = sys.argv[1:] if argv is None else list(argv)
-    if "--check" in argv or (argv[:1] == ["check"]):
-        parser = ReaderArgumentParser(description=__doc__,
-                                         formatter_class=argparse.RawDescriptionHelpFormatter)
-        parser.add_argument("--data", default=os.environ.get("LOL2_DAT"),
-                            help="the game's DAT folder (default: $LOL2_DAT)")
-        parser.add_argument("--check", action="store_true")
-        parser.add_argument("check_word", nargs="?")
-        args = parser.parse_args(argv)
-        if not args.data:
-            parser.error("--data or $LOL2_DAT is required")
-        return check(args.data)
     parser = ReaderArgumentParser(description=__doc__,
-                                     formatter_class=argparse.RawDescriptionHelpFormatter)
-    sub = parser.add_subparsers(dest="command", required=True)
+                                  formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument("--data", default=os.environ.get("LOL2_DAT"),
+                        help="the game's DAT folder (default: $LOL2_DAT)")
+    parser.add_argument("--check", action="store_true", help="check the texture banks in all original levels")
+    sub = parser.add_subparsers(dest="command")
+    legacy = sub.add_parser("check", help="alias for --check")
+    legacy.add_argument("--data", default=argparse.SUPPRESS, help="the game's DAT folder")
     for name, fn in (("info", cmd_info), ("material", cmd_material),
                      ("export", cmd_export), ("blob", cmd_blob)):
-        p = sub.add_parser(name)
-        p.add_argument("--mix", required=True, help="level MIX from your own install, e.g. ./lol2_game/DAT/L1_DC.MIX")
+        p = sub.add_parser(name, description="Read a .TE_ texture bank from an original LoL2 level MIX.")
+        p.add_argument("--data", default=argparse.SUPPRESS, help="the game's DAT folder")
+        p.add_argument("--mix", required=True, help="level MIX path or a bare name, e.g. L1_DC.MIX")
         p.add_argument("--level", help="level name if it differs from the MIX file stem")
         p.set_defaults(func=fn)
         if name in ("material", "export"):
@@ -649,6 +643,13 @@ def main(argv=None):
         if name == "blob":
             p.add_argument("--out", required=True, help="output file for the decoded blob")
     args = parser.parse_args()
+    if args.check or args.command == "check":
+        if args.command not in (None, "check") or not args.data:
+            parser.error("--check needs the DAT folder and no other command")
+        return check(args.data)
+    if args.command is None:
+        parser.error("give --check or an inspection command")
+    args.mix = lol2_cli.resolve_input(args.mix, args.data)
     if getattr(args, "out", None):
         lol2_cli.refuse_repo_output(args.out)
     try:

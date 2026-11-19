@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Plot an original LoL2 level's regions, wall sides, portals and placements.
+"""Read LoL2 region, wall, portal and placement rows to draw a map.
 
   lol2_level_schematic.py --data DAT --level 1 --out /tmp/l1.png
   lol2_level_schematic.py --data DAT --level 1 --focus 1029 --radius 450 --out /tmp/door.png

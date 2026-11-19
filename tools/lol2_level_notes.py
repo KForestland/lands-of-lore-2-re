@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Write evidence notes and JSON Lines indexes for original LoL2 level scripts.
+"""Read LoL2 level scripts and write notes and JSON Lines indexes.
 
   lol2_level_notes.py --data DAT --out DIR [LEVEL]   # full group list + JSON Lines rows for your own copy
                                                     # (DIR must be outside the repository; all levels if no LEVEL)

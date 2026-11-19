@@ -15,12 +15,11 @@ See the [opcode reference](lol2-script-opcodes.md) for all handlers and the disa
 ## Running the exporter
 
 ```bash
-python3 tools/lol2_export_scripts.py ./lol2_game L7_DH out/L7_DH.json
-python3 tools/lol2_export_scripts.py ./lol2_game 7 out/L7_DH.json
+python3 tools/lol2_export_scripts.py --data "$LOL2_DAT" L7_DH --out ../out/L7_DH.json
+python3 tools/lol2_export_scripts.py 7 --out ../out/L7_DH.json
 ```
 
-The game root must contain `DAT/`. Pass `-` to use `$LOL2_GAME` (default `./lol2_game`). The output may not
-be written inside the game directory. Exit code 1 means an opcode outside the size table was found; the
+Point `--data` or `LOL2_DAT` at the game's DAT folder. Write the JSON outside the game and repository. Exit code 1 means an opcode outside the size table was found; the
 stream is then listed under `unsupported` and nothing is guessed.
 
 Verified by running (2026-10-31, retail files, all 15 level archives): every stream frames exactly with the

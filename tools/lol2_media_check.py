@@ -519,7 +519,7 @@ def check(dat_dir):
 
 
 def main(argv):
-    parser = tool_args(__doc__)
+    parser = tool_args(__doc__, writes=False)
     args = parser.parse_args(argv)
     if not args.check:
         parser.print_help()

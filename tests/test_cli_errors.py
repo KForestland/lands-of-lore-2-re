@@ -79,3 +79,15 @@ class ReaderErrors(unittest.TestCase):
 
     def test_save(self):
         self.bad_files("SAVE.000", b"short", "lol2_save_header.py", self.data / "SAVE.000")
+
+    def test_aud_only_writes_with_out(self):
+        source = self.data / "A.AUD"
+        source.write_bytes(struct.pack("<HIIBBHHIh", 22050, 10, 2, 2, 99, 2, 2, 0xDEAF, -123))
+        reader = [sys.executable, str(TOOLS / "lol2_aud_decode.py"), "--raw", str(source)]
+        for destination in ([], ["--out", str(self.root / "sample.wav")]):
+            result = subprocess.run(reader + destination, cwd=self.root, env=self.env, capture_output=True,
+                                    text=True, timeout=10)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            if not destination:
+                self.assertEqual(list(self.root.glob("*.wav")), [])
+        self.assertTrue((self.root / "sample.wav").read_bytes().startswith(b"RIFF"))

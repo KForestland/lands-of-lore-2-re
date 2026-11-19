@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Analyze the disarm-rearm trace to identify post-A00F consumers.
+"""Read a disarm and rearm trace to classify field consumers.
 
 Reads guest_trace.jsonl from the disarm-rearm trace run and extracts:
 1. The disarm_rearm event (confirms patch fired)

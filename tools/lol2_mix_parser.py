@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Westwood MIX container parser for Lands of Lore 2.
+"""Read an original LoL2 MIX archive's directory and entries.
 
 MIX format:
   - u16 entry_count

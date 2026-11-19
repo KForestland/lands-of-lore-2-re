@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Draw a top-down schematic map of a LoL2 level from its region polygons.
+"""Read a LoL2 level's region polygons and draw an overhead map.
 
 Reads the vertex and region tables of the level data entry (docs/formats/geometry.md)
 and draws every region as a polygon shaded by floor height (darker = higher),

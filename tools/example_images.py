@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Check that every image the repository shows is exactly what today's tools make from the game files.
+"""Read game files and compare the published LoL2 example images.
 
   example_images.py --data DAT --check            # regenerate each image in a temporary folder and compare pixels
   example_images.py --data DAT --out-dir new/     # write today's versions (to replace stale images)
@@ -47,10 +47,10 @@ def pixels(blob):
 
 
 def main():
-    ap = lol2_cli.tool_args(__doc__, out_help=argparse_suppressed())
-    ap.add_argument("--out-dir", help="write today's versions here")
+    ap = lol2_cli.tool_args(__doc__, out_help="write today's versions to this directory",
+                            out_aliases=("--out-dir",))
     a = ap.parse_args()
-    if not (a.check or a.out_dir):
+    if not (a.check or a.out):
         ap.print_help(); return 2
     shown = sorted(os.path.relpath(os.path.join(d, n), ROOT)
                    for top in ("examples", "docs/images") for d, _, fs in os.walk(os.path.join(ROOT, top))
@@ -58,9 +58,9 @@ def main():
     stale = []
     for path in sorted(IMAGES):
         today = make(a.data, path)
-        if a.out_dir:
-            os.makedirs(a.out_dir, exist_ok=True)
-            with open(os.path.join(a.out_dir, os.path.basename(path)), "wb") as f:
+        if a.out:
+            os.makedirs(a.out, exist_ok=True)
+            with open(os.path.join(a.out, os.path.basename(path)), "wb") as f:
                 f.write(today)
         full = os.path.join(ROOT, path)
         if a.check and (not os.path.exists(full) or pixels(open(full, "rb").read()) != pixels(today)):
@@ -72,10 +72,6 @@ def main():
             return 1
         print(f"CHECK example_images: all {len(IMAGES)} shown images match today's tool output pixel for pixel")
     return 0
-
-
-def argparse_suppressed():
-    return "not used"
 
 
 if __name__ == "__main__":

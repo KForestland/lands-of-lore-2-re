@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Compare the shipped LoL2 cache seed lengths with the 15 original texture banks."""
+"""Read the shipped LoL2 cache seed and original texture banks."""
 import ctypes
 from cli_errors import ReaderArgumentParser, run_cli
 import os

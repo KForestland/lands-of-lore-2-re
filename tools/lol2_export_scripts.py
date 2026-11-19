@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
-"""Export one LoL2 level's native script data as JSON.
+"""Read a LoL2 level's native script data and export it as JSON.
 
-    python3 tools/lol2_export_scripts.py ./lol2_game L7_DH out/L7_DH.json
-    python3 tools/lol2_export_scripts.py ./lol2_game 7 out/L7_DH.json
 
-GAME is the game root (it must contain DAT/L<n>_<xx>.MIX); it is only read.
+    lol2_export_scripts.py --data DAT L7_DH --out ../out/L7_DH.json
+
 LEVEL is an archive stem such as L7_DH, or a level number.
-The game root can also come from the LOL2_GAME environment variable (pass '-').
+Pass --data or set LOL2_DAT to identify the DAT folder.
 
 What is written (see docs/lol2-level-script-format.md):
 - the two command streams, framed with the 37-opcode SIZES table (native
@@ -263,8 +262,7 @@ def export(archive_path, include_items=False):
                        'execution order or timing is claimed.'))
 
 
-def find_archive(game, level):
-    dat = game / 'DAT'
+def find_archive(dat, level):
     if re.fullmatch(r'\d+', level):
         hits = sorted(p for p in dat.glob(f'L{int(level)}_*.MIX') if re.fullmatch(r'L\d+_[A-Z]{2}', p.stem.upper()))
     else:
@@ -276,16 +274,29 @@ def find_archive(game, level):
 
 def main(argv=None):
     parser = ReaderArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument('game', help="game root containing DAT/ (read only); '-' uses $LOL2_GAME or ./lol2_game")
-    parser.add_argument('level', help='archive stem such as L7_DH, or a level number')
-    parser.add_argument('output', type=Path, help='output JSON path')
+    parser.add_argument("--data", type=Path, help="the game's DAT folder (default: $LOL2_DAT)")
+    parser.add_argument("--out", type=Path, help="write JSON to this file")
+    parser.add_argument("level", help="archive stem such as L7_DH, or a level number")
+    parser.add_argument("legacy", nargs="*", help=argparse.SUPPRESS)
     args = parser.parse_args(argv)
-    game = Path(os.environ.get('LOL2_GAME', './lol2_game') if args.game == '-' else args.game).resolve()
-    out = args.output.resolve()
-    if game == out or game in out.parents:
-        parser.error('output must not be inside the game directory')
+    if args.legacy:
+        if args.data or args.out or len(args.legacy) != 2:
+            parser.error("use LEVEL --out FILE or the older GAME LEVEL FILE form")
+        game_arg = args.level
+        game = Path(os.environ.get("LOL2_GAME", "./lol2_game") if game_arg == "-" else game_arg)
+        dat = (game / "DAT").resolve()
+        level, out = args.legacy[0], Path(args.legacy[1]).resolve()
+    else:
+        data_arg = args.data or os.environ.get("LOL2_DAT")
+        if not data_arg or not args.out:
+            parser.error("give --data or set LOL2_DAT and supply --out")
+        dat, level, out = Path(data_arg).resolve(), args.level, args.out.resolve()
+    if dat.parent == out or dat.parent in out.parents:
+        parser.error("give an output path outside the game directory")
+    from lol2_cli import refuse_repo_output
+    refuse_repo_output(out)
     try:
-        data = export(find_archive(game, args.level))
+        data = export(find_archive(dat, level))
     except (OSError, ValueError) as error:
         parser.error(str(error))
     out.parent.mkdir(parents=True, exist_ok=True)

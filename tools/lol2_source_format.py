@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Shared, standard-library-only LoL2 archive and script-command framing.
+"""Read original LoL2 MIX directories and locate their MAP members.
 
 - parse_mix(): strict Westwood MIX reader (u16 count, u32 data size, 12-byte
   key/offset/size rows). Offsets returned are absolute file offsets.
@@ -75,7 +75,7 @@ def main():
     import sys
     sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
     import lol2_cli
-    ap = lol2_cli.tool_args((__doc__ or "") + USAGE)
+    ap = lol2_cli.tool_args((__doc__ or "") + USAGE, writes=False)
     a = ap.parse_args()
     if not a.check:
         ap.print_help()

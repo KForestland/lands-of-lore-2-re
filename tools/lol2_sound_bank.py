@@ -97,7 +97,7 @@ def main():
                         help="LOCALLNG.MIX from your own install: a path, or found next to the DAT folder (--data or $LOL2_DAT)")
     parser.add_argument("--data", default=os.environ.get("LOL2_DAT"), help="the game's DAT folder (default $LOL2_DAT)")
     parser.add_argument("--json", action="store_true", help="print rows as JSON")
-    parser.add_argument("--extract", metavar="DIR", help="write raw AUD clips to DIR")
+    parser.add_argument("--out", "--extract", metavar="DIR", help="write raw AUD clips to DIR")
     parser.add_argument("--index", type=int, action="append",
                         help="row index to extract (repeatable; default all)")
     args = parser.parse_args()
@@ -122,9 +122,9 @@ def main():
             print(f"{r['index']:5d}  {r['name']:<14s} {r['size']:9d}  {detail}")
         print(json.dumps(summary, indent=2))
 
-    if args.extract:
+    if args.out:
         wanted = set(args.index) if args.index else None
-        out = Path(args.extract)
+        out = Path(lol2_cli.refuse_repo_output(args.out))
         out.mkdir(parents=True, exist_ok=True)
         written = 0
         for r in clips:

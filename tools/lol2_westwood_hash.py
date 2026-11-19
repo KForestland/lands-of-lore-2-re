@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Westwood Studios MIX file hash functions.
+"""Hash a supplied resource name or verify the original MIX keys.
 
 Implements the hash algorithms used by Westwood's MIX archive format across
 different engine generations:

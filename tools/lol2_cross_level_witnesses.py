@@ -144,7 +144,7 @@ def main():
     ap = lol2_cli.tool_args((__doc__ or "") + """
   lol2_cross_level_witnesses.py [--data DAT]   # tables of B_HUMAN and WORM records
   lol2_cross_level_witnesses.py --check        # every listed level archive yields its records
-""")
+""", writes=False)
     a = ap.parse_args()
     dat_dir = a.data
 

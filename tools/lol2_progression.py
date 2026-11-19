@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Level-to-level table for Lands of Lore 2, from the exit commands.
+"""Read LoL2 level scripts to tabulate each exit and its guard.
 
 Each row is one level-transition command (bytes 02 01 00 00 1c). The slots
 column is the kind-19 predicate on the one event that names that command's

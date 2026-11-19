@@ -87,24 +87,29 @@ def segment_type(flags):
 
 def main():
     parser = ReaderArgumentParser(
-        description="Inspect DOS4GW LE headers and objects. Export segments only with an explicit output folder."
+        description="Read the DOS4GW LE headers and objects in the original LOLG.DAT."
     )
     parser.add_argument(
         "exe_path", nargs="?",
-        default=os.environ.get(
-            "LOL2_EXE",
-            "lol2_game/LOLG.DAT"
-        ),
-        help="Path to LOLG.DAT (default: $LOL2_EXE or ./lol2_game/LOLG.DAT)"
+        help="path to LOLG.DAT (default: $LOL2_EXE or the program beside DAT)"
     )
     parser.add_argument(
         "output_dir", nargs="?",
         help="legacy positional output directory"
     )
+
+    parser.add_argument("--data", help="the game's DAT folder (default: $LOL2_DAT)")
     parser.add_argument("--out", help="explicit directory for segment files")
     args = parser.parse_args()
 
     input_file = args.exe_path
+    if args.data and not input_file:
+        input_file = os.path.join(os.path.dirname(os.path.realpath(args.data)), "LOLG.DAT")
+    if not input_file:
+        data = os.environ.get("LOL2_DAT")
+        input_file = os.environ.get("LOL2_EXE") or (
+            os.path.join(os.path.dirname(os.path.realpath(data)), "LOLG.DAT") if data else "lol2_game/LOLG.DAT"
+        )
     if args.out and args.output_dir:
         parser.error("use only one output directory")
     output_dir = args.out or args.output_dir

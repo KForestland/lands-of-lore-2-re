@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Asset-policy guard: fail if the repository tracks game files or game media.
+"""Read the tracked files and verify the repository's asset policy.
 
 The repository may hold documentation, tools, small data tables and a few
 images made by the tools in examples/ and docs/images/. This check lists the
