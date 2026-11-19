@@ -122,4 +122,59 @@ sum 269 and the uncapped `0x86800` at `0xE0C5C`. After the cap at
 
 The counts, samples and sums above (`0x34BF`/`0x34D7`, 63, 246, 269, `0x25`) were observed in one run and are not constants. Because `F` is always a multiple of `0x800` (or exactly `0x80000`), its low byte is zero, so `W = F >> 8` exactly and the 8.8 carry does not change in the positive range.
 
-**UNCONFIRMED.** Not observed in this run: the save-load restore of the three cells, the wall-clock delay across pauses and frame boundaries, and the site that increments the frame index `[0x22CB6]`.
+## Save restore and menu pause
+
+**CONFIRMED.** The level loader asks the same selector as the writer
+(`0xE7418` and `0xE8125`). For an admitted raw XOR section it
+reads the delta with `0x118820` at `0xE74B7`. It XORs dwords and
+then the trailing bytes into the existing level buffer at
+`0xE751D–0xE7521` and `0xE7552–0xE7559`. For section 67 the
+selector returns data `0x22C40`, length `0x51`, flags 3
+(`0xE9123–0xE9137`). The three elapsed cells are therefore
+restored from section offsets +0x14/+0x18/+0x1A by that XOR.
+The adjustment table entry at file `0x1206E4` leads to the
+common return `0xE97AC`. The sample ring starts at `0x22C62`
+and lies inside this section. The index at `0x22CB6` and the
+two carry cells lie outside it: `0xE0149` initializes the index,
+`0xE0A5A–0xE0A67` increments it, and `0xE0BE9` selects its low
+two bits for the ring. The address base used by those instructions
+is `0x227A4`, as passed at `0xA05B8`.
+
+**CONFIRMED.** Sections 61 and 63 save each list header, with
+pointer, capacity and active count at +0/+4/+8
+(`0xB8B54–0xB8B95`, `0xE9142–0xE9198`). Sections 62 and 64
+save their capacity-sized arrays of 32-bit pointers. The loader reads
+those two arrays directly at `0xE765B` and runs their adjustment
+arms at `0xEA077` and `0xEA0C5`. The adjustment is
+`new_base + (saved_pointer - saved_base)` within the matched
+save-header range (`0xEB2EC–0xEB32E`); a zero pointer remains zero.
+The list elements point to event and object records. The service reads
+and updates the countdown at event +8 (`0xB8BD1–0xB8C18`,
+`0xB8CE4`). For example, placed-item event lists come from
+`[0xB7D74] + item.u16(+0x18)` (`0xB71A0–0xB71C5`); their
+countdowns are in the section-9 data overlaid from the saved delta
+(`0xE8A74`, flags 7; read and decompress at `0xE749C`).
+
+**CONFIRMED for the normal menu open and resume branch.**
+The menu at `0xB9204` calls pause at `0xB9321`, dispatches its
+menu loop at `0xB9597`, and calls resume at `0xB96A7`.
+Pause stops both the level clock (`0xA021F`) and the frame clock
+(`0xA023E`). The stop helper consumes the current interval and clears
+the marker (`0x14FAA8–0x14FAB3`). Resume reanchors the level clock
+to the current count at `0xA031A`. It resets the frame accumulator
+to zero at `0xA033D` and reanchors it at `0xA034A`.
+A stopped clock omits the subtraction from its update (`0x14FA80–0x14FA99`);
+reanchoring sets the marker to the new count plus one
+(`0x14FAC3–0x14FAD1`). Thus the menu wall time is excluded from
+the next clock sample. The frame update still uses the existing ring
+samples (`0xE0BE9–0xE0C3E`). The timer service consumes an elapsed
+value only when called (`0xB8BDF–0xB8C21`); the menu loop does
+not directly invoke it.
+
+**UNCONFIRMED in play.** The first resumed delay with the unchanged
+ring history and a particular object countdown. To observe it, open
+and close the normal menu during an active kind-2 countdown. Record
+the same row +8 at `0xB8CE4`, the marker at `0x14FAB3` and
+`0x14FACE`, and the first post-menu sample at `0xE0BE9`.
+For a load, compare the three XOR-restored fields at `0xE7559`
+before the next frame update at `0xE0C5C`.
