@@ -124,16 +124,18 @@ The counts, samples and sums above (`0x34BF`/`0x34D7`, 63, 246, 269, `0x25`) wer
 
 ## Save restore and menu pause
 
-**CONFIRMED.** The level loader asks the same selector as the writer
-(`0xE7418` and `0xE8125`). For an admitted raw XOR section it
+`tools/lol2_save_native.py --check` (part of `check_all.py`) re-reads the instructions cited in this section.
+
+**CONFIRMED.** The level loader (`0xE7418`) asks the same selector `0xE8914`
+as the writer (`0xE8125`). For an admitted raw XOR section it
 reads the delta with `0x118820` at `0xE74B7`. It XORs dwords and
-then the trailing bytes into the existing level buffer at
+then the trailing bytes into the selector's data block at
 `0xE751D–0xE7521` and `0xE7552–0xE7559`. For section 67 the
 selector returns data `0x22C40`, length `0x51`, flags 3
 (`0xE9123–0xE9137`). The three elapsed cells are therefore
 restored from section offsets +0x14/+0x18/+0x1A by that XOR.
-The adjustment table entry at file `0x1206E4` leads to the
-common return `0xE97AC`. The sample ring starts at `0x22C62`
+The adjustment table entry at file `0x1206E4`, dispatched at
+`0xEA137`, leads to the common return `0xE97AC`. The sample ring starts at `0x22C62`
 and lies inside this section. The index at `0x22CB6` and the
 two carry cells lie outside it: `0xE0149` initializes the index,
 `0xE0A5A–0xE0A67` increments it, and `0xE0BE9` selects its low
@@ -158,15 +160,17 @@ countdowns are in the section-9 data overlaid from the saved delta
 **CONFIRMED for the normal menu open and resume branch.**
 The menu at `0xB9204` calls pause at `0xB9321`, dispatches its
 menu loop at `0xB9597`, and calls resume at `0xB96A7`.
-Pause stops both the level clock (`0xA021F`) and the frame clock
-(`0xA023E`). The stop helper consumes the current interval and clears
-the marker (`0x14FAA8–0x14FAB3`). Resume reanchors the level clock
-to the current count at `0xA031A`. It resets the frame accumulator
+Pause stops the clock object `0x22C99` (`0xA021F`) and the frame clock
+`0x22C44` (`0xA023E`). When `[0xB85C]` is nonzero the menu then calls
+`0xE066C(0x227A4, 0x22574)` at `0xB938C`; that pass contains the frame
+update, so it can take one more sample, write one ring slot and restart
+`0x22C44` while the menu is open. The stop helper consumes the current interval and clears
+the marker (`0x14FAA8–0x14FAB3`). Resume reanchors `0x22C99` to the current count at `0xA031A`. It resets the frame accumulator
 to zero at `0xA033D` and reanchors it at `0xA034A`.
 A stopped clock omits the subtraction from its update (`0x14FA80–0x14FA99`);
 reanchoring sets the marker to the new count plus one
-(`0x14FAC3–0x14FAD1`). Thus the menu wall time is excluded from
-the next clock sample. The frame update still uses the existing ring
+(`0x14FAC3–0x14FAD1`). The reset at `0xA033D` is what excludes the menu wall time (and the
+partial frame before the pause) from the next clock sample. The frame update still uses the existing ring
 samples (`0xE0BE9–0xE0C3E`). The timer service consumes an elapsed
 value only when called (`0xB8BDF–0xB8C21`); the menu loop does
 not directly invoke it.
@@ -174,7 +178,7 @@ not directly invoke it.
 **UNCONFIRMED in play.** The first resumed delay with the unchanged
 ring history and a particular object countdown. To observe it, open
 and close the normal menu during an active kind-2 countdown. Record
-the same row +8 at `0xB8CE4`, the marker at `0x14FAB3` and
-`0x14FACE`, and the first post-menu sample at `0xE0BE9`.
+the event +8 countdown (subtracted at `0xB8CE4`), the marker (object +0,
+stored at `0x14FAB3` and `0x14FACE`), and the first post-menu sample at `0xE0BE9`.
 For a load, compare the three XOR-restored fields at `0xE7559`
 before the next frame update at `0xE0C5C`.

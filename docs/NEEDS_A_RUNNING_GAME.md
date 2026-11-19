@@ -140,6 +140,21 @@ selected prop to `[0xB7D80]` at `0xADD8A`, and read its
 that the test uses another object's state.
 [The three original commands](tutorial-one-event.md)
 
+### Q7 (menu). Which countdown value does the first frame after the menu use?
+
+Question: [Q7 in OPEN_QUESTIONS](OPEN_QUESTIONS.md).
+
+**CONFIRMED in code.** Pause stops the frame clock `0x22C44` and resume
+resets and reanchors it (`0xA023E`, `0xA033D`, `0xA034A`); the menu may
+run one frame update in between (`0xB938C`). [Save restore and menu
+pause](lol2-timer-clock.md#save-restore-and-menu-pause)
+
+**UNCONFIRMED in play.** Open and close the normal menu during an active
+kind-2 countdown. Record the event +8 countdown (subtracted at
+`0xB8CE4`), the clock marker (stored at `0x14FAB3` and `0x14FACE`) and
+the first post-menu sample at `0xE0BE9`; expect a sample that covers only
+the time since resume.
+
 ## Answered probes
 
 ### Q7. Which live writer supplies the timer service?

@@ -18,8 +18,8 @@ Counted by `tools/rating.py` on the English DOS 1.30 copy; [how we rate](docs/HO
 
 <!-- rating:begin -->
 - **Files read:** 81 of 83 files in `DAT` (1,915.3 of 1,915.6 MiB) are accounted for to the last byte by a reader here.
-- **Rules traced:** 614 statements labelled CONFIRMED against the program or the files, 180 labelled UNCONFIRMED, on 110 current pages.
-- **Seen in the running game:** 2 of 7 probes that need the original game running are answered.
+- **Rules traced:** 619 statements labelled CONFIRMED against the program or the files, 181 labelled UNCONFIRMED, on 110 current pages.
+- **Seen in the running game:** 2 of 8 probes that need the original game running are answered.
 - **Open questions:** 20: 3 answered, 15 mostly, 2 partly.
 <!-- rating:end -->
 
@@ -39,7 +39,7 @@ cd lands-of-lore-2-re
 python3 -m venv .venv && . .venv/bin/activate
 pip install -r requirements.txt
 export LOL2_DAT=/path/to/your/LOL2/DAT          # the game's DAT folder
-python3 tools/check_all.py                      # 23 checks, ends with ALL 23 CHECKS PASSED
+python3 tools/check_all.py                      # 24 checks, ends with ALL 24 CHECKS PASSED
 python3 tools/lol2_mix_parser.py L1_DC.MIX      # list the entries of level 1's archive
 ```
 

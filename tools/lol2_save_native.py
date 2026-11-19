@@ -34,6 +34,7 @@ def check(executable):
         start = address + CODE_BIAS
         if image[start:start + len(expected)] != expected:
             raise ValueError(f"save or clock instruction at 0x{address:X}")
+    # Adjustment arms are stored object-relative; adding 0x59024 gives the analysis address.
     table = 0x1205D8
     for section, target in ((62, 0xEA077), (64, 0xEA0C5), (67, 0xE97AC)):
         if struct.unpack_from("<I", image, table + section * 4)[0] + 0x59024 != target:

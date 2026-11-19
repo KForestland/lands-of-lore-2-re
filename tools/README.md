@@ -30,7 +30,7 @@ Run every `--check` (20) and print one line each, then a summary.
 $ python3 tools/check_all.py | sed -n "1,2p;21p"
 CHECK repo_guard: N tracked files; game files, media, stray images, files over 300 KB, machine paths, words from the local list, or commit identities: none (0); private word list: not present, skipped
 CHECK mix: 81 MIX files, 2905 entries; this reader and lol2_source_format.parse_mix agree and every entry lies inside its file: 81/81; index sorted by signed key: 81/81 (by unsigned key: 20); bad=none
-ALL 23 CHECKS PASSED
+ALL 24 CHECKS PASSED
 ```
 
 ### `lol2_save_header.py`
@@ -169,6 +169,10 @@ Re-read the spoken-line format, the category switch, two `MCEL.MIX` keys and the
 $ python3 tools/lol2_speech_names.py --data /path/to/DAT --check
 CHECK speech: format at file 0x1C427A; switch at 0xF133C enters eight arms through slots at 0xF131C; cue id from table 0x269CC calls 0xE3924; .aud probe is the other branch; MCEL entries 5 and 7 are 44100 Hz codec 99 (17564 and 21668 bytes); MCEL import +0xFC reaches 0xF133C
 ```
+
+### `lol2_save_native.py`
+
+Re-reads the native save and clock instructions cited on the [timer page](../docs/lol2-timer-clock.md#save-restore-and-menu-pause): the section selector calls, the section-67 XOR restore, the 62/64 pointer rebase arms, the frame index and the menu clock restart. Part of `check_all.py`.
 
 ### `example_images.py`
 
