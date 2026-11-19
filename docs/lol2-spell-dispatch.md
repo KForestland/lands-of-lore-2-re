@@ -103,9 +103,9 @@ zero (`0x102314–0x102327`, `0x10238F–0x1023A1`).
 
 **UNCONFIRMED.** The visible outcomes of every launch, pulse,
 collision and stalled placement are still open. The constructor
-and update fields give bounded entry points. Start with the effect
-32/33 collision slot +0x30 (`0x102718`) and record writes to
-its target before the +0xF0 exit. For effects 30 and 31, compare
+and update fields give bounded entry points; the effect 32/33
+contact packet is traced in [effect 32/33 contact](#effect-3233-contact).
+For effects 30 and 31, compare
 the primary and nearby hit receiver results under the same target
 definition and difficulty.
 
@@ -261,8 +261,34 @@ exported tables; it is entered through placed item 2's empty-hand
 interaction ([placed-item event lists](lol2-event-producers.md#placed-item-event-lists)).
 
 **UNCONFIRMED.** The numeric payload table establishes one
-downstream path for all 35 effect IDs. The remaining effect-32/33 target
-writebacks need deeper traces; follow the projectile after `0x102718`.
+downstream path for all 35 effect IDs. Effects 32 and 33 write back to their target only through one hit
+packet ([below](#effect-3233-contact)).
+
+### Effect 32/33 contact
+
+**CONFIRMED.** The vtable-0x8734 projectile's contact slot +0x40 is
+`0x1024B4` (the 0xF7030 projectile family uses the same slot). It sets
+byte +0x6A to 1. When the projectile is the moving object of the
+collision pass (`[0xB7CA1]`) and its +0x14 bit `0x100` is set, it adds
+a step along heading `[0xB7C8D]` scaled by `[0xB7C91]` to the pass's
+position cells `[0xB7C75]`/`[0xB7C79]` (`0x1024DA–0x10254B`). A
+collision code `0x80` in `[0xB7C74]` clears +0x69 and the target +0x42;
+a repeat contact with the current target only decrements +0x69;
+another contact becomes the target (`0x102555–0x10258C`). Once per
+projectile (+0x67 still zero, set to 1 at `0x102709`), it decrements
++0x69 and, when the distance to its +0x5E point exceeds u8 +0x66 << 16
+and a target exists, turns heading `[0xB7C68]` toward `[0xB7C8D]` by at
+most `0x1000`, copies it to +0x1E, and sends one 0x36-byte packet to the
+target's vtable +0x80 (`0x1025A7–0x102700`):
+
+| Mode +0x58 | Packet: word 0, word 2, kind, ID, magnitude |
+|---:|---|
+| 4 | `0x100`, 4, 5, `0x51`, 5 |
+| 6 | `0x100`, 4, 5, `0x20`, 5 |
+| other | `0x100`, 4, 2, `0x20`, 10 |
+
+The packet's +4 is the target, +8 the owner (+0x3E) and +0x10 the
+projectile.
 
 **CONFIRMED (effect 15's hit).** The effect-15 object (vtable 0x7278)
 sends its hit from `0x107ADA–0x107BF7` only when its byte +0x56 is 1
