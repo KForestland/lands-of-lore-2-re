@@ -15,7 +15,9 @@ The three games share some file formats and design ideas. Their programs store l
 
 PAK stores the names directly alongside the positions. MIX and WSX keep a numeric key, a position and a size in each directory row. Both use signed key ordering. MIX uppercases and folds four-byte words with a rotate left and addition. WSX uppercases and folds individual bytes, after reducing each to `(b-0x30)&0x3F`, with a rotate right and addition. Their shared directory structure says nothing about whether a particular name will have the same key.
 
-[LoL1 PAK](https://github.com/KForestland/lands-of-lore-1-re/blob/main/docs/formats/pak.md) · [LoL2 MIX](https://github.com/KForestland/lands-of-lore-2-re/blob/main/docs/formats/mix.md) · [LoL3 WSX reader](https://github.com/KForestland/Lands-of-lore-3-re/blob/main/docs/lol3-wsx-reader.md#resource-name-key)
+The shipped LoL3 `cdcache.wsx` and the four `.PHT` files sit outside that comparison. After the shared 114-byte header, the shipped cache is 51 copies of one 64,000-byte block. Each `.PHT` file is a prefix of one cycle. No reader is known for either, and they are not counted as read.
+
+[LoL1 PAK](https://github.com/KForestland/lands-of-lore-1-re/blob/main/docs/formats/pak.md) · [LoL2 MIX](https://github.com/KForestland/lands-of-lore-2-re/blob/main/docs/formats/mix.md) · [LoL3 WSX reader](https://github.com/KForestland/Lands-of-lore-3-re/blob/main/docs/lol3-wsx-reader.md#resource-name-key) · [LoL3 shipped cache](https://github.com/KForestland/Lands-of-lore-3-re/blob/main/docs/formats/wsx.md#cdcachewsx) · [LoL3 PHT](https://github.com/KForestland/Lands-of-lore-3-re/blob/main/docs/formats/pht.md)
 
 ## Compression
 
