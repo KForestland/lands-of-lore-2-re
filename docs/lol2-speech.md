@@ -49,10 +49,32 @@ CONFIRMED as keys, not as the files these arms open. `ww_hash_v1` of `WOMS\MCEL\
 
 Opcode 20 is the script path on the sound-cue page: a 10-byte command, the u16 at bytes 4 and 5, then VA `0xE3924`. The eight arms reach the same player with the runtime table word, not with a script operand.
 
-## Subtitles
+## Cue consumers after playback starts
 
-UNCONFIRMED. The five message tables use the reader at VA `0xCF014`, and none of them has 1,179 records. VA `0xE4B7C` stores flag bytes. It does not read a record. On each 60-byte row of the named bank the unknown dword is unique, and it is not `ww_hash_v1` or `ww_hash_v2` of the row name.
+**CONFIRMED.** The category arm passes a null event object and the
+u16 cue to `0xE3924` (`0xEEAC2–0xEEAF9`). It stores the returned
+voice handle at `[0xDB494]+0x90` and the category-derived table
+index at `+0x94` (`0xEEB0A–0xEEB17`). The later loops use the
+handle to get the live voice from `[0x267A0 + 4*handle]`.
+They test voice +0x26 bit 2 and compare voice +4 against the same
+u16 table cue (`0xEEB39–0xEEB79`, `0xEEB9A–0xEEBD3`).
+The loops call the room update at `0xEE010`, which services sound
+at `0xEE023`, while waiting for those conditions. These reads use
+the cue as a voice identifier.
 
-## What would settle the rest
+**CONFIRMED.** The sound player's event callback requires a nonnull
+event object, both when it admits playback and on cleanup
+(`0xE3BCC–0xE3BEB`, `0xE3824–0xE3841`). The category call does
+not supply one. The indexed bank lookup at `0xE4CEF–0xE4CF8`
+reads the payload for that cue from the EFX bank. The shutdown
+path frees the table pointer at `0x14EA84–0x14EA9C`.
 
-The instruction that reads the characters shown for the cue id just passed to VA `0xE3924`.
+**UNCONFIRMED.** A text reader keyed by the cue. The category
+call-through, its two completion loops, and the sound admission
+and cleanup branches show no conversion from cue ID to text.
+The five known TRR tables from `0xCF014` also have different row
+counts from the 1,179-row EFX bank. To settle a separate text
+path, trace the post-call owners of `[0xDB494]+0x90/+0x94`
+and imported room-module draw callbacks, then identify a reader
+that uses the same cue ID to select a text record. A count or a
+matching filename alone cannot establish that join.
