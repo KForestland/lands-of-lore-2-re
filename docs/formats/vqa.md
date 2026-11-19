@@ -82,7 +82,7 @@ distance is `((command & 0x0F) << 8) | next_byte` at `0x158D94–0x158DB0`.
 | Original case | VPTZ payload start in MIX | Static prediction at `0x158DB2` (not observed) |
 |---|---|---|
 | `L20_BBI.MIX`, key `0xD3C844E7`, entry 25 frame 115 | `+0x35202D6` | `ESI` equals `EDI` at destination base +30,400. Up to 3 bytes advance through a self-copy. |
-| `SPKSTON2.MIX`, key `0x4119C826`, entry 4 frame 492 | `+0x17695E8` | `EDI` is destination base +564 and `ESI` is destination base −110. Up to 5 bytes come from that preceding range. |
+| `SPKSTON2.MIX`, key `0x4119C826`, entry 4 frame 492 | `+0x17695E8` | `EDI` is destination base +564 and `ESI` is destination base −110. Up to 5 bytes come from that preceding range. Observed with `ECX=5` in an [edited-save run](#scene-probes-from-edited-copies). |
 
 **CONFIRMED.** The pointer decode at `0x17280D–0x172826` chooses
 node +0's allocation or the shared pointer buffer `[context+0x6E6]`
@@ -114,7 +114,8 @@ selected base. The clamp at `0x158DA3–0x158DA8` limits copy length by output
 capacity, while `0x158DAE–0x158DB2` uses the computed source.
 
 **UNCONFIRMED.** The source bytes and the active codebook in the two
-specific frames are still open. The Extras menu exposed the intro and
+specific frames are still open, apart from the frame-492 source bytes
+read in an [edited-save run](#scene-probes-from-edited-copies). The Extras menu exposed the intro and
 other replays. Loading L20_BB from the copied autosave (a player save written by the game, not shipped) read the directory
 of `L20_BBI.MIX` at offsets 0, 4 and 6, leaving the target payload unvisited.
 The `SPKSTON2.MIX` key matches `OUTTAKES\ss-4e.vqa` by the original
@@ -164,7 +165,7 @@ as breakpoint targets for the next runtime trial; the `SPKSTON` open also needs 
 ## Open
 
 - The indexed `VPRZ`/`VPTR` command grammar is [traced here](../lol2-vqa-v2.md#pointer-streams). The remaining question is the initial destination for each transparent draw and seek.
-- The two `VPTZ` frames above use the native short-copy instruction. Their prior destination contents remain open.
+- The two `VPTZ` frames above use the native short-copy instruction. Their prior destination contents remain open, except the five frame-492 source bytes read in an edited-save run.
 - How a script names a movie is a separate page: [movie scenes](../lol2-movie-scenes.md).
 
 ### Scene probes from edited copies
@@ -184,8 +185,15 @@ The original definition-table range base at slot `+0xB4`
 plus `139 × 91` yields `0x10956F35`. The old pool base at
 slot `+0xC8` plus `47 × 12` yields the pack reference
 `0x102F5720` (map writer `0xE5C9C–0xE5D0B`).
-The corresponding base-image bytes are zero. Each changed section
-was one LZO chunk. Repacking changed stored spans from
+Global 2 `+0x238` is that row's instance input byte.
+Globals 2–4 are stored as XOR deltas against the game-written
+`GLOBAL.IMG` (6,098 bytes, prefix `2d2fd3f0a91e`), whose sections lie
+in index order with lengths 558, 53, 3,072, 32 and 2,335 for globals
+0–4. The corresponding base-image bytes are zero, so each new
+decoded byte equals the live value. Each changed section
+was one LZO chunk. Each changed chunk was expanded, edited and
+packed again with `lzo1x_1_compress` from liblzo2 (the chunk header is
+u32 expanded length, u32 packed length). Repacking changed stored spans from
 703/33/590 to 751/44/634 bytes. The recipe changes the packed-length
 word of each chunk, adds the running size delta to the following
 global and level start offsets (`+0x18E/+0x1BA` directories),
@@ -197,9 +205,12 @@ byte-identical.
 On restore, pack entry 4 referenced row 47, whose definition
 identity was `0x5AA2B9B5` and handler byte 74. The occupied bit
 was set. The original startup already made `[0xB860]` nonzero.
-It is a command-line gate set at `0x14E5E0` after checks for
-`-NOMIX` and `-PATH` (literals at `LOLG.DAT+0x1C5278/+0x1C527F`).
-The save edit left that cell to startup. Taking the new pack
+It is not a save field. `-NOMIX` and `-PATH` are command-line
+options of the original program (literals at
+`LOLG.DAT+0x1C5278/+0x1C527F`). Startup looks each up through
+`0x15C5CC` at `0x14E5B8–0x14E5D8` and stores 1 at `0x14E5E0` only
+when neither is present, so a plain start opens the optional
+stone archives. This run started `LOLG.EXE -CD ..`. Taking the new pack
 item and pressing W hit `0x99EF4`, and `0x99F64` returned
 a nonnull handle after opening `SPKSTON2.MIX`. Selector 4 supplies the clip filename used by the playback
 call at `0x99F89`.
@@ -216,6 +227,8 @@ and the final pixels for this frame remain **UNCONFIRMED**.
 Capture both after `0x158DB4` in a repeated playback to tie
 the five output bytes to the visible tile references.
 
+**BLOCKED, bb_brth frame 115.** The position edit loaded, but
+the scene had already played in this slot.
 **CONFIRMED, edited-save run, bb_brth setup.** The same source
 was relocated beside prop 87. The fourteen contiguous bytes at
 slot `+0x180` changed from

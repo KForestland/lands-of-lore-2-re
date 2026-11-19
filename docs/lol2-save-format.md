@@ -157,9 +157,12 @@ base image and its effective byte value before encoding the
 difference. For compressed data keep each expanded size
 consistent, update each repacked chunk length, rebase all
 following directory starts and update total length
-(`+0x2C`). An unchanged per-level payload retains its own
+(`+0x2C`). The accepted copy was repacked with liblzo2
+`lzo1x_1_compress`. An unchanged per-level payload retains its own
 directory and length. The three version stamps and 20 level
 stamps were copied unchanged. No extra checksum field was
 updated for the accepted edits. The original gate for the
-optional stone archive is set by startup at `0x14E5E0`.
+optional stone archive is not in the save: startup sets it at
+`0x14E5E0` when neither the `-NOMIX` nor the `-PATH` command-line
+option is given.
 [Pack recipe and observed restore](formats/vqa.md#scene-probes-from-edited-copies)
