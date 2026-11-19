@@ -21,6 +21,8 @@ def check(executable):
         (0xB9321, 0xA0200), (0xB96A7, 0xA02F8),
         (0xA023E, 0x14FAA1), (0xA031A, 0x14FABD),
         (0xA033D, 0x14FADB), (0xA034A, 0x14FABD),
+        (0xE95B4, 0xEB2C8), (0xD36FE, 0x115D6C),
+        (0x64DBE, 0x66664), (0xE8020, 0x145F2C), (0x7CF23, 0xFA5C4),
     ):
         opcode, displacement = struct.unpack_from("<Bi", image, address + CODE_BIAS)
         if opcode != 0xE8 or address + 5 + displacement != target:
@@ -33,6 +35,12 @@ def check(executable):
         (0x14FAB3, "c70200000000"),
         (0x14FAC8, "8b50088b12428910"),
         (0xB8CE4, "66294308"),
+        (0xEB30D, "c780d000000001000000"),
+        (0x115D6C, "31c0c3"),
+        (0xA7245, "891da4690900"),
+        (0xAA5E9, "3b05a46909000f94c3"),
+        (0xAAF10, "893289763c"),
+        (0x64DCE, "c6400901"),
     ):
         expected = bytes.fromhex(sequence)
         start = address + CODE_BIAS
@@ -51,7 +59,7 @@ def check(executable):
             if struct.unpack_from("<I", image, table + section * 4)[0] + 0x59024 != target:
                 raise ValueError(f"section {section} data selector")
     return ("CHECK native save: header, global and level payload paths, "
-            "timer restore and menu clock restart")
+            "timer restore and menu clock restart, actor links and automap markers")
 
 
 def main():

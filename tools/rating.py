@@ -3,6 +3,7 @@
 
   rating.py --data DAT          # print the four lines
   rating.py --data DAT --check  # also require README.md and docs/STATUS.md to carry them
+  rating.py --data DAT --labels # list pages with open labels, largest first
 
 The lines are explained in docs/HOW_WE_RATE.md:
   Files read      DAT files whose every byte a reader here accounts for, by count and by bytes
@@ -57,17 +58,20 @@ def history(text):
     return any(line.startswith("> **History") for line in text.splitlines()[:6])
 
 
-def labels():
-    confirmed = unconfirmed = pages = 0
+def label_counts():
     for page in sorted((ROOT / "docs").rglob("*.md")):
         text = page.read_text(encoding="utf-8")
         if history(text) or page.name == "HOW_WE_RATE.md":
             continue
         text = re.sub(re.escape(BEGIN) + ".*?" + re.escape(END), "", text, flags=re.S)  # the rating block itself
-        pages += 1
-        confirmed += len(re.findall(r"(?<![A-Z])(?:CONFIRMED|PROVEN)\b", text))
-        unconfirmed += len(re.findall(r"\b(?:UNCONFIRMED|UNKNOWN)\b", text))
-    return confirmed, unconfirmed, pages
+        confirmed = len(re.findall(r"(?<![A-Z])(?:CONFIRMED|PROVEN)\b", text))
+        unconfirmed = len(re.findall(r"\b(?:UNCONFIRMED|UNKNOWN)\b", text))
+        yield page.relative_to(ROOT), confirmed, unconfirmed
+
+
+def labels():
+    counts = list(label_counts())
+    return sum(c for _, c, _ in counts), sum(u for _, _, u in counts), len(counts)
 
 
 def probes():
@@ -114,10 +118,18 @@ def block_of(path):
 
 def main():
     parser = lol2_cli.tool_args(__doc__)
+    parser.add_argument("--labels", action="store_true", help="list pages with open evidence labels")
     args = parser.parse_args()
     if args.out:
         parser.error("prints only")
+    if args.labels and args.check:
+        parser.error("--labels and --check are mutually exclusive")
     try:
+        if args.labels:
+            for page, _, count in sorted(label_counts(), key=lambda row: (-row[2], row[0])):
+                if count:
+                    print(f"{count}\t{page}")
+            return 0
         lines = rating(args.data)
         if not args.check:
             print("\n".join(lines))
