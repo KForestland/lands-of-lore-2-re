@@ -171,10 +171,29 @@ definitions through opcode 3. The placed item vtable +0x64 points to
 `0xB5000` at `0x95218` before the transfer path, and
 `0xADDA3–0xADDB0` adds the event's u16 group `0x3510` to stream 1.
 
-**UNCONFIRMED.** Which pointer or input gesture picks the L1_DC item
-in a running game. To settle that, stop at `0x95218` with item 2 as the
-receiver, record the call into vtable +0x64 and confirm stream-1 group
-`0x3510` at `0x646EC`. After the 57 placed-item joins, a review count over
+**CONFIRMED.** After the 57 placed-item joins, a review count over
 both streams, the four event tables, the region lists and the placed
 items finds no group without a serialized reference. The 57 joins come
 from the placed-item table at level header +0x20/+0x6C.
+
+### Empty-hand left click on L1_DC placement 16
+
+**CONFIRMED.** On the original DOS 1.30 game, restore the
+[opening-cave before slot](lol2-save-sections.md#original-opening-cave-pickup-in-l1_dc)
+and left-click the floor sprite with an empty cursor. The native
+pick at `0x110ACD` passed row `0x1128C304` through the vtable
+to `0x95200`, then `0x95218 → 0xB5000`. This was row 16
+at `L1_DC.MIX+0x6FBFCE`, definition `0xA4C5CBD3`. Object +0x18
+was `0x1ADA`. Added to live object-event base `0x111E37FC`,
+it selected `0x111E52D6`, the kind-4 record at
+`L1_DC.MIX+0x6EB187`.
+
+Execution reached the predicate call at `0xADD80` (predicate 41 at
+`L1_DC.MIX+0x70628A`) and then the group call `0xADDB0 → 0x646EC`.
+The argument was `0x1122773C`, stream-1 base `0x112240F4` plus
+`0x3648`, whose group starts at `L1_DC.MIX+0x6E93AF`.
+The subsequent `0x64887` command had value 1 and points to the
+group's local-byte-16 write at `L1_DC.MIX+0x6E93BB`.
+The click also called `0x95A64` to transfer the item to the player.
+Thus an ordinary empty-hand left click reaches a placed-item
+group and can pick up the same item on the same input.

@@ -200,3 +200,12 @@ row 16 at `0x9412C`. With position fixed, the saves show row 16's
 reusable bit, the new player occupancy bit, and four new definition
 bytes in global section 2. Level sections 31/32 agree.
 [Save inspector comparison and native calls](lol2-save-sections.md#original-opening-cave-pickup-in-l1_dc)
+
+### Q18. Which gesture reaches an original placed-item group?
+
+**ANSWERED, CONFIRMED.** An empty-hand left click on L1_DC row
+16 (`L1_DC.MIX+0x6FBFCE`) reached the placed-item virtual call
+at `0x110ACD`, dispatched its kind-4 record and entered stream-1
+group `0x3648` at `0x646EC`. The original click also allocated a
+player item and released the floor row.
+[Native calls, predicate and group offsets](lol2-event-producers.md#empty-hand-left-click-on-l1_dc-placement-16)
