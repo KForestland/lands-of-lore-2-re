@@ -235,6 +235,47 @@ def placed_item_groups(raw, scripts):
     return count, added
 
 
+def exit_predicates(scripts):
+    """Join exit commands to serialized event predicates and resolve shared leaves."""
+    predicates = [bytes.fromhex(row) for row in scripts["predicate_table"]["entries"]]
+
+    def shared_slots(index, ancestors):
+        if index in ancestors or index >= len(predicates):
+            raise ValueError(f"invalid exit predicate reference {index}")
+        row = predicates[index]
+        slots = set()
+        for kind, operand in (row[1:3], row[3:5]):
+            if kind == 2:
+                slots.add(operand)
+            elif kind == 4:
+                slots.update(shared_slots(operand, ancestors | {index}))
+        return slots
+
+    object_events = (event for obj in scripts["objects"] if obj["table"] != "region"
+                     for event in obj["events"])
+    region_events = (event for entry in scripts["region_lists"] for event in entry["records"])
+    by_group = defaultdict(dict)
+    for events in (object_events, region_events):
+        for event in events:
+            if "group" in event:
+                key = (event["stream"], event["group"])
+                by_group[key][event["file_offset"]] = event
+    direct = guarded = 0
+    shared = []
+    for command in scripts["transitions"]:
+        events = by_group[(command["stream"], command["group"])]
+        direct += bool(events)
+        for event in events.values():
+            predicate = event.get("predicate")
+            if predicate is None:
+                continue
+            guarded += 1
+            slots = shared_slots(predicate["index"], set())
+            if slots:
+                shared.append((command["file_offset"], event["file_offset"], sorted(slots)))
+    return direct, guarded, shared
+
+
 def read_level(data_dir, stem):
     path = Path(data_dir) / f"{stem}.MIX"
     b = path.read_bytes()
@@ -434,6 +475,13 @@ def main():
             bad.append(f"{s}: {ex}")
     if a.check:
         exits = sum(len(L["scripts"]["transitions"]) for L in levels)
+        exit_checks = [exit_predicates(L["scripts"]) for L in levels]
+        direct_exits = sum(direct for direct, _, _ in exit_checks)
+        guarded_exits = sum(guarded for _, guarded, _ in exit_checks)
+        shared_exits = [row for _, _, rows in exit_checks for row in rows]
+        expected_shared = [(0x5E93F4, 0x5EC32A, [52]), (0x5E93FA, 0x5EC336, [52])]
+        if len(stems) == 15 and (direct_exits, guarded_exits, shared_exits) != (72, 24, expected_shared):
+            bad.append("exit predicate census changed")
         tex = sum(1 for L in levels if L["tex"])
         ent = sum(1 for L in levels if L["records"])
         uns = sum(len(L["scripts"]["unsupported"]) for L in levels)
@@ -465,7 +513,8 @@ def main():
         unknown_kinds = sorted(k for k in ev if k not in EVENT_KINDS)
         print(f"CHECK level_report: {len(levels)}/{len(stems)} level archives read (level data entry, scripts framed, "
               f"{uns} commands outside the size table); texture container found by name hash in {tex}; entity records in "
-              f"{ent}; {exits} level-transition commands; regions {sum(L['geom']['regions'] for L in levels):,}, "
+              f"{ent}; {exits} level-transition commands ({direct_exits} directly linked, {guarded_exits} predicate links, "
+              f"{len(shared_exits)} with shared bytes); regions {sum(L['geom']['regions'] for L in levels):,}, "
               f"out-of-range vertex/neighbour indices {gb}, portal links {gl:,} (reciprocal {gr:,}, sharing the side's vertices "
               f"{gs:,}); wall rows {wr:,}, partition faults {wb}, {special} special ({based} with earlier base); event records {sum(ev.values()):,} (kinds without a documented matcher: {unknown_kinds or 'none'}); "
               f"opcode-21 movie commands {sum(sp.values())} naming {len(sp)} scene ids (outside the scene table: {bad_scene or 'none'}); held-item tests (kind 4 mode 3) {len(tests)}, identity not in the item table: "

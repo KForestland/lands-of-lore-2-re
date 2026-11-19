@@ -109,6 +109,52 @@ set, observation +0x9E & 5 is nonzero, actor +0xB4 bit 0x20
 is set and its secondary action differs from 13
 (`0xA2F2A–0xA2F5C`).
 
+### Mode 3 item target, mode 8 and mode 13
+
+**CONFIRMED.** Mode 3 target type 4 enters `0xA276A`, copies the
+target coordinates and sets +0xB8 bits 4–5 to binary `10`. The
+distance check at `0xA27B1–0xA27D3` requires a result strictly
+below the creature's vtable +0x14 result shifted left 16. The
+slot at `LOLG.DAT+0x1C6908` resolves to `0xF2A68`, which returns
+`u8(definition+0x2B) >> 1`. At or beyond that distance the branch
+calls `0xA9720(actor, 2, 0)` at `0xA28ED`. Inside that distance,
+mode 3 clears the target and calls the placed-item transfer routine
+`0x95A64` at `0xA27ED`. That routine uses the non-player recipient
+pool at `[0x9691C]` and the source's item record +0x2C
+(`0x95A8B–0x95AA5`). The near branch selects +0xAA=9 and requests
+animation action `0x17` (`0xA2800`, `0xA2843`).
+
+**CONFIRMED.** Placement u16 +0x21 copies into live +0x70 at
+`0xA2455–0xA2459`. On load, its `0x20` bit selects object
++0x17 mask `0x80` versus `0x40` (`0xA245C–0xA246A`, `0xA210C`).
+Low nibble 5 sets +0xB5 bit 0 (`0xA2110–0xA2121`, `0xA224E`),
+which blocks the animation-request helper at `0xA7E0D`. With
+placement mask `0x10` set, mode 3's near continuation writes +0x64
+according to whether +0x34 remains non-null and clears +0xB5
+bit `0x10` and +0xB8 bit 1 (`0xA2890–0xA28C4`). When
+that mask is clear, it sets +0x64 to `0xFF` and sets +0xB8
+bit 1 (`0xA28C9–0xA28DB`). The flags coexist in
+`L13_RC.MIX+0x68EFEA`, placement 27 (u16 +0x21 = `0x0035`,
+initial behavior 14). This record proves the original values at load.
+
+**CONFIRMED.** In mode 8's zero-observation continuation at `0xA2DEE`,
+a set +0xB9 bit 0 refreshes the +0x40 coordinate triplet from the target,
+sets +0xB8 bit 4 and clears its bit 5 and the +0xB9 bit. It calls
+`0xA9720(actor, 1, 3)` at `0xA2E2D`. With the +0xB9 bit clear,
++B8 & `0x30` equal to `0x30` calls
+`0xA9720(actor, 3, 0)` at `0xA2E4F`. If the distance to the
+stored point is then below the same definition radius via vtable
++0x14, it selects +0xAA=9, sets +0xB9 bit 0, and clears both update
+bytes at `0xA2E84–0xA2EAA`.
+
+**CONFIRMED.** Mode 13 refreshes the target and calls
+`0xA9720(actor, 1, 1)` with observation & 7 nonzero
+(`0xA31C2–0xA3200`). With that mask zero, it selects +0xAA=9,
+clears update bytes and requests action 0 only with +0xB5 bit 0
+clear and a successful animation lookup (`0xA320F–0xA328B`).
+Mode 10 calls the navigation helper even on its zero-mask path
+(`0xA316F` -> `0xA31A6`).
+
 ## Creature byte +0xA3
 
 **CONFIRMED.** Two hit paths write 15. The area-hit helper at
@@ -134,9 +180,9 @@ modified by each +0xA6/+0xA7 consumer remains
 **UNCONFIRMED**. Trace the next read of each byte after
 `0xAA478`, comparing the same definition with +0xA3=0 and 15.
 
-**UNCONFIRMED.** Other branches in modes 3–5 and 7–10
-remain open. The native paths above establish the fields that
-change. The next witnesses can follow mode 3 target type 4
-from `0xA276A` and mode 8's zero observation path from
-`0xA2DEE`, recording which requested action survives the
-common update at `0xA3DEC`.
+**UNCONFIRMED.** Other branches in modes 3–5 and 7–10 remain open.
+To settle which original situation takes mode 8's stored-point path,
+record +0x9E, +0xB8 and +0xB9 on entry at `0xA2C63`, then check the
+requested action at `0xA2E84` against the animation install at
+`0xA7DC4`. Trace other placement and definition masks from their first
+caller to establish their uses.

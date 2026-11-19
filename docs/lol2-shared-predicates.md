@@ -65,7 +65,7 @@ before interpreting a single leaf. The examples below identify their original gr
 | 52 | Same region and event at `L19_BC.MIX+0x5EC336`. Predicate 205 at `+0x5F6D65` is `shared[52] == 1`. | Stream 0 group 15790 issues the level-20 transition to arrival 2 at `+0x5E93FA`. |
 | 52 | `L20_BB.MIX+0xECE285`, prop 242, stream 1 group 7704. Predicate 206 tests bound object state zero at `+0xEE16C0`. | Opcode 199 sets `shared[52] = 1` at `+0xEC7D19`. The original name row starts at `GLOBAL.MIX+0x66846C`. |
 | 13 | `L4_HJ.MIX+0xC2C3A4`, prop 552, kind 4, stream 1 group 10816. Predicate 39 includes leaf 25 at `+0xC8BD0D`, which tests `shared[13] >= 1`. | Updates shared byte 0 at `+0xC26236`, adds 1 to byte 13 at `+0xC2623C`, and sets local 51 to 1 at `+0xC26242`. |
-| 37 | `L9_DR.MIX+0x162ABFA`, prop 1201, kind 2. Predicate 45 at `+0x166EB13` tests `shared[37] == 1`. | Stream 1 group 9392 issues opcode-2 subcommand `0x26` at `+0x1627524`. Its deeper effect remains **UNCONFIRMED** here. |
+| 37 | `L9_DR.MIX+0x162ABFA`, prop 1201, kind 2. Predicate 45 at `+0x166EB13` tests `shared[37] == 1`. | Stream 1 group 9392 issues opcode-2 subcommand `0x26` at `+0x1627524`. The reset continuation is traced below. |
 
 Use `0x66C43` for the equality arms above, `0x66C7F` for >=,
 `0xD8797–0xD87C5` for level/entry splitting, and `0x64887`, `0x64A8C`,
@@ -74,9 +74,40 @@ root predicate offset and linked command site.
 
 **CONFIRMED.** Opcode-2 subcommand 0x26 (`cmp ah,0x26` at `0xD869C`, then `0xD7A9B–0xD7B0B`) sets the receiving object's +0x228 bit 0x80 and clears bit 0x10, clears byte +5 of the objects at +0x97 and +0x9B(+0x2C) and the pointers to them, and clears +0x9F, +0x21E and bit 0x08 of +0x19F. Its plot meaning is open.
 
-**UNCONFIRMED.** The full branch catalog and native producers for the
-other shared indexes remain open. The census followed shared readers through
-recursive type-4 edges and the original opcode 199/206 write sites.
-The two L19 guards give a complete pair for values 0 and 1 at that exit.
-For a different branch, trace every leaf of the root predicate, then
-follow the matching command sites and native writers of the same index.
+## Exit predicate census
+
+**CONFIRMED.** The 15 level command streams contain 72 level-transition
+commands with prefix `02 01 00 00 1c`. Each links directly to one
+original event among the four principal object tables and region lists.
+Twenty-four of those pairs have a kind-19 predicate trailer. Following
+every type-4 predicate edge from those roots, the only type-2
+shared-array slot is 52. It occurs twice, for the two L19_BC arrivals
+in the table above. The recheck uses geometry header +0x38/+0x40 for event
+blobs, +0x3C/+0x44 for commands and +0xBC for predicate rows. It pins both
+event and command offsets. Recursive operand readers are `0x66B47` and
+`0x66BEC`, with shared reads at `0x66B2A` and `0x66BAF`.
+The check covers the directly linked exit commands. Other plot
+branches can use shared slots elsewhere in the scripts.
+
+## Slot 37 reset continuation
+
+**CONFIRMED.** The player subcommand `0x26` at `0xD7ABC` passes
+argument 1 to `0xD0138`. That argument clears player bytes +0x1B6
+through +0x1BD. The common tail clears +0x22/+0x23, +0x1BE through
++0x1C1, +0x20A and the low ten bits of word +0x226. It clears
++0x22A bit 1 (`0xD0144–0xD01CB`). If player +0x229 contains bit
+`0x04` or `0x08`, and +0x85 is null, it also sends signed words at
++0x206 and +0x208 to `0x151DAE` (`0xD01D3–0xD01FA`). The latter
+clamps the coordinates to the current bounds at context
++0x42B/+0x42F and +0x433/+0x437. Its native mouse-service branch
+requests DOS mouse function 4 through the DPMI wrapper
+(`0x151B88–0x151C11`, interrupt `0x31`, simulated interrupt `0x33`).
+The slot-37 event includes a player input-state reset and a conditional
+pointer-position write.
+
+**UNCONFIRMED.** The user-facing change of the original L9 prop and
+the other plot branches. For slot 37, trace the first subsequent read
+of player +0x228 mask `0x80` after `0xD7ABC` and see whether player
++0x229 and +0x85 admit the pointer write. For branches other than the
+72 exits, identify each event's linked command effect and all the
+leaves of its root predicate before assigning a narrative role.
