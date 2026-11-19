@@ -30,7 +30,8 @@ and every group reference resolves. The totals are 42,594 commands using 32 dist
 
 Each level archive holds one geometry entry. It is recognised by its header: dword +0 = 18 (0x12), dword +4
 = 5300 (the vertex table offset), and at least 0x244 bytes. The native loader reads 0x244 header bytes and
-continues only when dword +0 is 0x12 and dword +0x58 is not zero (PROVEN, loader around file 0xD3CBC).
+continues only when dword +0 is 0x12 and dword +0x58 is not zero (PROVEN: the 0x244-byte read is requested at
+`0x9CCCE–0x9CCDB`, file `LOLG.DAT+0xD3CCE–0xD3CDB`, and the two tests are at `0x9CCE3–0x9CCEE`).
 The MIX key differs per level; it is not needed to find the entry.
 
 ## Header fields (PROVEN by consistent reading on all 15 levels)

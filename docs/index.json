@@ -236,6 +236,15 @@
       ]
     },
     {
+      "path": "docs/CONFIRMED_SAMPLE.md",
+      "title": "Re-deriving a sample of confirmed statements",
+      "answers": [],
+      "question_references": [
+        "Q20"
+      ],
+      "tools": []
+    },
+    {
       "path": "docs/COOKBOOK.md",
       "title": "Cookbook",
       "answers": [],

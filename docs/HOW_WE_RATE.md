@@ -30,6 +30,7 @@ that would settle it). Older pages use PROVEN and UNKNOWN for the same two label
 labels, not importance: one CONFIRMED may cover a whole table and one
 UNCONFIRMED a single byte. It does **not** claim that unlabelled text is
 wrong or that labelled text is complete.
+A sample of 30 CONFIRMED statements was re-derived from the bytes ([sample](CONFIRMED_SAMPLE.md)): 22 held, 6 held in part, 2 corrected (1 wrong, 1 overstated). Four of the 30 are also on the list of a first sample that is still being checked.
 
 **Seen in the running game.** Of the probes on
 [NEEDS_A_RUNNING_GAME.md](NEEDS_A_RUNNING_GAME.md) (tests that the files

@@ -32,7 +32,8 @@ A side whose neighbour word is not `0xFFFF` is an opening into the neighbouring 
 - The 15 levels hold 52,669 regions with 178,728 neighbour links. 177,774 of them (99.5%) are reciprocal: the neighbour names the region back.
 - 177,318 links (99.2%) share the side's two vertices with the neighbour.
   - In L1_DC, 6,392 of 6,478 links share them.
-  - The remaining 86 are the connector and subdivision links described on the [cave page](../draracle-restoration.md).
+
+The counts do not say what the other links are for. The [cave page](../draracle-restoration.md) splits the 86 remaining L1_DC links into 56 connector and 30 subdivision/owner directions; that split comes from its extraction pipeline and stays UNCONFIRMED here, like the subdivision links in the region record table above.
 
 ## Worked example
 
