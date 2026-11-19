@@ -48,6 +48,8 @@ write and stack if it occurs, then whether the same object reaches
 identify that trial's producer. The already-known lesson and
 effect-0x0A cast provide zero-valued controls.
 
+Parked (not run); see [Parked probes](#parked-probes-not-run).
+
 ### Q10. Which observation path a live mode-2 creature takes
 
 Question: [Q10 in OPEN_QUESTIONS](OPEN_QUESTIONS.md).
@@ -74,6 +76,8 @@ update record the target and secondary action. With 0x05
 clear and 0x0A set, action 1 and 9 distinguish the remembered
 bit's two settings. A transition to a different mode calls for
 a trace of that actor's mode store with the same target snapshot.
+
+Parked (not run); see [Parked probes](#parked-probes-not-run).
 
 ### Q12. Which history do two exceptional VQA frames read?
 
@@ -117,6 +121,8 @@ at `0x158DB2` (five zero source bytes). The final composition
 and the native `bb_brth` frame 115 remain open. The relocated
 late slot had already reached prop 87 state 14.
 [Exact edits and frame-492 trace](formats/vqa.md#scene-probes-from-edited-copies)
+
+Parked (not run); see [Parked probes](#parked-probes-not-run).
 
 ### Q17. What on-screen action reaches these records?
 
@@ -163,6 +169,97 @@ and input, compare the target to `[0xB7D80]` at `0xADD8A`, and read
 prop +0x25. Binding to prop 1050 with byte zero reaches group
 `0x228E` and its cursor grant. A different pointer identifies
 the object supplying the predicate's state.
+
+## Parked probes (not run)
+
+These running-game tests were planned and then parked. No one will run
+them here. Each one is "not run": it has no result and the question it
+belongs to keeps its state. A reader with the original game and a
+debugger can do it. Addresses follow the convention at the top of this
+page: code at `LOLG.DAT` analysis addresses, data as displacements from
+the object-5 base.
+
+- **Timed message 0x26 (not run).** Settles the producer in
+  [Q9](OPEN_QUESTIONS.md). Full test:
+  [Q9](#q9-what-starts-the-timed-message-0x26). Setup: the late
+  game-written level-20 slot used for the
+  [lesson control](lol2-spell-dispatch.md#controlled-use-of-the-level-20-lesson).
+  Watch: a write watch on player +0x185 (player pointer from
+  `0xD2E30`), and breaks at `0x86230` (message 0x23) and `0xD2E57`
+  (the clear before message 0x26). Play: use the lesson item for an
+  acquisition ID the player does not have yet, then let the character
+  change form (player +0x1AB). Result: a nonzero write to +0x185 that
+  reaches `0xD2E57` on the same object names the producer. Only zero
+  values repeat the known controls.
+- **Movie frame 115 of `bb_brth` (not run).** Settles the frame-115
+  history in [Q12](OPEN_QUESTIONS.md). Full test:
+  [Q12](#q12-which-history-do-two-exceptional-vqa-frames-read).
+  Setup: a level-20 slot from before timer slot 12 expires, so prop 87
+  is not yet in state 14; the
+  [edited L20_BB copy](formats/vqa.md#scene-probes-from-edited-copies)
+  had already played the scene. Watch: `0x172838` (pointer LCW) and
+  `0x158DB2` (the short copy). Play: let prop 87 play scene 65
+  (`L20_BBI.MIX` entry 25). Result: on frame 115 log the copy's
+  source, destination, capacity and the bytes already there. A short
+  self-copy from the current destination matches the static reading;
+  anything else is the original history. Log the active codebook too.
+- **How `ARENA.MIX` is opened (not run).** Settles the open part of
+  [Q3](OPEN_QUESTIONS.md). Setup: any game-written slot; no room is
+  known to lead to the Arena, so there is no edited-placement recipe.
+  Watch: the archive constructor `0x11C654`, logging the name it is
+  given, and the name-driven room opener (`0xEDFAF–0xEDFB6`, room
+  import `0xEF558`). Play: the start, each hub room change and the
+  movies. Result: a constructor call with the name `ARENA.MIX` (any
+  letter case) gives its caller, which is the route. No such call over
+  the stated play means that play does not open it. Details:
+  [the extra ARENA archive](lol2-room-archives.md#the-extra-arena-archive).
+- **Who reads the 404 cue words (not run).** Settles the text side of
+  [Q13](OPEN_QUESTIONS.md). Setup: any game-written slot. Watch: after
+  the loader's read at `0xE3742`, take the table pointer stored at data
+  `0x269CC` and set read watches on the cue words, at least on the
+  eight category words (table index 161, 162, 167, 168, 174, 197, 198
+  and 199, two bytes each). Play: a scene that plays one of those
+  cues, such as the MCEL room callbacks. Result: the known readers are
+  the category arm (`0xEEAC2–0xEEAF9`), the voice loops
+  (`0xEEB39–0xEEBD3`) and the cleanup at `0xF0B98–0xF0C29`. A read
+  from any other address, followed into text, is the text reader.
+  Only known readers bound the scenes played. Details:
+  [cue consumers](lol2-speech.md#cue-consumers-after-playback-starts).
+- **Shade index on one L10_DC wall (not run).** Settles the open step
+  of [Q5](OPEN_QUESTIONS.md). Setup: a game-written slot in L10_DC.
+  Watch: the return of the evaluator `0x1319B4` (the two sums, the
+  clamp at `0x131D16–0x131D4D`), then the scalar caller at `0x129C23`
+  (row offset `(S >> 8) & 0xFF00` at `0x129C28–0x129C33`) and the
+  lookup at `0x12AA89–0x12AAA8`. For a wall drawn per vertex, follow
+  the callers `0x126E82`, `0x127BD6` or `0x1288DA` through clipping
+  (`0x133C68`, `0x133FF4`) to the span setup. Play: stand in view of
+  one wall and do not move. Result: for one primitive, log both sums,
+  `S` and the shade row it uses. Row `S >> 16` reaching the lookup
+  unchanged settles the scalar path; a different row shows the span
+  interpolation. Details:
+  [shade row](lol2-event-producers.md#scalar-shade-row-and-packed-colour).
+- **One Huline Temple quad (not run).** Settles the open step of
+  [Q16](OPEN_QUESTIONS.md). Setup: a game-written slot in L14_HT, in
+  view of the window in region 0 (rows 7,448 to 7,451). Watch: the
+  material dispatch at `0x11496D` (expect material 181 for row 7,448
+  and 495 for the other three), the UV inputs at `0x12759C` if the
+  software path runs, and the first clipped vertex at `0x133FF4`.
+  Play: stand still facing the window. Result: the screen endpoints
+  and UVs of each quad, compared with the span setup. Endpoints that
+  match the [replayed quads](formats/walls.md#worked-example-a-window-in-the-huline-temple)
+  after projection confirm the static model; a difference shows what
+  clipping or the sampler adds.
+- **Two mode decisions in named encounters (not run).** Settles more
+  of [Q10](OPEN_QUESTIONS.md). Full test:
+  [Q10](#q10-which-observation-path-a-live-mode-2-creature-takes).
+  Setup: two edited copies with the party placed near one named
+  creature each (level, actor number), by the
+  [position recipe](lol2-save-format.md#editing-a-copy-of-an-original-slot).
+  Watch: `0xA32B4` for one actor whose target +0x34 is the player.
+  Play: approach in sight, then step behind a portal edge. Result: with
+  +0x9D mask 0x05 clear and 0x0A set, action 1 or action 9 shows the
+  remembered bit; a change to another mode needs a trace of that
+  actor's mode store.
 
 ## Answered probes
 
