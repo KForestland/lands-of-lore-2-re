@@ -21,6 +21,38 @@ wall-record evidence from pinned original files.
 
 The tools below follow one set of rules: `--help` changes nothing; the game's `DAT` folder comes from `--data` or `$LOL2_DAT` (no built-in path); nothing is written unless you pass `--out` (or `--png`); `--check` prints one `CHECK` line and exits 0 when it passes. `check_all.py` runs them all. Run examples outside the repository; `.gitignore` and `repo_guard.py` keep game files and media out of it.
 
+## Format and rules coverage
+
+Tool names below are relative to `tools/`. Checks describe what the named
+tool actually exercises. A reference table records the documented rules
+when those rules do not have a standalone file layout.
+
+| Original format or rules table | Reader | Check | Inspect output |
+|---|---|---|---|
+| [MIX directories and filename keys](../docs/formats/mix.md) | `lol2_mix_parser.py`, `lol2_westwood_hash.py` | Strict directory and name-key checks | Entry offsets, sizes and hashes |
+| [Cache seed and old cache rows](../docs/lol2-cache-initializer.md) | `lol2_cache_seed.py` | Joins shipped seed rows to texture entries | **Gap:** row-by-row seed and backup inventory |
+| [Room archives and WOM relocations](../docs/lol2-room-archives.md) | `lol2_media_check.py` | Original module framing and relocations | **Gap:** select one module for a section and relocation summary |
+| [Level data directories](../docs/formats/level-data.md) | `lol2_source_format.py`, `lol2_level_report.py` | Geometry found and sections checked across all levels | Level reports |
+| [Regions and portals](../docs/formats/geometry.md), [walls](../docs/formats/walls.md), [automap inputs](../docs/formats/maps.md) | `lol2_level_report.py`, `lol2_level_map.py` | Region links, wall ranges and polygon checks | Region map. **Gap:** combined wall, door and placement schematic |
+| [ODF definitions](../docs/formats/entity-records.md), [placed objects and controls](../docs/lol2-l8-controls.md) | `lol2_entity_field_analyzer.py`, `lol2_level_report.py` | Definition framing and selected placement joins | Entity summary and level report. **Gap:** placements on the schematic |
+| [Script framing and opcode dispatch](../docs/lol2-script-opcodes.md) | `lol2_disassemble_scripts.py` | All 15 command streams by level, with native opcode sizes | Full listing. **Gap:** per-group meaning and trigger summary |
+| [Trigger and predicate tables](../docs/lol2-script-events.md), [shared predicates](../docs/lol2-shared-predicates.md), [level exits](../docs/lol2-level-graph.md) | `lol2_disassemble_scripts.py`, `lol2_level_report.py`, `lol2_level_notes.py` | Event and predicate joins and exit census | Raw links, level notes. **Gap:** event browser |
+| [Script motion](../docs/lol2-script-motion.md), [event producers](../docs/lol2-event-producers.md), [timers and clocks](../docs/lol2-timer-clock.md) | Native evidence in linked tables; `lol2_save_native.py` for clock witnesses | Selected native reads and calls | **Gap:** topic view of cited readers and rules |
+| [Item definitions](../docs/lol2-item-format.md) and [item handlers](../docs/lol2-item-handlers.md) | `lol2_item_labels.py`, `lol2_level_report.py` | Definition keys, names, replacement handlers and placement links | **Gap:** per-definition fields and handler lookup |
+| [Spell table](../docs/lol2-spells.md), [dispatch](../docs/lol2-spell-dispatch.md), [item effects](../docs/lol2-item-effects.md) | Native evidence in linked tables | Address and offset witnesses in the reference | **Gap:** topic view of cited readers and rules |
+| [Combat and creature AI](../docs/lol2-combat-ai.md), [mode transitions](../docs/lol2-creature-transitions.md) | Native evidence in linked tables | Address witnesses and selected corpus checks | **Gap:** topic view of cited readers and rules |
+| [Texture banks, descriptors and mips](../docs/formats/texture-container.md) | `lol2_texture_container.py` | Raw and compressed mip layouts and original LZO frames | Container and material reports, explicit PNG export |
+| [LZO1X and Westwood LZ77](../docs/formats/compression.md) | `lol2_texture_container.py`, `lol2_decompress_westwood.py` | Block lengths and decoder witnesses | Texture framing and explicit byte extraction |
+| [`options.shp`](../docs/formats/room-sections.md), [sprite blocks and frames](../docs/block-sprite-decoder.md) | `lol2_decompress_sphere.py`, `draracle/extract_block_sprite_frames.py` | Shape boundaries and selected frame witnesses | Shape summary and explicit frame export |
+| [WSA panel animations](../docs/formats/compression.md) | `lol2_media_check.py` | Named archive members and compressed delta spans | **Gap:** one bank's frame lengths and offsets |
+| [AUD and sound banks](../docs/formats/sound.md), [cues](../docs/lol2-sound-cues.md), [speech](../docs/lol2-speech.md) | `lol2_aud_decode.py`, `lol2_sound_bank.py`, `lol2_speech_names.py` | AUD chunk lengths, cue words and native switch paths | Audio info and bank rows. **Gap:** cue footer words by index |
+| [HMI music and music selection](../docs/lol2-music-selection.md) | `lol2_hmi_midi.py`, `lol2_media_check.py` | 33 HMI files and filename-table checks | HMI track info and explicit MIDI output |
+| [VQA movies](../docs/formats/vqa.md), [scene table](../docs/lol2-movie-scenes.md) | `lol2_vqa_v2_decode.py`, `lol2_media_check.py` | Frame framing, sample decodes and native scene witnesses | Movie info. **Gap:** scene lookup and level references in one view |
+| [TRR text tables](../docs/lol2-text-tables.md) | `lol2_text_tables.py` | Named table framing and counts | **Gap:** selected table entries and record offsets |
+| [Loose WAV and NE setup image](../docs/formats/loose.md) | `lol2_loose.py` | WAV chunks and executable sections | Check line. **Gap:** detailed file structure inventory |
+| [Save headers, sections and fields](../docs/lol2-save-format.md) | `lol2_save_header.py`, `lol2_save_native.py` | Native selector and clock checks, slot length check with a supplied save | Header JSON. **Gap:** named save fields and section payload view |
+| [Executable LE layout and native tables](../docs/lol2-executable-tables.md) | `lol2_parse_le.py`, focused witness checkers above | Table and relocation witnesses in `check_all.py` | Segment extractor. **Gap:** read-only LE structure and a unified table index |
+
 
 ### `check_all.py`
 
@@ -48,7 +80,7 @@ Reads `AUTOPLAY.WAV` and `SETUP.EXE` through their last byte. Part of `check_all
 
 ### `lol2_save_header.py`
 
-Reads one save slot you name (a player save, not a game file) and prints its preview, global and level offsets as JSON. Writes nothing. It has no `--check`, so it is not one of the `check_all.py` checks.
+Reads one save slot you name (a player save, not a game file) and prints its preview, global and level offsets as JSON. Writes nothing. Pass `--check` with a slot to compare its stored level lengths with the directory.
 
 ### `lol2_mix_parser.py`
 
