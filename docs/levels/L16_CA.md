@@ -2,6 +2,8 @@
 
 Made by `tools/lol2_level_report.py` from `DAT/L16_CA.MIX` and `DAT/L16_CAI.MIX`. Formats: [MIX](../formats/mix.md), [level data](../formats/level-data.md), [texture container](../formats/texture-container.md), [entity records](../formats/entity-records.md). How to read it: [README](README.md).
 
+Related references: [Progression rows for L16_CA](../PROGRESSION.md#level-l16_ca) and [item, spell and creature numbers](../NUMBERS.md).
+
 ## Archive entries
 
 `L16_CA.MIX` is 19,106,900 bytes with 3 entries.

@@ -2,6 +2,8 @@
 
 Made by `tools/lol2_level_report.py` from `DAT/L1_DC.MIX` and `DAT/L1_DCI.MIX`. Formats: [MIX](../formats/mix.md), [level data](../formats/level-data.md), [texture container](../formats/texture-container.md), [entity records](../formats/entity-records.md). How to read it: [README](README.md).
 
+Related references: [Progression rows for L1_DC](../PROGRESSION.md#level-l1_dc) and [item, spell and creature numbers](../NUMBERS.md).
+
 ## Archive entries
 
 `L1_DC.MIX` is 7,424,548 bytes with 3 entries.

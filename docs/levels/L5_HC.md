@@ -2,6 +2,8 @@
 
 Made by `tools/lol2_level_report.py` from `DAT/L5_HC.MIX` and `DAT/L5_HCI.MIX`. Formats: [MIX](../formats/mix.md), [level data](../formats/level-data.md), [texture container](../formats/texture-container.md), [entity records](../formats/entity-records.md). How to read it: [README](README.md).
 
+Related references: [Progression rows for L5_HC](../PROGRESSION.md#level-l5_hc) and [item, spell and creature numbers](../NUMBERS.md).
+
 ## Archive entries
 
 `L5_HC.MIX` is 6,030,400 bytes with 3 entries.

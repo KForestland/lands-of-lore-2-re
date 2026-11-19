@@ -2,6 +2,8 @@
 
 Made by `tools/lol2_level_report.py` from `DAT/L12_CM.MIX` and `DAT/L12_CMI.MIX`. Formats: [MIX](../formats/mix.md), [level data](../formats/level-data.md), [texture container](../formats/texture-container.md), [entity records](../formats/entity-records.md). How to read it: [README](README.md).
 
+Related references: [Progression rows for L12_CM](../PROGRESSION.md#level-l12_cm) and [item, spell and creature numbers](../NUMBERS.md).
+
 ## Archive entries
 
 `L12_CM.MIX` is 10,064,381 bytes with 3 entries.

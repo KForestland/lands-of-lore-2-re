@@ -2,6 +2,8 @@
 
 Made by `tools/lol2_level_report.py` from `DAT/L14_HT.MIX` and `DAT/L14_HTI.MIX`. Formats: [MIX](../formats/mix.md), [level data](../formats/level-data.md), [texture container](../formats/texture-container.md), [entity records](../formats/entity-records.md). How to read it: [README](README.md).
 
+Related references: [Progression rows for L14_HT](../PROGRESSION.md#level-l14_ht) and [item, spell and creature numbers](../NUMBERS.md).
+
 ## Archive entries
 
 `L14_HT.MIX` is 11,912,452 bytes with 3 entries.

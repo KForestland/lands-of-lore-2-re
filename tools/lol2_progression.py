@@ -179,6 +179,28 @@ def write_text(slot, stem, writes):
     return f"the stored writes to {slot} in the {where} are " + ", ".join(f"{how} {value}" for how, value in stored)
 
 
+def level_cell(stem, pending):
+    if stem in pending:
+        pending.remove(stem)
+        return f'<a name="level-{stem.lower()}"></a>[{stem}](levels/{stem}.md)'
+    return stem
+
+
+def check_level_sheets(rows):
+    directory = Path(PAGE).parent / "levels"
+    mentioned = {stem for row in rows for stem in row[:2]}
+    sheets = {path.stem for path in directory.glob("*.md")} - {"README"}
+    if sheets != mentioned:
+        raise ValueError(f"without a sheet: {sorted(mentioned - sheets)}; "
+                         f"without a progression row: {sorted(sheets - mentioned)}")
+    for stem in sorted(sheets):
+        text = (directory / f"{stem}.md").read_text(encoding="utf-8")
+        for link in (f"](../PROGRESSION.md#level-{stem.lower()})", "](../NUMBERS.md)"):
+            if link not in text:
+                raise ValueError(f"missing {link[2:-1]} link in {stem}.md")
+    return len(sheets)
+
+
 def page(rows, names, writes):
     present = {number(stem) for stem in names.values()}
     sources = {number(row[0]) for row in rows}
@@ -274,8 +296,15 @@ def page(rows, names, writes):
         "| From | To | Entry | Stream | Group | Event | Slots |",
         "|---|---|---:|---:|---:|---|---|",
     ]
+    # Put the jump target on the first outgoing row, or an incoming row
+    # for a level with no exit of its own.
+    outgoing = {row[0] for row in rows}
+    pending = set(names.values())
     for position, row in enumerate(rows):
         cells = list(row[:7])
+        cells[0] = level_cell(cells[0], pending)
+        if row[1] not in outgoing:
+            cells[1] = level_cell(cells[1], pending)
         if position in marked:
             cells[6] = f"{cells[6]} selector"
         lines.append("| " + " | ".join(str(part) for part in cells) + " |")
@@ -297,7 +326,11 @@ def main():
         stored = open(PAGE, encoding="utf-8").read() if os.path.isfile(PAGE) else ""
         if stored != text:
             parser.exit(1, "CHECK progression: docs/PROGRESSION.md differs from the exit table")
-        print(f"CHECK progression: {len(rows)} exits, {guarded} predicates; docs/PROGRESSION.md matches")
+        try:
+            covered = check_level_sheets(rows)
+        except (OSError, ValueError) as error:
+            parser.exit(1, f"CHECK progression: {error}")
+        print(f"CHECK progression: {len(rows)} exits, {guarded} predicates; docs/PROGRESSION.md matches; {covered} linked level sheets")
         return 0
     if args.out:
         with open(args.out, "w", encoding="utf-8") as handle:

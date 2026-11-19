@@ -2,6 +2,8 @@
 
 Made by `tools/lol2_level_report.py` from `DAT/L19_BC.MIX` and `DAT/L19_BCI.MIX`. Formats: [MIX](../formats/mix.md), [level data](../formats/level-data.md), [texture container](../formats/texture-container.md), [entity records](../formats/entity-records.md). How to read it: [README](README.md).
 
+Related references: [Progression rows for L19_BC](../PROGRESSION.md#level-l19_bc) and [item, spell and creature numbers](../NUMBERS.md).
+
 ## Archive entries
 
 `L19_BC.MIX` is 6,329,528 bytes with 3 entries.

@@ -2,6 +2,8 @@
 
 Made by `tools/lol2_level_report.py` from `DAT/L13_RC.MIX` and `DAT/L13_RCI.MIX`. Formats: [MIX](../formats/mix.md), [level data](../formats/level-data.md), [texture container](../formats/texture-container.md), [entity records](../formats/entity-records.md). How to read it: [README](README.md).
 
+Related references: [Progression rows for L13_RC](../PROGRESSION.md#level-l13_rc) and [item, spell and creature numbers](../NUMBERS.md).
+
 ## Archive entries
 
 `L13_RC.MIX` is 6,992,017 bytes with 3 entries.

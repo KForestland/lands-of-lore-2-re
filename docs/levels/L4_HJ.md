@@ -2,6 +2,8 @@
 
 Made by `tools/lol2_level_report.py` from `DAT/L4_HJ.MIX` and `DAT/L4_HJI.MIX`. Formats: [MIX](../formats/mix.md), [level data](../formats/level-data.md), [texture container](../formats/texture-container.md), [entity records](../formats/entity-records.md). How to read it: [README](README.md).
 
+Related references: [Progression rows for L4_HJ](../PROGRESSION.md#level-l4_hj) and [item, spell and creature numbers](../NUMBERS.md).
+
 ## Archive entries
 
 `L4_HJ.MIX` is 13,304,101 bytes with 3 entries.

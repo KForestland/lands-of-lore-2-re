@@ -2,6 +2,8 @@
 
 Made by `tools/lol2_level_report.py` from `DAT/L8_SJ.MIX` and `DAT/L8_SJI.MIX`. Formats: [MIX](../formats/mix.md), [level data](../formats/level-data.md), [texture container](../formats/texture-container.md), [entity records](../formats/entity-records.md). How to read it: [README](README.md).
 
+Related references: [Progression rows for L8_SJ](../PROGRESSION.md#level-l8_sj) and [item, spell and creature numbers](../NUMBERS.md).
+
 ## Archive entries
 
 `L8_SJ.MIX` is 13,831,538 bytes with 3 entries.

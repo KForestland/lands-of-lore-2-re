@@ -2,6 +2,8 @@
 
 Made by `tools/lol2_level_report.py` from `DAT/L20_BB.MIX` and `DAT/L20_BBI.MIX`. Formats: [MIX](../formats/mix.md), [level data](../formats/level-data.md), [texture container](../formats/texture-container.md), [entity records](../formats/entity-records.md). How to read it: [README](README.md).
 
+Related references: [Progression rows for L20_BB](../PROGRESSION.md#level-l20_bb) and [item, spell and creature numbers](../NUMBERS.md).
+
 ## Archive entries
 
 `L20_BB.MIX` is 15,779,290 bytes with 3 entries.

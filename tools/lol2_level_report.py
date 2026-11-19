@@ -384,6 +384,7 @@ def sheet(L, names, items, scenes):
              + ". Formats: [MIX](../formats/mix.md), [level data](../formats/level-data.md), "
                "[texture container](../formats/texture-container.md), [entity records](../formats/entity-records.md). "
                "How to read it: [README](README.md).", "",
+             f"Related references: [Progression rows for {s}](../PROGRESSION.md#level-{s.lower()}) and [item, spell and creature numbers](../NUMBERS.md).", "",
              "## Archive entries", "",
              f"`{s}.MIX` is {L['size']:,} bytes with {len(L['rows'])} entries.", "",
              "| Entry | Key | File offset | Size | What it is |", "|---:|---|---:|---:|---|"]

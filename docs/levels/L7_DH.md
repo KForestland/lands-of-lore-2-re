@@ -2,6 +2,8 @@
 
 Made by `tools/lol2_level_report.py` from `DAT/L7_DH.MIX` and `DAT/L7_DHI.MIX`. Formats: [MIX](../formats/mix.md), [level data](../formats/level-data.md), [texture container](../formats/texture-container.md), [entity records](../formats/entity-records.md). How to read it: [README](README.md).
 
+Related references: [Progression rows for L7_DH](../PROGRESSION.md#level-l7_dh) and [item, spell and creature numbers](../NUMBERS.md).
+
 ## Archive entries
 
 `L7_DH.MIX` is 5,057,658 bytes with 3 entries.

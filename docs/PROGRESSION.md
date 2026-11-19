@@ -54,7 +54,7 @@ One row per pair of levels, from the table below. Only command bytes and their l
 
 | From | To | Entry | Stream | Group | Event | Slots |
 |---|---|---:|---:|---:|---|---|
-| L1_DC | L3_DH | 1 | 0 | 1194 | region 1190 kind 12 event 2 | (local 2 == 5) |
+| <a name="level-l1_dc"></a>[L1_DC](levels/L1_DC.md) | L3_DH | 1 | 0 | 1194 | region 1190 kind 12 event 2 | (local 2 == 5) |
 | L1_DC | L3_DH | 1 | 0 | 1246 | region 1217 kind 12 event 2 | (local 2 == 5) |
 | L1_DC | L3_DH | 1 | 0 | 1298 | region 1218 kind 12 event 2 | (local 2 == 5) |
 | L1_DC | L3_DH | 1 | 0 | 1350 | region 1219 kind 12 event 2 | (local 2 == 5) |
@@ -64,8 +64,8 @@ One row per pair of levels, from the table below. Only command bytes and their l
 | L1_DC | L3_DH | 1 | 0 | 1558 | region 1223 kind 12 event 2 | (local 2 == 5) |
 | L1_DC | L3_DH | 1 | 0 | 1610 | region 1224 kind 12 event 2 | (local 2 == 5) |
 | L1_DC | L3_DH | 1 | 1 | 4030 | prop:447 kind 8 match 973 | none |
-| L3_DH | L4_HJ | 1 | 1 | 7306 | control:82 kind 6 value 1 | (object+0x25 == 3) |
-| L4_HJ | L5_HC | 1 | 0 | 5208 | region 2809 kind 12 event 2 | none |
+| <a name="level-l3_dh"></a>[L3_DH](levels/L3_DH.md) | L4_HJ | 1 | 1 | 7306 | control:82 kind 6 value 1 | (object+0x25 == 3) |
+| <a name="level-l4_hj"></a>[L4_HJ](levels/L4_HJ.md) | L5_HC | 1 | 0 | 5208 | region 2809 kind 12 event 2 | none |
 | L4_HJ | L5_HC | 2 | 0 | 4846 | region 2604 kind 12 event 2 | none |
 | L4_HJ | L7_DH | 1 | 0 | 6292 | region 3205 kind 12 event 4 | none |
 | L4_HJ | L8_SJ | 1 | 0 | 6100 | region 3186 kind 12 event 2 | (local 55 == 0) selector |
@@ -76,16 +76,16 @@ One row per pair of levels, from the table below. Only command bytes and their l
 | L4_HJ | L8_SJ | 1 | 0 | 6184 | region 3188 kind 12 event 2 | (local 55 == 1) selector |
 | L4_HJ | L8_SJ | 1 | 0 | 6190 | region 3189 kind 12 event 2 | (local 55 == 0) selector |
 | L4_HJ | L8_SJ | 1 | 0 | 6214 | region 3189 kind 12 event 2 | (local 55 == 1) selector |
-| L5_HC | L4_HJ | 3 | 0 | 860 | region 460 kind 12 event 2 | none |
+| <a name="level-l5_hc"></a>[L5_HC](levels/L5_HC.md) | L4_HJ | 3 | 0 | 860 | region 460 kind 12 event 2 | none |
 | L5_HC | L4_HJ | 4 | 0 | 6400 | region 835 kind 12 event 2 | none |
-| L7_DH | L4_HJ | 6 | 0 | 856 | region 1394 kind 12 event 2 | none |
+| <a name="level-l7_dh"></a>[L7_DH](levels/L7_DH.md) | L4_HJ | 6 | 0 | 856 | region 1394 kind 12 event 2 | none |
 | L7_DH | L4_HJ | 6 | 0 | 874 | region 1408 kind 12 event 2 | none |
 | L7_DH | L4_HJ | 6 | 0 | 892 | region 1409 kind 12 event 2 | none |
 | L7_DH | L4_HJ | 6 | 0 | 910 | region 1410 kind 12 event 2 | none |
 | L7_DH | L4_HJ | 6 | 0 | 928 | region 1411 kind 12 event 2 | none |
 | L7_DH | L4_HJ | 6 | 0 | 946 | region 1412 kind 12 event 2 | none |
 | L7_DH | L4_HJ | 6 | 0 | 964 | region 1413 kind 12 event 2 | none |
-| L8_SJ | L4_HJ | 7 | 0 | 1492 | region 2352 kind 12 event 2 | none |
+| <a name="level-l8_sj"></a>[L8_SJ](levels/L8_SJ.md) | L4_HJ | 7 | 0 | 1492 | region 2352 kind 12 event 2 | none |
 | L8_SJ | L4_HJ | 7 | 0 | 1498 | region 2353 kind 12 event 2 | none |
 | L8_SJ | L4_HJ | 7 | 0 | 1504 | region 2360 kind 12 event 2 | none |
 | L8_SJ | L9_DR | 1 | 0 | 1670 | region 3132 kind 12 event 2 | none |
@@ -95,28 +95,28 @@ One row per pair of levels, from the table below. Only command bytes and their l
 | L8_SJ | L10_DC | 1 | 0 | 564 | region 908 kind 12 event 2 | none |
 | L8_SJ | L12_CM | 1 | 0 | 1908 | region 3277 kind 12 event 2 | none |
 | L8_SJ | L14_HT | 1 | 1 | 11612 | prop:1198 kind 6 value 20 | (local 13 == 1) |
-| L9_DR | L8_SJ | 5 | 1 | 2168 | prop:104 kind 2 timer flags 0x30 | none |
+| <a name="level-l9_dr"></a>[L9_DR](levels/L9_DR.md) | L8_SJ | 5 | 1 | 2168 | prop:104 kind 2 timer flags 0x30 | none |
 | L9_DR | L8_SJ | 6 | 0 | 572 | region 2301 kind 12 event 2 | none |
 | L9_DR | L8_SJ | 7 | 0 | 5582 | region 5340 kind 12 event 2 | none |
 | L9_DR | L10_DC | 2 | 0 | 548 | region 2299 kind 12 event 2 | none |
-| L10_DC | L8_SJ | 2 | 0 | 0 | region 0 kind 12 event 2 | none |
+| <a name="level-l10_dc"></a>[L10_DC](levels/L10_DC.md) | L8_SJ | 2 | 0 | 0 | region 0 kind 12 event 2 | none |
 | L10_DC | L9_DR | 3 | 0 | 108 | region 42 kind 12 event 2 | (local 11 == 1) |
-| L12_CM | L8_SJ | 4 | 0 | 0 | region 734 kind 12 event 2 | none |
+| <a name="level-l12_cm"></a>[L12_CM](levels/L12_CM.md) | L8_SJ | 4 | 0 | 0 | region 734 kind 12 event 2 | none |
 | L12_CM | L13_RC | 1 | 1 | 2808 | control:74 kind 5 event 4 value 0 | none |
-| L13_RC | L12_CM | 2 | 0 | 706 | region 489 kind 12 event 2 | none |
-| L14_HT | L8_SJ | 3 | 0 | 1462 | region 863 kind 12 event 2 | none |
+| <a name="level-l13_rc"></a>[L13_RC](levels/L13_RC.md) | L12_CM | 2 | 0 | 706 | region 489 kind 12 event 2 | none |
+| <a name="level-l14_ht"></a>[L14_HT](levels/L14_HT.md) | L8_SJ | 3 | 0 | 1462 | region 863 kind 12 event 2 | none |
 | L14_HT | L8_SJ | 3 | 0 | 3836 | region 4176 kind 12 event 2 | none |
 | L14_HT | L16_CA | 1 | 1 | 9210 | prop:170 kind 6 value 20 | (local 22 == 1) |
-| L16_CA | L17_HC | 1 | 1 | 42056 | control:74 kind 5 event 4 value 0 | none |
+| <a name="level-l16_ca"></a>[L16_CA](levels/L16_CA.md) | L17_HC | 1 | 1 | 42056 | control:74 kind 5 event 4 value 0 | none |
 | L16_CA | L17_HC | 3 | 0 | 7268 | region 9822 kind 12 event 2 | none |
-| L17_HC | L16_CA | 2 | 1 | 3896 | movable:50 kind 5 event 4 value 0 | (object+0x25 == 1) |
+| <a name="level-l17_hc"></a>[L17_HC](levels/L17_HC.md) | L16_CA | 2 | 1 | 3896 | movable:50 kind 5 event 4 value 0 | (object+0x25 == 1) |
 | L17_HC | L16_CA | 3 | 0 | 1644 | region 1318 kind 12 event 2 | none |
 | L17_HC | L19_BC | 1 | 0 | 1632 | region 1312 kind 12 event 2 | none |
 | L17_HC | L19_BC | 1 | 0 | 1638 | region 1313 kind 12 event 2 | none |
-| L19_BC | L17_HC | 2 | 0 | 0 | region 22 kind 12 event 2 | none |
+| <a name="level-l19_bc"></a>[L19_BC](levels/L19_BC.md) | L17_HC | 2 | 0 | 0 | region 22 kind 12 event 2 | none |
 | L19_BC | L20_BB | 1 | 0 | 15784 | region 2369 kind 12 event 2 | (shared 52 == 0) selector |
 | L19_BC | L20_BB | 2 | 0 | 15790 | region 2369 kind 12 event 2 | (shared 52 == 1) selector |
-| L20_BB | L19_BC | 2 | 0 | 3786 | region 1475 kind 12 event 2 | none |
+| <a name="level-l20_bb"></a>[L20_BB](levels/L20_BB.md) | L19_BC | 2 | 0 | 3786 | region 1475 kind 12 event 2 | none |
 | L20_BB | L19_BC | 2 | 0 | 3792 | region 1476 kind 12 event 2 | none |
 | L20_BB | L19_BC | 2 | 0 | 3798 | region 1477 kind 12 event 2 | none |
 | L20_BB | L19_BC | 2 | 0 | 3804 | region 1478 kind 12 event 2 | none |

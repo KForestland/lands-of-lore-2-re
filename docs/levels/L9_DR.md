@@ -2,6 +2,8 @@
 
 Made by `tools/lol2_level_report.py` from `DAT/L9_DR.MIX` and `DAT/L9_DRI.MIX`. Formats: [MIX](../formats/mix.md), [level data](../formats/level-data.md), [texture container](../formats/texture-container.md), [entity records](../formats/entity-records.md). How to read it: [README](README.md).
 
+Related references: [Progression rows for L9_DR](../PROGRESSION.md#level-l9_dr) and [item, spell and creature numbers](../NUMBERS.md).
+
 ## Archive entries
 
 `L9_DR.MIX` is 23,611,578 bytes with 3 entries.
