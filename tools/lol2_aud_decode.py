@@ -24,6 +24,7 @@ Environment:
   LOL2_DAT  - path to LoL2 game files directory (default: current directory)
 """
 
+from cli_errors import ReaderArgumentParser, run_cli
 import os
 import struct
 import sys
@@ -158,6 +159,8 @@ def decode_aud(data):
     # Walk the chunks
     pos = AUD_HEADER_SIZE
     end = AUD_HEADER_SIZE + hdr["comp_size"]
+    if end > len(data):
+        raise ValueError(f"truncated AUD payload: expected {end} bytes, got {len(data)}")
     all_samples = []
     predictor = 0
     step_index = 0
@@ -172,10 +175,10 @@ def decode_aud(data):
             print(f"WARNING: chunk {chunk_count} at offset {pos} has unexpected id 0x{chunk_id:08X} (expected 0x{CHUNK_MAGIC:08X})",
                   file=sys.stderr)
 
-        chunk_data = data[pos + CHUNK_HEADER_SIZE: pos + CHUNK_HEADER_SIZE + chunk_comp]
-        if len(chunk_data) < chunk_comp:
-            print(f"WARNING: chunk {chunk_count} truncated (expected {chunk_comp}, got {len(chunk_data)} bytes)",
-                  file=sys.stderr)
+        start = pos + CHUNK_HEADER_SIZE
+        if start + chunk_comp > end:
+            raise ValueError(f"truncated AUD chunk {chunk_count} at offset {pos}")
+        chunk_data = data[start:start + chunk_comp]
 
         if chunk_comp == chunk_decomp and chunk_comp % 2 == 0:
             # Stored chunk: compressed size equals decoded size, so the bytes are 16-bit PCM already
@@ -298,9 +301,8 @@ def check(data_dir):
 
 
 def main():
-    import argparse
 
-    parser = argparse.ArgumentParser(description="Decode Westwood AUD audio from LoL2 MIX files")
+    parser = ReaderArgumentParser(description="Decode Westwood AUD audio from LoL2 MIX files")
     parser.add_argument("mixfile", nargs="?", help="MIX filename (resolved relative to LOL2_DAT)")
     parser.add_argument("entry", nargs="?", type=int, default=0, help="Entry index (default: 0)")
     parser.add_argument("-o", "--output", default=None, help="Output WAV file (default: auto-named)")
@@ -351,6 +353,8 @@ def main():
         aud_data = read_mix_entry(mix_path, args.entry)
 
     hdr = parse_aud_header(aud_data)
+    if AUD_HEADER_SIZE + hdr["comp_size"] > len(aud_data):
+        raise ValueError("truncated AUD payload")
 
     channels = 2 if hdr["stereo"] else 1
     sample_width = 2 if hdr["is_16bit"] else 1
@@ -389,4 +393,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(run_cli(main))

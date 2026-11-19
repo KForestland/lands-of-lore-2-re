@@ -8,6 +8,7 @@ import of the category switch and the cue table loaded from LOCALLNG.MIX.
 It writes nothing unless --out is set, and then only the check line.
 """
 
+from cli_errors import run_cli
 import os
 import struct
 import sys
@@ -388,4 +389,4 @@ def main(argv):
 
 
 if __name__ == "__main__":
-    sys.exit(main(sys.argv[1:]))
+    raise SystemExit(run_cli(main, sys.argv[1:]))

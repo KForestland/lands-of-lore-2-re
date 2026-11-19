@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Read the native LoL2 DOS slot header of a player save (game-written, not shipped). Prints offsets and sizes to stdout."""
-import argparse
+from cli_errors import ReaderArgumentParser, run_cli
 import json
 import struct
 from pathlib import Path
@@ -26,7 +26,7 @@ def parse_header(header, file_size):
 
 
 def main():
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = ReaderArgumentParser(description=__doc__)
     parser.add_argument("file", type=Path)
     parser.add_argument("--check", action="store_true", help="compare stored and derived level lengths")
     args = parser.parse_args()
@@ -46,4 +46,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(run_cli(main))

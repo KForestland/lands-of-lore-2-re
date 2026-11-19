@@ -7,6 +7,7 @@ AUTOPLAY.WAV counts when its RIFF chunks tile the file. SETUP.EXE counts
 when the MZ image ends at an NE header and that header's tables, segments,
 relocation lists, zero padding and resources tile the file.
 """
+from cli_errors import run_cli
 from pathlib import Path
 from struct import unpack_from
 
@@ -270,4 +271,4 @@ def main():
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    raise SystemExit(run_cli(main))

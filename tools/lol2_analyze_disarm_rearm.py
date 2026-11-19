@@ -10,6 +10,7 @@ Usage:
     python lol2_analyze_disarm_rearm.py --trace TRACE_FILE [--out SUMMARY.json]
 """
 
+from cli_errors import ReaderArgumentParser, run_cli
 import json
 import os
 import sys
@@ -166,7 +167,7 @@ def self_test():
 
 def main():
     import argparse
-    ap = argparse.ArgumentParser(description=(__doc__ or "") + """
+    ap = ReaderArgumentParser(description=(__doc__ or "") + """
   lol2_analyze_disarm_rearm.py --trace guest_trace.jsonl [--out consumer_summary.json]
   lol2_analyze_disarm_rearm.py --check   # self-test on built-in synthetic events (needs no trace)
 Traces come from a patched DOSBox guest tracer; none is included.
@@ -190,4 +191,4 @@ Traces come from a patched DOSBox guest tracer; none is included.
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    raise SystemExit(run_cli(main))

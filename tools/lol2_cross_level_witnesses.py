@@ -13,9 +13,9 @@ The DAT directory is resolved in order:
     3. Current directory
 """
 
+from cli_errors import run_cli
 import os
 import struct
-import sys
 from collections import defaultdict
 
 LEVEL_FILES = [
@@ -205,4 +205,4 @@ def main():
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    raise SystemExit(run_cli(main))

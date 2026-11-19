@@ -19,7 +19,7 @@ The script intentionally does not claim runtime provenance closure.
 
 from __future__ import annotations
 
-import argparse
+from cli_errors import ReaderArgumentParser, run_cli
 import hashlib
 import json
 import os
@@ -111,7 +111,7 @@ def rgb_stats(path: str) -> dict[str, object]:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(
+    parser = ReaderArgumentParser(
         description="Verify the current LOCAL.MIX wall-atlas candidate model."
     )
     parser.add_argument(
@@ -356,4 +356,4 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(run_cli(main))

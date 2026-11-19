@@ -13,6 +13,7 @@ Usage:
 Environment variables:
   LOL2_DAT  - path to the LoL2 DAT/ directory (default: current directory)
 """
+from cli_errors import run_cli
 import os
 import struct
 
@@ -21,15 +22,7 @@ LOL2_DAT = os.environ.get("LOL2_DAT")   # no built-in default; see lol2_cli.py
 
 def read_mix(path):
     """Parse a Westwood MIX file, return list of entry byte strings."""
-    with open(path, "rb") as f:
-        data = f.read()
-    count = struct.unpack_from("<H", data, 0)[0]
-    entries = []
-    for i in range(count):
-        off = 6 + i * 12
-        h, o, s = struct.unpack_from("<III", data, off)
-        entries.append((h, o, s))
-    data_base = 6 + count * 12
+    data, entries, data_base = read_mix_with_hashes(path)
     return [data[data_base + o : data_base + o + s] for h, o, s in entries]
 
 
@@ -37,13 +30,19 @@ def read_mix_with_hashes(path):
     """Parse a MIX file, return (raw_data, [(hash, offset, size)], data_base_offset)."""
     with open(path, "rb") as f:
         data = f.read()
-    count = struct.unpack_from("<H", data, 0)[0]
+    if len(data) < 6:
+        raise ValueError(f"{path}: truncated MIX header")
+    count, total = struct.unpack_from("<HI", data)
+    data_base = 6 + count * 12
+    if data_base + total != len(data):
+        raise ValueError(f"{path}: MIX header and payload sizes do not match the file")
     entries = []
     for i in range(count):
         off = 6 + i * 12
         h, o, s = struct.unpack_from("<III", data, off)
+        if o + s > total:
+            raise ValueError(f"{path}: MIX entry {i} lies outside the payload")
         entries.append((h, o, s))
-    data_base = 6 + count * 12
     return data, entries, data_base
 
 
@@ -63,7 +62,6 @@ USAGE = """
 
 
 def main():
-    import sys
     import lol2_cli
     import lol2_source_format as strict
     ap = lol2_cli.tool_args((__doc__ or "") + USAGE)
@@ -116,5 +114,4 @@ def main():
 
 
 if __name__ == "__main__":
-    import sys
-    sys.exit(main())
+    raise SystemExit(run_cli(main))

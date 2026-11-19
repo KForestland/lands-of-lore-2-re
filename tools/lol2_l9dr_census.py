@@ -7,12 +7,12 @@ Extracts all fixed-stride records, catalogs tags, and computes simple per-tag
 field invariants for the first staged 24-word prefix.
 """
 
+from cli_errors import run_cli
 import json
 import os
 import struct
 from collections import Counter, defaultdict
 
-import sys
 RECORD_SIZE = 147
 BODY_SIZE = 135
 N_HEADER_WORDS = 24
@@ -108,4 +108,4 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    raise SystemExit(run_cli(main))

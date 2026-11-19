@@ -29,7 +29,7 @@ Requires Python 3.10+. Frame decoding uses NumPy. Pillow is needed only for --ou
     python3 tools/lol2_vqa_v2_decode.py ./lol2_game/DAT/CHUT.MIX
     python3 tools/lol2_vqa_v2_decode.py ./lol2_game/DAT/CHUT.MIX --entry 3 --out frames/
 """
-import argparse
+from cli_errors import ReaderArgumentParser, run_cli
 import os
 import sys
 from pathlib import Path
@@ -584,7 +584,7 @@ def _entry_blob(folder, mix_name, index):
 
 
 def main(argv=None) -> int:
-    ap = argparse.ArgumentParser(description='Decode LoL2 VQA v2 movies (see docs/lol2-vqa-v2.md).')
+    ap = ReaderArgumentParser(description='Decode LoL2 VQA v2 movies (see docs/lol2-vqa-v2.md).')
     ap.add_argument('path', type=Path, nargs='?', help='a .VQA file, or a MIX archive (read only)')
     ap.add_argument('--entry', type=int, help='MIX entry index to decode')
     ap.add_argument('--key', type=lambda s: int(s, 0), help='MIX entry key (hash) to decode')
@@ -645,4 +645,4 @@ def main(argv=None) -> int:
 
 
 if __name__ == '__main__':
-    sys.exit(main())
+    raise SystemExit(run_cli(main))

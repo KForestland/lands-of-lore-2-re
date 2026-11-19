@@ -13,6 +13,7 @@ Item handlers read these values as [[0x96904]] + 8*pair + 4.
 handlers 2, 8, 83 and 91-93 (pairs 17, 15, 22 and 37). Prints indexes only.
 """
 
+from cli_errors import run_cli
 import os
 import struct
 import sys
@@ -99,4 +100,4 @@ def main(argv):
 
 
 if __name__ == "__main__":
-    sys.exit(main(sys.argv[1:]))
+    raise SystemExit(run_cli(main, sys.argv[1:]))

@@ -34,6 +34,7 @@ Body field map (u16 LE words):
     f23:     Packed: hi byte = level tier/quest flag, lo byte = entity slot index
 """
 
+from cli_errors import run_cli
 import json
 import os
 import struct
@@ -323,4 +324,4 @@ def main():
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    raise SystemExit(run_cli(main))

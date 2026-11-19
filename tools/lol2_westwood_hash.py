@@ -21,7 +21,7 @@ Usage as library:
     from lol2_westwood_hash import ww_hash_v1, ww_hash_v2, ww_hash_ts, ww_hash_crc
 """
 
-import sys
+from cli_errors import ReaderArgumentParser, run_cli
 import zlib
 
 
@@ -108,7 +108,7 @@ USAGE = """
 
 def main():
     import argparse, os
-    ap = argparse.ArgumentParser(description=(__doc__ or "") + USAGE, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap = ReaderArgumentParser(description=(__doc__ or "") + USAGE, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("names", nargs="*")
     ap.add_argument("--data", default=os.environ.get("LOL2_DAT"))
     ap.add_argument("--check", action="store_true")
@@ -138,4 +138,4 @@ def main():
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    raise SystemExit(run_cli(main))

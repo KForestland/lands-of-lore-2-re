@@ -8,7 +8,8 @@ palette (CPL0), and audio chunks (SND0/SND1/SND2).
 Environment variables:
   LOL2_DAT   - path to the LoL2 DAT directory (default: current directory)
 """
-import struct, os, sys, argparse
+from cli_errors import ReaderArgumentParser, run_cli
+import struct, os, sys
 from collections import defaultdict
 
 
@@ -157,7 +158,7 @@ def process_mix(mix_path, verbose=False):
 
 
 def main():
-    parser = argparse.ArgumentParser(
+    parser = ReaderArgumentParser(
         description="Parse VQA (FORM/WVQA) entries from a LoL2 MIX archive.")
     parser.add_argument("mix_path", nargs="?",
                         help="Path to a MIX file (e.g. L10_DCI.MIX). "
@@ -181,4 +182,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(run_cli(main))

@@ -7,6 +7,7 @@ Examples: lol2_inspect.py --data DAT item 68
 
 All commands print to standard output. They read the supplied installation.
 """
+from cli_errors import ReaderArgumentParser, run_cli
 import argparse
 import os
 from pathlib import Path
@@ -295,7 +296,7 @@ def check(data, image, names):
 
 
 def main():
-    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser = ReaderArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     dat = os.environ.get("LOL2_DAT")
     parser.add_argument("--data", type=Path, required=dat is None, default=dat, help="original DAT folder")
     parser.add_argument("--check", action="store_true")
@@ -351,4 +352,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(run_cli(main))

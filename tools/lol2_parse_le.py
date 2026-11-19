@@ -8,10 +8,10 @@ with valid byte/word order fields (both 0) since the standard e_lfanew
 mechanism is not used in bound DOS4GW executables.
 """
 
+from cli_errors import ReaderArgumentParser, run_cli
 import os as _os, sys as _sys
 _sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))
 from lol2_cli import refuse_repo_output  # noqa: E402
-import argparse
 import struct
 import os
 import sys
@@ -86,7 +86,7 @@ def segment_type(flags):
 
 
 def main():
-    parser = argparse.ArgumentParser(
+    parser = ReaderArgumentParser(
         description="Inspect DOS4GW LE headers and objects. Export segments only with an explicit output folder."
     )
     parser.add_argument(
@@ -463,4 +463,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    raise SystemExit(run_cli(main))

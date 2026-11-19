@@ -2,16 +2,15 @@
 """Extract code/data segments from LOLG.DAT (DOS4GW LE executable).
 LE header at 0x3BCB4, 5 objects, 4096-byte pages."""
 
+from cli_errors import ReaderArgumentParser, run_cli
 import os as _os, sys as _sys
 _sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))
 from lol2_cli import refuse_repo_output  # noqa: E402
-import argparse
 import struct
 import os
-import sys
 
 def main():
-    parser = argparse.ArgumentParser(
+    parser = ReaderArgumentParser(
         description="Extract code/data segments from LOLG.DAT (DOS4GW LE executable)."
     )
     parser.add_argument(
@@ -221,4 +220,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    raise SystemExit(run_cli(main))

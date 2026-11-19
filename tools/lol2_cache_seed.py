@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Compare the shipped LoL2 cache seed lengths with the 15 original texture banks."""
-import argparse
 import ctypes
+from cli_errors import ReaderArgumentParser, run_cli
 import os
 import re
 import struct
@@ -108,7 +108,7 @@ def compare(data):
 
 
 def main():
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = ReaderArgumentParser(description=__doc__)
     data = os.environ.get("LOL2_DAT")
     parser.add_argument("--data", type=Path, default=data, required=data is None)
     parser.add_argument("--check", action="store_true", required=True)
@@ -126,4 +126,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(run_cli(main))

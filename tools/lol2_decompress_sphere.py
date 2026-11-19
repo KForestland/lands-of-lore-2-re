@@ -4,8 +4,8 @@
 The tool's filename is historical. Native shape directory and header
 readers are at LOLG.DAT analysis addresses 0x15A22D and 0x15A457.
 """
+from cli_errors import run_cli
 import struct
-import sys
 from pathlib import Path
 
 from lol2_decompress_westwood import decompress_westwood
@@ -118,4 +118,4 @@ def main():
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    raise SystemExit(run_cli(main))

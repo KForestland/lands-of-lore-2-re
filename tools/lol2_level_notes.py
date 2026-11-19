@@ -13,6 +13,7 @@ The output describes static commands, matcher operands and references. It never
 runs a script. See docs/levels/notes/README.md for the row schema.
 """
 
+from cli_errors import run_cli
 import json
 import struct
 import sys
@@ -636,4 +637,4 @@ def main():
 
 
 if __name__ == '__main__':
-    sys.exit(main())
+    raise SystemExit(run_cli(main))

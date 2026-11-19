@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Inspect a player save written by the original DOS 1.30 game. Prints to stdout."""
-import argparse
+from cli_errors import ReaderArgumentParser, run_cli
 from ctypes import byref, c_size_t, create_string_buffer
 from functools import lru_cache
 import os
@@ -294,7 +294,7 @@ def verify_slot(data):
 
 
 def main():
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = ReaderArgumentParser(description=__doc__)
     parser.add_argument("slot", type=Path, nargs="?", help="player save slot written by the game")
     parser.add_argument("--data", type=Path, default=os.environ.get("LOL2_DAT"), help="original DAT folder")
     parser.add_argument("--check", action="store_true", help="check one slot, or the native code and sibling SAVEGAME folder")
@@ -332,4 +332,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(run_cli(main))

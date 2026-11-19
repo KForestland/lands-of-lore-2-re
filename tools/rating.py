@@ -12,8 +12,8 @@ The lines are explained in docs/HOW_WE_RATE.md:
                   and how many of the answered ones rest on edited saves only
   Open questions  the state words of the At-a-glance table in docs/OPEN_QUESTIONS.md
 """
+from cli_errors import run_cli
 import re
-import sys
 from pathlib import Path
 
 import struct
@@ -170,4 +170,4 @@ def main():
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    raise SystemExit(run_cli(main))

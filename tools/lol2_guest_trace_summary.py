@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from cli_errors import ReaderArgumentParser, run_cli
 import collections
 import json
 import os
@@ -80,7 +81,7 @@ def summarize(trace_path) -> str:
 def main() -> int:
     """Summarize a DOSBox guest trace (guest_trace.jsonl from the patched tracer; none is included)."""
     import argparse, tempfile
-    ap = argparse.ArgumentParser(description="""Summarize a DOSBox guest trace (JSON lines) as Markdown.
+    ap = ReaderArgumentParser(description="""Summarize a DOSBox guest trace (JSON lines) as Markdown.
 
   lol2_guest_trace_summary.py --trace guest_trace.jsonl [--out summary.md]
   lol2_guest_trace_summary.py --check   # self-test on a synthetic trace (needs no game data)""",
@@ -112,4 +113,4 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    raise SystemExit(run_cli(main))

@@ -16,7 +16,7 @@ question the evidence can answer:
 
 from __future__ import annotations
 
-import argparse
+from cli_errors import ReaderArgumentParser, run_cli
 import json
 import os
 import sys
@@ -102,7 +102,7 @@ def variant_rows(data: bytes, width: int, height: int) -> dict[str, list[bytes]]
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(
+    parser = ReaderArgumentParser(
         description="Check Entry 1 record 0 against preserved runtime wall buffers."
     )
     parser.add_argument(
@@ -210,4 +210,4 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(run_cli(main))

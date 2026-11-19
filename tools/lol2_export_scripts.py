@@ -23,6 +23,7 @@ raw hex. An opcode outside SIZES stops framing of that stream, is listed under
 
 Standard library only.
 """
+from cli_errors import ReaderArgumentParser, run_cli
 import argparse
 import hashlib
 import json
@@ -274,7 +275,7 @@ def find_archive(game, level):
 
 
 def main(argv=None):
-    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser = ReaderArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('game', help="game root containing DAT/ (read only); '-' uses $LOL2_GAME or ./lol2_game")
     parser.add_argument('level', help='archive stem such as L7_DH, or a level number')
     parser.add_argument('output', type=Path, help='output JSON path')
@@ -300,4 +301,4 @@ def main(argv=None):
 
 
 if __name__ == '__main__':
-    sys.exit(main())
+    raise SystemExit(run_cli(main))

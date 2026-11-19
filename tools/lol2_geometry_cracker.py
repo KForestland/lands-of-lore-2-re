@@ -11,10 +11,11 @@ Environment variables:
   LOL2_OUT   - output directory (default: ./lol2_geometry_out)
   LOL2_LEVEL - level name override (e.g. L1_DC, L10_DC)
 """
+from cli_errors import ReaderArgumentParser, run_cli
 import os as _os, sys as _sys
 _sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))
 from lol2_cli import refuse_repo_output  # noqa: E402
-import struct, os, sys, argparse, json
+import struct, os, sys, json
 from collections import Counter, defaultdict
 from PIL import Image
 import colorsys
@@ -307,7 +308,7 @@ def visualize_sectors(subs, ei, out_dir):
 # Main
 # ---------------------------------------------------------------------------
 def main():
-    parser = argparse.ArgumentParser(
+    parser = ReaderArgumentParser(
         description="Parse and visualize LoL2 level geometry from MIX archives.")
     parser.add_argument("mix_path", nargs="?",
                         help="Path to a level MIX file (e.g. L1_DC.MIX). "
@@ -369,4 +370,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(run_cli(main))

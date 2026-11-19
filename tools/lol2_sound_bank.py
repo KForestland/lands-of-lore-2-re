@@ -19,6 +19,7 @@ Usage:
   lol2_sound_bank.py ./lol2_game/LOCALLNG.MIX --json
   lol2_sound_bank.py ./lol2_game/LOCALLNG.MIX --extract OUTDIR [--index N ...]
 """
+from cli_errors import ReaderArgumentParser, run_cli
 import argparse
 import collections
 import json
@@ -90,7 +91,7 @@ def parse_rows(bank):
 
 
 def main():
-    parser = argparse.ArgumentParser(description=__doc__,
+    parser = ReaderArgumentParser(description=__doc__,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("mix", nargs="?", default="LOCALLNG.MIX",
                         help="LOCALLNG.MIX from your own install: a path, or found next to the DAT folder (--data or $LOL2_DAT)")
@@ -135,4 +136,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(run_cli(main))

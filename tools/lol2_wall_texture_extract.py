@@ -48,7 +48,7 @@ Usage
 
 from __future__ import annotations
 
-import argparse
+from cli_errors import ReaderArgumentParser, run_cli
 import os
 import struct
 import sys
@@ -275,7 +275,7 @@ def save_texture(pixels: bytes, width: int, height: int,
 # ---------------------------------------------------------------------------
 
 def main() -> None:
-    parser = argparse.ArgumentParser(
+    parser = ReaderArgumentParser(
         description="Extract wall textures from LoL2 LOCAL.MIX"
     )
     parser.add_argument(
@@ -384,4 +384,4 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(run_cli(main))

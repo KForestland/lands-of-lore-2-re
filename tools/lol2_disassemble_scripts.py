@@ -8,6 +8,7 @@ The listing includes numeric operands, group links and predicate bytes. It
 describes static instructions and never executes the bytecode.
 """
 
+from cli_errors import run_cli
 from collections import Counter
 from pathlib import Path
 import re
@@ -177,4 +178,4 @@ def main(argv=None):
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    raise SystemExit(run_cli(main))

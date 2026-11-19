@@ -8,6 +8,7 @@ Each image is listed in IMAGES with the tool command that makes it. Pixels are c
 conversion to RGBA, so PNG compression settings do not matter. Every PNG under examples/ and
 docs/images/ must be listed.
 """
+from cli_errors import run_cli
 import os
 import subprocess
 import sys
@@ -78,4 +79,4 @@ def argparse_suppressed():
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    raise SystemExit(run_cli(main))

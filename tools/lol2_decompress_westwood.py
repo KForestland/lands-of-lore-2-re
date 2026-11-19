@@ -22,9 +22,9 @@ Usage:
 Environment variables:
   LOL2_DAT  - path to the LoL2 DAT/ directory (default: current directory)
 """
+from cli_errors import run_cli
 import os
 import struct
-import sys
 
 from lol2_mix_parser import read_mix_entry, LOL2_DAT
 
@@ -226,4 +226,4 @@ def main():
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    raise SystemExit(run_cli(main))

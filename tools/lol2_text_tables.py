@@ -7,6 +7,7 @@ TCEL.MIX sit inside it. --check re-reads those bytes and prints one line.
 It writes nothing unless --out is set, and then only counts.
 """
 
+from cli_errors import run_cli
 import os
 import struct
 import sys
@@ -238,4 +239,4 @@ def main(argv):
 
 
 if __name__ == "__main__":
-    sys.exit(main(sys.argv[1:]))
+    raise SystemExit(run_cli(main, sys.argv[1:]))

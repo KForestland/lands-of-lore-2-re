@@ -28,6 +28,7 @@ Usage:
   lol2_texture_container.py blob     --mix DAT/L1_DC.MIX --out l1_dc.bin
   lol2_texture_container.py --check --data DAT
 """
+from cli_errors import ReaderArgumentParser, run_cli
 import argparse
 import collections
 import ctypes
@@ -618,7 +619,7 @@ def check(data_dir):
 def main(argv=None):
     argv = sys.argv[1:] if argv is None else list(argv)
     if "--check" in argv or (argv[:1] == ["check"]):
-        parser = argparse.ArgumentParser(description=__doc__,
+        parser = ReaderArgumentParser(description=__doc__,
                                          formatter_class=argparse.RawDescriptionHelpFormatter)
         parser.add_argument("--data", default=os.environ.get("LOL2_DAT"),
                             help="the game's DAT folder (default: $LOL2_DAT)")
@@ -628,7 +629,7 @@ def main(argv=None):
         if not args.data:
             parser.error("--data or $LOL2_DAT is required")
         return check(args.data)
-    parser = argparse.ArgumentParser(description=__doc__,
+    parser = ReaderArgumentParser(description=__doc__,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = parser.add_subparsers(dest="command", required=True)
     for name, fn in (("info", cmd_info), ("material", cmd_material),
@@ -657,4 +658,4 @@ def main(argv=None):
 
 
 if __name__ == "__main__":
-    sys.exit(main() or 0)
+    raise SystemExit(run_cli(main))

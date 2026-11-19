@@ -9,6 +9,7 @@ and LOCALLNG.MIX are read from that folder's parent. --check prints one line.
 
 Expected output is in tools/README.md.
 """
+from cli_errors import run_cli
 import os
 import struct
 import sys
@@ -532,4 +533,4 @@ def main(argv):
 
 
 if __name__ == "__main__":
-    sys.exit(main(sys.argv[1:]))
+    raise SystemExit(run_cli(main, sys.argv[1:]))

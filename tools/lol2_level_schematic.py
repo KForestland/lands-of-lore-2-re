@@ -8,6 +8,7 @@
 The PNG is a schematic. It uses original geometry and placement records,
 with labels drawn by Pillow. Use --focus to inspect a dense area.
 """
+from cli_errors import run_cli
 from dataclasses import dataclass
 from pathlib import Path
 from struct import iter_unpack
@@ -240,4 +241,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(run_cli(main))

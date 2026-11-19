@@ -22,6 +22,7 @@ No game text, pictures or sound are written; only ids, counts and offsets.
   lol2_level_report.py --data DAT --out DIR --level 9   # one level
   lol2_level_report.py --check --data DAT               # one line: every level reads cleanly, and docs/levels matches the tool
 """
+from cli_errors import run_cli
 import os
 import sys
 from collections import Counter, defaultdict
@@ -634,4 +635,4 @@ def main():
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    raise SystemExit(run_cli(main))

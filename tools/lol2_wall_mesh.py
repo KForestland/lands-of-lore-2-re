@@ -15,10 +15,11 @@ Environment variables:
   LOL2_DAT   - path to the LoL2 DAT directory (default: current directory)
   LOL2_OUT   - output directory (default: current directory)
 """
+from cli_errors import ReaderArgumentParser, run_cli
 import os as _os, sys as _sys
 _sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))
 from lol2_cli import refuse_repo_output  # noqa: E402
-import struct, os, sys, argparse
+import struct, os, sys
 from collections import defaultdict
 
 
@@ -308,7 +309,7 @@ def generate_wall_mesh(mix_path, obj_path, geo_idx=None):
 # Main
 # ---------------------------------------------------------------------------
 def main():
-    parser = argparse.ArgumentParser(
+    parser = ReaderArgumentParser(
         description="Generate OBJ wall meshes from LoL2 level MIX geometry.")
     parser.add_argument("mix_path",
                         help="Path to a level MIX file (e.g. L1_DC.MIX)")
@@ -337,4 +338,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(run_cli(main))

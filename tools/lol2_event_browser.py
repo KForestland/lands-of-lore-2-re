@@ -8,6 +8,7 @@
 Use --start and --limit to page through a level. Offsets identify the original
 records. Command meanings come from the documented native opcode paths.
 """
+from cli_errors import ReaderArgumentParser, run_cli
 from collections import Counter, defaultdict
 import argparse
 import os
@@ -109,7 +110,7 @@ def check(data, lookup):
 
 
 def main():
-    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser = ReaderArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     dat = os.environ.get("LOL2_DAT")
     parser.add_argument("--data", default=dat, type=Path, required=dat is None, help="original DAT directory")
     parser.add_argument("--check", action="store_true")
@@ -147,4 +148,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(run_cli(main))

@@ -7,6 +7,7 @@ MIDI file per song in memory, and prints one line. It writes nothing.
 --out writes one .mid per song and must be a directory outside this repository.
 """
 
+from cli_errors import run_cli
 import os
 import struct
 import sys
@@ -349,4 +350,4 @@ def main(argv):
 
 
 if __name__ == "__main__":
-    sys.exit(main(sys.argv[1:]))
+    raise SystemExit(run_cli(main, sys.argv[1:]))

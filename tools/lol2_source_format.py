@@ -12,6 +12,7 @@
 
 No game data is bundled. Callers read the user's own files.
 """
+from cli_errors import run_cli
 import struct
 
 
@@ -104,4 +105,4 @@ def main():
 
 if __name__ == "__main__":
     import sys
-    sys.exit(main())
+    raise SystemExit(run_cli(main))
