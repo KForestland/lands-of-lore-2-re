@@ -179,15 +179,15 @@ not directly invoke it.
 
 **CONFIRMED, saved timer.** One DOS 1.30 instance used a
 disposable game copy, a private Xvfb display and null audio.
-It loaded the game-written L20_BB
-autosave with SHA-256 prefix `e2393dbe4d2b`. In that slot, the
+It loaded the game-written L20_BB autosave with SHA-256 prefix `e2393dbe4d2b`. In that slot, the
 L61 active-count XOR at slot `+0x189819` is 1 and the first
 L62 pointer at `+0x189825` is `0x1120284C`. The rebasing
 arms `0xEA077/0xEA0C5` executed. The first live event was at
 `0x11202774`, or L9 buffer +0x18 in this run (L9 stored span
 starts at slot `+0x183669`). Its first six bytes
 `0A 02 18 00 30 80` identify kind 2, command offset 0x18 and
-flag byte 0x30. Mask 0x90 is present, so the service loads the
+flag byte 0x30. Its intersection with mask 0x90 is nonzero,
+so the service loads the
 whole-tick cell at `0xB8BE5`.
 
 **CONFIRMED, first service after load.** The three cells were zero
@@ -210,8 +210,7 @@ from 3 to zero and reanchored the marker at `0x0F31`
 The first countdown ran before the first new sample. It
 subtracted the retained whole-tick value 4 at `0xB8CE4`.
 The last pre-pause frame conversion (`0xE0C5C–0xE0CD2`)
-left that value. The subtraction was
-taking +8 from `0x0A05` to `0x0A01`. The subsequent frame
+left that value. The subtraction took +8 from `0x0A05` to `0x0A01`. The subsequent frame
 sample at `0xE0BE9` was 24, with marker `0x0F49`.
 That marker is 24 counts after the resume anchor. The observed
 menu interval did not advance the countdown or enter the next

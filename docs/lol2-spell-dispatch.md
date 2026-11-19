@@ -334,7 +334,9 @@ the sampled points.
 
 #### Controlled use of the level-20 lesson
 
-**CONFIRMED.** The same original autosave was restored in one DOS 1.30 instance on a private Xvfb display, using null audio and a disposable installation copy.
+**CONFIRMED.** The same original autosave was restored in one DOS 1.30
+instance on a private Xvfb display, using null audio and a
+disposable installation copy.
 With inventory page 0 open, a left click on row 2, column 2 took
 inventory index 6 (instance `0x102F5AD4`, definition +0x18
 `0x5BD621C2`). The configured Use Mouse Item key, W, invoked
@@ -350,7 +352,9 @@ in the player pool ([release call `0x96FDD`](lol2-item-handlers.md)).
 This exercises use of a lesson whose acquisition ID was already present.
 
 **CONFIRMED for this action.** The little-endian dword at player
-+0x185 was zero at the six traced sites from the handler entry through the effect request, including the cursor lookup at `0x77ACC`. In a separate run of the
++0x185 was zero at the six traced sites from the handler entry
+through the effect request, including the cursor lookup at
+`0x77ACC`. In a separate run of the
 same restore, a hardware write watch on +0x185 ended without a hit;
 its duration was not recorded. No breakpoints were set at the
 countdown and expiry sites (`0xD2E45–0xD2E61`) in either run, and
