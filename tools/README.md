@@ -80,7 +80,7 @@ Run each `--check` and print one line each, then a summary.
 $ python3 tools/check_all.py | sed -n '1,2p;$p'
 CHECK repo_guard: N tracked files; game files, media, stray images, files over 300 KB, machine paths, words from the local list, or commit identities: none (0); private word list: not present, skipped
 CHECK mix: 81 MIX files, 2905 entries; this reader and lol2_source_format.parse_mix agree and every entry lies inside its file: 81/81; index sorted by signed key: 81/81 (by unsigned key: 20); bad=none
-ALL 37 CHECKS PASSED
+ALL 39 CHECKS PASSED
 ```
 
 ### `doc_links.py`
@@ -147,7 +147,10 @@ $ python3 tools/lol2_save_inspect.py --data /path/to/DAT --check
 CHECK save inspector: 30 game-written player saves and 154 level blocks
 ```
 
-That output is from the reference installation's `SAVEGAME` folder. A
+That output is from the `SAVEGAME` folder of the working installation
+(30 game-written saves). The archived reference copy of the same folder
+lacks three later saves and reports 27 game-written player saves and 149
+level blocks; both counts are right for their folder. A
 fresh installation reports `CHECK save inspector: native save witnesses
 checked; no save slots supplied`. Use `python3 tools/lol2_save_inspect.py
 "$LOL2_SLOT"` with a slot of your own for the field-by-field overview.
@@ -373,6 +376,10 @@ CHECK repo_guard: N tracked files; game files, media, stray images, files over 3
   - example: `python3 tools/lol2_mix_parser.py --help`
 - `lol2_mix_writer.py` — writes a MIX archive from (key, offset, payload) rows; `--check` rebuilds the 81 `DAT/` archives and the 6 shipped game-folder archives in memory and compares them byte for byte (`CDCACHE.MIX` is skipped, the game writes it; [MIX writing](../docs/formats/mix.md#writing))
   - example: `python3 tools/lol2_mix_writer.py --check --data /path/to/LoL2/DAT`
+- `lol2_westwood_writer.py` — Westwood LZ77 encoder for both offset modes; `--check` reads the 37 compressed `options.shp` shapes (of 39), the 640 WSA panel deltas in 21 panels and the 15 texture streams in `global\global.tex`, re-encodes each and re-reads it through `lol2_decompress_westwood.py`. Decode-identical, not byte-identical: every re-read matches the original decoded bytes, but only 1 of 37 shape streams, 20 of 640 deltas and 0 of 15 texture streams match the original compressed bytes. All these original streams use the absolute mode; the relative mode is covered by synthetic tests only
+  - example: `python3 tools/lol2_westwood_writer.py --check --data /path/to/LoL2/DAT`
+- `lol2_save_writer.py` — writes a game-written save slot from parsed fields and stored chunks; `--check` rebuilds every save in the `SAVEGAME` folder next to `--data` in memory and compares it byte for byte. Slot header, directory offsets, level-block headers and LZO chunk headers are regenerated; the LZO chunk payloads are copied as stored, not re-compressed, so this proves the container layout, not the compressor. The working installation gives 30 game-written saves and 154 level blocks, the reference copy 27 and 149, the same counts as `lol2_save_inspect.py --check`. Writes no file
+  - example: `python3 tools/lol2_save_writer.py --check --data /path/to/LoL2/DAT`
 - `lol2_decompress_westwood.py` — Westwood LZ77 decompressor. The function is at VA `0x158D58`. No size-prefixed MIX entry decodes with it; the buffers of its eleven callers are mapped and `options.shp` uses it, other source files are open ([Q1](../docs/OPEN_QUESTIONS.md))
   - example: `python3 tools/lol2_decompress_westwood.py --help`
 - `lol2_decompress_sphere.py` — reads the `options.shp` interface shapes in `LOCAL.MIX` entry 1 ([shape format](../docs/formats/room-sections.md))

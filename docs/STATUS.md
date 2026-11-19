@@ -2,7 +2,7 @@
 
 What is documented about the original game, which tool reads it, what the tools check on the game files, and what is open. This table replaces the "almost fully understood" summary of earlier pages: those pages ([understanding (history)](lol2-understanding-2026-11.md), [current status (history)](lol2-current-status.md), [closure summary (history)](closure-summary.md), [final closure memo (history)](final-closure-memo.md)) are kept as history.
 
-Run the checks: `python3 tools/check_all.py` with `$LOL2_DAT` set: 37 checks, all pass on the English DOS 1.30 copy with the listed requirements.
+Run the checks: `python3 tools/check_all.py` with `$LOL2_DAT` set: 39 checks, all pass on the English DOS 1.30 copy with the listed requirements.
 
 **Running-game results.** Answered probes are counted in the rating; which ones and how: [NEEDS_A_RUNNING_GAME](NEEDS_A_RUNNING_GAME.md#answered-probes). Runs on hand-edited copies of a game-written save: [edited saves](EDITED_SAVES.md).
 

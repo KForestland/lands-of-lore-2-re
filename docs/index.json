@@ -484,6 +484,8 @@
         "tools/lol2_progression.py",
         "tools/lol2_save_inspect.py",
         "tools/lol2_save_native.py",
+        "tools/lol2_save_writer.py",
+        "tools/lol2_westwood_writer.py",
         "tools/rating.py"
       ]
     },
@@ -1817,6 +1819,7 @@
         "tools/lol2_save_header.py",
         "tools/lol2_save_inspect.py",
         "tools/lol2_save_native.py",
+        "tools/lol2_save_writer.py",
         "tools/lol2_sound_bank.py",
         "tools/lol2_source_format.py",
         "tools/lol2_speech_names.py",
@@ -1824,6 +1827,7 @@
         "tools/lol2_texture_container.py",
         "tools/lol2_vqa_v2_decode.py",
         "tools/lol2_westwood_hash.py",
+        "tools/lol2_westwood_writer.py",
         "tools/rating.py",
         "tools/repo_guard.py"
       ]

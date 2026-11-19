@@ -32,3 +32,35 @@ class MixRoundTrip(unittest.TestCase):
         self.assertEqual([i for i in range(len(changed)) if changed[i] != rebuilt[i]], [len(changed) - 2])
         rows = parse_mix(changed)
         self.assertEqual([(row["key"], row["size"]) for row in rows], [(0x80000001, 2), (2, 1)])
+
+class WestwoodRoundTrip(unittest.TestCase):
+    def test_modes_and_terminator(self):
+        from lol2_decompress_westwood import decompress_westwood
+        from lol2_westwood_writer import encode_westwood
+        repeated = bytes(range(16)) * 500
+        absolute = encode_westwood(repeated)
+        relative = encode_westwood(repeated, relative=True)
+        self.assertEqual(absolute[17:22], struct.pack("<BHH", 0xFF, len(repeated) - 16, 0))
+        self.assertEqual(relative[18:23], struct.pack("<BHH", 0xFF, len(repeated) - 16, 16))
+        for original in (b"", b"Z" * 70000, repeated, bytes(range(255))):
+            for mode in (False, True):
+                encoded = encode_westwood(original, mode)
+                self.assertEqual(decompress_westwood(encoded, len(original) + 1), (original, 0, len(encoded)))
+
+
+class SaveRoundTrip(unittest.TestCase):
+    def test_regenerates_directories_and_chunk_headers(self):
+        from dataclasses import replace
+        from lol2_save_writer import Packed, parse_slot, synthetic_slot, write_slot
+        preview = Packed(((1, b"\x12P\x11\0\0"), (1, b"\x12Q\x11\0\0")))
+        slot = replace(synthetic_slot(), preview=preview, dimensions=(2, 1))
+        data = write_slot(slot)
+        self.assertEqual(parse_slot(data), slot)
+        self.assertEqual(struct.unpack_from("<I", data, 0xA4)[0], 0x25D)
+        self.assertEqual(struct.unpack_from("<2I", data, 0x25D), (1, 5))
+        self.assertEqual(struct.unpack_from("<I", data, 0x20E)[0], 0x2FE)
+
+    def test_invalid_packed_extent(self):
+        from lol2_save_writer import parse_packed
+        with self.assertRaises(ValueError):
+            parse_packed(struct.pack("<II", 0x2001, 1) + b"x")
