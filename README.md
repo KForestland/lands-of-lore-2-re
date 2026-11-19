@@ -10,7 +10,7 @@ It contains documentation, tools and small tables of numbers. It contains no gam
 - **What you can do today:** list and unpack every archive, decode sounds, music and movies, read every level's geometry and scripts, follow one event from a click to its result, and look up what each item and spell does in the program.
 - **Start in five minutes:** the [Quick start](#quick-start) below, then [Start here, by goal](docs/START_HERE.md), [How the game works](docs/HOW_THE_GAME_WORKS.md) or the [worked example](docs/tutorial-one-event.md).
 - **Recipes:** [cookbook](docs/COOKBOOK.md), seven short runs with the command and the first lines it prints.
-- **What is still unknown:** the [open questions](docs/OPEN_QUESTIONS.md), counted in the [rating](#rating); most open points are the meaning of specific fields and effects. Some can only be settled by watching the [original game run](docs/NEEDS_A_RUNNING_GAME.md); the clock writer and a pickup's save changes were settled that way, and the rest need saved games from later in the game.
+- **What is still unknown:** the [open questions](docs/OPEN_QUESTIONS.md), counted in the [rating](#rating); most open points are the meaning of specific fields and effects. Some can only be settled by watching the [original game run](docs/NEEDS_A_RUNNING_GAME.md); the clock writer and a pickup's save changes were settled that way, and the rest need saved games from later in the game. Some probes were also tried on [edited saves](docs/EDITED_SAVES.md), copies of a game-written save with a few bytes changed.
 - **What changed lately:** [what's new](docs/WHATS_NEW.md), newest first.
 - **The three games:** [LoL1](https://github.com/KForestland/lands-of-lore-1-re) · [LoL2](https://github.com/KForestland/lands-of-lore-2-re) · [LoL3](https://github.com/KForestland/Lands-of-lore-3-re) ([what they share](docs/series-formats.md), [how the engine changed](docs/engine-evolution.md)).
 
@@ -20,8 +20,8 @@ These are counts of work done, not a percentage of how complete the project is. 
 
 <!-- rating:begin -->
 - **Files read:** 83 of 83 files in `DAT` (1,915.6 of 1,915.6 MiB) have their whole layout read by a tool here: every byte belongs to a known header, directory, entry, chunk, segment or resource, or to zero padding between them; the DOS part of `SETUP.EXE` is counted by its length (what is inside an entry may still be only partly understood).
-- **Rules traced:** the pages mark 703 statements CONFIRMED (proved from the program code or the files) and 169 UNCONFIRMED (a reading not yet proved), on 113 current pages; old notes kept as history are not counted.
-- **Seen in the running game:** 4 of 9 probes that need the original game running are answered (a question can have more than one probe).
+- **Rules traced:** the pages mark 703 statements CONFIRMED (proved from the program code or the files) and 169 UNCONFIRMED (a reading not yet proved), on 114 current pages; old notes kept as history are not counted.
+- **Seen in the running game:** 4 of 9 probes that need the original game running are answered (a question can have more than one probe); 0 of them rest on edited saves only.
 - **Open questions:** 20 numbered questions: 5 answered, 14 mostly answered, 1 partly answered.
 <!-- rating:end -->
 

@@ -36,7 +36,7 @@ Follow the engine from startup to saving in [How Lands of Lore II works](HOW_THE
 
 - [Item format](lol2-item-format.md) and [item grants and effects](lol2-item-effects.md) cover definitions, script grants and selected item-use handlers.
 - [Spells](lol2-spells.md) covers costs, acquisition and magic rewards. [Combat and creature decisions](lol2-combat-ai.md) covers hit calculation and the actor update.
-- [Native save slots](lol2-save-format.md) covers directories, compression and runtime sections. [Executable addresses](lol2-executable-tables.md) maps code and data references to file offsets.
+- [Native save slots](lol2-save-format.md) covers directories, compression and runtime sections. [Edited saves](EDITED_SAVES.md) lists the runs where the original game loaded a hand-edited copy, each with a link to its byte table. [Executable addresses](lol2-executable-tables.md) maps code and data references to file offsets.
 
 ## I want sound, music or movies
 

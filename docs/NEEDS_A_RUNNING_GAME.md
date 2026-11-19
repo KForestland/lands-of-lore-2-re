@@ -13,6 +13,8 @@ Object-5 base = the relocated operand of the `mov ax,[…]` at
 `0xB8C0D`, minus `0x22C58`. Record the release, save slot,
 level, action, native instruction and values for each observation.
 
+Some probes were also tried on edited saves: copies of a game-written save with a few bytes changed. [Edited saves](EDITED_SAVES.md) lists those runs and what a game-written save would still add.
+
 ## Remaining probes
 
 ### Q9. What starts the timed message 0x26?
