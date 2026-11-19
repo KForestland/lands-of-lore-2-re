@@ -166,3 +166,74 @@ as breakpoint targets for the next runtime trial; the `SPKSTON` open also needs 
 - The indexed `VPRZ`/`VPTR` command grammar is [traced here](../lol2-vqa-v2.md#pointer-streams). The remaining question is the initial destination for each transparent draw and seek.
 - The two `VPTZ` frames above use the native short-copy instruction. Their prior destination contents remain open.
 - How a script names a movie is a separate page: [movie scenes](../lol2-movie-scenes.md).
+
+### Scene probes from edited copies
+
+**CONFIRMED, edited-save run, ss-4e.** The DOS 1.30 source
+`e2393dbe4d2b` supplied a level-20 slot. The edit added one
+pack reference and reused free player item row 47. These are
+the complete decoded byte changes within the three LZO chunks.
+
+| Selector (source slot offset) | Decoded offsets and old → new |
+|---|---|
+| Global 2 (`0x8595`) | `+0x234 F8→35`, `+0x235 55→6F`, `+0x238 01→00` |
+| Global 3 (`0x8854`) | `+0x05 7F→FF` |
+| Global 4 (`0x8875`) | `+0x290..+0x293 00 00 00 00→20 57 2F 10` |
+
+The original definition-table range base at slot `+0xB4`
+plus `139 × 91` yields `0x10956F35`. The old pool base at
+slot `+0xC8` plus `47 × 12` yields the pack reference
+`0x102F5720` (map writer `0xE5C9C–0xE5D0B`).
+The corresponding base-image bytes are zero. Each changed section
+was one LZO chunk. Repacking changed stored spans from
+703/33/590 to 751/44/634 bytes. The recipe changes the packed-length
+word of each chunk, adds the running size delta to the following
+global and level start offsets (`+0x18E/+0x1BA` directories),
+and increases the total length at `+0x2C` by 103.
+The resulting 1,612,948-byte copy has prefix `d8b54a66a8ad`.
+The source version/stamp bytes and all per-level payloads stayed
+byte-identical.
+
+On restore, pack entry 4 referenced row 47, whose definition
+identity was `0x5AA2B9B5` and handler byte 74. The occupied bit
+was set. The original startup already made `[0xB860]` nonzero.
+It is a command-line gate set at `0x14E5E0` after checks for
+`-NOMIX` and `-PATH` (literals at `LOLG.DAT+0x1C5278/+0x1C527F`).
+The save edit left that cell to startup. Taking the new pack
+item and pressing W hit `0x99EF4`, and `0x99F64` returned
+a nonnull handle after opening `SPKSTON2.MIX`. Selector 4 supplies the clip filename used by the playback
+call at `0x99F89`.
+
+The original archive read began at `SPKSTON2.MIX+0x17695E8`,
+the frame-492 VPTZ payload. At `0x158DB2` the watched source
+base was `0x1130E8B0` and the input pointer had advanced by
+`0x225`, matching token `22 A2` at payload +0x223. Destination
+base was `0x112E603C`, capacity 32,004, destination
+`0x112E6270` (+564) and source `0x112E5FCE` (−110).
+`ECX=5` and the source bytes were `00 00 00 00 00`.
+This resolves the short-copy input in this run. The live codebook
+and the final pixels for this frame remain **UNCONFIRMED**.
+Capture both after `0x158DB4` in a repeated playback to tie
+the five output bytes to the visible tile references.
+
+**CONFIRMED, edited-save run, bb_brth setup.** The same source
+was relocated beside prop 87. The fourteen contiguous bytes at
+slot `+0x180` changed from
+`26 A2 36 F2 22 1A 5C 12 16 FD 00 00 27 03` to
+`00 00 6A FA 00 00 A4 10 00 00 EC FF 23 01`
+(copy `5a34d0c63a97`). The original restored X −1430,
+Y 4260 and heading 0 via `0xE6F17–0xE6F2A` and
+`0xD025F–0xD0279`. The third header dword supplies the
+heading's low word, and the observed height of −20 came from
+the loaded geometry.
+
+The loaded prop 87 at (−1496, 4268, −20), corresponding to
+`L20_BB.MIX+0xED0972`, already had +0x25 = 14. Group
+`0x0302` sets state 14 at `+0xEC61FF`. An earlier native
+level-20 slot, `25ab2119ec3d`, has zero at the same decoded
+prop state offset (level selector 18, row 87 +0x25).
+**UNCONFIRMED.** Frame 115. Start from a native slot before
+timer slot 12 expires, watch group `0x02E8`
+(`L20_BB.MIX+0xEC61D1`), and follow its state-13 write and
+value-20 dispatch to group `0x0302`. The position edit alone
+left the post-scene state in place.

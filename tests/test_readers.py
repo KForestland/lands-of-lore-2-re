@@ -61,7 +61,7 @@ class ReaderTests(unittest.TestCase):
         struct.pack_into("<3I", header, 0x2C, len(header) + len(block), 18, 102)
         struct.pack_into("<3I", header, 0x9C, 0, 0, HEADER_SIZE)
         struct.pack_into("<31I", header, 0x18E, *([HEADER_SIZE] * 12), *([HEADER_SIZE + len(block)] * 19))
-        struct.pack_into("<iI", header, 0x17C, 1, 0xFA)
+        struct.pack_into("<iiiI", header, 0x17C, 1, 0xFA, -0x10000, 0x4FA4)
         header[0x94] = 0xAA
         struct.pack_into("<I", header, 0x20A, len(block))
         struct.pack_into("<I", block, 0, len(block))
@@ -72,7 +72,9 @@ class ReaderTests(unittest.TestCase):
         slot = header + block
         overview = "\n".join(inspect(slot, level=1))
         self.assertIn("Slot+0x0094  unknown = aa 00 00 00", overview)
-        self.assertIn("Slot+0x0180  player position dword 0 = 250", overview)
+        self.assertIn("Slot+0x0180  player X (16.16) = 250", overview)
+        self.assertIn("Slot+0x0184  player Y (16.16) = -65536", overview)
+        self.assertIn("Slot+0x0188  player heading dword (low word) = 20388", overview)
         selected = "\n".join(inspect(slot, section=28, row=0))
         self.assertIn("first list head pointer = 4660 (0x00001234)", selected)
         struct.pack_into("<I", block, 0xD8, 0)

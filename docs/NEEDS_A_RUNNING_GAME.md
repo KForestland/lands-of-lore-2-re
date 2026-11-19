@@ -97,8 +97,8 @@ scene 42. L5_HC placement 9 and an L9_DR grant supply the item
 handled by `0x99EF4` for scene 42.
 [Original trigger routes and offsets](formats/vqa.md#original-trigger-routes-for-the-two-frames)
 
-**UNCONFIRMED.** The original destination history at those
-copies. Break at the pointer LCW invocation `0x172838`
+**UNCONFIRMED.** The original frame-115 source history and
+both final compositions. Break at the pointer LCW invocation `0x172838`
 during the corresponding original cutscenes. Identify the
 source entry and count frames from the seek table. On the
 target frame, step into each exceptional token and log its
@@ -108,6 +108,13 @@ from the current destination. Frame 492 predicts a source 110
 bytes before the destination base. Log the active codebook and
 the final destination offset to identify how those bytes become
 tile references in the frame.
+
+**CONFIRMED, edited-save run.** Item 139 loaded in the pack,
+and native playback of `ss-4e` reached the exceptional copy
+at `0x158DB2` (five zero source bytes). The final composition
+and the native `bb_brth` frame 115 remain open. The relocated
+late slot had already reached prop 87 state 14.
+[Exact edits and frame-492 trace](formats/vqa.md#scene-probes-from-edited-copies)
 
 ### Q17. What on-screen action reaches these records?
 
@@ -125,8 +132,8 @@ the expected event groups through vtable `0x5484`. The interaction entry
 player away from both targets, so the test left the visible results open.
 [Live placement and breakpoint conditions](lol2-l8-controls.md#live-binding-of-both-l8-controls)
 
-**UNCONFIRMED.** Which visible face invokes each control and
-what geometry the destination displays. In L8_SJ approach the
+**UNCONFIRMED.** Whether the same picks and transitions occur in a
+native save reached through ordinary play. In L8_SJ approach the
 two placements from the positions recorded in the level archive.
 Interact with an empty hand while breaking at `0x110ACD` (log request
 +0x32 kind, +0x20 object and +0x28 distance), `0xB5000` and `0xADDB0`;
@@ -137,6 +144,13 @@ at `0xB2A96`. Group 12668 identifies control 69 and the exact
 destination above. Group 13090 identifies control 114 and
 should change the linked objects. Capture a failed click with
 an item held as a comparison.
+
+**CONFIRMED, edited-save run.** Empty-hand clicks dispatched both
+groups. Control 69 moved the player from height −10 to 100.
+Control 114 issued the two link-state requests and the subsequent
+pick selected control 116. The original player in that copy was
+already form 2.
+[Exact edits, click coordinates and live trace](lol2-l8-controls.md#empty-hand-clicks-from-edited-placements)
 
 ### Level-1 tutorial: which click binds prop 1050?
 

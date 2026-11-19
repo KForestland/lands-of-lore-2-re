@@ -35,7 +35,8 @@ offsets describe empty spans. The final level's end is the file size.
 | `0x0A8–0x177` | 26 u32 bases, 26 u32 lengths | Address-range map used for pointer conversion, populated by `0xE5C48`, passed to the save adjustment routine at `0xE7A15`. |
 | `0x178–0x17B` | u32 | Address-map adjustment status at map +0xD0 (`0xE7A15–0xE7A1C`, `0xE9207`, `0xEB30D`). |
 | `0x17C` | s32 | Active level ID from byte `[0x23331]` at `0xE7887–0xE7895`. |
-| `0x180`, `0x184`, `0x188` | s32 each | Player position dwords re-applied by the writer at `0xE7D3F–0xE7D4F`. |
+| `0x180`, `0x184` | s32 each | Player horizontal X and Y, 16.16, restored through `0xE6F1E–0xE6F2A → 0xD025F–0xD0267`. |
+| `0x188` | u32 | The low word restores player heading through `0xE6F1A/0xE6F2A → 0xD026A–0xD0279`. Height is resolved separately. |
 | `0x18C` | u16 | Region index, or 0xFFFF for a null region. The writer computes a 44-byte row pointer at `0xE7D04–0xE7D3A`. |
 | `0x18E–0x1B9` | 11 u32 | Absolute offsets for global sections 0–10, written at `0xE794F`. |
 | `0x1BA–0x209` | 20 u32 | Absolute offsets for levels 1–20, written at `0xE7B92`. |
@@ -135,3 +136,30 @@ The [save section descriptors](lol2-save-sections.md#items-and-occupancy)
 trace item pickup through the placed-object row and the recipient's saved
 item pool. A [controlled original save pair](lol2-save-sections.md#controlled-pickup-in-l20_bb)
 identifies the changed placement row and player occupancy bit.
+
+## Editing a copy of an original slot
+
+**CONFIRMED, edited-save run.** The DOS 1.30 loader accepted
+same-length position edits in two L8_SJ copies and the longer
+L20_BB slot with one new pack item. The position tuple is
+X, Y, heading and region index. The loader passes those fields
+to `0xD0250` through `0xE6DE2–0xE6F2A`, then places the actor
+against the loaded geometry. Neither changing the region alone
+nor putting a height in the heading dword supplies a saved Z.
+[Exact L8 placement recipes](lol2-l8-controls.md#empty-hand-clicks-from-edited-placements)
+
+For a pool addition, the definition and item-pool pointers
+must fit the **saved** address ranges, from which
+`0xEB2E8–0xEB32E` converts them to live pointers. The trial
+changed the item row, corresponding occupancy bit and pack
+reference together. XOR-backed data needs the corresponding
+base image and its effective byte value before encoding the
+difference. For compressed data keep each expanded size
+consistent, update each repacked chunk length, rebase all
+following directory starts and update total length
+(`+0x2C`). An unchanged per-level payload retains its own
+directory and length. The three version stamps and 20 level
+stamps were copied unchanged. No extra checksum field was
+updated for the accepted edits. The original gate for the
+optional stone archive is set by startup at `0x14E5E0`.
+[Pack recipe and observed restore](formats/vqa.md#scene-probes-from-edited-copies)

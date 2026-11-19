@@ -118,3 +118,44 @@ unobserved. `0x5DA48` was not hit in that input. For a closer save, condition th
 on `word [EBX+0x18]` equal to `0x1338` or `0x13C4`. `0xB5000` has two other direct callers (`0x95218`, `0xA74CB`), so also break at its entry with the object at `[esp+4]` and the same +0x18 test. Record the requester,
 group and visible change for the matched control. The destination and
 linked props in the tables above identify the two expected outcomes.
+
+## Empty-hand clicks from edited placements
+
+**CONFIRMED, edited-save run.** Both copies started from native
+slot `9a46a2bdecb4` and changed only the bytes in the
+header's position group at `+0x180..+0x18D`. In order,
+the two signed dwords are 16.16 X and Y, the low word of
+the third dword is heading, and the final word is the region
+index (`0xE6DE2–0xE6F2A`, `0xD025F–0xD0279`).
+The source bytes were `F0 DF 4B FF DB 3F 01 01 D7 A6 00 00 78 04`.
+
+| Target and copy | Replacement at `+0x180..+0x18D` | Native restore |
+|---|---|---|
+| 69, `f138c78cdc84` | `00 00 EC FB 00 00 5F 0A 70 78 00 00 A6 02` | X −1044, Y 2655, height −10, heading `0x7870` |
+| 114, `644644a3b7f5` | `00 00 B0 13 00 00 62 F8 00 2B 00 00 86 0C` | X 5040, Y −1950, height 0, heading `0x2B00` |
+
+For control 69, an empty-hand click on the horizontal planks
+in the original 640×400 view selected the object at
+`0x112C7BAC` (`0x110ACD → 0x5DA51`). Request +0x2C/+0x2E
+contained X 310, Y 206. The event read at `0xADDB0` began
+`0A 04 7C 31`, group 12668. The direct sequence reached
+`0x65C3C` with flags `0x0304`. At `0xB2A96` the actual
+position was (−1004, 2590, 100) and the returned heading
+was `0x4FA4`. The view changed from the planks to a grassy
+space with two flaming ornaments against the rock face.
+
+For control 114, the empty-hand click on the timber assembly
+selected `0x112C86EC` at `0x110ACD`. Request coordinates
+were X 382, Y 269. At `0xADDB0` the event began
+`0A 04 22 33`, group 13090. The trace through `0xB50E9`,
+`0xB511A` and `0xB49EC` shows the unlink request for control
+114 and link request for 116, with arguments 0 and 1,
+respectively. A later pick on the timber returned control
+116 (`0x112C876C`), whose event offset was zero. The
+property-21 dispatches at `0xB5448` and branch at
+`0xD8059` also ran. Player form was already 2 and remained 2.
+The recorded pick of 114 came from the repeated input at the
+cache-dialog coordinates after restore. The saved view frames
+show the timber assembly, but their timing does not establish
+the first visual change. A native slot near both controls
+would settle the actions from normally reached states.

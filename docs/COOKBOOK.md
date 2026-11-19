@@ -51,9 +51,9 @@ Slot+0x0000  display name = '**AUTOSAVE**'
 The position fields, later in the same listing, were:
 
 ```text
-Slot+0x0180  player position dword 0 = -231300570 (0xF236A226)
-Slot+0x0184  player position dword 1 = 308025890 (0x125C1A22)
-Slot+0x0188  player position dword 2 = 64790 (0x0000FD16)
+Slot+0x0180  player X (16.16) = -231300570 (0xF236A226)
+Slot+0x0184  player Y (16.16) = 308025890 (0x125C1A22)
+Slot+0x0188  player heading dword (low word) = 64790 (0x0000FD16)
 Slot+0x018C  player region (0xFFFF absent) = 807 (0x0327)
 ```
 

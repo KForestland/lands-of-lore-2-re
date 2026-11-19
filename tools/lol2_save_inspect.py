@@ -105,8 +105,8 @@ SLOT_FIELDS = {
     0x98: ("4s", "unknown preview descriptor word"), 0x9C: ("I", "preview width"),
     0xA0: ("I", "preview height"), 0xA4: ("I", "preview data offset"),
     0x178: ("I", "address-map status"), 0x17C: ("i", "active level"),
-    0x180: ("i", "player position dword 0"), 0x184: ("i", "player position dword 1"),
-    0x188: ("i", "player position dword 2"), 0x18C: ("H", "player region (0xFFFF absent)"),
+    0x180: ("i", "player X (16.16)"), 0x184: ("i", "player Y (16.16)"),
+    0x188: ("I", "player heading dword (low word)"), 0x18C: ("H", "player region (0xFFFF absent)"),
 }
 
 
