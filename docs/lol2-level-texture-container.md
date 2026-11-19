@@ -223,21 +223,93 @@ word's high two bits occur across the banks. UNCONFIRMED: the meaning
 of those bits, the treatment of uncovered pixels and the native reader
 address. The counted spans establish byte framing.
 
-### Other compressed records
+### Vector-coded rows (flag `0x1246`)
 
-CONFIRMED. Each of the 27,889 `0x1246` records is 22 bytes plus the fourth
-word. In `L10_DC.MIX`, descriptor 699 mip 0 at decoded bank
-`+0x1149B2E` is 320×200, 1,202 bytes, with fourth word 1,180. It has 13
-zero bytes and one `03` between the header and the payload. The payload
-at record `+0x16` begins `2F 5A 00 66 00 76 00`. Only mip 0 is populated.
+**CONFIRMED.** The native selector at `0x125FC4` reads the resource
+word and gives priority to bit `0x1000`. Its object-2 pointer `0xCD058`
+(LE fixup at `LOLG.DAT+0x6A1C0`) resolves to `0x12607C`.
+That reader returns one pixel row. For nonnegative row number `y`,
+use the following inputs.
 
-UNCONFIRMED. The `0x1246` payload and the other six payload-length flags (of which `0x02AC`, in two descriptors with four mips, also frames under the row rule above; the other five do not)
-have no verified row decoder. Feeding one sample of each to the movie
-LCW and mode-byte LZ77 decoders produced no exact pixel count. A direct
-comparison with `0x1246` was absent in the code scan. To settle it, trace
-the masked bank flag read into the copy loop for the descriptor 699
-payload at record `+0x16`, then compare the same reader with descriptor
-1 at record `+8` to locate the high-bit branches.
+| Mip record input | Native use |
+|---|---|
+| +0x16 and +0x17, u8 each | First and last active four-pixel band, inclusive, compared with `y/4` at `0x12608F–0x1260BB`. |
+| +0x18, table of u16 | A band offset indexed by `y/4 - first`. Nonzero offsets are relative to +0x18. Zero gives an empty row (`0x1260D2–0x1260FD`). |
+| u16 +2 | Width in pixels. The decoder starts with `width/4` blocks (`0x12610A–0x126120`). |
+| u32 +8 | Companion key. The class-3 material arm adds it to `[0x22D98]` and loads the resource into `[0x22514]` (`0x132808–0x132843`). |
+
+A run starts with a marker and a block count (one byte each).
+A zero marker gives zero blocks. At the beginning of the band, the
+first zero run instead sets the horizontal offset to four times its
+count (`0x126122–0x126144`).
+A nonzero marker is followed by that many u16 codebook indices.
+The native read is the four consecutive bytes at
+`[0x22514] + 16*index + 4*(y&3)`, written into the row buffer
+(`0x126148–0x126195`). A 16-byte codebook entry thus supplies a
+4×4 block of source bytes.
+
+**CONFIRMED from the file join.** The decoded bank's section 9
+contains 12-byte companion rows. At index record +8, the row
+gives a u32 bank source offset in section 8, u32 capacity and
+u32 stored length. The contents read as the original mode-byte
+LZ77 format, consistent with the generic resource loader
+`0x67022–0x67052`. The corpus check walks 27,889 mip-0
+records, 1,135,521 band slots (1,762 empty) and 21,231,709
+codebook references into 400 companions. All references fit
+the declared capacity. Of these books, 253 finish below capacity,
+and six stop at capacity with more than one input byte left.
+
+Example. `L10_DC.MIX` descriptor 699 is at decoded bank
+`+0x1149B2E`, 320×200 with a 1,202-byte mip. Bytes +0x16/+0x17
+are 3 and 47. The row-3 offset is `0x005A`, with commands
+starting at bank `+0x1149BA0`. The first run skips 33 blocks.
+The next run references three entries `0x027F`, `0x072D`,
+`0x0727`. A final zero run covers 44 blocks. Companion 0 has
+its table row at `+0x25E5BB` and compressed bytes at `+0x2009BB`
+(stored length 19,474 and capacity 32,000).
+
+**UNCONFIRMED.** 190 references in 180 row slots of 30
+`L20_BB.MIX` descriptors exceed the bytes emitted by companion 3.
+Every one stays within its 32,000-byte allocation. For example,
+descriptor 4473 at decoded bank `+0x1A7897C` uses index 1972,
+but the stream named by section-9 row `+0x52F611` ends after
+1,954 entries. Follow the original buffer at `0x67052` and
+the first affected lookup at `0x12616C` to verify what bytes it reads.
+Every vector mip also leaves `2*(height/4)-2` bytes beyond the
+last row-run extent. The row reader stops before those bytes.
+The separate purpose or origin of the tail remains open.
+
+### Run-length columns and raw fallback mips
+
+**CONFIRMED.** At `0x13F1F4–0x13F21F` the scaler tests flag
+bit `0x04` before calling `0x12621C`. That reader indexes
+u16 offsets at mip +8 using the selected column, then adds
+a nonzero offset to +8. A zero offset yields an empty column.
+For each run, read its u8 length. If the next byte is 0, 1 or 2,
+it supplies the repeated value. Otherwise that byte is the beginning
+of the literal run itself, and the reader copies `length` bytes.
+The output count is the mip height (`0x12622D–0x12625E`,
+`0x1262FE–0x126330`).
+
+The exact walk covers 4,366 compressed mips of flags
+`0x008F`, `0x00C7`, `0x20C7`, `0x808F` and `0x80C7`,
+ending at each record boundary. Another 1,185 mips on these
+descriptors clear bit `0x04` in the **mip header** and hold
+raw bytes. For example, `L10_DC.MIX` descriptor 85 has its
+`0x008F` first mip at `+0x37246F`. The first column at
+`+0x3725F7` starts a 128-byte literal run. The same descriptor's
+96-byte 12×8 last mip has flag `0x008B` at `+0x378FD7`.
+
+**CONFIRMED.** `0x126000` is the separate row-span helper
+for the four span flags above. It advances by four plus the
+count, returns the two high flag bits and low 14-bit position
+separately, and returns the payload pointer at row +4
+(`0x126018–0x126076`). The four `0x02AC` mips also frame as
+rows. **UNCONFIRMED.** Their live path and the rendering
+effect of the two high span bits. The generic selector tests
+the record's `0x20` bit first for `0x02AC`, selecting the
+contiguous-row helper `0x1261E8`. A caller trace would establish
+which record and helper reach the sampler for those four mips.
 
 Fifteen further descriptors have flag 0, size 0×0, and no mip records.
 The 15 levels together hold 38,361 descriptors and no other flag value.
@@ -265,14 +337,14 @@ It is not one of the checks in `check_all.py`.
 The line from the 2026-11-19 run:
 
 ```
-CHECK textures: 15 levels, 38361 descriptors; raw 8-bit 2039; movie-name records 881 (0 bare names are DAT keys); payload-length header 7537 (1 header-height mismatch); flag 0x1246 records 27889; 30593 framed row payloads; empty 15; rectangular raw samples store columns; bad=none
+CHECK textures: 15 levels, 38361 descriptors; raw 8-bit 2039; movie-name records 881 (0 bare names are DAT keys); payload-length header 7537 (1 header-height mismatch); flag 0x1246 records 27889; 30593 row spans and 4 ambiguous spans, 4366 compressed columns, 1185 raw fallback mips; 400 vector books, 1135521 row slots, 190 indexes beyond decoded book data; empty 15; rectangular raw samples store columns; bad=none
 ```
 
 ## Open
 
 - Which image edge is up.
 - Meaning of descriptor `+0x08`, `+0x0C`, bits `0x8000` and `0x2000` of the flag, and the high byte of `+0x0A`.
-- The native interpretation of the four row-framed flags and the payload layout of the remaining seven compressed flags.
+- The high span bits, the live `0x02AC` branch and the vector tail and underfilled-book contents.
 - How a movie-name record is resolved to a file.
 - How the renderer picks a shade row per surface.
 - Sections other than 2, 3 and 4.

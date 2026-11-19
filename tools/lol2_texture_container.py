@@ -14,8 +14,8 @@ L20_BB; see docs), then the section offset table at +8.
 
 Ten flag values share one raw layout: 8-bit indices after an 8-byte header,
 stored column by column. The check covers those, the 22-byte movie-name
-records, and the headers of the other flags. It does not decode the
-compressed payloads.
+records, row spans, run-length columns, and vector-coded rows and their
+companion codebooks.
 
 Requirements: Python 3.9+ standard library and the system liblzo2 shared
 library (Debian/Ubuntu: liblzo2-2). It is loaded through ctypes; no python-lzo
@@ -43,6 +43,7 @@ from pathlib import Path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from lol2_mix_parser import read_mix_with_hashes  # noqa: E402
 from lol2_westwood_hash import ww_hash_v1  # noqa: E402
+from lol2_decompress_westwood import decompress_westwood  # noqa: E402
 import lol2_cli  # noqa: E402
 
 MAX_DECOMPRESSED = 64 * 1024 * 1024
@@ -358,6 +359,90 @@ def validate_row_payload(blob, start, size):
     require(at == end, "trailing bytes in row payload")
 
 
+
+COLUMN_RLE_FLAGS = frozenset({0x008F, 0x00C7, 0x20C7, 0x808F, 0x80C7})
+
+
+def validate_column_payload(blob, start, size):
+    """Read the offset table and column runs used by 0x12621C."""
+    width, height = struct.unpack_from("<HH", blob, start + 2)
+    base = start + 8
+    end = start + size
+    cursor = base + 2 * width
+    require(cursor <= end <= len(blob), "column directory outside record")
+    for column in range(width):
+        offset = struct.unpack_from("<H", blob, base + 2 * column)[0]
+        if not offset:
+            continue
+        require(base + offset == cursor, "column run offset")
+        remaining = height
+        while remaining:
+            require(cursor + 2 <= end, "truncated column run")
+            count, value = blob[cursor], blob[cursor + 1]
+            require(0 < count <= remaining, "column run count")
+            cursor += 2 if value <= 2 else 1 + count
+            remaining -= count
+    require(cursor == end, "column payload end")
+
+
+def vector_book(blob, offsets, key):
+    """Decode the matching section-8 companion, using section 9's 12-byte rows."""
+    table_end = offsets[2]
+    at = offsets[9] + 12 * key
+    require(offsets[8] < offsets[9] <= at and at + 12 <= table_end, "vector companion row")
+    start, capacity, length = struct.unpack_from("<III", blob, at)
+    require(0 < length <= capacity and capacity in (32000, 64000), "vector companion size")
+    require(offsets[8] <= start and start + length <= offsets[9], "vector companion bounds")
+    decoded, errors, used = decompress_westwood(blob[start:start + length], capacity)
+    require(errors == 0 and 0 < len(decoded) <= capacity and len(decoded) % 16 == 0,
+            "malformed vector companion")
+    return capacity // 16, len(decoded) // 16, length - used
+
+
+def validate_vector_payload(blob, start, size, books, offsets, metrics):
+    """Frame the 0x12607C tile-row directory and each run."""
+    width, height = struct.unpack_from("<HH", blob, start + 2)
+    first, last = blob[start + 0x16:start + 0x18]
+    base = start + 0x18
+    end = start + size
+    require(width % 4 == 0 and height % 4 == 0 and 0 < width // 4 <= 255,
+            "invalid vector dimensions")
+    require(first <= last < height // 4 and base + 2 * (last - first + 1) <= end,
+            "vector row range")
+    key = struct.unpack_from("<I", blob, start + 8)[0]
+    if key not in books:
+        books[key] = vector_book(blob, offsets, key)
+    capacity, decoded, _ = books[key]
+    cursor = base + 2 * (last - first + 1)
+    for row in range(last - first + 1):
+        offset = struct.unpack_from("<H", blob, base + 2 * row)[0]
+        metrics["slots"] += 1
+        if not offset:
+            metrics["empty"] += 1
+            continue
+        require(base + offset == cursor, "vector row offset")
+        remaining = width // 4
+        missing = 0
+        while remaining:
+            require(cursor + 2 <= end, "truncated vector run")
+            marker, count = blob[cursor], blob[cursor + 1]
+            cursor += 2
+            require(0 < count <= remaining, "vector run count")
+            if marker:
+                require(cursor + 2 * count <= end, "vector indices outside record")
+                indices = struct.unpack_from(f"<{count}H", blob, cursor)
+                require(max(indices) < capacity, "vector index exceeds book allocation")
+                metrics["lookups"] += count
+                if max(indices) >= decoded:
+                    missing += sum(index >= decoded for index in indices)
+                cursor += 2 * count
+            remaining -= count
+        if missing:
+            metrics["short_rows"] += 1
+            metrics["short_indices"] += missing
+    require(end - cursor == 2 * (height // 4) - 2, "vector record tail length")
+
+
 def check(data_dir):
     """Walk every level .TE_ and pin the flag layouts measured on 2026-11-18 (row framing added 2026-11-19)."""
     bad = []
@@ -365,7 +450,9 @@ def check(data_dir):
     levels = 0
     name_hit = name_total = 0
     height_mismatch = 0
-    row_payloads = 0
+    row_payloads = ambiguous_rows = column_payloads = raw_fallbacks = 0
+    book_count = short_books = book_tails = 0
+    vectors = collections.Counter()
     scores = {flag: [0.0, 0.0, 0.0, 0] for flag in COLUMN_FLAGS}
     keys = _mix_keys(data_dir)
     for name in sorted(os.listdir(data_dir)):
@@ -382,6 +469,7 @@ def check(data_dir):
         total = descriptor_count(blob)
         offsets = sections(blob)
         payload = offsets[3]
+        books = {}
         for index in range(total):
             d = descriptor(blob, index)
             flag = d["flags"]
@@ -438,6 +526,11 @@ def check(data_dir):
                 if (header_h != d["height"] or size != 22 + fourth or present != [0]
                         or (d["field10"] & 0xFF) != 1 or (d["field10"] >> 8) != 3):
                     bad.append(f"{name}#{index} bad 0x1246 size {size} fourth {fourth}")
+                else:
+                    try:
+                        validate_vector_payload(blob, start, size, books, offsets, vectors)
+                    except (ValueError, struct.error) as error:
+                        bad.append(f"{name}#{index}: {error}")
                 continue
             if flag in PAYLOAD_FLAGS:
                 if size != 8 + fourth or (d["field10"] >> 8) != 3:
@@ -447,7 +540,7 @@ def check(data_dir):
                     height_mismatch += 1
                     if not (d["width"] == 640 and d["height"] == 434 and header_h == 192):
                         bad.append(f"{name}#{index} unexpected height {header_h} vs {d['height']}")
-                if flag in (0x028E, 0x02C6, 0x828E, 0x82C6):
+                if flag in (0x028E, 0x02AC, 0x02C6, 0x828E, 0x82C6):
                     for mip in present:
                         mip_start = payload + d["mip_offsets"][mip]
                         mip_size = d["mip_sizes"][mip]
@@ -456,9 +549,30 @@ def check(data_dir):
                         except (ValueError, struct.error) as error:
                             bad.append(f"{name}#{index} mip {mip}: {error}")
                         else:
-                            row_payloads += 1
+                            row_payloads += flag != 0x02AC
+                            ambiguous_rows += flag == 0x02AC
+                if flag in COLUMN_RLE_FLAGS:
+                    for mip in present:
+                        mip_start = payload + d["mip_offsets"][mip]
+                        mip_size = d["mip_sizes"][mip]
+                        try:
+                            mip_flag, width, height, length = struct.unpack_from("<4H", blob, mip_start)
+                            if mip_flag == flag:
+                                validate_column_payload(blob, mip_start, mip_size)
+                                column_payloads += 1
+                            else:
+                                require(mip_flag == flag & ~4 and mip_flag in RAW_LAYOUT_FLAGS,
+                                        "unexpected column mip flag")
+                                require(mip_start + mip_size <= len(blob) and mip_size == 8 + width * height
+                                        and length == (width * height) & 0xFFFF, "invalid raw fallback size")
+                                raw_fallbacks += 1
+                        except (ValueError, struct.error) as error:
+                            bad.append(f"{name}#{index} mip {mip}: {error}")
                 continue
             bad.append(f"{name}#{index} unclassified flag 0x{flag:X}")
+        book_count += len(books)
+        short_books += sum(decoded < capacity for capacity, decoded, _ in books.values())
+        book_tails += sum(tail > 1 for _, _, tail in books.values())
     if levels != 15:
         bad.append(f"levels {levels}")
     if dict(counts) != EXPECTED_COUNTS:
@@ -467,8 +581,14 @@ def check(data_dir):
             if counts[flag] != EXPECTED_COUNTS.get(flag)))
     if height_mismatch != 1:
         bad.append(f"header-height mismatches {height_mismatch}")
-    if row_payloads != 30593:
-        bad.append(f"row payload count {row_payloads}")
+    if (book_count, short_books, book_tails) != (400, 253, 6):
+        bad.append(f"vector books {(book_count, short_books, book_tails)}")
+    if vectors != dict(slots=1135521, empty=1762, lookups=21231709, short_rows=180, short_indices=190):
+        bad.append(f"vector census {dict(vectors)}")
+    if (column_payloads, raw_fallbacks) != (4366, 1185):
+        bad.append(f"column and raw payload counts {(column_payloads, raw_fallbacks)}")
+    if (row_payloads, ambiguous_rows) != (30593, 4):
+        bad.append(f"row payload counts {(row_payloads, ambiguous_rows)}")
     if name_total != 881 or name_hit != 0:
         bad.append(f"movie names {name_total} bare keys {name_hit}")
     for flag, (adj, stride_w, stride_h, count) in scores.items():
@@ -485,7 +605,9 @@ def check(data_dir):
             f"raw 8-bit {raw_n}; movie-name records {name_total} "
             f"({name_hit} bare names are DAT keys); payload-length header {payload_n} "
             f"({height_mismatch} header-height mismatch); flag 0x1246 records {counts[0x1246]}; "
-            f"{row_payloads} framed row payloads; empty {counts[0]}; rectangular raw samples store columns; "
+            f"{row_payloads} row spans and {ambiguous_rows} ambiguous spans, {column_payloads} compressed columns, "
+            f"{raw_fallbacks} raw fallback mips; {book_count} vector books, "
+            f"{vectors['slots']} row slots, {vectors['short_indices']} indexes beyond decoded book data; empty {counts[0]}; rectangular raw samples store columns; "
             f"bad={'none' if not bad else '; '.join(bad[:6])}")
     print(line)
     return 1 if bad else 0
