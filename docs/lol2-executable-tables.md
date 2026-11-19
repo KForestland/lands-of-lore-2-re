@@ -3,6 +3,8 @@
 **CONFIRMED.** This page covers the DOS retail 1.30 `LOLG.DAT` of size
 `0x1E2AAF` and SHA-256
 `b27a35341c6e877e40b1540b6482748e7a750c605fefe6452431b18a5d766775`.
+File +0x100 is `bd 01 68 0c df 07 91 0f df 07 95 0f df 07 89 10`, in the part before the embedded MZ (below); this page does not interpret those bytes, they only pin the copy.
+`lol2_cache_seed.py --check` re-reads those sixteen bytes.
 The embedded MZ starts at file `0x39024`. Its LE header begins at
 `0x3BCB4` with bytes `4C 45 00 00`. LE header +0x28 specifies a
 0x1000-byte page. Header +0x80 gives the page-data start relative to the

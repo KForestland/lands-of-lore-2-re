@@ -94,6 +94,8 @@ def compare(data):
         want = bytes.fromhex(code)
         if program[va + 0x37000:va + 0x37000 + len(want)] != want:
             raise ValueError("version and date string reader at %X" % va)
+    if program[0x100:0x110] != bytes.fromhex("bd01680cdf07910fdf07950fdf078910"):
+        raise ValueError("LOLG.DAT+0x100 differs")
     for level, art, leved in BANK_FOLDERS:
         image, entry, _bank = find_texture_entry(data / f"{level}.MIX")
         raw = image[entry["offset"]:]

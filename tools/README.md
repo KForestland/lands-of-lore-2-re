@@ -326,7 +326,7 @@ animation rows behind save sections 26 and 27 in all 15 levels. Part of
 
 ### `lol2_cache_seed.py`
 
-Joins the 15 shipped `CDCACHE.LS_` rows to the level texture banks by name and compares the seed sizes with each bank's first dword; also reads `CACHEBAK.MIX`. Also reads the executable's version and date strings `DOS 1.30` / `Dec 03 1997 17:51:02`, the seed's 15 name strings, and the art and leved folder in each bank's first block. Part of `check_all.py`. Page: `docs/lol2-cache-initializer.md`.
+Joins the 15 shipped `CDCACHE.LS_` rows to the level texture banks by name and compares the seed sizes with each bank's first dword; also reads `CACHEBAK.MIX`. Also reads the executable's version and date strings `DOS 1.30` / `Dec 03 1997 17:51:02`, sixteen bytes at file +0x100 (`bd 01 68 0c df 07 91 0f df 07 95 0f df 07 89 10`), the seed's 15 name strings, and the art and leved folder in each bank's first block. Part of `check_all.py`. Page: `docs/lol2-cache-initializer.md`.
 
 ### `example_images.py`
 
