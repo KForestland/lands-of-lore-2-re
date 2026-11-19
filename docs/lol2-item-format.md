@@ -106,5 +106,5 @@ No random-number call appears on this path before the descriptor callbacks.
 ## Still open
 
 - Mapping individual definition descriptors to their assembled hit contributions.
-- The [108 handler slots](lol2-item-handlers.md) now have native modes and effect routes. Trace the remaining outward effects from handler 2’s instance +5 store at `0x960EA–0x96111` to the object consumer.
+- The [108 handler slots](lol2-item-handlers.md) now have native modes and effect routes. The sixteen readers and writers of instance byte +5 are on the [handler page](lol2-item-handlers.md#instance-byte-5). What the byte means in play is still open.
 - For unresolved definition bytes, begin with the exact row returned by `0x9EB5C` and compare its first access with the offsets in the field table above.

@@ -487,6 +487,7 @@
         "tools/lol2_cache_seed.py",
         "tools/lol2_event_browser.py",
         "tools/lol2_inspect.py",
+        "tools/lol2_instance_field.py",
         "tools/lol2_item_labels.py",
         "tools/lol2_level_report.py",
         "tools/lol2_level_schematic.py",
@@ -1291,6 +1292,7 @@
       ],
       "question_references": [],
       "tools": [
+        "tools/lol2_instance_field.py",
         "tools/lol2_item_labels.py"
       ]
     },
@@ -1476,6 +1478,7 @@
       "question_references": [],
       "tools": [
         "tools/lol2_disassemble_scripts.py",
+        "tools/lol2_instance_field.py",
         "tools/lol2_level_notes.py"
       ]
     },
@@ -1815,6 +1818,7 @@
         "tools/lol2_guest_trace_summary.py",
         "tools/lol2_hmi_midi.py",
         "tools/lol2_inspect.py",
+        "tools/lol2_instance_field.py",
         "tools/lol2_item_labels.py",
         "tools/lol2_l9dr_census.py",
         "tools/lol2_level_map.py",

@@ -116,6 +116,31 @@ meaning of instance +5 remains **UNCONFIRMED**. Compare this
 handler’s set-to-5 path with the next consumer of `[0x2260B]`
 through one held-to-world transition.
 
+## Instance byte +5
+
+<!-- instance-plus5:begin -->
+**CONFIRMED.** Sixteen instructions read or write byte +5 of the 6-byte record at allocation +0x2C (a dword at +0, a byte at +4 and a byte at +5). `tools/lol2_instance_field.py --check` follows the code from 25 entry points and finds 162 byte accesses at displacement 5. Fifteen of them use a register that holds a record pointer, and one more writes the same byte as displacement 0x31 from the object start. The constructor at `0x94044` adds 0x2C at `0x94059`, stores 0 in both bytes and the dword, and stores vtable `0x573C` at `[eax-4]`. The copy at `0x95804` copies byte +4, the dword and byte +5. The initializer at `0x95824` stores 0 in byte +5. The player object is `0x22574` (the opcode 2 dispatcher passes it to `0xD7890` at `0xB5BC8`, and `0xED807` passes it to `0xDD584`), so its +0x97 is `[0x2260B]` and its +0x9B is `[0x2260F]`. Handler 102 is the only site that stores a nonzero constant: 5 in the held record, whose pointer it then keeps at `[0x2260B]`. When the byte is nonzero, the read at `0xD25F6` keeps the record pointer at `[0x2260B]`, and the read at `0x77A73` keeps the object that `0x95894` returns at `[0x2260F]` and clears `[0x2260B]`. Opcode 2 selector 0 (when player byte +0x227 has bit 0x40), selector 38 and `0xDD584` store 0 in the byte again and clear `[0x2260B]` and `[0x2260F]`. The other 147 accesses lie in the command, object, timer and region-row code windows listed in the tool. A linear pass over the whole code section finds 270 such accesses; the 108 the census does not reach are not classified here.
+
+| Address | Access | Instruction | Record pointer | Effect |
+|---|---|---|---|---|
+| `0x77A73` | read | `mov bl, byte ptr [ebx + 5]` | `[esi+0x90F]` | when nonzero, stores the result of `0x95894` at `[0x2260F]` and 0 at `[0x2260B]` |
+| `0x7E47F` | read | `mov dl, byte ptr [esi + 5]` | `[0x23C57]` | when nonzero and bit 0 of `[0x269C4]` is clear, calls `0xE3924` |
+| `0x8CA4B` | read | `mov al, byte ptr [eax + 5]` | `[0x23C57]` | when nonzero and bit 0 of `[0x269C4]` is clear, calls `0xE3924` |
+| `0x94060` | write | `mov byte ptr [eax + 5], 0` | allocation + 0x2C | constructor stores 0 |
+| `0x9581B` | read | `mov dl, byte ptr [ebx + 5]` | second argument | copy reads the source byte |
+| `0x9581E` | write | `mov byte ptr [eax + 5], dl` | first argument | copy writes the source byte |
+| `0x95830` | write | `mov byte ptr [eax + 5], 0` | first argument | initializer stores 0 |
+| `0x9B5C2` | read | `mov dl, byte ptr [eax + 5]` | `[0x23C57]` | handler 102 goes on only when it is zero |
+| `0x9B5E9` | write | `mov byte ptr [eax + 5], 5` | `[0x23C57]` | handler 102 stores 5, then the pointer at `[0x2260B]` |
+| `0xD25F6` | read | `mov al, byte ptr [ebx + 5]` | return of `0x77ACC` (old `[0x23348+0x90F]`) | when nonzero, stores the pointer at `[0x2260B]` |
+| `0xD79A4` | write | `mov byte ptr [edi + 5], al` | `[ebx+0x97]`, that is `[0x2260B]` | opcode 2 selector 0 stores 0 (al cleared at `0xD79A2`), then 0 at `[0x2260B]` |
+| `0xD79DC` | write | `mov byte ptr [eax + 0x31], 0` | `[ebx+0x9B]`, that is `[0x2260F]` | opcode 2 selector 0 stores 0 at object +0x31 (record +5), then 0 at `[0x2260F]` |
+| `0xD7AD0` | write | `mov byte ptr [esi + 5], al` | `[ebx+0x97]`, that is `[0x2260B]` | opcode 2 selector 38 stores 0 (al cleared at `0xD7ACE`), then edi at `[0x2260B]` |
+| `0xD7B07` | write | `mov byte ptr [eax + 5], 0` | `[ebx+0x9B]` + 0x2C, that is `[0x2260F]` + 0x2C | opcode 2 selector 38 stores 0, then 0 at `[0x2260F]` |
+| `0xDD593` | write | `mov byte ptr [edx + 5], 0` | `[eax+0x97]`, that is `[0x2260B]` | `0xDD584`, called with 0x22574 at `0xED80C`, stores 0, then 0 at `[0x2260B]` |
+| `0xDD5CB` | write | `mov byte ptr [edx + 5], 0` | `[ebx+0x9B]` + 0x2C, that is `[0x2260F]` + 0x2C | `0xDD584` stores 0, then 0 at `[0x2260F]` |
+<!-- instance-plus5:end -->
+
 ## Handler destinations
 
 **CONFIRMED.** Every handler index 0–107 occurs among the 170 definitions
@@ -383,8 +408,8 @@ contact that sets that bit with one where it is clear.
 
 ### Q8
 
-**What was measured.** The code in `LOLG.DAT` contains 20 byte stores (`C6 /0`) whose 8-bit displacement is 5. One, at `0x9B5E9`, is `C6 40 05 05`, and nine store immediate 0, including `C6 40 05 00` at `0x95830`. The handler-2 instructions from `0x960EA` to `0x96111` contain no memory displacement 5; their first twelve bytes are `A1 04 69 09 00 8B 00 05 88 00 00 00`.
+**What was measured.** A scan that follows the code from 25 entry points finds 162 byte accesses whose displacement is 5 (a linear pass over the whole code section finds 270). Fifteen of them, and one store at displacement 0x31 from the object start, are the placed-item record's byte +5, listed under [instance byte +5](#instance-byte-5). The handler-2 instructions from `0x960EA` to `0x96111` contain no memory displacement 5; their first twelve bytes are `A1 04 69 09 00 8B 00 05 88 00 00 00`.
 
-**What was tried.** This scan counted those displacement-5 byte stores. The page already records the constructor clear of instance +5, handler 102's store of 5, and the replacement read in that handler-2 window.
+**What was tried.** Each site's base register was traced to its record pointer: `[0x23C57]`, `[esi+0x90F]`, the player's +0x97 (`[0x2260B]`), the player's +0x9B plus 0x2C (`[0x2260F]`), or a function argument. Handler 102 is the only site that stores 5; opcode 2 selectors 0 and 38 and `0xDD584` store 0 again.
 
-**What would settle it.** The running-game test is not yet run ([probes not yet run](NEEDS_A_RUNNING_GAME.md#probes-not-yet-run)). Watch the held instance +5 across one use of handler 2 and compare it with the value written at `0x960EA–0x96111`. For the packet bits, follow the receiver called at `0xF7774` before and after that contact.
+**What would settle it.** The running-game test is not yet run ([probes not yet run](NEEDS_A_RUNNING_GAME.md#probes-not-yet-run)). Watch the held instance byte +5 and `[0x2260B]` across one use of handler 102 and the next opcode 2 selector 0 or 38 that clears them. For the packet bits, follow the receiver called at `0xF7774` before and after that contact.

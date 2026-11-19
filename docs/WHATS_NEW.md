@@ -4,6 +4,7 @@ Newest first. One line per question worked on, new tool or visible change; each 
 
 ## 19 November 2026
 
+- **Instance byte +5 and script arms (Q8 and Q4, both mostly answered).** Sixteen readers and writers of the placed-item byte at record +5 are listed: fifteen of 162 byte accesses at displacement 5 that the scan reaches, and one store at object +0x31. Only handler 102 stores 5; opcode 2 selectors 0 and 38 and `0xDD584` store 0 again. Opcode 2 has a handler for each selector 0 through 66. The jump tables of opcodes 6, 9 and 15 have 13, 35 and 113 slots with 13, 31 and 69 different targets. Open: what the byte means in play, and the on-screen result of an arm that only calls onward ([instance byte](lol2-item-handlers.md#instance-byte-5), [subcommand handlers](lol2-script-opcodes.md#subcommand-handlers)). `lol2_instance_field.py --check` requires both tables. `check_all.py` now runs 40 checks.
 - **How a level is put together.** The pieces a level needs, the file that holds each and the order the program loads them ([level assembly](HOW_A_LEVEL_IS_PUT_TOGETHER.md)).
 - **Tour.** One level followed end to end: its picture, sheet, exits and numbers, with the command behind each part ([tour](TOUR.md)).
 - **Across the three games.** How each game gates progress and scales its numbers, each fact linked to its evidence ([progress and numbers](series-progress-and-numbers.md)).
