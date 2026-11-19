@@ -1,24 +1,78 @@
 # Re-deriving a sample of confirmed statements
 
-A sample of 30 statements labelled confirmed was taken from the current
-pages and checked again from the original bytes: the archives in `DAT/`
+Two samples of 30 statements labelled confirmed were taken from the current
+pages, each by its own rule, and checked again from the original bytes: the archives in `DAT/`
 and beside the game, `LOLG.DAT` disassembled at code address = file offset
 minus `0x37000`, and the shipped cache seed. No game, emulator or debugger
 was run, so the running-game part of a statement is listed as not repeated.
-The list was fixed before any statement on it was checked.
+Each list was fixed before any statement on it was checked.
 
 "Held" means the bytes give the same values as the page. "Part held"
 means the checked part held and a broader part of the same statement
 was not re-checked. "Wrong" and "Overstated" statements were corrected
 on the page.
 
+## First sample (19–20 November 2026)
+
+Pages in the order the rating counts them; every third page from the
+third page on, the first paragraph on it that carries a confirmed label
+and names an address or offset. Those pages gave 25 statements, so the
+list was filled from pages 1, 4, 7, … (pages 1, 4, 7, 28 and 31 were the
+first five with such a paragraph). The rule was written into the picking
+script and the list was fixed at 22:54 UTC on 19 November; the checking
+scripts are from 23:07 on. Four statements are also on the second
+sample's list (the cookbook help table, level assembly load order, the
+form compare tree and the geometry entry), so 26 are new to it. 30
+statements: **25 held, 3 part held and 2 wrong (both corrected).**
+
+| Page | Statement | Result |
+| --- | --- | --- |
+| [Running game](NEEDS_A_RUNNING_GAME.md) | Player +0x185 clears | Held |
+| [Progression](PROGRESSION.md) | Exit matchers run every match | Held |
+| [Round trip](ROUND_TRIP.md) | Mode byte and rebuilt streams | Part held: the decoder, its mode byte and the 15 texture streams (all in the absolute mode); the encoder, writer and synthetic tests were not re-run from the bytes |
+| [Tour](TOUR.md) | L1_DC map entry | Part held: the entry, the vertex and region tables and the 1,954 regions; the picture was not re-rendered |
+| [Compression](formats/compression.md) | Scheme table | Held |
+| [Items](formats/items.md) | Table counts and handler indexes | Held |
+| [Maps](formats/maps.md) | Automap markers | Held |
+| [Sound](formats/sound.md) | Bank layout and cue indices | Held |
+| [Walls](formats/walls.md) | Wall table fields | Held |
+| [L12_CM notes](levels/notes/L12_CM.md) | Stream and event counts | Held |
+| [L16_CA notes](levels/notes/L16_CA.md) | Stream and event counts | Held |
+| [L3_DH notes](levels/notes/L3_DH.md) | Stream and event counts | Held |
+| [L7_DH notes](levels/notes/L7_DH.md) | Stream and event counts | Held |
+| [Level notes](levels/notes/README.md) | Group runner and direct references | Held |
+| [Item effects](lol2-item-effects.md) | Definition base and lookup | Held |
+| [L8 controls](lol2-l8-controls.md) | Placement 69 control event | Held |
+| [Texture container](lol2-level-texture-container.md) | Container header | Held |
+| [Music selection](lol2-music-selection.md) | Music name table | Held |
+| [Save field witnesses](lol2-save-field-witnesses.md) | Section 28 and 29 object lists | Held |
+| [Script engine addendum](lol2-script-engine-facts-2026-10-addendum.md) | Predicate table and evaluator | Held (the six class vtable slots and the opcode 16 write were re-read in the review below) |
+| [Script motion](lol2-script-motion.md) | Motion command slot | Held |
+| [Sound cues](lol2-sound-cues.md) | Low opcode dispatcher | Held |
+| [Spells](lol2-spells.md) | Cast effect index | Held |
+| [VQA version 2](lol2-vqa-v2.md) | Pointer-stream node bits | Wrong, corrected: `VPRZ` sets bit 4 at `0x16E635`; the cited `0x172808–0x172845` tests the bit, calls `0x158D58` and clears it |
+| [One event](tutorial-one-event.md) | Prop 1050 event chain | Held |
+| [Cookbook](COOKBOOK.md) | Help-message location | Held |
+| [Level assembly](HOW_A_LEVEL_IS_PUT_TOGETHER.md) | Load order and MAP header check | Wrong, the same correction as in the second sample |
+| [Numbers](NUMBERS.md) | Form compare tree | Part held: the compare tree, the arm entries and the duration helper; the census of stored opcode 2 commands was not walked again |
+| [Entity records](formats/entity-records.md) | ODF suffix and keys | Held |
+| [Level data](formats/level-data.md) | Geometry entry selection | Held |
+
+A review re-derived six of these from the bytes again with its own
+readers (picked at random, seed 85, from the 26 not on the second list):
+the L1_DC map entry, the automap markers, the L16_CA counts, the predicate
+table and evaluator, the cast effect index and the ODF suffix and keys.
+All six gave the result above. For the predicate statement the review
+also read the six class vtable slots (all `0xB71A0`), the opcode 16 write
+at `0xB5A3C` and the seven direct references to `0xB7D80` (two stores,
+five readers), which the first check had not read correctly.
+
 ## Second sample (19–20 November 2026)
 
 Every third page from the second page on, the last statement on it that
 names an address or offset; level-note tables give their last row. The
 list was fixed at 23:01 UTC on 19 November; the first byte for it was read
-at 23:07. A first sample, taken by a different rule, is still being
-checked and is not recorded here yet. Four statements on this list are
+at 23:07. The first sample, taken by a different rule, is above. Four statements on this list are
 also on the list frozen for the first sample (the cookbook help table,
 level assembly load order, the form compare tree and the geometry entry),
 so 26 are new to it. 30 statements: **22 held, 6 part held, 1 wrong and

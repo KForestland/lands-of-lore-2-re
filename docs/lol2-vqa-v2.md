@@ -46,7 +46,8 @@ codebook before frame F is drawn. The size on frame 0 is the compressed length o
 
 **CONFIRMED.** `VPRZ` and `VPTR` select node +0x14 bit 5 at
 `0x16E5F6–0x16E661` and `0x16E4A8–0x16E50C`. `VPRZ` also sets
-bit 4 for the mode-byte LCW decoder (`0x172808–0x172845`). The
+bit 4 at `0x16E635`. The mode-byte LCW decoder path tests that bit,
+calls `0x158D58` and clears the bit again (`0x172808–0x172845`). The
 frame builder tests bit 5 at `0x1728E4` and calls context +0x772
 at `0x17291C`. Indexed 4×4 callbacks include `0x17D3D4`
 (assignment `0x172068`, after applying the object-2 relocation).
