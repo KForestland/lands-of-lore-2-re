@@ -61,7 +61,8 @@ def check_cue_pointer_references(image):
     page_table, record_table = struct.unpack_from("<II", image, le + 0x68)
     page_size = struct.unpack_from("<I", image, le + 0x28)[0]
     first, count = struct.unpack_from("<II", image, 0x3BD90 + 0xC)
-    # Internal selector, offset32 with word or dword target, and relative32.
+    # Internal-reference records: source type 2 (16-bit selector), 7 (32-bit offset, word or dword
+    # target) and 0x13 (16:16 pointer with the alias flag).
     record_lengths = {(2, 0): 5, (7, 0): 7, (7, 16): 9, (19, 0): 7}
     loads = 0
     stores = []

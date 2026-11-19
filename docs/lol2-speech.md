@@ -72,14 +72,16 @@ path frees the table pointer at `0x14EA84–0x14EA9C`.
 **CONFIRMED.** The separate consumer at `0xF0B98–0xF0C29`
 uses the saved handle and index for voice cleanup. If the
 voice is active and its +4 matches the mapped cue, the call
-at `0xF0C0E` passes the handle, mapped cue and a zero argument
-to `0xE4004`. The matching arm there updates the voice flags
-and requests a stop (`0xE40E6–0xE4157`). The caller then writes
-zero to +0x94 and −1 to +0x90. Those fields feed the audio
-selector in this path.
+at `0xF0C0E` passes the sound-system object `0x23C68`, the handle,
+the mapped cue and zero to `0xE4004`. The matching arm there masks the
+voice flags with `0x77`, sets `0x80` and calls `0x156030` and `0x155636`
+(`0xE40E6–0xE4157`); reading this as a stop request is an
+interpretation. The caller then writes zero to +0x94 and −1 to +0x90.
+This arm runs when the selector at +0x1C is 2 or 100
+(`0xF0AC2–0xF0B70`) and resets it to −1 at `0xF0C29`.
 
-**CONFIRMED.** The LE main code object (file `0x3BD90`, logical
-pages 2 through 305) has 533 direct relocations to data `0x269CC`.
+**CONFIRMED.** The LE main code object (object record at file
+`0x3BD90`; its pages, logical 2 through 305, start at file `0x90024`) has 533 direct relocations to data `0x269CC`.
 532 load the pointer and the sole direct store clears it on shutdown
 (instruction `0x14EA9C`, LE fixup file offset `0x74154`).
 `lol2_speech_names.py --check` walks those relocation pages and

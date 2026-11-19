@@ -97,12 +97,13 @@ the settings copy at `0x15DE49–0x15DE76`. Its op-2 arm at `0x11356B`
 passes allocation flags zero to `0x14FBE0`. The allocator fills the
 payload with zero only if those flags have mask `0x02` (`0x14FD66–0x14FD70`).
 Op 4 selects `0x113588` (the fourth dword of the table at file
-`LOLG.DAT+0x14A538`). This arm either returns the passed pointer or
-calls `0x14FB00` when `[0x223D5]` is nonzero. The built-in fallback
+`LOLG.DAT+0x14A538`). This arm returns the passed pointer, first
+calling `0x14FB00` when `[0x223D5]` is nonzero. The built-in fallback
 installed at `0x15DE76` has an op-4 arm at `0x16D814` that also calls
 `0x14FB00`. That helper passes DPMI function `0x0600`, with the pointer
 and length, to interrupt `0x31` (`0x14FB22–0x14FB62`). It locks the
-memory range. The callback and decode call leave its existing bytes in place.
+memory range. The callback and the decode call leave the shared buffer's existing
+bytes in place.
 `lol2_media_check.py --check` re-reads the callback slots and call sites.
 
 In the shared case, frame 115 copies at distance 0, so it reads three bytes
