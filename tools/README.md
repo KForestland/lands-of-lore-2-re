@@ -126,8 +126,8 @@ Reads one save slot you name (a player save, not a game file) and prints its pre
 
 ### `lol2_save_inspect.py`
 
-Prints a player's original slot header, directories and section names to
-stdout. `--level 1` limits the overview to the first level block.
+Prints the header, directories and section names of a player save
+written by the game (saves are not shipped game files) to stdout. `--level 1` limits the overview to the first level block.
 Use `--level 1 --section 27 --row 1` to inspect one texture animation row,
 or `--global-section 2` to inspect player item records. Section offsets
 are relative to the decoded payload. Unassigned bytes and XOR deltas
@@ -173,8 +173,10 @@ CHECK source_format: 81/81 MIX files pass the strict reader (sizes, bounds, no o
 
 Draws the regions, walls, portals and numbered placements as a PNG. The
 amber mark means a linked side with a flat, collapsed region. These are
-doorway candidates from geometry. `--focus` selects a zero-based region
-and `--radius` gives map units to either side. Use a focused view for
+doorway candidates from geometry. Lighter floors are higher (the
+`lol2_level_map.py` overview uses the opposite: darker = higher), and
+stacked storeys can overlap. `--focus` selects a zero-based region,
+outlined in cyan, and `--radius` gives map units to either side. Use a focused view for
 crowded placements. [Example and field sources](../examples/README.md)
 
 ```text

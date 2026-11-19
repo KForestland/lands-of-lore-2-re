@@ -17,6 +17,9 @@ adds 100 to its height (see `0x64FBA–0x64FE3` and the
 [motion reference](../docs/lol2-script-motion.md#opcode-196)). Marks
 I5 and A23 come from `+0x5ABCAB` and `+0x5AB8E2`. Coordinate words
 +0/+2 enter the common placement constructor `0xAE99A–0xAE9CB`.
+The cyan outline is the selected region 792. Lighter floor fills are
+higher floors; the region overview from `lol2_level_map.py` shades the
+other way (darker = higher). Stacked storeys can overlap in plan view.
 The image plots geometry and placement numbers. It contains no game pixels.
 
 The [full region overview](../docs/formats/maps.md) comes from

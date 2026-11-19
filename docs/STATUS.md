@@ -2,7 +2,7 @@
 
 **As of:** 2026-11-19. What is documented about the original game, which tool reads it, what the tools check on the game files, and what is open. This table replaces the "almost fully understood" summary of earlier pages: those pages ([understanding](lol2-understanding-2026-11.md), [current status](lol2-current-status.md), [closure summary](closure-summary.md), [final closure memo](final-closure-memo.md)) are kept as history.
 
-Run the checks: `python3 tools/check_all.py` (with `$LOL2_DAT` set) (28 checks; all pass on the copy read).
+Run the checks: `python3 tools/check_all.py` (with `$LOL2_DAT` set) (32 checks; all pass on the copy read).
 
 **Running-game results** (original program under a debugger, one run each; [procedures and results](NEEDS_A_RUNNING_GAME.md)): the frame-clock writer (Q7) and the save changes of one pickup (Q11) are answered; a creature distance branch (Q10) and the level-8 controls (Q17) are partly answered; the timed message (Q9) and two movie frames (Q12) were not reached.
 

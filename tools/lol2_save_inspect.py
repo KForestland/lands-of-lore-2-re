@@ -30,7 +30,7 @@ LEVEL_NAMES = {
     22: "movables", 24: "local script bytes", 25: "placed items", 26: "surface presets",
     27: "texture animations", 28: "first world list head", 29: "second world list head",
     31: "non-player items", 32: "non-player item occupancy", 33: "last creature hit by player",
-    34: "waypoint pointer", 35: "actor groups", 36: "effect pool", 60: "audio context",
+    34: "row pointer", 35: "actor groups", 36: "effect pool", 60: "audio context",
     61: "timer list header", 62: "timer pointers", 63: "parallel object list header",
     64: "object pointers", 65: "frame context", 66: "automap marker inputs", 67: "elapsed time",
 }
