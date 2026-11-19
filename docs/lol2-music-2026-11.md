@@ -13,7 +13,7 @@ low-nibble-first IMA decoder already used for LoL2 speech (predictor and step in
 | MIX header: `u16` count 33, `u32` data size, then 33 x (`u32` id, `u32` offset, `u32` size); body at file offset 402; sizes cover the body with no gap or overlap | proven |
 | Every entry: 12-byte AUD header (`u16` rate, `u32` compressed size, `u32` output size, `u8` flags 0x02, `u8` codec 99); chunks `u16` size, `u16` decompressed size, `u32` id `0x0000DEAF` | proven |
 | 32 tracks at 22050 Hz, one at 44100 Hz; lengths about 1.5 to 6 minutes | proven |
-| The executable builds the track name from `MUSIC\%s.AUD` or `MUSIC\%s.HMI` with a table of 34 stems; script opcode 210 (arms 0/1) selects the stem by index | proven |
+| The executable builds the track name from `MUSIC\%s.AUD` or `MUSIC\%s.HMI` with a table of 35 slots (32 real stems, one empty and two `badfile` slots); script opcode 210 (arms 0/1) selects the stem by index | proven |
 | One global byte picks digital (AUD) or MIDI (HMI) for the whole game; the GOG install is set to digital | proven |
 | `MELODIC.BNK` / `DRUM.BNK` are AdLib FM banks for the HMI MIDI path; the MIDI scores are the 33 `HMI-MIDISONG` entries in `LOCAL.MIX` | banks proven, scores proven below |
 | The GOG copy has no CD audio tracks | proven for this copy; retail discs likely the same |
@@ -23,9 +23,9 @@ low-nibble-first IMA decoder already used for LoL2 speech (predictor and step in
 
 `LOCAL.MIX` holds 33 entries that start with the 18 bytes `HMI-MIDISONG061595`. The same bytes are at `LOLG.DAT` file `0x1C5D90` (object-5 cell `0x4D6C`). VA `0x16A8C9` compares the loaded buffer with that string and stores error `0x0E` when it does not match.
 
-32 of the 33 keys are `ww_hash_v1` of `MUSIC\<stem>.HMI` for the 32 real stems in the table at file `0x1CE10C` ([the selection note](lol2-music-selection.md)). The remaining key is `0x1305A4F0`. That table has no name for it.
+32 of the 33 keys are `ww_hash_v1` of `MUSIC\<stem>.HMI` for the 32 real stems in the table at file `0x1CE10C` ([the selection note](lol2-music-selection.md)). CONFIRMED. The direct builder at VA `0xCA8E0` appends `credits.hmi` at `LOLG.DAT+0x1C26C9` and calls the HMI loader at `0xCAA57`. Both hashes of `MUSIC\\CREDITS.HMI` are `0x1305A4F0`, entry 71.
 
-`tools/lol2_hmi_midi.py --check` re-reads the songs, walks every track to its end marker, and builds a standard MIDI file in memory. It writes nothing.
+`tools/lol2_hmi_midi.py --check` re-reads the songs, walks every track to its end marker, and builds a standard MIDI file in memory and checks all 33 names. It writes nothing.
 
 ### Song
 

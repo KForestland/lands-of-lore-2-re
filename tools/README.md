@@ -149,7 +149,7 @@ Re-read the movie scene ids, one sound-bank row, the music stem hashes and the 4
 
 ```
 $ python3 tools/lol2_media_check.py --data /path/to/DAT --check
-CHECK media: scene limit 85; L12 opcode 21/20/210 at 9823886/9821090/9823696; citadel L12_CMI entry 21; lolg MOVIES entry 2; bank 1179 row 1049 0190108e.aud; 32 AUD in DMUSIC and 32 HMI in LOCAL; DMUSIC entry 16 unmatched; 46/46 room archives carry the code banner
+CHECK media: scene limit 85; L12 opcode 21/20/210 at 9823886/9821090/9823696; citadel L12_CMI entry 21; lolg MOVIES entry 2; bank 1179 row 1049 0190108e.aud; 32 table stems and CREDITS in both formats; 46/46 room archives carry the code banner
 ```
 
 ### `lol2_text_tables.py`
@@ -176,7 +176,7 @@ Walk the 33 `HMI-MIDISONG` entries in `LOCAL.MIX` and build a standard MIDI file
 
 ```
 $ python3 tools/lol2_hmi_midi.py --data /path/to/DAT --check
-CHECK hmi: 33 songs, 438 tracks, all end on FF 2F 00; 80067 note-ons with a duration; 32 named, 1 unnamed; standard MIDI in memory, division 120
+CHECK hmi: 33 songs, 438 tracks, all end on FF 2F 00; 80067 note-ons with a duration; 32 table stems and CREDITS; standard MIDI in memory, division 120
 ```
 
 ### `repo_guard.py`

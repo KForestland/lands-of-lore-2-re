@@ -17,7 +17,6 @@ from lol2_westwood_hash import ww_hash_v1, ww_hash_v2
 OBJ5 = 0x1C1024
 MAGIC = b"HMI-MIDISONG061595"
 TAIL = bytes.fromhex("2a2e6d69640000000000000000000000")
-UNNAMED_KEY = 0x1305A4F0
 DIVISION = 120
 
 
@@ -72,6 +71,16 @@ def stems_from(image):
         ptr = u32(image, 0x1CE10C + 4 * i)
         names.append(cstr(image, OBJ5 + ptr) if ptr else "")
     return names
+
+
+def credits_paths(image):
+    # The direct builder at 0xCA8E0 appends these literals in order.
+    prefix = cstr(image, OBJ5 + 0x1691) + cstr(image, OBJ5 + 0x1697)
+    aud = prefix + cstr(image, OBJ5 + 0x1699)
+    hmi = prefix + cstr(image, OBJ5 + 0x16A5)
+    if aud.upper() != r"MUSIC\CREDITS.AUD" or hmi.upper() != r"MUSIC\CREDITS.HMI":
+        raise ValueError("direct credits paths changed")
+    return aud, hmi
 
 
 def hmi_songs(local_bytes):
@@ -236,8 +245,13 @@ def check(dat_dir):
     songs = hmi_songs(local)
     if len(songs) != 33 or len(wanted) != 32:
         raise ValueError("song or stem count")
+    _, credits_hmi = credits_paths(image)
+    credits_key = ww_hash_v1(credits_hmi)
+    if credits_key != 0x1305A4F0 or credits_key != ww_hash_v2(credits_hmi):
+        raise ValueError("credits HMI key")
+    wanted[credits_key] = "CREDITS"
     keys = {key for key, _blob in songs}
-    if set(wanted) - keys or keys - set(wanted) != {UNNAMED_KEY}:
+    if keys != set(wanted):
         raise ValueError("HMI names")
     note_ons = controllers = pitch = pressure = programs = 0
     tracks = 0
@@ -294,7 +308,7 @@ def check(dat_dir):
     if (tick, status & 0xF0, data) != (0, 0xB0, b"\x69\x01"):
         raise ValueError("worked example")
     return ("CHECK hmi: 33 songs, 438 tracks, all end on FF 2F 00; "
-            "80067 note-ons with a duration; 32 named, 1 unnamed; "
+            "80067 note-ons with a duration; 32 table stems and CREDITS; "
             "standard MIDI in memory, division 120")
 
 
@@ -305,6 +319,8 @@ def write_songs(dat_dir, out_dir):
     local = open(parent_file(dat_dir, "LOCAL.MIX"), "rb").read()
     names = {ww_hash_v1("MUSIC\\%s.HMI" % stem): stem
              for stem in stems_from(image) if stem and stem != "badfile"}
+    _, credits_hmi = credits_paths(image)
+    names[ww_hash_v1(credits_hmi)] = "CREDITS"
     for key, blob in hmi_songs(local):
         smf, _messages, _tails = convert_song(blob)
         stem = names.get(key, "unnamed_%08x" % key)

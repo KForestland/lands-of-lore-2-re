@@ -1,8 +1,8 @@
 # Music selection
 
-Opcode 210 byte 4 picks one of twelve arms. Arms 0 and 1 store byte 5 into the two bytes the filename builder uses as stem indexes. The builder writes `MUSIC\stem.AUD` when the high byte of the dword at data `0x2238E` is 2, and `MUSIC\stem.HMI` otherwise. All 32 real stems have an `.AUD` entry in `DMUSIC.MIX` and an `.HMI` entry in `LOCAL.MIX`. One `DMUSIC.MIX` entry has no stem.
+Opcode 210 byte 4 picks one of twelve arms. Arms 0 and 1 store byte 5 into the two bytes the filename builder uses as stem indexes. The builder writes `MUSIC\stem.AUD` when the high byte of the dword at data `0x2238E` is 2, and `MUSIC\stem.HMI` otherwise. All 32 real stems have an `.AUD` entry in `DMUSIC.MIX` and an `.HMI` entry in `LOCAL.MIX`. The direct credits builder supplies the 33rd name in both archives.
 
-`tools/lol2_media_check.py --check` re-reads the stem table, the 32 hashes, the headers and the worked-example command. It writes nothing. It does not decode samples. Header and chunk facts for the codec are in [the music note](lol2-music-2026-11.md).
+`tools/lol2_media_check.py --check` re-reads the stem table, the indexed and direct-path hashes, the headers and the worked-example command. It writes nothing. It does not decode samples. Header and chunk facts for the codec are in [the music note](lol2-music-2026-11.md).
 
 ## The stem table
 
@@ -58,7 +58,23 @@ The builder leaves immediately when that byte is 0, which is the empty slot. Oth
 
 CONFIRMED. `DMUSIC.MIX` has 33 entries. For every stem except the empty slot and `badfile`, both hash functions of `MUSIC\stem.AUD` agree, and that id is one entry. That is 32 hits. The `.HMI` ids are not in `DMUSIC.MIX`. All 32 are in `LOCAL.MIX`.
 
-The entry with no stem is index 16, id `0x22F7A4EB`, size 2,784,067. Its header is rate 22050, flags 2, codec 99, and the first chunk id is `0xDEAF`. The compressed-size field plus 12 equals the entry size. No name was invented for it.
+### The direct credits path
+
+CONFIRMED. At VA `0xCA8E9` and `0xCA90A` the original builds its prefix
+with the literals `music` and `\\` at `LOLG.DAT+0x1C26B5` and
+`+0x1C26BB`. For audio mode 2, `0xCA976` appends `credits.aud`
+(`+0x1C26BD`) and `0xCA9D9` calls the digital loader `0x155850`.
+For mode 1, `0xCA9FB` appends `credits.hmi` (`+0x1C26C9`) and
+`0xCAA57` calls `0x156BD0`. Both branches store the resulting handle
+at data `0xB7F20` (`0xCA9E1`, `0xCAA5F`).
+
+Both Westwood hashes of `MUSIC\\CREDITS.AUD` are `0x22F7A4EB`,
+`DMUSIC.MIX` entry 16, size 2,784,067. Its header gives rate 22050,
+flags 2, codec 99 and first chunk id `0xDEAF`. Both hashes of
+`MUSIC\\CREDITS.HMI` are `0x1305A4F0`, `LOCAL.MIX` entry 71,
+size 23,055, starting with `HMI-MIDISONG`. These two names come
+directly from code, separate from the indexed stem table at
+file `0x1CE10C`.
 
 Every one of the 33 headers has flags 2, codec 99, first chunk id `0xDEAF`, and compressed size plus 12 equal to the entry size. Thirty-two are 22050 Hz. Entry 10 is `SSARPIT1` (stem 29), id `0xD76E26ED`, rate 44100, size 3,394,572. This pass did not decode the samples.
 
@@ -80,4 +96,3 @@ Which extension those two stems use depends on the high byte of `[0x2238E]` at t
 
 - What writes the high byte of data `0x2238E`, and what writes the gate byte at `0xB868`.
 - What the calls at VA `0x156030` and VA `0x156F12` do, and what the scaled words and the arm 10 and arm 11 dwords change.
-- A name for `DMUSIC.MIX` entry 16. The 34 stems do not hash to it.

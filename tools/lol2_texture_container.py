@@ -344,6 +344,20 @@ def _column_scores(pixels, width, height):
     return adj / na, sw / nw, sh / nh
 
 
+def validate_row_payload(blob, start, size):
+    """Frame one row header and its literal bytes per declared image row."""
+    _flags, width, height, length = struct.unpack_from("<4H", blob, start)
+    end = start + size
+    require(length == size - 8 and end <= len(blob), "invalid row payload size")
+    at = start + 8
+    for _ in range(height):
+        require(at + 4 <= end, "truncated row header")
+        first, count = struct.unpack_from("<HH", blob, at)
+        at += 4 + count
+        require((first & 0x3FFF) + count <= width and at <= end, "row span exceeds dimensions")
+    require(at == end, "trailing bytes in row payload")
+
+
 def check(data_dir):
     """Walk every level .TE_ and pin the flag layouts measured on 2026-11-18."""
     bad = []
@@ -351,6 +365,7 @@ def check(data_dir):
     levels = 0
     name_hit = name_total = 0
     height_mismatch = 0
+    row_payloads = 0
     scores = {flag: [0.0, 0.0, 0.0, 0] for flag in COLUMN_FLAGS}
     keys = _mix_keys(data_dir)
     for name in sorted(os.listdir(data_dir)):
@@ -432,6 +447,16 @@ def check(data_dir):
                     height_mismatch += 1
                     if not (d["width"] == 640 and d["height"] == 434 and header_h == 192):
                         bad.append(f"{name}#{index} unexpected height {header_h} vs {d['height']}")
+                if flag in (0x028E, 0x02C6, 0x828E, 0x82C6):
+                    for mip in present:
+                        mip_start = payload + d["mip_offsets"][mip]
+                        mip_size = d["mip_sizes"][mip]
+                        try:
+                            validate_row_payload(blob, mip_start, mip_size)
+                        except (ValueError, struct.error) as error:
+                            bad.append(f"{name}#{index} mip {mip}: {error}")
+                        else:
+                            row_payloads += 1
                 continue
             bad.append(f"{name}#{index} unclassified flag 0x{flag:X}")
     if levels != 15:
@@ -442,6 +467,8 @@ def check(data_dir):
             if counts[flag] != EXPECTED_COUNTS.get(flag)))
     if height_mismatch != 1:
         bad.append(f"header-height mismatches {height_mismatch}")
+    if row_payloads != 30593:
+        bad.append(f"row payload count {row_payloads}")
     if name_total != 881 or name_hit != 0:
         bad.append(f"movie names {name_total} bare keys {name_hit}")
     for flag, (adj, stride_w, stride_h, count) in scores.items():
@@ -458,7 +485,7 @@ def check(data_dir):
             f"raw 8-bit {raw_n}; movie-name records {name_total} "
             f"({name_hit} bare names are DAT keys); payload-length header {payload_n} "
             f"({height_mismatch} header-height mismatch); flag 0x1246 records {counts[0x1246]}; "
-            f"empty {counts[0]}; rectangular raw samples store columns; "
+            f"{row_payloads} framed row payloads; empty {counts[0]}; rectangular raw samples store columns; "
             f"bad={'none' if not bad else '; '.join(bad[:6])}")
     print(line)
     return 1 if bad else 0

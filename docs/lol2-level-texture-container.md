@@ -199,25 +199,45 @@ header word is not a pixel count.
 | `0x82C6` | 749 | payload length |
 | `0x1246` | 27,889 | record length minus 22 |
 
-7,537 records use the payload-length word (the ten rows above `0x1246`).
-The payload is shorter than `width * height`, so it is not raw indices.
-`0x1246` is the majority of the table. Its record is 22 bytes plus the
-fourth word: an 8-byte header, 14 bytes that are not one constant, then
-that many payload bytes. `L10_DC.MIX` descriptor 699 is 320×200, record
-1,202 bytes, fourth word 1,180, and the 14 bytes are thirteen `00` bytes
-then `03`. Only mip 0 is present, and the low byte of `+0x0A` is 1.
+CONFIRMED. 7,537 mip-0 records use the payload-length word (the ten flags
+above `0x1246`). Their payloads are shorter than `width * height`.
+The one mip-0 height mismatch is `L9_DR.MIX` descriptor 1321, flag
+`0x02C6`. The descriptor says 640×434. The mip header says 640×192,
+and the fourth word is 65,369 (record length 65,377 minus 8).
 
-The one header mismatch is `L9_DR.MIX` descriptor 1321, flag `0x02C6`.
-The descriptor says 640×434. The mip-0 header says 640×192, and the fourth
-word is 65,369, which still equals the record length 65,377 minus 8.
+### Four row-framed flags
 
-One payload of each of these flags was given to the movie LCW decoder and
-to the mode-byte LZ77 decoder. Neither produced `width * height` bytes.
-The former room-section decoder (now the `options.shp` shape reader) always returns a buffer of the size it was asked
-for, so a full buffer from it is not evidence. `L10_DC.MIX` descriptor 1
-(flag `0x028E`, 320×200, record 7,659) begins its payload with the 16-bit
-pair (`0x0140`, `0x0000`) 37 times; `0x0140` is the width. That pattern
-was not turned into pixels.
+CONFIRMED from the decoded `.TE_` banks. For flags `0x028E`, `0x02C6`,
+`0x828E` and `0x82C6`, start at mip record `+8`. Read two little-endian
+u16 words, then advance by the second word in bytes. Do this once per
+row of the **mip header** height. The sum of the first word masked by
+`0x3FFF` and the second word is at most the mip header width. This walk
+ends at the exact declared record boundary for all 30,593 present mips
+(3,691, 22,997, 321 and 3,584 respectively), including the 192-row sample.
+
+In `L10_DC.MIX`, descriptor 1 mip 0 (`0x028E`, 320×200) starts at decoded
+bank `+0x2762E7` and is 7,659 bytes. The 37 pairs from payload
+`+0x2762EF` are `(0x0140, 0)`. The next pair at bank `+0x276383` is
+`(0x40A9, 6)` and is followed by six bytes. All four values of the first
+word's high two bits occur across the banks. UNCONFIRMED. The significance
+of those bits, the treatment of uncovered pixels and the native reader
+address. The counted spans establish byte framing.
+
+### Other compressed records
+
+CONFIRMED. Each of the 27,889 `0x1246` records is 22 bytes plus the fourth
+word. In `L10_DC.MIX`, descriptor 699 mip 0 at decoded bank
+`+0x1149B2E` is 320×200, 1,202 bytes, with fourth word 1,180. It has 13
+zero bytes and one `03` between the header and the payload. The payload
+at record `+0x16` begins `2F 5A 00 66 00 76 00`. Only mip 0 is populated.
+
+UNCONFIRMED. The `0x1246` payload and the other six payload-length flags
+have no verified row decoder. Feeding one sample of each to the movie
+LCW and mode-byte LZ77 decoders produced no exact pixel count. A direct
+comparison with `0x1246` was absent in the code scan. To settle it, trace
+the masked bank flag read into the copy loop for the descriptor 699
+payload at record `+0x16`, then compare the same reader with descriptor
+1 at record `+8` to locate the high-bit branches.
 
 Fifteen further descriptors have flag 0, size 0×0, and no mip records.
 The 15 levels together hold 38,361 descriptors and no other flag value.
@@ -242,17 +262,17 @@ python3 tools/lol2_texture_container.py --check --data ./lol2_game/DAT
 local use; do not commit them. `--check` prints one line and writes nothing.
 It is not one of the checks in `check_all.py`.
 
-The line from the 2026-11-18 run:
+The line from the 2026-11-19 run:
 
 ```
-CHECK textures: 15 levels, 38361 descriptors; raw 8-bit 2039; movie-name records 881 (0 bare names are DAT keys); payload-length header 7537 (1 header-height mismatch); flag 0x1246 records 27889; empty 15; rectangular raw samples store columns; bad=none
+CHECK textures: 15 levels, 38361 descriptors; raw 8-bit 2039; movie-name records 881 (0 bare names are DAT keys); payload-length header 7537 (1 header-height mismatch); flag 0x1246 records 27889; 30593 framed row payloads; empty 15; rectangular raw samples store columns; bad=none
 ```
 
 ## Open
 
 - Which image edge is up.
 - Meaning of descriptor `+0x08`, `+0x0C`, bits `0x8000` and `0x2000` of the flag, and the high byte of `+0x0A`.
-- The payload bytes of the flags in the header-only table, including `0x1246`.
+- The native interpretation of the four row-framed flags and the payload layout of the remaining seven compressed flags.
 - How a movie-name record is resolved to a file.
 - How the renderer picks a shade row per surface.
 - Sections other than 2, 3 and 4.

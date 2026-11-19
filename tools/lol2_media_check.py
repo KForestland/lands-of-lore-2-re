@@ -15,6 +15,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from lol2_cli import tool_args  # noqa: E402
+from lol2_hmi_midi import credits_paths  # noqa: E402
 from lol2_source_format import SIZES  # noqa: E402
 from lol2_westwood_hash import ww_hash_v1, ww_hash_v2  # noqa: E402
 
@@ -256,10 +257,14 @@ def check(dat_dir):
         hmi_hits += 1
     if hmi_hits != 32:
         raise ValueError("hmi hits %s" % hmi_hits)
-    used = {ww_hash_v1("MUSIC\\%s.AUD" % s) for s in stems if s and s != "badfile"}
-    spare = [e for e in dentries if e["key"] not in used]
-    if len(spare) != 1 or spare[0]["index"] != 16 or spare[0]["key"] != 0x22F7A4EB:
-        raise ValueError("unmatched DMUSIC entry changed")
+    credits_aud, credits_hmi = credits_paths(image)
+    credits_aud_key = ww_hash_v1(credits_aud)
+    credits_hmi_key = ww_hash_v1(credits_hmi)
+    if (credits_aud_key != ww_hash_v2(credits_aud) or credits_hmi_key != ww_hash_v2(credits_hmi)
+            or credits_aud_key != 0x22F7A4EB or credits_hmi_key != 0x1305A4F0
+            or by_key.get(credits_aud_key, {}).get("index") != 16
+            or credits_hmi_key not in local_keys):
+        raise ValueError("credits music entries changed")
     rates = {}
     odd = 0
     for entry in dentries:
@@ -328,7 +333,7 @@ def check(dat_dir):
 
     return ("CHECK media: scene limit 85; L12 opcode 21/20/210 at 9823886/9821090/9823696; "
             "citadel L12_CMI entry 21; lolg MOVIES entry 2; bank 1179 row 1049 0190108e.aud; "
-            "32 AUD in DMUSIC and 32 HMI in LOCAL; DMUSIC entry 16 unmatched; "
+            "32 table stems and CREDITS in both formats; "
             "46/46 room archives carry the code banner")
 
 
