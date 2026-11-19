@@ -63,16 +63,19 @@ structures accessed by the indicated caller.
 
 The global texture file supplies a named witness for `0x67052`.
 `0x9E305–0x9E32D` opens `global\global.tex` from
-`LOLG.DAT+0x1C1C90`. The original file name hashes to `0xEF88C09F`,
+`LOLG.DAT+0x1C1C90` (data address `0xC6C`). The original file name hashes to `0xEF88C09F`,
 `LOCAL.MIX` entry 50 at `+0x4E6`. The loader reads the secondary
 base at member +0x298 (`0x9E332–0x9E358`), then seeks to its
 section-9 table (`0x9E689–0x9E6A0`). In the original member the
-secondary base is `0x18AE18`; its offset +0x2A4 gives 15 rows.
+secondary base is `0x18AE18`; the dword at secondary base +0x2A4 gives 15 rows, and the table
+starts at secondary base +0x2C.
 The read at `0x9E6BE` uses three dwords per row. The call
-`0x9E6ED → 0x66E8C` stores their source offset (relative to that
-secondary base), capacity and packed length in resource +4, +8
-and +0xC (`0x66EA7–0x66EBC`). For a texture with mask `0x1000`,
-the class-3 resource path asks for the companion at `0x132835`,
+`0x9E6ED → 0x66E8C` stores secondary base + row offset (an absolute file position, sought
+at `0x67015`), capacity and the packed length (a word) in resource +4,
++8 and +0xC (`0x66EA7–0x66EBC`). For a texture with mask `0x1000`,
+the class-2 resource path (`0x13277C`; table `[0x22D88]`, loader
+struct `0x22CD8` + 0xB0, index base `[0x22DA0]`) asks for the companion
+at `0x1327B1`,
 and the resource reader takes the packed arm at `0x67022–0x67052`.
 
 The first row at `LOCAL.MIX+0x339FA5` names the stream at
