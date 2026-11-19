@@ -27,19 +27,22 @@ sending message 0x26. [Spell and timer consumers](lol2-spell-dispatch.md)
 **CONFIRMED, two runtime controls.** One level-20 cast reached
 `0xD24B1` with effect `0x0A` and the watched player field stayed zero.
 In a separate restore of the same slot, taking the handler-34 lesson
-and pressing W reached school 4 registration at `0x96FEC`, returned
-zero at `0x96FF4` and spawned the feedback effect at `0x97028`.
+and pressing W reached acquisition ID 4 at `0x96FEC`. Its return
+of zero at `0x96FF4` shows that ID 4 was already known. This
+path spawned the feedback effect at `0x97028`.
 Player +0x185 stayed zero at the traced sites and through the
 20-second watch. The expiry call at `0xD2E61` did not run.
 [Lesson, feedback and slot evidence](lol2-spell-dispatch.md#controlled-use-of-the-level-20-lesson)
 
 **UNCONFIRMED.** Which gameplay action arms the timer. Arm a write
 watch at player +0x185 after initialization and note the player
-pointer from `0xD2E30`. Let the character change form and verify
+pointer from `0xD2E30`. First observe a lesson with an absent
+acquisition ID (for ID 4, message 0x23 at `0x86230`). Separately,
+let the character change form and verify
 a transition at player +0x1AB. Record the first nonzero timer
 write and stack if it occurs, then whether the same object reaches
 `0xD2E57` and sends 0x26. A nonzero write and matching expiry
-identify that trial's producer. The observed school-4 lesson and
+identify that trial's producer. The already-known lesson and
 effect-0x0A cast provide zero-valued controls.
 
 ### Q10. Which observation path a live mode-2 creature takes
@@ -167,6 +170,8 @@ the service before the subtraction at `0xB8CE4`.
 
 ### Q7 (save-load and menu). What does the first resumed countdown use?
 
+Question: [Q7 in OPEN_QUESTIONS](OPEN_QUESTIONS.md).
+
 **ANSWERED, CONFIRMED.** The same kind-2 L20_BB event first
 used 3 restored whole ticks after load (`0x0A0B` → `0x0A08`).
 In a separate normal-menu trial it stayed at `0x0A05` for
@@ -197,15 +202,20 @@ sections 31/32 agree across the pair.
 placement at `L1_DC.MIX+0x6FBFCE` has definition `0xA4C5CBD3`.
 A left click allocated player row 0 at `0x95A99` and released placement
 row 16 at `0x9412C`. With position fixed, the saves show row 16's
-reusable bit, the new player occupancy bit, and four new definition
-bytes in global section 2. Level sections 31/32 agree.
+reusable bit, the new player occupancy bit, and four new definition-pointer
+XOR bytes in global section 2. Level sections 31/32 agree.
 [Save inspector comparison and native calls](lol2-save-sections.md#original-opening-cave-pickup-in-l1_dc)
 
 ### Q18. Which gesture reaches an original placed-item group?
 
+Question: [Q18 in OPEN_QUESTIONS](OPEN_QUESTIONS.md).
+
 **ANSWERED, CONFIRMED.** An empty-hand left click on L1_DC row
 16 (`L1_DC.MIX+0x6FBFCE`) reached the placed-item virtual call
 at `0x110ACD`, dispatched its kind-4 record and entered stream-1
-group `0x3648` at `0x646EC`. The original click also allocated a
-player item and released the floor row.
+group `0x3648` at `0x646EC`. The click was replayed with xdotool
+on private Xvfb display :74, using the Q11 before slot in a separate
+DOS instance. The empty cursor passed the gate at
+`0xADBDB–0xADC59`. The click also allocated a player item and
+released the floor row.
 [Native calls, predicate and group offsets](lol2-event-producers.md#empty-hand-left-click-on-l1_dc-placement-16)

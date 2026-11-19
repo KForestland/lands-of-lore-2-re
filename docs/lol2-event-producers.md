@@ -178,9 +178,11 @@ from the placed-item table at level header +0x20/+0x6C.
 
 ### Empty-hand left click on L1_DC placement 16
 
-**CONFIRMED.** On the original DOS 1.30 game, restore the
+**CONFIRMED.** In a separate run of original DOS 1.30,
+with one instance on a private Xvfb display, a disposable copy
+and null audio, the trial restored the
 [opening-cave before slot](lol2-save-sections.md#original-opening-cave-pickup-in-l1_dc)
-and left-click the floor sprite with an empty cursor. The native
+and left-clicked the floor sprite with an empty cursor. The native
 pick at `0x110ACD` passed row `0x1128C304` through the vtable
 to `0x95200`, then `0x95218 → 0xB5000`. This was row 16
 at `L1_DC.MIX+0x6FBFCE`, definition `0xA4C5CBD3`. Object +0x18
@@ -188,8 +190,8 @@ was `0x1ADA`. Added to live object-event base `0x111E37FC`,
 it selected `0x111E52D6`, the kind-4 record at
 `L1_DC.MIX+0x6EB187`.
 
-Execution reached the predicate call at `0xADD80` (predicate 41 at
-`L1_DC.MIX+0x70628A`) and then the group call `0xADDB0 → 0x646EC`.
+Execution reached the predicate word load at `0xADD80` (predicate
+41 at `L1_DC.MIX+0x70628A`, call at `0xADD8A`) and then the group call `0xADDB0 → 0x646EC`.
 The argument was `0x1122773C`, stream-1 base `0x112240F4` plus
 `0x3648`, whose group starts at `L1_DC.MIX+0x6E93AF`.
 The subsequent `0x64887` command had value 1 and points to the

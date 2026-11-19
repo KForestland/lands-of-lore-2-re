@@ -334,20 +334,23 @@ the sampled points.
 
 #### Controlled use of the level-20 lesson
 
-**CONFIRMED.** The same original autosave was restored in DOS 1.30.
+**CONFIRMED.** The same original autosave was restored in one DOS 1.30 instance on a private Xvfb display, using null audio and a disposable installation copy.
 With inventory page 0 open, a left click on row 2, column 2 took
 inventory index 6 (instance `0x102F5AD4`, definition +0x18
 `0x5BD621C2`). The configured Use Mouse Item key, W, invoked
 handler `0x96F64` with that same instance. It called `0x8619C`
-at `0x96FEC` with school 4. The return register was zero at
-`0x96FF4`, and execution continued through the feedback call
+at `0x96FEC` with acquisition ID 4. A match in the +0xA0 list
+sets the return value to zero (`0x861CD–0x861E3`,
+`0x86201–0x86205 → 0x86262`). That zero was returned at
+`0x96FF4`, identifying the already-known path. Execution
+continued through the feedback call
 `0x97001` and effect spawn `0x97028` (template `0x6A`,
 requested at `0x97012`). The used instance was no longer allocated
 in the player pool ([release call `0x96FDD`](lol2-item-handlers.md)).
-This exercises a successful new lesson, including the feedback path.
+This exercises use of a lesson whose acquisition ID was already present.
 
 **CONFIRMED for this action.** The little-endian dword at player
-+0x185 was zero at all five sites. A 20-second hardware watch
++0x185 was zero at the six traced sites from the handler entry through the effect request, including the cursor lookup at `0x77ACC`. A 20-second hardware watch
 covering the input and following updates saw no value change, and
 the countdown and expiry sites at `0xD2E45`, `0xD2E57` and
 `0xD2E61` were idle. The post-action player read still gave +0x185=0
@@ -355,7 +358,11 @@ and form +0x1AB=0. This lesson use yielded its own feedback without
 arming timed message 0x26 during the observed interval.
 
 **UNCONFIRMED.** The first nonzero producer of +0x185 remains
-open. Keep the watch through a genuine form transition (observe
-+0x1AB change), record the first nonzero writer with its call stack
+open. An absent acquisition ID 4 instead reaches the jump
+table at `0x86250` (entry `LOLG.DAT+0xBD190`) and sends
+message 0x23 at `0x86230`. Run that original lesson branch
+with +0x185 watched. Separately, keep the watch through a
+genuine form transition (observe +0x1AB change). In either
+trial record the first nonzero writer with its call stack
 and follow the same player through `0xD2E57–0xD2E61` to check
 whether expiry sends 0x26.

@@ -177,7 +177,9 @@ not directly invoke it.
 
 ### First countdown after save-load and menu pause
 
-**CONFIRMED, saved timer.** DOS 1.30 loaded the game-written L20_BB
+**CONFIRMED, saved timer.** One DOS 1.30 instance used a
+disposable game copy, a private Xvfb display and null audio.
+It loaded the game-written L20_BB
 autosave with SHA-256 prefix `e2393dbe4d2b`. In that slot, the
 L61 active-count XOR at slot `+0x189819` is 1 and the first
 L62 pointer at `+0x189825` is `0x1120284C`. The rebasing
@@ -206,7 +208,9 @@ and the ring stayed `[24, 43, 27, 24]`. The resume path
 from 3 to zero and reanchored the marker at `0x0F31`
 (`0x14FACE`, read back at `0xA034F`).
 The first countdown ran before the first new sample. It
-subtracted the existing whole-tick cell 4 at `0xB8CE4`,
+subtracted the retained whole-tick value 4 at `0xB8CE4`.
+The last pre-pause frame conversion (`0xE0C5C–0xE0CD2`)
+left that value. The subtraction was
 taking +8 from `0x0A05` to `0x0A01`. The subsequent frame
 sample at `0xE0BE9` was 24, with marker `0x0F49`.
 That marker is 24 counts after the resume anchor. The observed

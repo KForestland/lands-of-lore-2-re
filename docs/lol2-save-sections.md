@@ -203,18 +203,23 @@ Sections 31/32 describe a separate pool.
 
 ### Original opening-cave pickup in L1_DC
 
-**CONFIRMED.** In DOS 1.30 a new game was walked into L1_DC and
-saved with F8. The slot used for the pair was taken at the item after
+**CONFIRMED.** A new DOS 1.30 game in a disposable copy,
+with one instance on a private Xvfb display and null audio,
+was walked into L1_DC and saved with F8. The slot used for the pair was taken at the item after
 reloading that run. With an empty cursor, a left click on the loose
 floor sprite took placement row 16. The row starts at
 `L1_DC.MIX+0x6FBFCE`. Its +0x20 identity is `0xA4C5CBD3`, and its
 +0x24 instance input is zero. The live row at `0x1128C304` held
-that same definition identity (+0x2C indirection then definition +0x18).
+the same definition identity (+0x2C indirection then definition +0x18).
+It had the original X/Z pair of −2275/5173 and event-list offset
+0x1ADA, identifying the eighth placement with this identity in
+shipped file order (rows 9–16).
 At `0x95A64` the row went to the player object. At `0x95A99`
 the allocator returned `0x102F54EC`, the first player element.
 That same world row reached the reusable-flag store at `0x9412C`.
 
-The two completed native slots have SHA-256 prefixes `b75a12565c10`
+Two copies of the native autosave, written by the game during
+this probe (not shipped), have SHA-256 prefixes `b75a12565c10`
 and `cedb327d1f86`. Slot +0x17C is 1, +0x180..+0x18B holds
 `0d8690f7 0e444d14 43b50000`, and +0x18C is 604 in both.
 The save inspector decodes both slots and reads row 16 with the
