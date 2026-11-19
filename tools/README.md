@@ -35,8 +35,8 @@ when those rules do not have a standalone file layout.
 | [Level data directories](../docs/formats/level-data.md) | `lol2_source_format.py`, `lol2_level_report.py` | Geometry found and sections checked across all levels | Level reports |
 | [Regions and portals](../docs/formats/geometry.md), [walls](../docs/formats/walls.md), [automap inputs](../docs/formats/maps.md) | `lol2_level_report.py`, `lol2_level_map.py`, `lol2_level_schematic.py` | Region links, wall ranges, polygons and door-candidate geometry | Wall, portal, door-candidate and placement schematic |
 | [ODF definitions](../docs/formats/entity-records.md), [placed objects and controls](../docs/lol2-l8-controls.md) | `lol2_entity_field_analyzer.py`, `lol2_level_report.py`, `lol2_level_schematic.py` | Definition framing, placement rows and selected joins | Entity summary, level report and numbered item and creature marks |
-| [Script framing and opcode dispatch](../docs/lol2-script-opcodes.md) | `lol2_disassemble_scripts.py` | All 15 command streams by level, with native opcode sizes | Full listing. **Gap:** per-group meaning and trigger summary |
-| [Trigger and predicate tables](../docs/lol2-script-events.md), [shared predicates](../docs/lol2-shared-predicates.md), [level exits](../docs/lol2-level-graph.md) | `lol2_disassemble_scripts.py`, `lol2_level_report.py`, `lol2_level_notes.py` | Event and predicate joins and exit census | Raw links, level notes. **Gap:** event browser |
+| [Script framing and opcode dispatch](../docs/lol2-script-opcodes.md) | `lol2_disassemble_scripts.py`, `lol2_event_browser.py` | Both command streams in each of the 15 levels, with native opcode sizes | Full listing or paged group summaries and opcode meanings |
+| [Trigger and predicate tables](../docs/lol2-script-events.md), [shared predicates](../docs/lol2-shared-predicates.md), [level exits](../docs/lol2-level-graph.md) | `lol2_event_browser.py`, `lol2_level_report.py`, `lol2_level_notes.py` | Event and predicate joins and exit census | Trigger owners, matcher operands, predicate indices and level notes |
 | [Script motion](../docs/lol2-script-motion.md), [event producers](../docs/lol2-event-producers.md), [timers and clocks](../docs/lol2-timer-clock.md) | Native evidence in linked tables; `lol2_save_native.py` for clock witnesses | Selected native reads and calls | **Gap:** topic view of cited readers and rules |
 | [Item definitions](../docs/lol2-item-format.md) and [item handlers](../docs/lol2-item-handlers.md) | `lol2_item_labels.py`, `lol2_level_report.py` | Definition keys, names, replacement handlers and placement links | **Gap:** per-definition fields and handler lookup |
 | [Spell table](../docs/lol2-spells.md), [dispatch](../docs/lol2-spell-dispatch.md), [item effects](../docs/lol2-item-effects.md) | Native evidence in linked tables | Address and offset witnesses in the reference | **Gap:** topic view of cited readers and rules |
@@ -62,7 +62,7 @@ Run each `--check` and print one line each, then a summary.
 $ python3 tools/check_all.py | sed -n '1,2p;$p'
 CHECK repo_guard: N tracked files; game files, media, stray images, files over 300 KB, machine paths, words from the local list, or commit identities: none (0); private word list: not present, skipped
 CHECK mix: 81 MIX files, 2905 entries; this reader and lol2_source_format.parse_mix agree and every entry lies inside its file: 81/81; index sorted by signed key: 81/81 (by unsigned key: 20); bad=none
-ALL 30 CHECKS PASSED
+ALL 31 CHECKS PASSED
 ```
 
 ### `doc_links.py`
@@ -152,6 +152,24 @@ L1_DC  geometry MIX+0x6C370A
 $ python3 tools/lol2_disassemble_scripts.py --data /path/to/DAT --check
 CHECK scripts: 15/15 levels, 42594 commands, 32 observed opcodes, 0 unsupported
 ```
+
+### `lol2_event_browser.py`
+
+Prints group offsets, triggering records, predicate rows and one-line native
+opcode meanings. It includes the placed-item table. Use `--start` and
+`--limit` to page through a level or select an exact `--stream`/`--group`.
+The command for [the level-1 tutorial](../docs/tutorial-one-event.md) begins
+with the following lines.
+
+```text
+$ python3 tools/lol2_event_browser.py --data /path/to/DAT L1_DC --stream 1 --group 0x228e
+L1_DC: groups 1–1 of 1  (opcodes in hex)
+s1:0x228E MIX+0x6E7FF5  1 trigger record  opcodes 09 03 10
+```
+
+`--check` replays the browser over all 15 levels and verifies group, command and
+trigger counts. Opcode and trigger evidence comes from the [opcode reference](../docs/lol2-script-opcodes.md)
+and the [event matcher reference](../docs/lol2-script-events.md).
 
 ### `lol2_westwood_hash.py`
 

@@ -69,10 +69,9 @@ game; the [runtime procedure](NEEDS_A_RUNNING_GAME.md) covers the click.
 [Definition fields](lol2-item-format.md)
 
 To find the record and group in your own installation, give the
-[disassembler](lol2-script-opcodes.md) the original installation's
-DAT directory.
+[event browser](../tools/README.md#lol2_event_browserpy) the original
+installation's DAT directory.
 
 ```sh
-python3 tools/lol2_disassemble_scripts.py --data "$LOL2_DAT" L1_DC |
-  grep -iE '6e7ff5|6e7ffb|6e8001|6e800d|6eab81|7061d1'
+python3 tools/lol2_event_browser.py --data "$LOL2_DAT" L1_DC --stream 1 --group 0x228e
 ```

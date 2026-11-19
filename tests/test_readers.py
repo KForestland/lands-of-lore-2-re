@@ -6,6 +6,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))
 
 from lol2_decompress_westwood import decompress_westwood
+from lol2_event_browser import event_index, summary
 from lol2_export_scripts import SourceError, frame, group, walk
 from lol2_level_schematic import Placement, bounds, edge_type, parse_geometry
 from lol2_save_header import HEADER_SIZE, parse_header
@@ -98,3 +99,19 @@ class ReaderTests(unittest.TestCase):
         self.assertEqual(edge_type(regions[0], closed), "door")
         closed[14] = 4
         self.assertEqual(edge_type(regions[0], closed), "portal")
+
+    def test_event_browser_groups_shared_triggers_and_describes_commands(self):
+        event = {"stream": 1, "group": 12, "kind": 6, "file_offset": 80,
+                 "raw_hex": "06060c001400", "predicate": {"index": 3, "entry_file_offset": 160}}
+        scripts = {"region_lists": [], "objects": [
+            {"table": "prop", "ref": "prop:2", "events": [event]},
+            {"table": "placed_item", "ref": "placed_item:5", "events": [event]},
+        ]}
+        triggers = event_index(scripts)[1, 12]
+        self.assertEqual(len(triggers), 1)
+        group = {"stream": 1, "group": 12, "file_offset": 44,
+                 "commands": [{"opcode": 16, "kind": 3, "target": 2, "raw_hex": "100302000100"}]}
+        lines = "\n".join(summary(group, triggers, {}, [], []))
+        self.assertIn("placed item 5, prop 2 receives kind-6 value 20", lines)
+        self.assertIn("predicate 3 passes (MIX+0xA0)", lines)
+        self.assertIn("0x10  set object state +0x25 to 1", lines)

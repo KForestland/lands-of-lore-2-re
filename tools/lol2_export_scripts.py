@@ -42,6 +42,7 @@ STREAMS = [(0, 0x3C, 0x84, 0x2B51C), (1, 0x44, 0x8C, 0x2B514)]
 # label, header offset field, header count field, record stride (event list offset = record word +12)
 TABLES = [('actor', 0x1C, 0x68, 56), ('prop', 0x14, 0x60, 37), ('control', 0x18, 0x64, 33),
           ('movable', 0x24, 0x70, 41)]
+PLACED_ITEMS = ('placed_item', 0x20, 0x6C, 37)
 OBJECT_EVENTS = (0x40, 0x88)      # object event-record blob: offset, size
 REGION_EVENTS = (0x38, 0x80)      # region event-record blob: offset, size
 REGION_DESCRIPTORS = (0xA4, 0xAC, 26)
@@ -121,7 +122,7 @@ def command_row(base, offset, body):
                 target=struct.unpack_from('<H', body, 2)[0], raw_hex=body.hex())
 
 
-def export(archive_path):
+def export(archive_path, include_items=False):
     archive = archive_path.read_bytes()
     entry, raw = level_geometry(archive)
     base = entry['offset']
@@ -163,7 +164,8 @@ def export(archive_path):
 
     objects, record_counts, unlinked, table_sizes = [], Counter(), Counter(), {}
     obj_start, _, obj_blob = section(raw, *OBJECT_EVENTS, 1)
-    for label, offset_field, count_field, stride in TABLES:
+    tables = (*TABLES, PLACED_ITEMS) if include_items else TABLES
+    for label, offset_field, count_field, stride in tables:
         table_start, count, records = section(raw, offset_field, count_field, stride)
         table_sizes[label] = count
         for index in range(count):
