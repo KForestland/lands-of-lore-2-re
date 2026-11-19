@@ -388,8 +388,12 @@
       "question_references": [],
       "tools": [
         "tools/check_all.py",
+        "tools/lol2_export_scripts.py",
+        "tools/lol2_level_writer.py",
         "tools/lol2_mix_writer.py",
+        "tools/lol2_progression.py",
         "tools/lol2_save_writer.py",
+        "tools/lol2_text_writer.py",
         "tools/lol2_westwood_writer.py"
       ]
     },
@@ -491,6 +495,7 @@
         "tools/lol2_item_labels.py",
         "tools/lol2_level_report.py",
         "tools/lol2_level_schematic.py",
+        "tools/lol2_level_writer.py",
         "tools/lol2_loose.py",
         "tools/lol2_mix_writer.py",
         "tools/lol2_numbers.py",
@@ -499,6 +504,7 @@
         "tools/lol2_save_inspect.py",
         "tools/lol2_save_native.py",
         "tools/lol2_save_writer.py",
+        "tools/lol2_text_writer.py",
         "tools/lol2_westwood_writer.py",
         "tools/rating.py"
       ]
@@ -1325,6 +1331,8 @@
       "question_references": [],
       "tools": [
         "tools/lol2_export_scripts.py",
+        "tools/lol2_level_writer.py",
+        "tools/lol2_mix_writer.py",
         "tools/lol2_source_format.py"
       ]
     },
@@ -1825,6 +1833,7 @@
         "tools/lol2_level_notes.py",
         "tools/lol2_level_report.py",
         "tools/lol2_level_schematic.py",
+        "tools/lol2_level_writer.py",
         "tools/lol2_loose.py",
         "tools/lol2_media_check.py",
         "tools/lol2_mix_parser.py",
@@ -1841,6 +1850,7 @@
         "tools/lol2_source_format.py",
         "tools/lol2_speech_names.py",
         "tools/lol2_text_tables.py",
+        "tools/lol2_text_writer.py",
         "tools/lol2_texture_container.py",
         "tools/lol2_vqa_v2_decode.py",
         "tools/lol2_westwood_hash.py",

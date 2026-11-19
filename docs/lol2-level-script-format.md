@@ -134,3 +134,32 @@ question; see [`lol2-level-graph.md`](lol2-level-graph.md).
 - Header dwords not listed above, and most placement bytes.
 - Remaining effects behind virtual calls and subcommand switches. See the [opcode reference](lol2-script-opcodes.md#opcode-table).
 - Command kind byte (+1) tables beyond the decoded cases.
+
+## Writing the stored fields
+
+**CONFIRMED.** `lol2_level_writer.py --check --data /path/to/DAT` reconstructs both
+command streams (+0x3C/+0x84 and +0x44/+0x8C, size switch `0x645E0`), both event
+pools (+0x38/+0x80 and +0x40/+0x88, end test at `0xAD8B5–0xAD8D4`), and the
+five-byte predicate rows (+0xBC/+0xB8, loader `0x669D4`) in all 15 archives.
+It writes 42,594 commands, 9,678 group headers, 17,372 distinct object records,
+5,604 distinct region records, 5,084 terminators and 3,825 predicates. The
+record counts include the placed-item table and count an offset shared by
+several lists once.
+
+What is regenerated and what is copied: the writer rebuilds the MIX directory
+(through `lol2_mix_writer.py`) and, inside the level-geometry member, only the two
+command streams, the two event pools and the predicate table. These five sections
+total 559,799 of the 164,076,323 bytes in the 15 archives (0.34 %; 3–14 % of each
+geometry member). Everything else is copied unchanged: the geometry header with its
+offsets and sizes, the geometry itself, placement tables, region descriptors, the
+other two members of each archive and their textures. Inside the rebuilt sections,
+66,079 bytes are command or event remainders past the named fields and are copied
+as stored, and the predicate rows are written back as five plain bytes without
+interpretation. The byte-for-byte match therefore proves the command, event-record
+and predicate layouts, not the rest of the archive.
+
+One copied pair is kept: the bytes `02 00` at region pool +0x394 (geometry member
++0x44D24, `L12_CM.MIX+0x967D14`), the last two bytes of the 918-byte pool, after the
+empty list at +0x392. None of the 238 region descriptors, no command field and no
+event-record field holds +0x394, so no record points at them; they are copied at
+their stored offset.

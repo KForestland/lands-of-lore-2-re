@@ -80,7 +80,7 @@ Run each `--check` and print one line each, then a summary.
 $ python3 tools/check_all.py | sed -n '1,2p;$p'
 CHECK repo_guard: N tracked files; game files, media, stray images, files over 300 KB, machine paths, words from the local list, or commit identities: none (0); private word list: not present, skipped
 CHECK mix: 81 MIX files, 2905 entries; this reader and lol2_source_format.parse_mix agree and every entry lies inside its file: 81/81; index sorted by signed key: 81/81 (by unsigned key: 20); bad=none
-ALL 40 CHECKS PASSED
+ALL 42 CHECKS PASSED
 ```
 
 ### `doc_links.py`
@@ -467,3 +467,5 @@ python3 tools/doc_index.py --check
 ```
 
 The check also runs in `check_all.py` and GitHub Actions. It needs no game data.
+- `lol2_level_writer.py` — `--check` reconstructs command streams, event pools and predicates, then compares the complete 15 level MIX archives.
+- `lol2_text_writer.py` — `--check` finds shipped TRR message tables, rebuilds IDs, message boundaries and NUL-terminated records, and compares the original bytes.
