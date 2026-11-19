@@ -312,8 +312,31 @@ separately, and returns the payload pointer at row +4
 rows. **UNCONFIRMED.** Their live path and the rendering
 effect of the two high span bits. The generic selector tests
 the record's `0x20` bit first for `0x02AC`, selecting the
-contiguous-row helper `0x1261E8`. A caller trace would establish
-which record and helper reach the sampler for those four mips.
+contiguous-row helper `0x1261E8`. The static read and the file framing
+disagree for this flag if the original bytes are supplied verbatim.
+Both descriptors are in L16_CA, rows 1507 and 1508 (IDs 7320 and 7322).
+These four mips are in its decoded `.TE_` bank.
+
+| Descriptor | Mip 0 (8 × 8) | Mip 1 (4 × 4) |
+|---|---|---|
+| 1507 | +0x1F969E1 | +0x1F96A49 |
+| 1508 | +0x1F96A71 | +0x1F96AD9 |
+
+**CONFIRMED.** At each mip's +8, every stored row starts with
+u16 zero and a u16 equal to its width. Compact row payloads then
+fill the record exactly, at 12 bytes per 8-pixel row or 8 bytes per
+4-pixel row. `0x125FC4` would choose the contiguous reader for these
+unaltered flag words, with the pointer return `mip + 8 + y*width`
+(`0x126200–0x126219`). For example, in row zero of +0x1F969E1
+that starts on the row's zero and count words, four bytes before
+its first literal pixel. The texture-container check re-reads the
+full-width headers and the level-report check pins the selector.
+
+To distinguish pre-conversion from a bypass of this helper, follow
+IDs 7320/7322 from descriptor lookup at `0x1326FA–0x13273C`. Compare
+their original header and row-zero bytes with the pointer at
+`0x129A25` or `0x13F3EC`, then record the callback invoked by the
+first row request. This would settle what reaches the sampler.
 
 Fifteen further descriptors have flag 0, size 0×0, and no mip records.
 The 15 levels together hold 38,361 descriptors and no other flag value.

@@ -289,17 +289,22 @@ def exit_predicates(scripts):
     return direct, guarded, shared, other
 
 
-def check_shade_routes(image):
+def check_render_routes(image):
     for address, sequence in (
         (0x129C23, "e88c7d0000c1f80883c40c2500ff000089842488000000"),
         (0x12AA4B, "8b512883fa000f8421ffffff"),
         (0x12AA90, "8a5c05008a540d00"),
         (0x13227F, "8a442424884424578a442428884424568a44242c884424558b442454"),
+        (0x125FD3, "f6c4107406b858d00c00c3f6c4017406b890d10c00c3a8207406b8c4d10c00c3"),
+        (0x126200, "a1a0d80f0031d2668b500289118b5424040faf1183c00801d0c3"),
+        (0x114753, "e84cdb010083c4148b0424d1f883c74666894632"),
+        (0x114951, "0314246bd20ca1782d020001c2"),
+        (0x12759E, "8a4130c1e010898424fc03000031c08a4131c1e010"),
     ):
         expected = bytes.fromhex(sequence)
         start = address + 0x37000
         if image[start:start + len(expected)] != expected:
-            raise ValueError(f"shade route at {address:#x}")
+            raise ValueError(f"render route at {address:#x}")
 
 
 def check_l8_controls(data_dir):
@@ -544,7 +549,7 @@ def main():
         nonexit_group_count = sum(len({key for key, *_ in rows}) for _, _, _, rows in exit_checks)
         nonexit_slots = {slot for _, _, _, slots in nonexit_shared for slot in slots}
         try:
-            check_shade_routes((Path(a.data).resolve().parent / "LOLG.DAT").read_bytes())
+            check_render_routes((Path(a.data).resolve().parent / "LOLG.DAT").read_bytes())
         except (OSError, ValueError) as error:
             bad.append(str(error))
         expected_shared = [(0x5E93F4, 0x5EC32A, [52]), (0x5E93FA, 0x5EC336, [52])]

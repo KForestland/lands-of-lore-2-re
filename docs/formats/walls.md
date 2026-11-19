@@ -122,10 +122,48 @@ leave a raised opening in the middle of the side.
 
 Across the Huline Temple, 5,951 of its 8,117 rows stand on portal sides (classes 0: 3,090; 8: 2,734; 4: 97; 12: 30), against 2,150 rows on wall sides (2,134 of class 4 and 16 of classes 0 and 8) and 16 special rows ([level sheet](../levels/L14_HT.md)). Most of the temple's walls are therefore pieces around openings, not full walls.
 
-The constructed opening has both horizontal and vertical bounds. UNCONFIRMED. Raster clipping and the screen-space texture coordinates of this opening need a draw-path witness.
+### Normal, material and UV inputs
+
+**CONFIRMED.** The call at `0x114753` passes the four corners to
+`0x1322A4`. This routine takes the cross product of the two corner
+differences `p2-p0` and `p3-p1`, normalizes it to length 65,536 and
+stores the three rounded components (`0x1322AD–0x132397`). A component
+of exactly 65,536 is decremented to keep it in range after the
+arithmetic shift right one. The caller stores those half-scale
+components at wall +0x32/+0x34/+0x36 (`0x11475B–0x11478B`).
+These are inputs for the face normal. The clipping and UV paths
+use other fields.
+
+**CONFIRMED.** The wall material preparation at `0x11491E–0x11495C`
+uses signed on-disk row +0. A nonnegative value directly indexes a
+12-byte descriptor in `[0x22D78]`. A negative value first chooses an
+8-byte row at `[0x22D54] + 8*abs(value)`, where u16 +0 and u8 +7
+are added to form that index. The routine dispatches through
+`[0xE890]` method +0x28 at `0x11496D`. Its alternate branch uses
+`[0x22CE8]` at `0x1148FA` if wall byte +6 bit 1 and the resource
+state at `0x1148E2–0x1148F8` admit it. For the four serialized rows
+above these direct material indexes are 181, 495, 495 and 495.
+
+**CONFIRMED.** For a software draw, the UV-offset path at
+`0x12759C–0x1275BA` reads wall bytes +0x30/+0x31 and shifts each
+left 16 before projection at `0x12766A`. The update at
+`0x114860–0x11486F` can copy row +2/+3/+4 into wall +0x30/+0x31/+0x40
+when the row flags admit it. The horizontal camera helper at
+`0x1338B7` transforms the endpoints using camera cells
+`0xFE470/0xFE478` and rotation `0xFE4D4/0xFE4D8`. Its next stage
+at `0x133A49–0x133BBD` rejects common horizontal outcodes, clamps
+visible endpoint depth to at least one map unit and compares the
+projected endpoints with the horizontal window.
+
+**UNCONFIRMED.** The Huline opening's final screen-space endpoints and
+UVs. For each quad, follow the active wall from `0x11496D` into the
+current method +0x28. Record the descriptor at that call, the wall's
+UV inputs at `0x12759C` if it takes the software path, and the first
+surviving clipped vertex at the viewport stage `0x133FF4`. Compare its
+UVs with the span setup rather than using the normal as an offset.
 
 ## Open ([Q16](../OPEN_QUESTIONS.md))
 
 - The other row bytes: bytes 0–1 look like a texture or resource word, bytes 2–4 hold setup values the constructor copies (replayed on L1_DC by `tools/draracle/lol2_extract_wall_records.py`), and bytes 6–7 hold flags (bit 7 of byte 6 selects connector endpoints for classes 0/8 and the height source for classes 4/12, as traced above).
-- The preceding replay stops at the constructed quad. To link the Huline Temple witness to the one sampled L20_BB span, pass the four output quads, via the call at `0x114753`, into `0x1322A4`. Follow the three stored setup words at runtime wall +0x32/+0x34/+0x36 (`0x114763–0x11478B`) to the clipping and sampler initialization for each surviving span. Full UV mapping remains UNCONFIRMED.
+- For the [sampled L20_BB span](../lol2-wall-material-provenance.md), the archive descriptor and shade row are known. Whether the Huline opening reaches the same sampler is **UNCONFIRMED**. Use the callback and clipped-vertex test above on each Huline quad.
 - The alternate constructor `0x115250` is selected when region +0x1C bit 7 is set (`0x1145CE–0x1145DC`, call at `0x114710`); none of the 67 special rows sits in such a region. Its behaviour remains UNCONFIRMED. Select a retail wall in a region whose +0x1C bit 7 is set, record the five incoming arguments at `0x114710`, and compare the emitted spans with the ordinary constructor’s endpoints.

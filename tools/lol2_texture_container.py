@@ -347,13 +347,15 @@ def _column_scores(pixels, width, height):
 
 def validate_row_payload(blob, start, size):
     """Frame one row header and its literal bytes per declared image row."""
-    _flags, width, height, length = struct.unpack_from("<4H", blob, start)
+    flags, width, height, length = struct.unpack_from("<4H", blob, start)
     end = start + size
     require(length == size - 8 and end <= len(blob), "invalid row payload size")
     at = start + 8
     for _ in range(height):
         require(at + 4 <= end, "truncated row header")
         first, count = struct.unpack_from("<HH", blob, at)
+        if flags == 0x02AC:
+            require((first, count) == (0, width), "0x02AC row is not a full-width literal")
         at += 4 + count
         require((first & 0x3FFF) + count <= width and at <= end, "row span exceeds dimensions")
     require(at == end, "trailing bytes in row payload")
