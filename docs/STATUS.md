@@ -11,10 +11,10 @@ Run the checks: `python3 tools/check_all.py` (with `$LOL2_DAT` set) (25 checks; 
 **Rating** (counted by `tools/rating.py`; see [how we rate](HOW_WE_RATE.md)):
 
 <!-- rating:begin -->
-- **Files read:** 81 of 83 files in `DAT` (1,915.3 of 1,915.6 MiB) are accounted for to the last byte by a reader here.
-- **Rules traced:** 630 statements labelled CONFIRMED against the program or the files, 212 labelled UNCONFIRMED, on 111 current pages.
-- **Seen in the running game:** 2 of 8 probes that need the original game running are answered.
-- **Open questions:** 20: 3 answered, 15 mostly, 2 partly.
+- **Files read:** 81 of 83 files in `DAT` (1,915.3 of 1,915.6 MiB) have their whole layout read by a tool here: every byte belongs to a known header, directory or entry (what is inside an entry may still be only partly understood).
+- **Rules traced:** the pages mark 630 statements CONFIRMED (proved from the program code or the files) and 212 UNCONFIRMED (a reading not yet proved), on 111 current pages; old notes kept as history are not counted.
+- **Seen in the running game:** 2 of 8 questions that can only be settled by watching the original game run are settled.
+- **Open questions:** 20 numbered questions: 3 answered, 15 mostly answered, 2 partly answered.
 <!-- rating:end -->
 
 **Columns**: *Pages*: where it is described. *Tool check*: what `--check` measures on the game files. *Open*: numbered in [OPEN_QUESTIONS.md](OPEN_QUESTIONS.md).

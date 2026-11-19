@@ -7,27 +7,27 @@ It contains documentation, tools and small tables of numbers. It contains no gam
 ## At a glance
 
 - **What this is:** documentation of the original 1997 DOS game's data files and engine (archives, levels, scripts, items, spells, creatures, sound, movies, saves), checked against the game files and the original program.
-- **What you can do today:** list and unpack every archive, decode sounds, music and movies, read every level's geometry and scripts, follow one event from a click to its result, and look up what each item handler and spell does.
+- **What you can do today:** list and unpack every archive, decode sounds, music and movies, read every level's geometry and scripts, follow one event from a click to its result, and look up what each item and spell does in the program.
 - **Start in five minutes:** the [Quick start](#quick-start) below, then [Start here, by goal](docs/START_HERE.md), [How the game works](docs/HOW_THE_GAME_WORKS.md) or the [worked example](docs/tutorial-one-event.md).
-- **What is still unknown:** the [open questions](docs/OPEN_QUESTIONS.md) (counts in the [rating](#rating)); most open points are the meaning of specific fields and effects. Some were tried in the [running game](docs/NEEDS_A_RUNNING_GAME.md) (the clock writer and a pickup's save changes are answered); the rest need later-game saves.
+- **What is still unknown:** the [open questions](docs/OPEN_QUESTIONS.md), counted in the [rating](#rating); most open points are the meaning of specific fields and effects. Some can only be settled by watching the [original game run](docs/NEEDS_A_RUNNING_GAME.md); the clock writer and a pickup's save changes were settled that way, and the rest need saved games from later in the game.
 - **What changed lately:** [what's new](docs/WHATS_NEW.md), newest first.
 - **The three games:** [LoL1](https://github.com/KForestland/lands-of-lore-1-re) · [LoL2](https://github.com/KForestland/lands-of-lore-2-re) · [LoL3](https://github.com/KForestland/Lands-of-lore-3-re) ([what they share](docs/series-formats.md), [how the engine changed](docs/engine-evolution.md)).
 
 ## Rating
 
-Counted by `tools/rating.py` on the English DOS 1.30 copy; [how we rate](docs/HOW_WE_RATE.md) explains each line and what it does not claim.
+These are counts of work done, not a percentage of how complete the project is. They are produced by `tools/rating.py` on the English DOS 1.30 copy; [how we rate](docs/HOW_WE_RATE.md) explains each line and what it does not claim.
 
 <!-- rating:begin -->
-- **Files read:** 81 of 83 files in `DAT` (1,915.3 of 1,915.6 MiB) are accounted for to the last byte by a reader here.
-- **Rules traced:** 630 statements labelled CONFIRMED against the program or the files, 212 labelled UNCONFIRMED, on 111 current pages.
-- **Seen in the running game:** 2 of 8 probes that need the original game running are answered.
-- **Open questions:** 20: 3 answered, 15 mostly, 2 partly.
+- **Files read:** 81 of 83 files in `DAT` (1,915.3 of 1,915.6 MiB) have their whole layout read by a tool here: every byte belongs to a known header, directory or entry (what is inside an entry may still be only partly understood).
+- **Rules traced:** the pages mark 630 statements CONFIRMED (proved from the program code or the files) and 212 UNCONFIRMED (a reading not yet proved), on 111 current pages; old notes kept as history are not counted.
+- **Seen in the running game:** 2 of 8 questions that can only be settled by watching the original game run are settled.
+- **Open questions:** 20 numbered questions: 3 answered, 15 mostly answered, 2 partly answered.
 <!-- rating:end -->
 
 ## What you get
 
 - **Format and engine pages** in [`docs/`](docs): archives, level scripts, level geometry, walls and textures, items, sound, music and movies. Short pages, one per format with worked examples: [`docs/formats/`](docs/formats/README.md). One sheet per level, generated from the level archives: [`docs/levels/`](docs/levels/README.md).
-- **Tools** in [`tools/`](tools/README.md): archive reader, name hashing, decompressors, entity and level analysers, audio and video decoders, and the wall/geometry pipeline in `tools/draracle/`.
+- **Tools** in [`tools/`](tools/README.md): archive reader, name hashing, decompressors, entity and level analysers, audio and video decoders, and the wall and level-geometry tools in `tools/draracle/`.
 - **[Start here, by goal](docs/START_HERE.md)**, a **[glossary](docs/GLOSSARY.md)** and the **[open questions](docs/OPEN_QUESTIONS.md)**.
 
 ## Quick start
@@ -44,32 +44,42 @@ python3 tools/check_all.py                      # 25 checks, ends with ALL 25 CH
 python3 tools/lol2_mix_parser.py L1_DC.MIX      # list the entries of level 1's archive
 ```
 
+The last command prints `Entries: 3` and one line per entry with its name key, offset and size.
+
 ## Status
+
+"Q8" and the like are numbered questions in [`docs/OPEN_QUESTIONS.md`](docs/OPEN_QUESTIONS.md).
 
 Full table with evidence: [`docs/STATUS.md`](docs/STATUS.md).
 
 | Area | State |
 |------|-------|
-| Archives (MIX), entry names, compression | [Format page](docs/formats/mix.md); readers check all 81 archives in `DAT/` (`check_all`) and the 6 shipped ones in the game folder (`lol2_mix_parser.py --check --data <game folder>` gives 6/7: the seventh, `CDCACHE.MIX`, is written by the game); the game-written cache `CDCACHE.MIX` is not one (Q20) |
+| Archives (MIX), entry names, compression | [Format page](docs/formats/mix.md); readers check all 81 archives in `DAT/` (the other two files there are `AUTOPLAY.WAV` and `SETUP.EXE`) and the 6 shipped archives in the game folder. The seventh MIX file there, `CDCACHE.MIX`, is a cache the game writes itself (Q20). |
 | Levels, geometry, walls, textures | Documented for the traced parts; geometry entry found in all 15 levels; wall spans and UVs partly open (Q16) |
 | Level scripts | Opcode dispatch and event layouts documented. Disassembler checks all 15 levels (Q4–Q7). |
-| Entities, items, combat | Item definitions, native grants, selected effects and combat formulas documented (Q8, Q10). |
+| Entities, items, combat | Item definitions, what items give the player, some item effects and the combat formulas, as the original program does them (Q8, Q10). |
 | Sound, music, movies | AUD sounds, the HMI songs (converted to standard MIDI, Q15) and VQA v2 headers decoded; some movie codebook layouts and the `FORM` music entries open (Q12) |
-| Spells and saves | Native spell costs, selected effects, save directories and mapped sections documented (Q9, Q11). |
+| Spells and saves | Spell costs and some spell effects from the original program; save folders and the save sections mapped so far (Q9, Q11). |
 | Text | Message tables (help, options, automap, credits, errors) documented with a reader; character dialogue open (Q13). |
 
 ## Repository layout
 
 - [`docs/`](docs): format and engine pages, status, open questions, glossary; older closure notes kept as history
 - [`tools/`](tools/README.md): readers and analysers
-- [`evidence/`](evidence): trace references and evidence indexes from earlier work
+- [`evidence/`](evidence): lists of program addresses and files that back up the pages
 - [`data/`](data): machine-readable inventory summaries
-- [`examples/`](examples/README.md): notes from earlier atlas checks (the map picture lives in `docs/images/` and is checked against today's tool by `example_images.py`)
+- [`examples/`](examples/README.md): notes on the example level map (the picture is in `docs/images/` and is checked against today's tool by `example_images.py`)
 
 ## Asset policy
 
 No game files and no dumps of extracted game media are included; short byte excerpts appear in the documentation as examples. `tools/check_all.py` includes `repo_guard.py`, which fails if a game file, media file or stray image is committed. To run the tools you need your own copy of the game.
 
+## The other Lands of Lore games
+
+Formats the three games share, with links to the LoL1 and LoL3 repositories: [docs/series-formats.md](docs/series-formats.md).
+
 ## Sources
 
 Facts are checked against the original files and the original program (`LOLG.DAT`), with addresses or file offsets cited on each page. This is independent documentation.
+
+See [`CONTRIBUTING.md`](CONTRIBUTING.md) to help.
