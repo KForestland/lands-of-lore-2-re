@@ -375,4 +375,6 @@ The receivers are the class +0x80 handlers described in
 [combat](lol2-combat-ai.md).
 
 **UNCONFIRMED.** Runtime names of several native flags, and what
-the packet word bits mean on screen.
+the packet word bits mean on screen. To name a bit, follow the packet
+at `0xF7774` into the selected +0x80 receiver and compare an original
+contact that sets that bit with one where it is clear.

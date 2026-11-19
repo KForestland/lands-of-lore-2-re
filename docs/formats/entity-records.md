@@ -56,5 +56,4 @@ python3 tools/lol2_entity_field_analyzer.py --data DAT --check
 
 The check reads 128 definitions in the 15 original ODF tables.
 The older [body field notes](../lol2-entity-object-map.md) include
-**UNCONFIRMED** field names. Their gameplay roles require call-site
-evidence beyond the record framing and profile lookup above.
+**UNCONFIRMED** field names. For another body field, follow the row selected by the placement at `0xA22AF–0xA22BE` through actor initialization, and match a read of the same displacement before assigning a role.

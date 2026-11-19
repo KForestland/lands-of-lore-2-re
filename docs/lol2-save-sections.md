@@ -252,7 +252,7 @@ these rows use, so it is not needed to reproduce them.
 - **UNCONFIRMED.** The meanings of unlabelled slot-header bytes remain
   open. All 27 headers were checked against the fixed-size write at
   `0xE7CE1–0xE7CFE`. The 20 level stamps end at +0x93. The dword at
-  +0x94 is explicitly zeroed at `0xE777D`. To classify the remaining
-  bytes after +0x209, trace the writes to that part of the header buffer
-  passed to `0x118864` at `0xE7CF1`, then check a pair of saves differing
-  in one known setting.
+  +0x94 is explicitly zeroed at `0xE777D`. The 20 level lengths at
+  +0x20A through +0x259 are now mapped in the [save header](lol2-save-format.md#slot-header-and-directory).
+  To name +0x94 and +0x98, watch both dwords just after the header reads
+  at `0xE687E` and `0xEB7AE`, and distinguish a typed read from a bulk copy.

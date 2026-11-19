@@ -148,6 +148,10 @@ among 113 rows at `LOLG.DAT+0x1CC980+4*i`. The direct LE references to
 trace of every derived pointer is needed to name byte +2. The cast-school
 row +1 is read at `0xFB91F` for the row-0 exclusive upper bound. The
 non-advancing pointer in that loop leaves general per-school use open.
+For lesson names, compare the selected school ID at `0x81DF4` with
+the acquired-list entry written at `0x86455–0x86473` and the cast
+selector at `0xD0F4D`. For other target constructors, follow the
+actual target pointer across `0xD24B1` into the first effect allocation.
 
 ## Payloads of the 35 player slots
 

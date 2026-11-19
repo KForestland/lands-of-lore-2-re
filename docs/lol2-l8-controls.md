@@ -26,7 +26,7 @@ Its polygon at `0xCAE12E` contains the initial position and has floor
 whose polygon is at `0xCADD92` and floor is 100, exactly the sequence's
 Z. The action therefore moves the player up 110 height units between
 those polygons. Region 678 has no portal on side 0 (word at +4 =
-0xFFFF). The exact visible climbing surface remains **UNCONFIRMED**.
+0xFFFF). The exact visible climbing surface remains **UNCONFIRMED**. Match a pick at `0x110ACD` whose selected object is control 69 to the clicked pixel before entry to `0x5DA48`.
 
 ## Control 114
 
@@ -52,7 +52,7 @@ The clear-bit form branch at `0xD804B` enters `0xD7EE0`, calling
 `0x80064(0x23819,1)`. Its path sets the feedback timer
 +0x2EC to `0x30000` and plays the u16 cue at `[0x269CC]+0x20E` through `0xE3924` when
 `[0x269C4]` bit 0 is clear (`0x800CB–0x80100`). It does not reach the form-change call.
-The visible geometry and feedback remain **UNCONFIRMED** in play.
+The visible geometry and feedback remain **UNCONFIRMED** in play. Record the pick result for control 114 at `0x110ACD`, then follow its event group at `0x646EC` and compare the next view with the region reached.
 
 ## Placement and input selection
 

@@ -58,7 +58,9 @@ record with stored event 6 when the caller requests event 2.
 In the player's region transition path, the walker gets event 3
 for the previous region at `0xD383C` and event 2 for the new
 one at `0xD39BB`. Those calls establish two uses of the event
-IDs. Other caller sequences remain **UNCONFIRMED**.
+IDs. Other caller sequences remain **UNCONFIRMED**. At each entry to
+`0xAD7F4`, recover the return address and the event byte, then follow
+the last conditional branch at that caller.
 
 ## Object timers
 
@@ -162,4 +164,6 @@ Operator 6 then returns 1 only when both results are nonzero. At
 level-local byte 30 to zero.
 
 **UNCONFIRMED.** Some [event producers](lol2-event-producers.md) still need caller-by-caller
-tracing. The [shared predicate page](lol2-shared-predicates.md) maps the type-7 fallback and original branch witnesses.
+tracing. For a computed value, trace
+the argument to `0xADDE0` or `0xF2D2C` backward through the first
+selecting branch and match its width to the stored record. The [shared predicate page](lol2-shared-predicates.md) maps the type-7 fallback and original branch witnesses.

@@ -28,7 +28,9 @@ Cost byte `j` of a school is at
 `LOLG.DAT+0x1CC980+4*(first_effect+j)`, using zero-based `j`.
 The +1 bytes tile effects 0–112 when used as counts. Their role
 as per-school counts and player availability for each range are
-**UNCONFIRMED**.
+**UNCONFIRMED**. Follow the selected school at `0xD0F4D` back to the
+menu or acquired-list selector. Check whether charge admission reads
+that row’s +1 before forwarding the effect ID.
 
 | Cast school index | First effect | Row byte +1 | Stored costs in order |
 |---:|---:|---:|---|
@@ -102,7 +104,7 @@ enters the switch at `0x81AB2`. Messages 0x21 through 0x24 call
 Messages 0x25 and 0x26 call helper `0x8651C` with IDs 6 and 1
 (`0x81A7B`, `0x81A91`). Routine `0x86418` appends a dword
 school ID and increments the count (`0x86455–0x86473`). It suppresses
-a duplicate ID 5 (`0x86423–0x86450`). **CONFIRMED.** Message update consumes the frame delta at `0x81C35`; the half-length branch at `0x81C79` leads to the acquisition dispatch at `0x81DF4`. **UNCONFIRMED.** The first nonzero writer of the player +0x185 timer that expires at `0xD2E57`. Trace that field from level entry or a scroll grant to its first store.
+a duplicate ID 5 (`0x86423–0x86450`). **CONFIRMED.** Message update consumes the frame delta at `0x81C35`; the half-length branch at `0x81C79` leads to the acquisition dispatch at `0x81DF4`. **UNCONFIRMED.** The first nonzero writer of player +0x185. The explicit +0x185 displacement yields a constructor clear at `0xCFB8B`, reads and address formation at `0xD2E30–0xD2E47`, and the expiry clear at `0xD2E57`. Watch the executing player address plus 0x185 from the constructor through a level entry or scroll grant, including writes through computed pointers and save restore.
 The [lesson producers](lol2-spell-dispatch.md#lessons-from-native-producers)
 page traces two additional message paths and the update threshold, and it covers the producers of these acquisitions.
 The [item effects](lol2-item-effects.md#selected-item-use-handlers)
