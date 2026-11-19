@@ -24,21 +24,23 @@ Question: [Q9 in OPEN_QUESTIONS](OPEN_QUESTIONS.md).
 that field is nonzero and clears it at `0xD2E57` before
 sending message 0x26. [Spell and timer consumers](lol2-spell-dispatch.md)
 
-**CONFIRMED, partial runtime result.** One level-20 cast reached
+**CONFIRMED, two runtime controls.** One level-20 cast reached
 `0xD24B1` with effect `0x0A` and the watched player field stayed zero.
-The copied autosave (a player save written by the game) contains a handler-34 lesson item. The trial
-left its handler unobserved and the recorded player form stayed zero.
-[Runtime control and slot evidence](lol2-spell-dispatch.md#timed-message-runtime-control)
+In a separate restore of the same slot, taking the handler-34 lesson
+and pressing W reached school 4 registration at `0x96FEC`, returned
+zero at `0x96FF4` and spawned the feedback effect at `0x97028`.
+Player +0x185 stayed zero at the traced sites and through the
+20-second watch. The expiry call at `0xD2E61` did not run.
+[Lesson, feedback and slot evidence](lol2-spell-dispatch.md#controlled-use-of-the-level-20-lesson)
 
-**UNCONFIRMED.** Which gameplay action arms the timer. Arm a
-write watch at player +0x185 after initialization and note the
-player pointer from the executing update at `0xD2E30`. In
-separate trials use one lesson item, cast one spell and let the
-character change form. Wait in each trial until the next update.
-Record the first nonzero value and stack, then whether the
-same object reaches `0xD2E57` and sends 0x26. A nonzero write
-and matching expiry identify that trial's producer. Zero stores
-at initialization or expiry are controls.
+**UNCONFIRMED.** Which gameplay action arms the timer. Arm a write
+watch at player +0x185 after initialization and note the player
+pointer from `0xD2E30`. Let the character change form and verify
+a transition at player +0x1AB. Record the first nonzero timer
+write and stack if it occurs, then whether the same object reaches
+`0xD2E57` and sends 0x26. A nonzero write and matching expiry
+identify that trial's producer. The observed school-4 lesson and
+effect-0x0A cast provide zero-valued controls.
 
 ### Q10. Which observation path a live mode-2 creature takes
 
