@@ -199,13 +199,37 @@ def check_conditional_resource_names(image):
     for cell, text in names.items():
         if image[OBJ5 + cell:OBJ5 + cell + len(text)] != text:
             raise ValueError("resource name at %X" % cell)
-    # Direct absolute byte stores. A store through a register stays open.
+    # Every embedding of this address is a read. A store through a
+    # register pointer was not ruled out.
     flag = b"\xd6\x23\x02\x00"
     direct = [b"\xA2" + flag, b"\xC6\x05" + flag]
     direct += [bytes((0x88, (reg << 3) | 5)) + flag for reg in range(8)]
     code_obj = image[0x90024:0x1C1024]
     if any(pattern in code_obj for pattern in direct):
         raise ValueError("direct store of resource name flag")
+    if code_obj.count(b"\x80\x3d" + flag + b"\x00") != 38:
+        raise ValueError("resource flag compares")
+    loads = {0x25: 11, 0x35: 9, 0x15: 2, 0x3D: 2, 0x2D: 2, 0x1D: 1, 0x0D: 1}
+    for modrm, count in loads.items():
+        if code_obj.count(bytes((0x8A, modrm)) + flag) != count:
+            raise ValueError("resource flag load %02X" % modrm)
+    if code_obj.count(flag) != 66:
+        raise ValueError("resource flag embeddings")
+    windows = {
+        0x9C39E: bytes.fromhex("BEFF0B0000"),
+        0xD01C5: bytes.fromhex("8A982902000088902A02000089C2F6C3047505F6C3087425"),
+        0xD7B20: bytes.fromhex("C380A3280200007F"),
+        0xD86AA: bytes.fromhex("0F8271F4FFFF"),
+        0x9DD8F: bytes.fromhex("6A00"),
+        0x9E633: bytes.fromhex("6A00"),
+        0xE3705: bytes.fromhex("6A00"),
+        0x9E5B1: bytes.fromhex("31F656"),
+    }
+    for va, raw in windows.items():
+        if image[va + code:va + code + len(raw)] != raw:
+            raise ValueError("resource flag window %X" % va)
+    if image[OBJ5 + 0xBFF:OBJ5 + 0xBFF + 5] != b".tex\x00":
+        raise ValueError("texture suffix")
 
 
 def check_global_texture_books(image, local, entries):

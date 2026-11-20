@@ -457,19 +457,33 @@ low bits of +0x226 and can write the pointer position; reading this as
 an input reset is an interpretation (**UNCONFIRMED**).
 
 **UNCONFIRMED.** The user-facing change of the original L9 prop and
-the on-screen result of the other plot branches. For slot 37, trace the
-first subsequent read of player +0x228 mask `0x80` after `0xD7ABC` and
-see whether player +0x229 and +0x85 admit the pointer write. The command
-list and predicate leaves of each non-exit branch are in the generated
-table; a narrative role still needs the encounter reachability test in
-this section.
+the on-screen result of the other plot branches. The gate at
+`0xD01C5` copies player +0x229 into `bl` and the tests at `0xD01D3`
+use that copy, then the dword at +0x85. The gate does not read
++0x228. After the set (`or dh, 0x80` at `0xD7AA6`, stored at
+`0xD7AAC` and `0xD7AB6`), the arm calls `0xD0138` at `0xD7ABC` and
+returns 1 at `0xD7B20` or `0xD89F6`. Neither that arm nor the
+routines it reaches by direct call (`0xD0138`, `0x151DAE`,
+`0x151842`, `0x151B86`, `0x152128`, `0x152169`) accesses +0x228;
+three indirect calls through `[0x15550]` and `[0x15554]` were not
+followed. The clear `and byte [ebx+0x228], 0x7F` at `0xD7B21` is not
+on that path: it starts after the `ret` at `0xD7B20` and is the
+sibling arm reached by `jb` at `0xD86AA` (subcommand `0x27`). The
+eight memory-immediate tests of the mask (`0xD2F4A`, `0xD3141`,
+`0xD3A75`, `0xD55EA`, `0xD7013`, `0xD715F`, `0xD7558`, `0xD78E5`)
+lie below `0xD7ABC` in address order, so a later call after the
+handler returns can still reach them. None of the 21 dword loads of
++0x226 found by the scan extracts bit 23 (bit `0x80` of +0x228).
+The command list and predicate leaves of each non-exit branch are in
+the generated table; a narrative role still needs the encounter
+reachability test in this section.
 
 ## Close-out
 
 ### Q6
 
-**What was measured.** A disassembly of the code in `LOLG.DAT` finds eight `test byte [reg+0x228], 0x80` instructions, and all eight sit below `0xD7ABC`. From that address through the end of the code object the same scan finds zero, and the next mask of bit 0x80 on `[ebx+0x228]` is the seven bytes `80 A3 28 02 00 00 7F` at `0xD7B21`.
+**What was measured.** A disassembly of the code in `LOLG.DAT` finds eight `test byte [reg+0x228], 0x80` instructions, and all eight sit below `0xD7ABC`. From that address through the end of the code object the same scan finds zero, and the next mask of bit 0x80 on `[ebx+0x228]` in address order is the seven bytes `80 A3 28 02 00 00 7F` at `0xD7B21`, a sibling switch arm after the `ret` at `0xD7B20`. The gate at `0xD01C5` loads player +0x229 and does not read +0x228. Following the subcommand-`0x26` arm from `0xD7ABC` to its returns, and the six routines it reaches by direct call, finds no access to +0x228.
 
-**What was tried.** This scan looked for memory-immediate tests of that bit. The page already records the set of bit 0x80 at `0xD7ABC` and the clears through `0xD0138`.
+**What was tried.** This scan looked for memory-immediate tests of that bit, for byte, word and dword accesses whose span covers +0x228 (with the shift or mask in the next ten instructions), read the gate bytes at `0xD01C5`, and followed the direct calls from `0xD7ABC`. Indirect calls and the code after the handler returns were not followed. The page already records the set of bit 0x80 at `0xD7ABC` and the clears through `0xD0138`.
 
-**What would settle it.** Follow the first read of player +0x228 bit `0x80` after `0xD7ABC`, and check the pointer-position gate at `0xD01D3`.
+**What would settle it.** The first of the eight tests reached after the handler returns (through its caller), and the on-screen result of the original L9 prop.
