@@ -506,6 +506,7 @@
       ],
       "tools": [
         "tools/check_all.py",
+        "tools/lol.py",
         "tools/lol2_entity_field_analyzer.py",
         "tools/lol2_l9dr_census.py",
         "tools/lol2_speech_names.py",
@@ -569,6 +570,7 @@
         "tools/doc_index.py",
         "tools/doc_links.py",
         "tools/example_images.py",
+        "tools/lol.py",
         "tools/lol2_cache_seed.py",
         "tools/lol2_event_browser.py",
         "tools/lol2_hmi_writer.py",
