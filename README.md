@@ -10,6 +10,7 @@ It contains documentation, tools and small tables of numbers. It contains no gam
 - **What you can do today:** list and unpack every archive, decode sounds, music and movies, read every level's geometry and scripts, follow one event from a click to its result, and look up what each item and spell does in the program.
 - **Start in five minutes:** the [Quick start](#quick-start) below, then [Start here, by goal](docs/START_HERE.md), [How the game works](docs/HOW_THE_GAME_WORKS.md) or the [worked example](docs/tutorial-one-event.md).
 - **Recipes:** [cookbook](docs/COOKBOOK.md), seven short runs with the command and the first lines it prints.
+- **Change the game, safely:** [change a number in your own copy](#change-a-number-in-your-own-copy) with the mod kit, share it as a small [patch](docs/formats/patch.md) that can be undone, or change a field in a copy of a save; your game folder is only read.
 - **Numbers at a glance:** [item combat inputs, effect costs, creature definitions and form requests](docs/NUMBERS.md), tables generated from the original files by `tools/lol2_numbers.py`.
 - **What is still unknown:** the [open questions](docs/OPEN_QUESTIONS.md), counted in the [rating](#rating); most open points are the meaning of specific fields and effects. Some can only be settled by watching the original game run. Answered probes are counted in the rating; which ones and how: [NEEDS_A_RUNNING_GAME](docs/NEEDS_A_RUNNING_GAME.md#answered-probes). Some probes were also tried on [edited saves](docs/EDITED_SAVES.md), copies of a game-written save with a few bytes changed.
 - **What changed lately:** [what's new](docs/WHATS_NEW.md), newest first. What the pages got wrong, how it was caught and the commit that fixed it: [corrections](docs/CORRECTIONS.md).
@@ -25,7 +26,7 @@ These are counts of work done, not a percentage of how complete the project is. 
 
 <!-- rating:begin -->
 - **Files read:** 83 of 83 files in `DAT` (1,915.6 of 1,915.6 MiB) have their whole layout read by a tool here: every byte belongs to a known header, directory, entry, chunk, segment or resource, or to zero padding between them; the DOS part of `SETUP.EXE` is counted by its length (what is inside an entry may still be only partly understood).
-- **Rules traced:** the pages mark 757 statements CONFIRMED (proved from the program code or the files) and 178 UNCONFIRMED (a reading not yet proved), on 122 current pages; old notes kept as history are not counted.
+- **Rules traced:** the pages mark 758 statements CONFIRMED (proved from the program code or the files) and 179 UNCONFIRMED (a reading not yet proved), on 124 current pages; old notes kept as history are not counted.
 - **Seen in the running game:** 4 of 9 probes that need the original game running are answered (a question can have more than one probe); 0 of them rest on edited saves only.
 - **Open questions:** 20 numbered questions: 5 answered, 14 mostly answered, 1 partly answered.
 <!-- rating:end -->
@@ -74,6 +75,23 @@ What you can look at with your own copy of the game. Run from the clone with `ex
 | The rules behind a topic | `python3 tools/lol2_inspect.py --data "$LOL2_DAT" rules motion` |
 | Music as standard MIDI | `python3 tools/lol2_hmi_midi.py --data "$LOL2_DAT" --out ../lol2-out/midi` |
 | A saved game you made | `python3 tools/lol2_save_inspect.py "$LOL2_SLOT"` |
+
+## Change a number in your own copy
+
+The [mod kit](tools/README.md#modkitpy) turns the game's tables into files you can edit, and the [patch tool](docs/formats/patch.md) turns your change into a small patch file that can be applied and undone. The tools only read your game folder; everything they write goes into new folders you name, outside the game and this repository. Try changes on a **copy** of the game, never on the folder you play from. Patches must not remove or bypass copy protection.
+
+Type these in this repository's folder. Put quotes around paths with spaces. On Windows type `py -3` instead of `python3`, and `\` instead of `/` inside paths if you like; copy folders with Explorer. Each command ends with one summary line, or one sentence saying what is wrong.
+
+1. Unpack: `python3 tools/modkit.py unpack "/path/to/LoL2" "my mod work"`
+2. Change one number: `GLOBAL.MIX`, with the item table, ships twice (in the game folder and in `DAT`) and which one the game opens is not known, so change both. Open the file in `my mod work/edits/` whose name ends in `_GLOBAL.MIX_items.json` (the number in front may differ on your copy) and the file in `my mod work/edits/` whose name ends in `_GLOBAL.MIX_items.json` (the number in front may differ on your copy) in a text editor; in the first row of each, change `"strike_ticks": 45` to `"strike_ticks": 40` (the item's strike countdown, [numbers](docs/NUMBERS.md)). Change nothing else.
+3. Build and check: `python3 tools/modkit.py build "/path/to/LoL2" "my mod work" "my mod output"`, then the same with `verify`. Both end with `22 archives or loose tables, 2 changed (GLOBAL.MIX, DAT/GLOBAL.MIX)`.
+4. Make the patch: `python3 tools/patch.py make --data "/path/to/LoL2" "my mod output" --title "Faster strikes" --out "faster strikes.json"` prints `make: data patch with 2 changes in 2 files (DAT/GLOBAL.MIX, GLOBAL.MIX) ...`.
+5. Copy your whole game folder to a new folder, for example `LoL2 test copy`.
+6. Apply the patch to the copy: `python3 tools/patch.py apply --data "/path/to/LoL2 test copy" "faster strikes.json" --out "patched files"`. Copy everything in `patched files` except `undo.json` into `LoL2 test copy`, keeping the `DAT` folder, and replace the files there.
+7. Read it back: `python3 tools/modkit.py unpack "/path/to/LoL2 test copy" "check work"`; the same two files in `check work/edits` now say 40. Play the copy to try it.
+8. Undo: `python3 tools/patch.py apply --data "/path/to/LoL2 test copy" "patched files/undo.json" --out "restored files"`, then copy the files in `restored files` (except `undo.json`) into the copy in the same way. The copy is then byte for byte the original again.
+
+A saved game can be changed in a copy too: `python3 tools/save_edit.py set '/path/to/LoL2/SAVEGAME/$MUSEUM_.000' heading 0x4000 --out "my edited save.000"` prints the old and the new value. Save names begin with `$`, so on Linux and macOS put them in single quotes. More in the [cookbook](docs/COOKBOOK.md#share-a-change-as-a-patch).
 
 ## What you get
 

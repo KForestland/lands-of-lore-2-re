@@ -97,6 +97,41 @@ $ python3 tools/modkit.py --check
 CHECK modkit: 22 archives or loose tables rebuilt byte-identically from 25 unpacked entries; outputs in the game, work, archive and repository folders refused
 ```
 
+### `patch.py`
+
+Makes, applies and undoes small patches for your own copy of the game ([format, rules and limits](../docs/formats/patch.md)). `patch.py` is the same file in the three repositories. Your game folder is only read. Run it from any folder and put quotes around paths with spaces:
+
+```bash
+python3 tools/patch.py make --data "/path/to/LoL2" "my mod output" --title "Faster strikes" --out "faster strikes.json"
+python3 tools/patch.py apply --data "/path/to/LoL2 test copy" "faster strikes.json" --out "patched files"
+python3 tools/patch.py apply --data "/path/to/LoL2 test copy" "patched files/undo.json" --out "restored files"
+```
+
+- `--data` is the game folder holding `LOLG.DAT` and `DAT`; given the `DAT` folder, the tool reads the folder above it (default: `$LOL2_DAT`). It may also be given as the first path, as `modkit.py` takes it.
+- `make` writes a new patch file from the differences between the game folder and a folder of changed files, such as the output of `modkit.py build`. `--title` is required; `--description` is optional; `--kind data` or `--kind program` is found from the changed files when left out.
+- `apply` checks every old byte, the program's SHA-256 for a program patch and the undo before it writes anything, then writes the patched files and `undo.json` into the new `--out` folder. Copy the files except `undo.json`, with their folders, into a copy of the game. Applying `undo.json` to that copy gives the original bytes back.
+- Refused, with one sentence saying why: a missing or unchanged changed folder, a patch for another game, edition or version, a patch already applied, a patch over the size limits (data: 256 bytes per change and 4,096 per patch; program: 16 and 256), an output that already exists, whose folder does not exist, or that lies inside the game folder, a folder holding game archives or this repository.
+- Tests on synthetic files: `tests/test_patch.py` (the same file in the three repositories).
+
+```
+$ python3 tools/patch.py make --data "/path/to/LoL2" "my mod output" --title "Faster strikes" --out "faster strikes.json"
+make: data patch with 2 changes in 2 files (DAT/GLOBAL.MIX, GLOBAL.MIX) written to /path/to/faster strikes.json
+Data patches are for the original DOS game under DOSBox.
+```
+
+### `save_edit.py`
+
+Writes a copy of an original save with one field changed; the save itself is only read. Each run prints the old and the new value and one line saying whether the game has been shown to load such an edit (CONFIRMED) or not yet (UNCONFIRMED). Fields and their status: [cookbook](../docs/COOKBOOK.md#change-a-saved-game-a-copy).
+
+```
+$ python3 tools/save_edit.py set '/path/to/LoL2/SAVEGAME/$MUSEUM_.000' heading 0x4000 --out "my edited save.000"
+set: heading OLD -> 0x4000; copy written to /path/to/my edited save.000; the original save was only read
+UNCONFIRMED: no edited copy of this field has been loaded by the game yet; keep a backup of your saves
+```
+
+- Fields: `name` (the display name), `heading` (0–65535) and `position-from` (another save of the same level), for DOS 1.30 slots. Save names begin with `$`; on Linux and macOS put them in single quotes. Numbers can be decimal or start with `0x`.
+- Refused, with one sentence saying why: a missing or damaged save, a value out of range, a name that is not plain ASCII, a donor save from another level or version, and an output that already exists, lies in the save's own folder, in the game folder or in this repository. Tests on synthetic slots: `tests/test_save_edit.py`.
+
 ### `doc_links.py`
 
 Checks links and anchors only (it runs no command shown in the pages): every relative link, image link, `<a href>` and `#anchor` in `README.md`, `tools/README.md`, `CONTRIBUTING.md`, `docs/`, and `examples/` and `evidence/` when present. Anchors follow GitHub's heading ids. A link or heading inside a fenced example is skipped. Part of `check_all.py`.

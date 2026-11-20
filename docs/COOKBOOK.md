@@ -134,7 +134,7 @@ The [mod kit](../tools/README.md#modkitpy) writes the game's text tables and num
 python3 tools/modkit.py unpack "/path/to/LoL2" "my mod work"
 ```
 
-Open `my mod work/edits/0007_OPTTEXT.TRR_text.json` in a text editor and change `Save Game` to `Save Your Game` inside `"value"`. Then build and verify:
+Open the file in `my mod work/edits/` whose name ends in `_OPTTEXT.TRR_text.json` (the number in front may differ on your copy) in a text editor and change `Save Game` to `Save Your Game` inside `"value"`. Then build and verify:
 
 ```bash
 python3 tools/modkit.py build "/path/to/LoL2" "my mod work" "my mod output"
@@ -203,3 +203,34 @@ python3 tools/lol2_inspect.py --data "$out/DAT" trr help --id 0
 
 Expect the reader to display ID 0 at `+0x1B1872F`, 262 bytes including
 its terminating NUL, and the text `LOCAL TEST` followed by spaces.
+
+## Share a change as a patch
+
+The [README](../README.md#change-a-number-in-your-own-copy) walks through the whole route on your own copy: unpack, change one number, build, make a patch, apply it to a copy, read it back and undo it. The [patch format](formats/patch.md) page gives every rule and limit.
+
+- `make` compares the game folder (`--data`) with a folder of changed files. The output folder of `modkit.py build` works as it is, and so does a copy of the game folder in which only some files changed.
+- File names in the patch start at the game folder holding `LOLG.DAT` and `DAT`, whether you give that folder or its `DAT` folder, so a patch made from one applies to the other. A change made in `DAT` is named `DAT/GLOBAL.MIX`, never the copy beside `DAT`.
+- `apply` writes nothing until every check has passed: the old bytes, for a program patch the whole file's SHA-256, and the undo. Applying a patch twice, or to another edition, is refused with one sentence.
+- Program patches: copy the program file (`LOLG.DAT` or `LOLG.EXE`) into a new folder, at the same path it has in the game folder, change a byte with a hex editor, for example one letter of a message, and run `make` with that folder. The patch records the program's SHA-256 and applies only to that exact file. A program change may replace at most 16 bytes at a time and 256 in all, never changes the file length, and never touches copy-protection code.
+- `GLOBAL.MIX` ships twice, byte for byte the same: in the game folder and in `DAT`. The mod kit unpacks both as separate edit files (`0002_GLOBAL.MIX_items.json` and `0008_GLOBAL.MIX_items.json`). Which copy the game opens has not been shown (not known), so make the same change in both; the patch then names both files.
+
+## Change a saved game (a copy)
+
+```bash
+python3 tools/save_edit.py set '/path/to/LoL2/SAVEGAME/$MUSEUM_.000' heading 0x4000 --out "my edited save.000"
+python3 tools/lol2_save_inspect.py "my edited save.000"
+```
+
+Save names begin with `$`; on Linux and macOS put them in single quotes as above (on Windows, double quotes are fine). The first command prints `set: heading OLD -> 0x4000; copy written to ...`, with your save's old value for OLD, then one line saying how far the field is proven. The save itself is only read, and the copy must go outside the game and save folders. Copy it over a slot in the `SAVEGAME` folder of a **copy** of your game to load it.
+
+| Field | Value | Proven |
+| --- | --- | --- |
+| `position-from` | another save of the same level and version; copies its 14-byte position group (X, Y, heading, region) | tested: the DOS 1.30 game loaded copies with the position group edited (edited-save run) |
+| `heading` | 0–65535, the low word of the heading dword at +0x188 | not yet tested: a heading-only copy has not been loaded |
+| `name` | the display name, printable ASCII | not yet tested: no edited copy loaded yet |
+
+A donor from another level or version, or with no region, is refused. Choose a donor whose place can be reached in the edited save's world. The editor rewrites the slot byte for byte before the change and checks the lengths, directories and stored packets after it.
+[Slot offsets](lol2-save-format.md#slot-header-and-directory) ·
+[What an edited copy must keep](lol2-save-format.md#editing-a-copy-of-an-original-slot)
+
+Map viewer and editor notes for tool makers: [tool makers](TOOL_MAKERS.md).

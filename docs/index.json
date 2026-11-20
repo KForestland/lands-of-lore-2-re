@@ -208,8 +208,11 @@
         "tools/lol2_mix_parser.py",
         "tools/lol2_numbers.py",
         "tools/lol2_save_inspect.py",
+        "tools/modkit.py",
+        "tools/patch.py",
         "tools/rating.py",
-        "tools/repo_guard.py"
+        "tools/repo_guard.py",
+        "tools/save_edit.py"
       ]
     },
     {
@@ -259,7 +262,8 @@
         "tools/lol2_level_schematic.py",
         "tools/lol2_mix_parser.py",
         "tools/lol2_save_inspect.py",
-        "tools/modkit.py"
+        "tools/modkit.py",
+        "tools/save_edit.py"
       ]
     },
     {
@@ -303,6 +307,8 @@
         "tools/lol2_decompress_sphere.py",
         "tools/lol2_inspect.py",
         "tools/lol2_westwood_hash.py",
+        "tools/modkit.py",
+        "tools/patch.py",
         "tools/rating.py"
       ]
     },
@@ -496,6 +502,18 @@
       ]
     },
     {
+      "path": "docs/TOOL_MAKERS.md",
+      "title": "Next steps for tool makers",
+      "answers": [],
+      "question_references": [],
+      "tools": [
+        "tools/lol2_level_schematic.py",
+        "tools/lol2_level_writer.py",
+        "tools/lol2_mix_writer.py",
+        "tools/lol2_source_format.py"
+      ]
+    },
+    {
       "path": "docs/TOUR.md",
       "title": "Follow LoL2 L1_DC from map to exit",
       "answers": [],
@@ -561,7 +579,9 @@
         "tools/lol2_vqa_v2_decode.py",
         "tools/lol2_westwood_writer.py",
         "tools/lol2_xmi_reader.py",
-        "tools/rating.py"
+        "tools/patch.py",
+        "tools/rating.py",
+        "tools/save_edit.py"
       ]
     },
     {
@@ -704,7 +724,8 @@
         "tools/lol2_texture_container.py",
         "tools/lol2_vqa_v2_decode.py",
         "tools/lol2_westwood_hash.py",
-        "tools/lol2_xmi_reader.py"
+        "tools/lol2_xmi_reader.py",
+        "tools/patch.py"
       ]
     },
     {
@@ -806,6 +827,16 @@
         "tools/lol2_mix_writer.py",
         "tools/lol2_source_format.py",
         "tools/lol2_westwood_hash.py"
+      ]
+    },
+    {
+      "path": "docs/formats/patch.md",
+      "title": "Lands of Lore patch format",
+      "answers": [],
+      "question_references": [],
+      "tools": [
+        "tools/modkit.py",
+        "tools/patch.py"
       ]
     },
     {
@@ -1932,8 +1963,10 @@
         "tools/lol2_xmi_reader.py",
         "tools/modkit.py",
         "tools/modkit_core.py",
+        "tools/patch.py",
         "tools/rating.py",
-        "tools/repo_guard.py"
+        "tools/repo_guard.py",
+        "tools/save_edit.py"
       ]
     },
     {
