@@ -26,7 +26,7 @@ Follow the engine from startup to saving in [How Lands of Lore II works](HOW_THE
 - [lol2-level-graph.md](lol2-level-graph.md): the 15 levels, the room archives and the exits.
 - [Progression](PROGRESSION.md): each exit command and the shared or local slot it tests.
 - Options interface shapes in `LOCAL.MIX`: `python3 tools/lol2_decompress_sphere.py --check`.
-- Objects in each level: `python3 tools/lol2_entity_field_analyzer.py --out entities.json`.
+- Objects in each level: `python3 tools/lol2_entity_field_analyzer.py --out ../lol2-out/entities.json` (outside the downloaded folder).
 
 ## I want to understand the scripts
 

@@ -1,6 +1,6 @@
 # Patches
 
-Small checked edits for a reader's own copy of the original game. A patch file holds the changed bytes and the expected old bytes, not a game file. A patch must not remove or bypass a disc check, a serial check or any other copy protection, and none here does. The format and its limits are on the [patch format page](../docs/formats/patch.md). This folder has the list. It does not yet hold a patch file: the faults below are not a few proven bytes that this pass could show before and after in the running DOS 1.30 game.
+Small checked edits for a reader's own copy of the original game. A patch file holds the changed bytes and the expected old bytes, not a game file. A patch must not remove or bypass a disc check, a serial check or any other copy protection, and none here does. The format and its limits are on the [patch format page](../docs/formats/patch.md). This folder has the list. It does not yet hold a patch file: the faults below are not a few proven bytes that these pages could show before and after in the running DOS 1.30 game.
 
 The file format, when a patch is added, is `lol-patch-2`. `kind` is `data` or `program`. Each change has `file`, `entry`, `offset`, `old` and `new`.
 

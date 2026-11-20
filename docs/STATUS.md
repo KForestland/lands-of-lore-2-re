@@ -23,7 +23,7 @@ A dated snapshot; the work continues and the table below is kept current.
 
 - **Known.** Every file in `DAT` has its whole layout read by a tool here (83 of 83). The program's page map, the 33 music scores, every indexed movie frame and every level exit with its guard are read from the original files ([progression](PROGRESSION.md)).
 - **Open.** 15 of 20 numbered questions are not fully answered; most are "mostly answered" and wait on a running-game test or a game-written save ([open questions](OPEN_QUESTIONS.md)).
-- **Tests a reader with the game can run.** Each open point that needs the running game has its test, the save it needs and what the runs of 20 November did and did not show ([running-game probes](NEEDS_A_RUNNING_GAME.md)); runs from 20 November 08:41 UTC on follow the [launch-record rule](NEEDS_A_RUNNING_GAME.md#launch-record-rule-and-the-runs-of-20-november).
+- **Tests a reader with the game can run.** Each open point that needs the running game has its test, the save it needs and what the runs of 20 November did and did not show ([running-game probes](NEEDS_A_RUNNING_GAME.md)).
 - **Tools for your own copy.** Change text or numbers with the mod kit, make and undo patches, edit a saved game, open interactive level plans and convert movies and sounds: start with the [first ten minutes](FIRST_TEN_MINUTES.md) page or `python3 tools/lol.py`. Known original faults: [patches](../patches/README.md). What these pages got wrong: [corrections](CORRECTIONS.md).
 
 **Columns**: *Pages*: where it is described. *Tool check*: what `--check` measures on the game files. *Open*: numbered in [OPEN_QUESTIONS.md](OPEN_QUESTIONS.md).
