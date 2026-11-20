@@ -20,6 +20,7 @@ def one_line(message):
 
 
 REPOSITORY = Path(__file__).resolve().parents[1]
+DATA_SUBFOLDER = "DAT"
 # Options through which a tool writes a file or a folder of files.
 OUTPUT_OPTIONS = ("out", "output", "output_dir", "summary", "png")
 # Options that name the game's DAT folder or the game folder above it.
@@ -58,6 +59,39 @@ def output_refusal(path, data=None, repository=False):
     return None
 
 
+def game_path(folder, *parts):
+    """Read a game-relative name using the spelling stored on this filesystem."""
+    path = Path(folder)
+    for component in Path(*parts).parts:
+        wanted = path / component
+        if wanted.exists() or not path.is_dir():
+            path = wanted
+            continue
+        matches = [entry for entry in path.iterdir() if entry.name.casefold() == component.casefold()]
+        if len(matches) > 1:
+            raise ValueError(f"Several files in {path} match {component}. Give the exact name.")
+        path = matches[0] if matches else wanted
+    return path
+
+
+def data_folder(folder):
+    """Select the data folder when a reader is given the installation above it."""
+    path = Path(folder)
+    if path.name.upper() == DATA_SUBFOLDER:
+        return path
+    child = game_path(path, DATA_SUBFOLDER)
+    return child if child.is_dir() else path
+
+
+def input_path(path):
+    """Honor the given spelling first, then try each missing component by name."""
+    path = Path(path)
+    if path.exists() or path == path.parent:
+        return path
+    parent = path.absolute().parent if path.parent == Path(".") else input_path(path.parent)
+    return game_path(parent, path.name)
+
+
 class ReaderArgumentParser(argparse.ArgumentParser):
     def __init__(self, *args, output_options=(), **kwargs):
         """output_options: further option names through which this tool writes."""
@@ -73,8 +107,11 @@ class ReaderArgumentParser(argparse.ArgumentParser):
         options = super().parse_args(args, namespace)
         for name in ("data", "game_dat"):
             folder = getattr(options, name, None)
-            if isinstance(folder, (str, os.PathLike)) and not Path(folder).is_dir():
-                self.error(f"game data folder does not exist: {folder}")
+            if isinstance(folder, (str, os.PathLike)):
+                path = input_path(folder)
+                if not path.is_dir():
+                    self.error(f"game data folder does not exist: {folder}")
+                setattr(options, name, str(path) if isinstance(folder, str) else path)
         # A data folder that is only the built-in default "." is a guess, not a game folder;
         # the archive check below still refuses it when it holds game files.
         data = [getattr(options, name, None) for name in DATA_OPTIONS
@@ -85,6 +122,11 @@ class ReaderArgumentParser(argparse.ArgumentParser):
                 refusal = output_refusal(path, data)
                 if refusal:
                     self.error(refusal)
+        for name in ("data", "game_dat"):
+            folder = getattr(options, name, None)
+            if isinstance(folder, (str, os.PathLike)):
+                path = data_folder(folder)
+                setattr(options, name, str(path) if isinstance(folder, str) else path)
         return options
 
     def error(self, message):

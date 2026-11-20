@@ -8,7 +8,7 @@
 Use --start and --limit to page through a level. Offsets identify the original
 records. Command meanings come from the documented native opcode paths.
 """
-from cli_errors import ReaderArgumentParser, run_cli
+from cli_errors import ReaderArgumentParser, run_cli, game_path
 from collections import Counter, defaultdict
 import argparse
 import os
@@ -76,7 +76,7 @@ def summary(group, triggers, items, scenes, rooms, verbose=False):
 
 def context(data):
     # The documented source tables resolve item identities, scenes and rooms.
-    image = (data.resolve().parent / "LOLG.DAT").read_bytes()
+    image = game_path(data.resolve().parent, "LOLG.DAT").read_bytes()
     scenes = scene_names(data)
     require(bool(scenes), "native scene table unavailable")
     return item_identities(data), scenes, room_names(image)

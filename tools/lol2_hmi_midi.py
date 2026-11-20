@@ -7,7 +7,7 @@ MIDI file per song in memory, and prints one line. It writes nothing.
 --out writes one .mid per song and must be a directory outside this repository.
 """
 
-from cli_errors import run_cli
+from cli_errors import run_cli, game_path
 import os
 import struct
 import sys
@@ -30,7 +30,7 @@ def u16(blob, off):
 
 
 def parent_file(dat_dir, name):
-    path = os.path.join(os.path.dirname(os.path.abspath(dat_dir)), name)
+    path = str(game_path(os.path.dirname(os.path.abspath(dat_dir)), name))
     if not os.path.isfile(path):
         raise FileNotFoundError("%s is not in the parent of the DAT folder" % name)
     return path

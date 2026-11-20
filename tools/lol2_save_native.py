@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Verify save and clock instruction witnesses and level animation rows."""
-from cli_errors import ReaderArgumentParser, run_cli
+from cli_errors import ReaderArgumentParser, run_cli, game_path
 from collections import Counter
 import os
 import struct
@@ -137,7 +137,7 @@ def check_surface_tables(data_dir):
     surfaces = animations = 0
     surface_modes, animation_modes = Counter(), Counter()
     for filename in LEVEL_FILES:
-        path = data_dir / filename
+        path = game_path(data_dir, filename)
         archive = path.read_bytes()
         entry, _, _ = locate_entity_table(archive, path.stem)
         base = entry["offset"]
@@ -178,7 +178,7 @@ def main():
     args = parser.parse_args()
     try:
         data_dir = args.data.resolve()
-        print(check(data_dir.parent / "LOLG.DAT"))
+        print(check(game_path(data_dir.parent, "LOLG.DAT")))
         print(check_surface_tables(data_dir))
     except (OSError, RuntimeError, ValueError, struct.error) as error:
         parser.exit(1, f"CHECK native save: {error}\n")

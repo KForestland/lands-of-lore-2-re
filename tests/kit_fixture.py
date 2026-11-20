@@ -71,11 +71,25 @@ def foreign_level_edit():
 
 def inspect_jobs(test):
     test.assertIn(TRANSLATE_FROM, test.job("text", "--data", test.game, "loose-options", "--id", "1"))
-    data = media_files(test.root / "Media fixture")
+    game = test.root / "Media fixture"
+    data = media_files(game)
+    if test.lowercase:
+        lowercase(game)
     test.assertIn("1 movie entry", test.job("movie", "--data", data, "--list", "--file", "TEST.MIX"))
     wav = test.root / "wave"
     test.job("sound", "--data", data, "--file", "TEST.MIX", "--entry", "1", "--out", wav)
-    test.assertEqual((wav / "TEST-1.wav").read_bytes()[-2:], b"yz")
+    test.assertEqual((wav / ("test-1.wav" if test.lowercase else "TEST-1.wav")).read_bytes()[-2:], b"yz")
     out = test.root / "midi files"
     test.job("music", "--data", data, "--out", out)
     test.assertEqual((out / "unnamed_00000001.mid").read_bytes()[:4], b"MThd")
+
+
+def lowercase(root):
+    """Rename a generated installation as a lower-case filesystem copy."""
+    for path in sorted(root.rglob("*"), key=lambda p: len(p.parts), reverse=True):
+        lower = path.with_name(path.name.lower())
+        if lower.name != path.name:
+            # The intermediate name also makes a case-only rename portable.
+            temporary = path.with_name(path.name + ".renaming")
+            path.rename(temporary)
+            temporary.rename(lower)

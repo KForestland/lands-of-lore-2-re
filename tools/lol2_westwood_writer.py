@@ -4,7 +4,7 @@ from pathlib import Path
 import re
 import struct
 
-from cli_errors import run_cli
+from cli_errors import run_cli, game_path
 import lol2_cli
 from lol2_decompress_sphere import load_entry1, parse_entry1
 from lol2_decompress_westwood import decompress_westwood
@@ -121,7 +121,7 @@ def write_panel(original):
 def check(data_dir):
     root = Path(data_dir).resolve()
     local = Path(lol2_cli.resolve_input("LOCAL.MIX", root))
-    image = (root.parent / "LOLG.DAT").read_bytes()
+    image = game_path(root.parent, "LOLG.DAT").read_bytes()
     rows = {row["key"]: row for row in mix_dir(local)[-1]}
 
     def member(name):

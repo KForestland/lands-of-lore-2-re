@@ -34,7 +34,7 @@ Body field map (u16 LE words):
     f23:     Packed: hi byte = level tier/quest flag, lo byte = entity slot index
 """
 
-from cli_errors import run_cli
+from cli_errors import run_cli, game_path
 import json
 import os
 import struct
@@ -255,7 +255,7 @@ def main():
     level_stats = {}
 
     for lf in LEVEL_FILES:
-        path = os.path.join(dat_dir, lf)
+        path = game_path(dat_dir, lf)
         if not os.path.exists(path):
             print(f"WARNING: {path} not found", file=sys.stderr)
             continue

@@ -11,7 +11,7 @@ game pixels: it is a plot of the geometry numbers.
                                             # 15 levels has 4 distinct in-range corners
 Needs Pillow for --out.
 """
-from cli_errors import run_cli
+from cli_errors import run_cli, game_path
 import os
 import struct
 import sys
@@ -24,7 +24,7 @@ from lol2_level_report import level_files  # noqa: E402
 
 
 def load(data_dir, stem):
-    b = (Path(data_dir) / f"{stem}.MIX").read_bytes()
+    b = game_path(Path(data_dir), f"{stem}.MIX").read_bytes()
     _, raw = S.level_geometry(b)
     nv, nr = struct.unpack_from("<I", raw, 0x50)[0], struct.unpack_from("<I", raw, 0x58)[0]
     vo, ro = struct.unpack_from("<I", raw, 0x04)[0], struct.unpack_from("<I", raw, 0x0C)[0]

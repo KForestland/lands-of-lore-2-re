@@ -8,7 +8,7 @@ field of that record. The same scan lists the selector handlers of opcodes
   lol2_instance_field.py --data DAT
   lol2_instance_field.py --check --data DAT
 """
-from cli_errors import run_cli
+from cli_errors import run_cli, game_path
 import os
 import struct
 import sys
@@ -126,7 +126,7 @@ BANNED = ("UNCONFIRMED", "UNKNOWN", "PROVEN", "CONFIRMED")
 
 
 def load_image(data_dir):
-    path = Path(data_dir).resolve().parent / "LOLG.DAT"
+    path = game_path(Path(data_dir).resolve().parent, "LOLG.DAT")
     image = path.read_bytes()
     if len(image) != IMAGE_SIZE:
         raise ValueError(f"program length {len(image)}")

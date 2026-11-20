@@ -46,6 +46,8 @@ The [reader tool check audit](../docs/TOOL_CHECK_AUDIT.md) lists the mistakes te
 
 ## Setup
 
+For game data, give `--data` either your installation folder or its `DAT` folder. The readers accept mixed, uppercase or lowercase filenames and keep the spelling of files they copy.
+
 - Python 3.10 or later
 - `pip install -r requirements.txt`: Pillow (picture output), capstone (disassembly checks), numpy (movie decoder)
 - `liblzo2` (`apt install liblzo2-2` on Debian/Ubuntu) for packed saves,

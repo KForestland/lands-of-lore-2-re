@@ -4,7 +4,7 @@ The game's DAT folder is never assumed; tools that read game files need
 --data /path/to/DAT or the LOL2_DAT environment variable. Nothing is written
 unless an output path is given.
 """
-from cli_errors import ReaderArgumentParser, command_name, output_refusal
+from cli_errors import ReaderArgumentParser, command_name, data_folder, game_path, input_path, output_refusal
 import argparse
 import os
 
@@ -41,14 +41,14 @@ def refuse_repo_output(path, data=None):
 def resolve_input(name, data_dir=None):
     """Find a game file given as a path or a bare name: as given, then in the DAT folder
     (--data or $LOL2_DAT), then in the game folder above it (LOCAL, LOCALLNG, DMUSIC, SETUP, GLOBAL)."""
-    name = str(name)
-    if os.path.isfile(name):
-        return name
+    path = input_path(name)
+    if path.is_file():
+        return str(path)
     data_dir = data_dir or os.environ.get("LOL2_DAT")
     if data_dir:
-        for folder in (data_dir, os.path.dirname(os.path.abspath(str(data_dir)))):
-            for cand in (name, name.upper(), name.lower()):
-                p = os.path.join(folder, cand)
-                if os.path.isfile(p):
-                    return p
-    return name
+        data = data_folder(input_path(data_dir))
+        for folder in (data, data.resolve().parent):
+            path = game_path(folder, name)
+            if path.is_file():
+                return str(path)
+    return str(name)

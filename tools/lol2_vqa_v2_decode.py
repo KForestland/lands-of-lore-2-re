@@ -29,7 +29,7 @@ Requires Python 3.10+. Frame decoding uses NumPy. Pillow is needed only for --ou
     python3 tools/lol2_vqa_v2_decode.py ./lol2_game/DAT/CHUT.MIX
     python3 tools/lol2_vqa_v2_decode.py ./lol2_game/DAT/CHUT.MIX --entry 3 --out frames/
 """
-from cli_errors import ReaderArgumentParser, run_cli
+from cli_errors import ReaderArgumentParser, run_cli, game_path
 import os
 import sys
 from pathlib import Path
@@ -519,7 +519,7 @@ def _census(folder):
                     for tag, n in _frame_tag_counts(pl, f'VQFR {fi}').items():
                         tags[tag] = tags.get(tag, 0) + n
             except VQAError as error:
-                bad.append(f'{mix.name}#{e["index"]}: {error}')
+                bad.append(f'{mix.name.upper()}#{e["index"]}: {error}')
                 continue
             if tags.get(b'VPRZ') or tags.get(b'VPTR'):
                 streams += 1
@@ -627,7 +627,7 @@ def _walk_all(folder):
                     key = _layout(f, False)
                     layouts[key] = layouts.get(key, 0) + 1
             except VQAError as error:
-                bad.append(f'{mix.name}#{e["index"]}: {error}')
+                bad.append(f'{mix.name.upper()}#{e["index"]}: {error}')
     # Accept only a relative copy inside the LCW stream. The frame number is the
     # one the decoder reports; it is not a separate filter on the movie name.
     open_rel = [b for b in bad if 'relative reference' in b]
@@ -682,7 +682,7 @@ def check(folder, full=False) -> int:
 
 
 def _entry_blob(folder, mix_name, index):
-    data = (Path(folder) / mix_name).read_bytes()
+    data = game_path(folder, mix_name).read_bytes()
     for e in _mix_entries(data):
         if e['index'] == index:
             return data[e['offset']:e['offset'] + e['size']]

@@ -13,7 +13,7 @@ The DAT directory is resolved in order:
     3. Current directory
 """
 
-from cli_errors import run_cli
+from cli_errors import run_cli, game_path
 import os
 import struct
 from collections import defaultdict
@@ -151,7 +151,7 @@ def main():
     all_records = defaultdict(list)
 
     for fname in LEVEL_FILES:
-        path = os.path.join(dat_dir, fname)
+        path = game_path(dat_dir, fname)
         try:
             with open(path, "rb") as f:
                 data = f.read()

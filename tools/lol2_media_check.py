@@ -9,7 +9,7 @@ and LOCALLNG.MIX are read from that folder's parent. --check prints one line.
 
 Expected output is in tools/README.md.
 """
-from cli_errors import run_cli
+from cli_errors import run_cli, game_path
 import os
 import struct
 import sys
@@ -123,7 +123,7 @@ PROLOGUE = b"\x53\x56\x57\x55"
 
 def parent_file(dat_dir, name):
     """LOLG.DAT and the loose MIX files sit next to the DAT folder, not inside it."""
-    path = os.path.join(os.path.dirname(os.path.abspath(dat_dir)), name)
+    path = str(game_path(os.path.dirname(os.path.abspath(dat_dir)), name))
     if not os.path.isfile(path):
         raise FileNotFoundError("%s is not in the parent of the DAT folder" % name)
     return path
@@ -345,7 +345,7 @@ def check(dat_dir):
     if image[OBJ5 + 0x2CA9:OBJ5 + 0x2CAE] != b"%s\\%s":
         raise ValueError("directory format moved")
 
-    level = os.path.join(dat_dir, "L12_CM.MIX")
+    level = str(game_path(dat_dir, "L12_CM.MIX"))
     stream_file, stream = geometry_stream(level)
     commands = walk(stream)
     want21 = bytes.fromhex("150378000d00")
@@ -360,7 +360,7 @@ def check(dat_dir):
     if (found[want21], found[want20], found[want210]) != (9823886, 9821090, 9823696):
         raise ValueError("worked-example offsets moved")
 
-    movies = os.path.join(dat_dir, "L12_CMI.MIX")
+    movies = str(game_path(dat_dir, "L12_CMI.MIX"))
     key = ww_hash_v1("sphere2\\l12_cm\\citadel.vqa")
     if key != ww_hash_v2("sphere2\\l12_cm\\citadel.vqa"):
         raise ValueError("citadel hash variants disagree")
@@ -372,7 +372,7 @@ def check(dat_dir):
     if hit[0]["index"] != 21 or hit[0]["size"] != 14680498 or fields[:4] != (2, 591, 640, 400):
         raise ValueError("citadel entry changed")
 
-    movies_mix = os.path.join(dat_dir, "MOVIES.MIX")
+    movies_mix = str(game_path(dat_dir, "MOVIES.MIX"))
     _size, _body, mentries = mix_dir(movies_mix)
     lolg = ww_hash_v1("outtakes\\lolg.vqa")
     if lolg != ww_hash_v2("outtakes\\lolg.vqa"):
@@ -477,7 +477,7 @@ def check(dat_dir):
         raise ValueError("SSARPIT1 header")
 
     def container(name, count, banner_index, size_word, form_indexes):
-        path = os.path.join(dat_dir, name)
+        path = str(game_path(dat_dir, name))
         _size, _body, entries = mix_dir(path)
         if len(entries) != count:
             raise ValueError("%s count" % name)
@@ -511,7 +511,7 @@ def check(dat_dir):
         cut = prefix.find("_")
         if cut <= 0:
             raise ValueError("room name %s" % prefix)
-        path = os.path.join(dat_dir, prefix[:cut].upper() + ".MIX")
+        path = str(game_path(dat_dir, prefix[:cut].upper() + ".MIX"))
         _size, _body, entries = mix_dir(path)
         hits = 0
         for entry in entries:
@@ -528,7 +528,7 @@ def check(dat_dir):
         if hits != 1:
             raise ValueError("%s code entries %s" % (prefix, hits))
 
-    arena = os.path.join(dat_dir, "ARENA.MIX")
+    arena = str(game_path(dat_dir, "ARENA.MIX"))
     _size, _body, arena_entries = mix_dir(arena)
     if len(arena_entries) != 2 or arena_entries[1]["key"] != 0x0CBF521D:
         raise ValueError("Arena room module directory")

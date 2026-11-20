@@ -7,7 +7,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-from cli_errors import ReaderArgumentParser, run_cli
+from cli_errors import ReaderArgumentParser, run_cli, game_path
 import lol2_loose
 from lol2_mix_parser import read_mix_with_hashes
 from lol2_text_tables import parse_trr
@@ -37,8 +37,8 @@ def inventory(data):
 
 def text_counts(data):
     rows = []
-    for path, names in ((data.parent / "LOCALLNG.MIX", LOCALIZED),
-                        (data / "MOVIES.MIX", ("credits.trr",))):
+    for path, names in ((game_path(data.parent, "LOCALLNG.MIX"), LOCALIZED),
+                        (game_path(data, "MOVIES.MIX"), ("credits.trr",))):
         blob, entries, base = read_mix_with_hashes(path)
         for name in names:
             key = ww_hash_v1(name)
@@ -49,7 +49,7 @@ def text_counts(data):
             count, _, _ = parse_trr(blob[base + offset:base + offset + size], name)
             rows.append((os.path.relpath(path, data), name, count))
     for name in ("ERRTEXT.TRR", "OPTTEXT.TRR", "CREDITS.TRR"):
-        path = data.parent / name
+        path = game_path(data.parent, name)
         count, _, _ = parse_trr(path.read_bytes(), name)
         rows.append((os.path.relpath(path, data), name, count))
     return rows

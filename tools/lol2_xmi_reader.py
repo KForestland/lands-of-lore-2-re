@@ -5,7 +5,7 @@ from collections import Counter
 from pathlib import Path
 from struct import iter_unpack, unpack_from
 
-from cli_errors import run_cli
+from cli_errors import run_cli, game_path
 import lol2_cli
 from lol2_hmi_midi import credits_paths, read_vlq, stems_from
 from lol2_source_format import parse_mix
@@ -108,7 +108,7 @@ def inspect_song(blob):
 
 
 def check(data, listing):
-    image = (data.parent / "LOLG.DAT").read_bytes()
+    image = game_path(data.parent, "LOLG.DAT").read_bytes()
     _, credits = credits_paths(image)
     paths = [f"MUSIC\\{s}.XMI" for s in stems_from(image) if s and s != "badfile"]
     paths.append(credits[:-4] + ".XMI")
@@ -120,7 +120,7 @@ def check(data, listing):
         names[key] = path
     seen = set()
     counts = Counter()
-    local = (data.parent / "LOCAL.MIX").read_bytes()
+    local = game_path(data.parent, "LOCAL.MIX").read_bytes()
     for row in parse_mix(local):
         key, at, size = row["key"], row["offset"], row["size"]
         if local[at:at + 4] != b"FORM":
