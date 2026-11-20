@@ -300,6 +300,15 @@
       "tools": []
     },
     {
+      "path": "docs/EDITIONS.md",
+      "title": "Identify your edition",
+      "answers": [],
+      "question_references": [],
+      "tools": [
+        "tools/edition.py"
+      ]
+    },
+    {
       "path": "docs/FIRST_TEN_MINUTES.md",
       "title": "First ten minutes",
       "answers": [],
@@ -538,6 +547,15 @@
         "tools/lol2_level_report.py",
         "tools/lol2_numbers.py",
         "tools/lol2_progression.py"
+      ]
+    },
+    {
+      "path": "docs/UNUSED.md",
+      "title": "Unused content and development leftovers",
+      "answers": [],
+      "question_references": [],
+      "tools": [
+        "tools/lol2_level_writer.py"
       ]
     },
     {
@@ -1923,6 +1941,7 @@
         "tools/doc_format_offsets.py",
         "tools/doc_index.py",
         "tools/doc_links.py",
+        "tools/edition.py",
         "tools/example_images.py",
         "tools/full_report.py",
         "tools/history/draracle/catalogue_cave_entities.py",

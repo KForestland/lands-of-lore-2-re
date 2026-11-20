@@ -9,6 +9,8 @@ Use `level_viewer.py --check` to write and read back one plan in a temporary fol
 [First ten minutes](../docs/FIRST_TEN_MINUTES.md) ·
 [Interactive plans](../docs/COOKBOOK.md#open-an-interactive-level-plan)
 
+`edition.py` reads names, file sizes and SHA-256 to identify a measured game copy. `--check` verifies the full fingerprint in `check_all.py`. [Edition fingerprints](../docs/EDITIONS.md)
+
 ## Setup
 
 - Python 3.10 or later
@@ -78,7 +80,7 @@ Run each `--check` and print one line each, then a summary.
 $ python3 tools/check_all.py | sed -n '1,2p;$p'
 CHECK repo_guard: N tracked files; game files, media, stray images, files over 300 KB, machine paths, words from the local list, or commit identities and messages: none (0); private word list: not present, skipped
 CHECK mix: 81 MIX files, 2905 entries; this reader and lol2_source_format.parse_mix agree and every entry lies inside its file: 81/81; index sorted by signed key: 81/81 (by unsigned key: 20); bad=none
-ALL 48 CHECKS PASSED
+ALL 49 CHECKS PASSED
 ```
 
 ### `modkit.py`
