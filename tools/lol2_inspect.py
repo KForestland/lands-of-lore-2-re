@@ -299,6 +299,24 @@ def check(data, image, names):
     return "CHECK format inspector: cache, WOM, WSA, HMI, cues, scenes, TRR, items, LE, loose files and rule references"
 
 
+def text_job():
+    from level_html import find_data
+
+    parser = ReaderArgumentParser(description="Read original game text from a LoL2 message table.")
+    dat = os.environ.get("LOL2_DAT")
+    parser.add_argument("--data", required=dat is None, default=dat, help="your game folder or its DAT folder")
+    parser.add_argument("table", metavar="TABLE", help=", ".join(TRR_SOURCES))
+    parser.add_argument("legacy_table", nargs="?", help=argparse.SUPPRESS)
+    parser.add_argument("--id", type=int, dest="identifier", help="show the text for one record ID")
+    args = parser.parse_args()
+    table = args.legacy_table if args.table == "trr" else args.table
+    if table not in TRR_SOURCES or (args.legacy_table and args.table != "trr"):
+        parser.error(f"Choose a table: {', '.join(TRR_SOURCES)}.")
+    root = find_data(args.data, "DAT", "L1_DC.MIX")
+    for line in text_lines(root, table, args.identifier):
+        print(line)
+
+
 def main():
     parser = ReaderArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     dat = os.environ.get("LOL2_DAT")

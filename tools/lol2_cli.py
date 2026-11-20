@@ -4,7 +4,7 @@ The game's DAT folder is never assumed; tools that read game files need
 --data /path/to/DAT or the LOL2_DAT environment variable. Nothing is written
 unless an output path is given.
 """
-from cli_errors import ReaderArgumentParser, output_refusal
+from cli_errors import ReaderArgumentParser, command_name, output_refusal
 import argparse
 import os
 
@@ -33,7 +33,7 @@ def refuse_repo_output(path, data=None):
     import sys
     refusal = output_refusal(path, data, repository=True)
     if refusal:
-        print(f"{os.path.basename(sys.argv[0])}: {refusal}", file=sys.stderr)
+        print(f"{command_name()}: {refusal}", file=sys.stderr)
         sys.exit(2)
     return path
 

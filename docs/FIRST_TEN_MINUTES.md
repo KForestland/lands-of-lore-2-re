@@ -41,7 +41,7 @@ py -3 -m venv .venv
 Draw the level and open the picture.
 
 ```powershell
-.\.venv\Scripts\python.exe tools/lol2_level_schematic.py --data "$data" --level 1 --out "$out\first-level.png"
+.\.venv\Scripts\python.exe tools/lol2_level_schematic.py --data "$data" --level L1_DC --out "$out\first-level.png"
 Start-Process "$out\first-level.png"
 ```
 
@@ -59,7 +59,7 @@ out="$HOME/Downloads/LoL2 output"
 mkdir -p "$out"
 python3 -m venv .venv
 .venv/bin/python -m pip install Pillow
-.venv/bin/python tools/lol2_level_schematic.py --data "$data" --level 1 --out "$out/first-level.png"
+.venv/bin/python tools/lol2_level_schematic.py --data "$data" --level L1_DC --out "$out/first-level.png"
 xdg-open "$out/first-level.png"
 ```
 
@@ -67,6 +67,8 @@ You should see an overhead plan with numbered item and actor placements.
 If the tool cannot find a game file, check that the path points to the
 folder containing `L1_DC.MIX`. If the open command fails, open
 `first-level.png` from the output folder in your browser.
+
+To draw the picture again, choose a new picture file name in both lines.
 
 [More recipes](COOKBOOK.md) · [Terms used in the guides](GLOSSARY.md)
 
@@ -88,7 +90,7 @@ Linux
 xdg-open "$out/plans/L1_DC.html"
 ```
 
-Click a region or placement to see its details. Turn on **Map numbers**
+Click a region or placement to see its details. Choose **Props** under **Show** to see prop dots. Turn on **Map numbers**
 to show the placement numbers. To repeat the command, choose a new
 subfolder such as `plans-2` in both lines.
 

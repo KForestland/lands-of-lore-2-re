@@ -47,7 +47,8 @@ def view(data, stem, gates):
     vertices, regions, _ = parse_geometry(raw)
     exit_regions = {int(row[7].split()[1]) for row in gates if row[7].startswith("region ")}
     plan = Plan(f"{stem} level plan", vertices,
-                f"Geometry from {archive.name} +{base:#x}. Exit conditions use the static Progression reader.")
+                f"The map comes from {archive.name}. Source offsets show where records start in the archive. "
+                "Exit conditions come from the stored scripts.")
     plan.legend.update({"Region": "#587888", "Wall edge": "#9ab0bb",
                         "Exit region or collapsed portal side": "var(--exit)"})
     start = base + u32(raw, 0x0C)

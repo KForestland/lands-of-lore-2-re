@@ -3,8 +3,8 @@
 Read original LoL2 files and replay the checks cited in the reference pages. The [historical helper index](history/README.md) lists every archived script and fixture test.
 
 The `lol.py` job menu opens with `python tools/lol.py`. Add `JOB --help`
-to see the job's options. `level_viewer.py` writes an offline HTML plan with clickable
-details, sharing the drawing and interface in `level_html.py`.
+to see the job's options. `level_viewer.py` writes an offline HTML plan with clickable details using `level_html.py`.
+Use `level_viewer.py --check` to write and read back one plan in a temporary folder.
 `media_convert.py` converts one original VQA movie to MKV or AUD sound to WAV.
 [First ten minutes](../docs/FIRST_TEN_MINUTES.md) ·
 [Interactive plans](../docs/COOKBOOK.md#open-an-interactive-level-plan)
@@ -78,7 +78,7 @@ Run each `--check` and print one line each, then a summary.
 $ python3 tools/check_all.py | sed -n '1,2p;$p'
 CHECK repo_guard: N tracked files; game files, media, stray images, files over 300 KB, machine paths, words from the local list, or commit identities and messages: none (0); private word list: not present, skipped
 CHECK mix: 81 MIX files, 2905 entries; this reader and lol2_source_format.parse_mix agree and every entry lies inside its file: 81/81; index sorted by signed key: 81/81 (by unsigned key: 20); bad=none
-ALL 47 CHECKS PASSED
+ALL 48 CHECKS PASSED
 ```
 
 ### `modkit.py`

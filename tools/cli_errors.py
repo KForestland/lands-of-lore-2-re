@@ -7,6 +7,14 @@ import sys
 from pathlib import Path
 
 
+# The file-tool launcher sets this for the job it is dispatching.
+JOB_NAME = None
+
+
+def command_name():
+    return JOB_NAME or Path(sys.argv[0]).name
+
+
 def one_line(message):
     return " ".join(str(message).splitlines()).strip()
 
@@ -53,6 +61,11 @@ def output_refusal(path, data=None, repository=False):
 class ReaderArgumentParser(argparse.ArgumentParser):
     def __init__(self, *args, output_options=(), **kwargs):
         """output_options: further option names through which this tool writes."""
+        if JOB_NAME:
+            for field in ("description", "epilog"):
+                if kwargs.get(field):
+                    kwargs[field] = kwargs[field].replace(Path(sys.argv[0]).name, JOB_NAME)
+        kwargs.setdefault("prog", command_name())
         super().__init__(*args, **kwargs)
         self.output_options = OUTPUT_OPTIONS + tuple(output_options)
 
@@ -102,5 +115,5 @@ def run_cli(main, *args):
             message = f"This job needs {package}: run {python} -m pip install {package}."
         else:
             message = one_line(error) or type(error).__name__
-        print(f"{Path(sys.argv[0]).name}: {message}", file=sys.stderr)
+        print(f"{command_name()}: {message}", file=sys.stderr)
         return 1

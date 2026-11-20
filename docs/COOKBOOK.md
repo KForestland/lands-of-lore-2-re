@@ -21,16 +21,17 @@ Choose an output folder outside the game and clone. Use a fresh folder for each 
 ## Draw a level schematic
 
 ```bash
-python3 tools/lol2_level_schematic.py --data "$LOL2_DAT" --level 5 --out ../lol2-out/l5.png
+mkdir -p ../lol2-out
+python3 tools/lol2_level_schematic.py --data "$LOL2_DAT" --level L5_HC --out ../lol2-out/l5.png
 ```
 
-The tool prints one line. Before the path it reads:
+The tool prints the output path.
 
 ```text
-L5_HC: 64 placements, 11 crowded labels omitted; wrote
+Wrote schematic for L5_HC to ../lol2-out/l5.png.
 ```
 
-and then the PNG path, resolved. The picture is an overhead line drawing: walls, portals, placed items marked I and creatures marked A, with a legend. Eleven crowded labels are left off the picture.
+The picture is an overhead line drawing: walls, portals, placed items marked I and creatures marked A, with a legend. Eleven crowded labels are left off the picture.
 
 ## See what an event does
 
@@ -290,7 +291,7 @@ Run `python3 tools/lol.py` to see the job names. This example reads one
 row of a text table.
 
 ```sh
-python3 tools/lol.py text --data "$LOL2_DAT" trr options --id 0
+python3 tools/lol.py text --data "$LOL2_DAT" options --id 0
 ```
 
 Use `python3 tools/lol.py level --help` to see the level viewer's options.

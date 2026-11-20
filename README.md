@@ -47,7 +47,7 @@ python3 -m venv .venv && . .venv/bin/activate
 python3 -m pip install -r requirements.txt
 export LOL2_DAT="/path/to/your/LOL2/DAT"
 python3 tools/check_all.py --quick              # lists the checks it skips
-python3 tools/check_all.py                      # full suite of 47 checks
+python3 tools/check_all.py                      # full suite of 48 checks
 python3 -m unittest discover -s tests
 python3 tools/lol2_mix_parser.py --data "$LOL2_DAT" L1_DC.MIX   # list the entries of level 1's archive
 python3 tools/full_report.py --out "../lol2-out/report"
@@ -66,7 +66,7 @@ What you can look at with your own copy of the game. Run from the clone with `ex
 | To see | Command |
 |---|---|
 | A level as a map | `python3 tools/lol2_level_map.py --data "$LOL2_DAT" --level 1 --out ../lol2-out/l1_map.png` |
-| A level schematic with items and creatures | `python3 tools/lol2_level_schematic.py --data "$LOL2_DAT" --level 5 --out ../lol2-out/l5.png` |
+| A level schematic with items and creatures | `python3 tools/lol2_level_schematic.py --data "$LOL2_DAT" --level L5_HC --out ../lol2-out/l5.png` |
 | Level sheets | `python3 tools/lol2_level_report.py --data "$LOL2_DAT" --out ../lol2-out/levels` |
 | A level's events and what they do | `python3 tools/lol2_event_browser.py --data "$LOL2_DAT" L1_DC --stream 1 --group 0x228e` |
 | A level's full script listing | `python3 tools/lol2_disassemble_scripts.py --data "$LOL2_DAT" L1_DC` |

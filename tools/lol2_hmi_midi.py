@@ -344,6 +344,8 @@ def main(argv):
             return 2
         write_songs(args.data, args.out)
     except (OSError, ValueError) as exc:
+        if not args.check:
+            raise
         print("CHECK hmi: FAIL %s" % exc)
         return 1
     return 0

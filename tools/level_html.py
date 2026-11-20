@@ -3,6 +3,7 @@ from collections import Counter
 from html import escape
 import json
 from pathlib import Path
+from tempfile import TemporaryDirectory
 
 from cli_errors import ReaderArgumentParser
 from modkit_core import output_folder
@@ -35,6 +36,7 @@ dt{color:var(--muted);font-size:.8rem;line-height:1.35;margin-top:.55rem}dd{marg
 .cell{fill:transparent;vector-effect:non-scaling-stroke}
 .cell.exit-region{fill:var(--exit);fill-opacity:.53;stroke-width:1.15}
 .hit{cursor:pointer}.hit:hover{stroke:#a9f4e2;stroke-width:1.55}
+.props-hidden .map-prop:not(.chosen),.props-hidden .map-prop:not(.chosen) + .num{display:none}
 .marker{r:var(--marker-size,3.1px);stroke:#10232a;stroke-width:1;vector-effect:non-scaling-stroke}
 .chosen,.marker.chosen,.cell.chosen{stroke:#fff;stroke-width:2.2}
 .num{fill:#fff;stroke:#172531;stroke-width:calc(var(--label-size,8px) * .3);paint-order:stroke;font:var(--label-size,8px) system-ui,sans-serif;pointer-events:none;display:none}
@@ -59,7 +61,7 @@ for (const record of records) {
     linked.get(record.target).push(record);
 }
 const base = [0, 0, 900, 630];
-let box = [...base], selected = null, drag = null, moved = false;
+let box = [...base], selected = null, currentRecord = null, drag = null, moved = false;
 function view() {
     map.setAttribute('viewBox', box.join(' '));
     map.style.setProperty('--marker-size', (3.1 * box[2]/900) + 'px');
@@ -83,6 +85,7 @@ function select(id) {
     const record = byId.get(id);
     if (!record) return;
     if (selected) selected.classList.remove('chosen');
+    currentRecord = record;
     selected = document.getElementById(record.target || id);
     if (selected) selected.classList.add('chosen');
     document.querySelector('#detail-title').textContent = record.label;
@@ -103,7 +106,18 @@ function select(id) {
 function update() {
     const wanted = query.value.trim().toLowerCase();
     const kind = filter.value;
-    const matches = records.filter(r => (!kind || kind === r.kind) &&
+    const hideProps = kind !== 'Props' && kind !== '';
+    map.classList.toggle('props-hidden', hideProps);
+    if (hideProps && currentRecord?.kind === 'Props') {
+        selected?.classList.remove('chosen');
+        selected = currentRecord = null;
+        document.querySelector('#detail-title').textContent = 'Details';
+        document.querySelector('#center').disabled = true;
+        const hint = document.createElement('dd');
+        hint.textContent = 'Choose a row or click the plan.';
+        details.replaceChildren(hint);
+    }
+    const matches = records.filter(r => (!kind || (kind === 'without-props' ? r.kind !== 'Props' : kind === r.kind)) &&
         (!wanted || r.label.toLowerCase().includes(wanted) || r.id.toLowerCase() === wanted ||
             Object.values(r.details).some(value => String(value).toLowerCase().includes(wanted))));
     results.replaceChildren(...matches.slice(0,500).map(r => new Option(r.label, r.id)));
@@ -189,7 +203,8 @@ class Plan:
         self.note(key, label, kind, details)
         self.legend[kind] = color
         x, y = self.point(xy)
-        self.shapes.append(f'<circle id="{key}" class="hit marker" cx="{x:.3f}" cy="{y:.3f}" r="3.1" fill="{color}"/>'
+        prop = " map-prop" if kind == "Props" else ""
+        self.shapes.append(f'<circle id="{key}" class="hit marker{prop}" cx="{x:.3f}" cy="{y:.3f}" r="3.1" fill="{color}"/>'
                            f'<text class="num" x="{x:.3f}" y="{y:.3f}" dx=".5em" dy="-.5em">{escape(str(number))}</text>')
 
     def render(self):
@@ -198,7 +213,10 @@ class Plan:
         shapes = "\n".join(self.shapes)
         legends = " ".join(f'<span><i class="swatch" style="background:{color}"></i>{escape(name)}</span>'
                            for name, color in self.legend.items())
-        options = "".join(f'<option>{escape(kind)}</option>' for kind in self.counts)
+        options = '<option value="">Everything</option>'
+        if "Props" in self.counts:
+            options = '<option value="without-props" selected>Everything except props</option>' + options
+        options += "".join(f'<option>{escape(kind)}</option>' for kind in self.counts)
         records = json.dumps(self.records, separators=(",", ":"), ensure_ascii=True).replace("<", "\\u003c")
         summary = " · ".join(feature_count(kind, count) for kind, count in self.counts.items())
         return f"""<!doctype html>
@@ -209,12 +227,12 @@ class Plan:
 <figure>
 <div class="toolbar"><button id="in">Zoom in</button><button id="out">Zoom out</button><button id="reset">Reset view</button>
 <label><input id="numbers" type="checkbox"> Map numbers</label></div>
-<svg id="map" viewBox="0 0 {WIDTH} {HEIGHT}" aria-label="Level plan">{shapes}</svg>
+<svg id="map" class="props-hidden" viewBox="0 0 {WIDTH} {HEIGHT}" aria-label="Level plan">{shapes}</svg>
 <figcaption class="legend">{legends}</figcaption>
 </figure>
 <aside>
 <h2>Find on the plan</h2>
-<label for="filter">Show</label><select id="filter"><option value="">Everything</option>{options}</select>
+<label for="filter">Show</label><select id="filter">{options}</select>
 <label for="query">Name or number</label><input id="query" type="search" placeholder="Filter the list">
 <p id="found" class="muted" aria-live="polite"></p>
 <select id="results" aria-label="Matching features" size="5"></select>
@@ -234,9 +252,9 @@ def find_data(path, child, marker):
     if root.is_dir():
         for folder in (root, *(entry for entry in root.iterdir()
                                if entry.is_dir() and entry.name.upper() == child)):
-            if any(entry.name.upper() == marker for entry in folder.iterdir()):
+            if any(entry.is_file() and entry.name.upper() == marker for entry in folder.iterdir()):
                 return folder
-    raise ValueError(f"Cannot find {marker}. Give --data the game folder or its {child} folder.")
+    raise ValueError(f"Cannot find {marker} in {root}. Give --data the game folder or its {child} folder.")
 
 
 def installation_root(data):
@@ -247,14 +265,50 @@ def installation_root(data):
     return data
 
 
+def new_picture(path, extension):
+    if path.suffix.lower() != extension:
+        raise ValueError(f"--out must name a {extension.upper()[1:]} file.")
+    if path.exists() or path.is_symlink():
+        raise ValueError(f"The output already exists: {path}. Choose a new file name.")
+    if not path.parent.is_dir():
+        raise ValueError(f"The folder above --out does not exist: {path.parent}. Create it or choose another folder.")
+
+
+def write_plan(folder, stem, plan):
+    path = folder / f"{stem}.html"
+    path.write_text(plan.render(), encoding="utf-8")
+    return path
+
+
+def check_plan(stem, plan):
+    with TemporaryDirectory(prefix="lol-level-check-") as temp:
+        html = write_plan(Path(temp), stem, plan).read_text(encoding="utf-8")
+    marker = '<script id="records" type="application/json">'
+    if '<svg id="map"' not in html or marker not in html or not plan.records or not plan.shapes:
+        raise ValueError(f"{stem} did not produce a map with searchable entries.")
+    rows = json.loads(html.split(marker, 1)[1].split("</script>", 1)[0])
+    if len(rows) != len(plan.records):
+        raise ValueError(f"{stem} page lost searchable entries.")
+    print(f"CHECK level viewer: {stem} page written and read back with {counted(len(rows), 'entry', 'entries')}.")
+    return 0
+
+
 def main(description, child, marker, default, levels, build, progression=None):
     parser = ReaderArgumentParser(description=description)
     parser.add_argument("--data", required=True, help=f"your game folder or its {child} folder")
     parser.add_argument("--level", default=default, help=f"level to show (default: {default}; use all for every level)")
-    parser.add_argument("--out", required=True, help="new output folder for the HTML pages")
+    destination = parser.add_mutually_exclusive_group(required=True)
+    destination.add_argument("--out", help="new output folder for the HTML pages")
+    destination.add_argument("--check", action="store_true", help="write and verify one level page in a temporary folder")
     args = parser.parse_args()
+    if args.check and args.level.upper() == "ALL":
+        parser.error("--check takes one level.")
     data = find_data(args.data, child, marker)
     selected = levels(data, args.level.upper())
+    if args.check:
+        stem, = selected
+        gates = progression(data, selected) if progression else {}
+        return check_plan(stem, build(data, stem, gates.get(stem, ())))
     total = 0
     with output_folder(args.out, installation_root(data), args.data) as folder:
         if args.level.upper() == "ALL":
@@ -262,7 +316,7 @@ def main(description, child, marker, default, levels, build, progression=None):
         gates = progression(data, selected) if progression else {}
         for stem in selected:
             plan = build(data, stem, gates.get(stem, ()))
-            (folder / f"{stem}.html").write_text(plan.render(), encoding="utf-8")
+            write_plan(folder, stem, plan)
             total += len(plan.records)
     print(f"Wrote {counted(len(selected), 'level page')} with {counted(total, 'entry', 'entries')} to {args.out}.")
     print(f"Open {selected[0]}.html in your browser.")

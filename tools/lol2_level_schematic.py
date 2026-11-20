@@ -9,6 +9,7 @@ The PNG is a schematic. It uses original geometry and placement records,
 with labels drawn by Pillow. Use --focus to inspect a dense area.
 """
 from cli_errors import run_cli
+from level_html import find_data, new_picture
 from dataclasses import dataclass
 from pathlib import Path
 from struct import iter_unpack
@@ -207,7 +208,7 @@ def check(data, stems):
 
 def main():
     parser = lol2_cli.tool_args(__doc__, out_help="PNG path outside the repository and original installation")
-    parser.add_argument("--level", type=int)
+    parser.add_argument("--level", help="level page name such as L1_DC, or a level number")
     parser.add_argument("--focus", type=int, metavar="REGION", help="center the map on this zero-based region")
     parser.add_argument("--radius", type=int, default=450, help="map units on each side of a focused region")
     parser.add_argument("--size", type=int, default=1400, help="longest map dimension in pixels")
@@ -219,23 +220,25 @@ def main():
     if not 540 <= args.size <= 6000 or args.radius < 1:
         parser.error("size must be 540–6000 pixels and radius must be positive")
     try:
-        data = Path(args.data).resolve()
+        data = find_data(args.data, "DAT", "L1_DC.MIX")
         stems = level_files(data)
         if args.check:
             print(check(data, stems))
             return
-        stem = next((s for s in stems if int(s.split("_")[0][1:]) == args.level), None)
+        selection = args.level.upper()
+        stem = next((name for name in stems if name == selection or (
+            selection.isascii() and selection.isdecimal()
+            and int(name.split("_")[0][1:]) == int(selection))), None)
         if stem is None:
-            raise ValueError(f"no archive for level {args.level}")
+            raise ValueError(f"Level {args.level} was not found in {data}. Choose {', '.join(stems)}.")
         out = Path(lol2_cli.refuse_repo_output(args.out)).resolve()
         if out.is_relative_to(data.parent):
-            raise ValueError("give an output path outside the game folder")
-        if out.suffix.lower() != ".png":
-            raise ValueError("--out must name a PNG file")
-        image, visible, hidden = draw(stem, *load(data, stem), args.focus, args.radius, args.size)
-        out.parent.mkdir(parents=True, exist_ok=True)
-        image.save(out)
-        print(f"{stem}: {visible} placements, {hidden} crowded labels omitted; wrote {out}")
+            raise ValueError("Give an output path outside the game folder.")
+        new_picture(Path(args.out), ".png")
+        image, _, _ = draw(stem, *load(data, stem), args.focus, args.radius, args.size)
+        with out.open("xb") as file:
+            image.save(file, format="PNG")
+        print(f"Wrote schematic for {stem} to {args.out}.")
     except (OSError, ValueError) as error:
         parser.exit(1, f"level schematic: {error}\n")
 

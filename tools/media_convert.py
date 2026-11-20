@@ -209,9 +209,14 @@ def sound(blob, out, stem):
     return path.name, summary
 
 
-def main():
-    parser = ReaderArgumentParser(description=__doc__)
-    parser.add_argument("mode", choices=("movie", "sound"))
+def main(mode=None):
+    description = {"movie": "Convert an original LoL2 movie to MKV.",
+                   "sound": "Convert an original LoL2 sound to WAV."}
+    parser = ReaderArgumentParser(description=description.get(mode, __doc__))
+    if mode is None:
+        parser.add_argument("mode", choices=("movie", "sound"))
+    else:
+        parser.set_defaults(mode=mode)
     parser.add_argument("--data", required=True, help="your game folder or its DAT folder")
     parser.add_argument("--file", help="MIX archive or loose file name or path")
     parser.add_argument("--entry", type=int, help="zero-based MIX entry number from --list")

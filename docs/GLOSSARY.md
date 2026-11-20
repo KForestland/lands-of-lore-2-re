@@ -106,3 +106,5 @@ These words mean the same thing in the notes for all three Lands of Lore games.
 | Kind 12 event 2 | A region event record with kind byte 12 and event byte 2. These numbers identify the rule the engine checks. See [script events](lol2-script-events.md). |
 | Stream / group | One of the two stored command streams and the offset of the ordered commands within it. A group starts at the offset listed on the plan. |
 | Selector | A marker in the exit table for paired tests of the same slot against 0 and 1. See [Progression](PROGRESSION.md#exit-commands). |
+
+In the plan legend, a **collapsed portal side** borders a region whose floor and ceiling meet. The schematic marks it as a doorway candidate. See [walls](formats/walls.md).
