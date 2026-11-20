@@ -49,6 +49,27 @@ Each offset is the first byte of that name in this `LOLG.DAT`. The bytes just be
 
 The DOSBox configuration that ships with this tree sets `memsize=30`. One community note for the cantina, instead of `-LOWMEM`, raises that to 64 and points the extender at a small `DOS4GVM` file. The stub already contains its own sentence, `DOS4GVM=VirtualMemory:ON,VirtualSize:24M,...`, at `LOLG.EXE+0x481`. The two-digit edit of that sentence is the patch on the [fault page](README.md). It is not required to start the game.
 
+## Movement keys
+
+Walk and turn use the arrow keys. `LOLG.DAT` stores a key-name table, each name three times (English, then French, then German). The English arrow names are `LEFT` at `+0x1C317C`, `UP` at `+0x1C31C5`, `DOWN` at `+0x1C31D3` and `RIGHT` at `+0x1C3232`. The keypad names are in the same table: `*LEFT` at `+0x1C325B`, `*UP` at `+0x1C328F`, `*DOWN` at `+0x1C32AF` and `*RIGHT` at `+0x1C32F5`.
+
+The setting names begin at `Key_Move_Forward_1`, file `+0x1C3465`. This `options.ini` sets them once, in `[Keyboard]`:
+
+| Setting | Name offset | Value |
+| --- | --- | --- |
+| `Key_Move_Forward_1` | `0x1C3465` | `UP` |
+| `Key_Move_Forward_2` | `0x1C3478` | `*UP` |
+| `Key_Move_Backward_1` | `0x1C348B` | `*DOWN` |
+| `Key_Move_Backward_2` | `0x1C349F` | `DOWN` |
+| `Key_Turn_Left_1` | `0x1C34F5` | `LEFT` |
+| `Key_Turn_Left_2` | `0x1C3505` | `*HOME` |
+| `Key_Turn_Right_1` | `0x1C3515` | `RIGHT` |
+| `Key_Turn_Right_2` | `0x1C3526` | `*PGUP` |
+| `Key_Move_Left_1` | `0x1C34B3` | `*LEFT` |
+| `Key_Move_Right_1` | `0x1C34D3` | `*RIGHT` |
+
+`Key_Move_Left_2` and `Key_Move_Right_2` are blank here. The letters `W`, `A`, `S` and `D` are other actions. Their first values in the same section are `Key_Use_Mouse_Item_1=W` (name at `+0x1C3C1D`), `Key_Pitch_Reset_1=A` (`+0x1C3577`), `Key_Cast_Spell_1=S` (`+0x1C364F`) and `Key_Jump_1=D` (`+0x1C35FD`). Later lines in that section repeat some keys and leave many blank, including an empty `Key_Use_Mouse_Item_1`. They do not assign forward, backward or turn again, so those stay on the arrow-key names, with the keypad names as the second binding.
+
 ## Cache and install
 
 The installer ships `CACHEBAK.MIX` (131 bytes) and `CDCACHE.LS_` (4,008 bytes, 15 records, every state -1). The game writes `CDCACHE.MIX` and `CDCACHE.LST` when it runs. Those two are one run's cache, not a file to copy between machines. On a reset the program copies the shipped list onto `CDCACHE.LST` and the 131-byte seed onto the cache archive, then extends it. The byte-level account is [Native texture cache initialization](../docs/lol2-cache-initializer.md). If a run asks to rebuild the cache, that is this reset, not a patch.
