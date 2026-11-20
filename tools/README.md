@@ -1,17 +1,6 @@
 # Tools
 
-To write the inventory, level sheets and text counts together, use `full_report.py`. [Cookbook](../docs/COOKBOOK.md#write-a-full-report)
-
 Read original LoL2 files and replay the checks cited in the reference pages. The [historical helper index](history/README.md) lists every archived script and fixture test.
-
-## Historical cave geometry checks
-
-See [Draracle findings](../docs/draracle-restoration.md). Run
-`python3 tools/history/draracle/run_geometry_pipeline.py --game-root /path/to/lol2 --out /path/to/output`.
-This requires Python 3.10+ and Capstone 5, and produces corrected geometry and
-wall-record evidence from pinned original files.
-
-Run `python3 tools/lol2_numbers.py --check` to compare the generated item, spell, creature and form tables with the page. It prints `CHECK numbers: LoL2 tables match docs/NUMBERS.md`. [Numbers at a glance](../docs/NUMBERS.md)
 
 ## Setup
 
@@ -21,6 +10,8 @@ Run `python3 tools/lol2_numbers.py --check` to compare the generated item, spell
   level textures and the full `check_all.py` suite
 - Set `LOL2_DAT` to your LoL2 `DAT/` directory path, or pass `--data`
 - Some [historical helpers](history/README.md) use `OUTPUT_DIR` or `LOL2_OUT`. Give those an output directory outside the repository.
+
+To write the inventory, level sheets and text counts together, use `full_report.py`. [Cookbook](../docs/COOKBOOK.md#write-a-full-report)
 
 ## Common options
 
@@ -368,6 +359,15 @@ Fails if a game file, media file or stray image is committed. Needs no game data
 $ python3 tools/repo_guard.py --check
 CHECK repo_guard: N tracked files; game files, media, stray images, files over 300 KB, machine paths, words from the local list, or commit identities and messages: none (0); private word list: not present, skipped
 ```
+
+## Historical cave geometry checks
+
+See [Draracle findings](../docs/draracle-restoration.md). Run
+`python3 tools/history/draracle/run_geometry_pipeline.py --game-root /path/to/lol2 --out /path/to/output`.
+This requires Python 3.10+ and Capstone 5, and produces corrected geometry and
+wall-record evidence from pinned original files.
+
+Run `python3 tools/lol2_numbers.py --check` to compare the generated item, spell, creature and form tables with the page. It prints `CHECK numbers: LoL2 tables match docs/NUMBERS.md`. [Numbers at a glance](../docs/NUMBERS.md)
 
 ## Tool Index
 
