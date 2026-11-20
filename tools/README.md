@@ -78,7 +78,7 @@ Run each `--check` and print one line each, then a summary.
 
 ```
 $ python3 tools/check_all.py | sed -n '1,2p;$p'
-CHECK repo_guard: N tracked files; game files, media, stray images, files over 300 KB, machine paths, words from the local list, or commit identities: none (0); private word list: not present, skipped
+CHECK repo_guard: N tracked files; game files, media, stray images, files over 300 KB, machine paths, words from the local list, or commit identities and messages: none (0); private word list: not present, skipped
 CHECK mix: 81 MIX files, 2905 entries; this reader and lol2_source_format.parse_mix agree and every entry lies inside its file: 81/81; index sorted by signed key: 81/81 (by unsigned key: 20); bad=none
 ALL 44 CHECKS PASSED
 ```
@@ -366,7 +366,7 @@ Fails if a game file, media file or stray image is committed. Needs no game data
 
 ```
 $ python3 tools/repo_guard.py --check
-CHECK repo_guard: N tracked files; game files, media, stray images, files over 300 KB, machine paths, words from the local list, or commit identities: none (0); private word list: not present, skipped
+CHECK repo_guard: N tracked files; game files, media, stray images, files over 300 KB, machine paths, words from the local list, or commit identities and messages: none (0); private word list: not present, skipped
 ```
 
 ## Tool Index

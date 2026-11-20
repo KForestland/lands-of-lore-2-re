@@ -34,7 +34,7 @@ These are counts of work done, not a percentage of how complete the project is. 
 
 Use Python 3.10 or later and your own copy of the English GOG release, DOS version 1.30. The tools recognize the original program `LOLG.DAT` by its SHA-256 prefix `b27a35341c6e877e`. Keep `DAT/` with the rest of the game folder so the readers can also find `LOLG.DAT` and the sibling MIX and TRR files.
 
-Install Pillow for pictures, Capstone 5 for disassembly checks and NumPy for VQA frame decoding. The full check uses all three and the system LZO library (`apt install liblzo2-2` on Debian or Ubuntu). The synthetic unit tests use the Python standard library.
+Install Pillow for pictures (10.1 up to 13; the image check accepts each measured rendering), Capstone 5 for disassembly checks and NumPy for VQA frame decoding. The full check uses all three and the system LZO library (`apt install liblzo2-2` on Debian or Ubuntu). The synthetic unit tests use the Python standard library.
 
 ```bash
 git clone https://github.com/KForestland/lands-of-lore-2-re.git
