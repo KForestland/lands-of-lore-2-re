@@ -71,7 +71,30 @@ Run each `--check` and print one line each, then a summary.
 $ python3 tools/check_all.py | sed -n '1,2p;$p'
 CHECK repo_guard: N tracked files; game files, media, stray images, files over 300 KB, machine paths, words from the local list, or commit identities and messages: none (0); private word list: not present, skipped
 CHECK mix: 81 MIX files, 2905 entries; this reader and lol2_source_format.parse_mix agree and every entry lies inside its file: 81/81; index sorted by signed key: 81/81 (by unsigned key: 20); bad=none
-ALL 45 CHECKS PASSED
+ALL 47 CHECKS PASSED
+```
+
+### `modkit.py`
+
+The mod kit changes game text and numbers in copies; your game folder is only read. Run it from any folder and put quotes around paths with spaces:
+
+```bash
+python3 tools/modkit.py unpack "/path/to/LoL2" "my mod work"
+# change the files in "my mod work/edits", then:
+python3 tools/modkit.py build "/path/to/LoL2" "my mod work" "my mod output"
+python3 tools/modkit.py verify "/path/to/LoL2" "my mod work" "my mod output"
+```
+
+- `modkit.py` names the LoL2 tables; `modkit_core.py`, the same file in the three repositories, does the unpack, build, verify and folder checks.
+- The game folder is the LoL2 game folder holding `LOLG.DAT` and `DAT`, or its `DAT` folder (then the folder above it is read too).
+- `unpack` creates the work folder with `manifest.json`, a `README.txt` and one JSON file per table in `edits/`: the eight TRR text tables (`CREDITS.TRR`, `ERRTEXT.TRR`, `OPTTEXT.TRR`, four in `LOCALLNG.MIX`, one in `DAT/MOVIES.MIX`), the item fields `hit_mask`, `hit_flags` and `strike_ticks` of `GLOBAL.MIX` (the copy beside `DAT` and the one in it; change both), and the creature fields `health_cap` and `attack_input` of the 15 level archives ([numbers](../docs/NUMBERS.md)). Change only `"value"`; keep the number of rows, the field names and codes such as `\r` or `\u0002`.
+- `build` creates the output folder and writes every unpacked file into it, changed or not (about 380 MB), and names the changed files. `verify` reads the output back with the archive and table readers and checks it against the work folder. Copy the changed files over a backup copy of your game to try them.
+- Refused, with one line saying why: a work or output folder that already exists, lies inside the game folder, inside a folder holding MIX archives or `LOLG.DAT`, or inside this repository, and an output inside the work folder.
+- An unchanged work folder rebuilds byte for byte: 22 files (3 loose TRR tables and 19 MIX archives) from 25 entries. `--check` does unpack, build and verify in a temporary folder (`--data` or `$LOL2_DAT`) and is part of `check_all.py`:
+
+```
+$ python3 tools/modkit.py --check
+CHECK modkit: 22 archives or loose tables rebuilt byte-identically from 25 unpacked entries; outputs in the game, work, archive and repository folders refused
 ```
 
 ### `doc_links.py`

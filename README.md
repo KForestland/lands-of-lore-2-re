@@ -43,7 +43,7 @@ python3 -m venv .venv && . .venv/bin/activate
 python3 -m pip install -r requirements.txt
 export LOL2_DAT="/path/to/your/LOL2/DAT"
 python3 tools/check_all.py --quick              # lists the checks it skips
-python3 tools/check_all.py                      # full suite of 46 checks
+python3 tools/check_all.py                      # full suite of 47 checks
 python3 -m unittest discover -s tests
 python3 tools/lol2_mix_parser.py --data "$LOL2_DAT" L1_DC.MIX   # list the entries of level 1's archive
 python3 tools/full_report.py --out "../lol2-out/report"

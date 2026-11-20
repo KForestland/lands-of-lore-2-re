@@ -258,7 +258,8 @@
         "tools/lol2_level_report.py",
         "tools/lol2_level_schematic.py",
         "tools/lol2_mix_parser.py",
-        "tools/lol2_save_inspect.py"
+        "tools/lol2_save_inspect.py",
+        "tools/modkit.py"
       ]
     },
     {
@@ -1909,6 +1910,8 @@
         "tools/lol2_westwood_hash.py",
         "tools/lol2_westwood_writer.py",
         "tools/lol2_xmi_reader.py",
+        "tools/modkit.py",
+        "tools/modkit_core.py",
         "tools/rating.py",
         "tools/repo_guard.py"
       ]

@@ -126,6 +126,23 @@ The sheet's geometry table counts `actors` as 57. Its entity section is:
 11 records of 147 bytes, by name tag: `B_HUMAN` ×3, `GGUARD` ×2, `WORM` ×2, `GGCAPT` ×1, `Kenneth` ×1, `ROACH` ×1, `Roach` ×1.
 ```
 
+## Change text or numbers with the mod kit
+
+The [mod kit](../tools/README.md#modkitpy) writes the game's text tables and numbers as files you can edit, and builds changed archives into a new folder. The game folder is only read.
+
+```bash
+python3 tools/modkit.py unpack "/path/to/LoL2" "my mod work"
+```
+
+Open `my mod work/edits/0007_OPTTEXT.TRR_text.json` in a text editor and change `Save Game` to `Save Your Game` inside `"value"`. Then build and verify:
+
+```bash
+python3 tools/modkit.py build "/path/to/LoL2" "my mod work" "my mod output"
+python3 tools/modkit.py verify "/path/to/LoL2" "my mod work" "my mod output"
+```
+
+Each command ends with one summary line; build and verify print `22 archives or loose tables, 1 changed (OPTTEXT.TRR)`. Copy `OPTTEXT.TRR` from the output folder over a backup copy of your game to try it.
+
 ## Change one thing safely
 
 This example replaces the help message with ID 0 in a copy of
