@@ -2,6 +2,13 @@
 
 Read original LoL2 files and replay the checks cited in the reference pages. The [historical helper index](history/README.md) lists every archived script and fixture test.
 
+The `lol.py` job menu opens with `python tools/lol.py`. Add `JOB --help`
+to see the job's options. `level_viewer.py` writes an offline HTML plan with clickable
+details, sharing the drawing and interface in `level_html.py`.
+`media_convert.py` converts one original VQA movie to MKV or AUD sound to WAV.
+[First ten minutes](../docs/FIRST_TEN_MINUTES.md) ·
+[Interactive plans](../docs/COOKBOOK.md#open-an-interactive-level-plan)
+
 ## Setup
 
 - Python 3.10+

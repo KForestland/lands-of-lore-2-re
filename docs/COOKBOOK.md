@@ -234,3 +234,64 @@ A donor from another level or version, or with no region, is refused. Choose a d
 [What an edited copy must keep](lol2-save-format.md#editing-a-copy-of-an-original-slot)
 
 Map viewer and editor notes for tool makers: [tool makers](TOOL_MAKERS.md).
+
+## Open an interactive level plan
+
+```sh
+python3 tools/level_viewer.py --data "$LOL2_DAT" --level 1 --out "../LoL2 plans"
+```
+
+Open `L1_DC.html` in the new output folder. Click a region or placement
+to see its row and source offset. Choose **Exits** under **Show** to find
+level changes and their script conditions. **Zoom to selection** centers the
+map on a linked region or placement. Turn on **Map numbers** after zooming
+in to see placement row numbers. The plan works offline in a browser.
+Use `--level all` for the 15 levels.
+[Geometry fields](formats/geometry.md) · [Exit conditions](PROGRESSION.md#exit-commands)
+
+## Convert a movie or sound
+
+For movies, install NumPy with `python -m pip install numpy` and make sure
+`ffmpeg -version` and `ffprobe -version` both work in your terminal.
+AUD sound conversion uses the Python standard library.
+
+```sh
+python3 tools/media_convert.py movie --data "$LOL2_DAT" --file CAN.MIX --entry 22 --out "../LoL2 movie"
+python3 tools/media_convert.py sound --data "$LOL2_DAT" --file GLOBAL.MIX --entry 342 --out "../LoL2 sound"
+```
+
+Open `CAN-22.mkv` in a player that supports FFV1 and PCM. The converter
+checks 20 frames and 40,424 audio samples in the finished file.
+`GLOBAL-342.wav` contains 22,050 mono samples at 22,050 Hz.
+To find a different entry, use the same archive name with `--list` in
+place of `--entry 22 --out "../LoL2 movie"`.
+
+To find every archive with a particular kind of media, omit `--file`:
+
+```sh
+python3 tools/lol.py movie --data "$LOL2_DAT" --list
+python3 tools/lol.py sound --data "$LOL2_DAT" --list
+```
+
+Pass a file name or quote the full path shown in the list after `--file`.
+
+The movie reader uses the VQHD frame count at +4 and frame rate at
++0x0C. The mono SND0 packets carry PCM. SND2 yields two samples
+per byte, with the audio format given by VQHD +0x18 to +0x1B.
+For CAN.MIX entry 22, its 20,212 SND2 bytes decode to the same PCM
+as FFmpeg's source decoder. When a frame depends on the game's
+initial destination, the converter draws those missing pixels black
+and reports how many it supplied.
+[VQA framing](formats/vqa.md) · [AUD framing](formats/sound.md)
+
+## Find a tool by job
+
+Run `python3 tools/lol.py` to see the job names. This example reads one
+row of a text table.
+
+```sh
+python3 tools/lol.py text --data "$LOL2_DAT" trr options --id 0
+```
+
+Use `python3 tools/lol.py level --help` to see the level viewer's options.
+The original tool filenames also work.

@@ -255,6 +255,8 @@
       "question_references": [],
       "tools": [
         "tools/full_report.py",
+        "tools/level_viewer.py",
+        "tools/lol.py",
         "tools/lol2_event_browser.py",
         "tools/lol2_hmi_midi.py",
         "tools/lol2_inspect.py",
@@ -262,6 +264,7 @@
         "tools/lol2_level_schematic.py",
         "tools/lol2_mix_parser.py",
         "tools/lol2_save_inspect.py",
+        "tools/media_convert.py",
         "tools/modkit.py",
         "tools/save_edit.py"
       ]
@@ -295,6 +298,16 @@
         "Q17"
       ],
       "tools": []
+    },
+    {
+      "path": "docs/FIRST_TEN_MINUTES.md",
+      "title": "First ten minutes",
+      "answers": [],
+      "question_references": [],
+      "tools": [
+        "tools/lol.py",
+        "tools/lol2_level_schematic.py"
+      ]
     },
     {
       "path": "docs/GLOSSARY.md",
@@ -1916,6 +1929,9 @@
         "tools/history/draracle/extract_cave_sprite_sequences.py",
         "tools/history/draracle/run_geometry_pipeline.py",
         "tools/history/draracle/verify_huline_wall_spans.py",
+        "tools/level_html.py",
+        "tools/level_viewer.py",
+        "tools/lol.py",
         "tools/lol2_analyze_disarm_rearm.py",
         "tools/lol2_aud_decode.py",
         "tools/lol2_cache_seed.py",
@@ -1961,6 +1977,7 @@
         "tools/lol2_westwood_hash.py",
         "tools/lol2_westwood_writer.py",
         "tools/lol2_xmi_reader.py",
+        "tools/media_convert.py",
         "tools/modkit.py",
         "tools/modkit_core.py",
         "tools/patch.py",

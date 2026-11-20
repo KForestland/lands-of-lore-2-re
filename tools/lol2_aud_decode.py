@@ -52,21 +52,23 @@ IMA_STEP_TABLE = [
 ]
 
 
-def decode_ima_nibble(nibble, predictor, step_index):
+def decode_ima_nibble(nibble, predictor, step_index, *, round_once=False):
     """Decode a single 4-bit IMA-ADPCM nibble.
 
     Returns (new_predictor, new_step_index).
     """
     step = IMA_STEP_TABLE[step_index]
 
-    # Compute difference
-    diff = step >> 3
-    if nibble & 4:
-        diff += step
-    if nibble & 2:
-        diff += step >> 1
-    if nibble & 1:
-        diff += step >> 2
+    if round_once:
+        diff = ((2 * (nibble & 7) + 1) * step) >> 3
+    else:
+        diff = step >> 3
+        if nibble & 4:
+            diff += step
+        if nibble & 2:
+            diff += step >> 1
+        if nibble & 1:
+            diff += step >> 2
 
     # Apply sign
     if nibble & 8:
@@ -90,7 +92,7 @@ def decode_ima_nibble(nibble, predictor, step_index):
     return predictor, step_index
 
 
-def decode_ima_adpcm_block(data, predictor=0, step_index=0):
+def decode_ima_adpcm_block(data, predictor=0, step_index=0, *, round_once=False):
     """Decode a block of IMA-ADPCM data (packed nibbles, low nibble first).
 
     Returns (list_of_s16_samples, final_predictor, final_step_index).
@@ -101,10 +103,10 @@ def decode_ima_adpcm_block(data, predictor=0, step_index=0):
         lo = byte & 0x0F
         hi = (byte >> 4) & 0x0F
 
-        predictor, step_index = decode_ima_nibble(lo, predictor, step_index)
+        predictor, step_index = decode_ima_nibble(lo, predictor, step_index, round_once=round_once)
         samples.append(predictor)
 
-        predictor, step_index = decode_ima_nibble(hi, predictor, step_index)
+        predictor, step_index = decode_ima_nibble(hi, predictor, step_index, round_once=round_once)
         samples.append(predictor)
 
     return samples, predictor, step_index

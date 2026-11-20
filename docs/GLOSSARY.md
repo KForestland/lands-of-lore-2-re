@@ -91,3 +91,18 @@ These words mean the same thing in the notes for all three Lands of Lore games.
 | Autosave | The save slot the game writes by itself, shown with the name `**AUTOSAVE**`. It has the same layout as a player's own saves ([save slots](lol2-save-format.md)). |
 | NE, segment, resource | NE (New Executable) is the Windows program format of `SETUP.EXE`, which begins with a separate DOS (MZ) program. A segment is one of its five code or data blocks, each followed by a count and 8-byte records. A resource is one of the five data blocks at its end ([loose files](formats/loose.md)). |
 | Texture container | A level's `SPHERE<n>\<LEVEL>\<LEVEL>.TE_` entry: a total decoded size, then LZO1X blocks of 1 MiB decoded each and a zero trailer. It holds the level's wall and floor textures ([texture container](formats/texture-container.md)). |
+
+## Reader tools
+
+| Term | Meaning |
+| --- | --- |
+| Level plan | An overhead drawing from the level's geometry. The HTML plan opens in a web browser and lets you choose a map feature to read its details. |
+| Gate | A script condition that can control a level change. See [Progression](PROGRESSION.md). |
+| Output folder | A directory you choose for the files a tool writes. The level and media tools use a new folder outside the game and the repository. |
+| MKV | Matroska, the file container used for the movie conversion. It can hold video and audio in one file. |
+| FFV1 | The lossless video encoding inside the converted MKV. |
+| FFmpeg, FFprobe | Tools used to write the movie and count the frames and samples in the result. |
+| PCM | Sound stored as a series of sample values. The WAV export writes those values without compression. |
+| Kind 12 event 2 | A region event record with kind byte 12 and event byte 2. These numbers identify the rule the engine checks. See [script events](lol2-script-events.md). |
+| Stream / group | One of the two stored command streams and the offset of the ordered commands within it. A group starts at the offset listed on the plan. |
+| Selector | A marker in the exit table for paired tests of the same slot against 0 and 1. See [Progression](PROGRESSION.md#exit-commands). |
