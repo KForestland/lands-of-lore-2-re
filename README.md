@@ -81,6 +81,19 @@ What you can look at with your own copy of the game. Run from the clone with `ex
 | Music as standard MIDI | `python3 tools/lol2_hmi_midi.py --data "$LOL2_DAT" --out ../lol2-out/midi` |
 | A saved game you made | `python3 tools/lol2_save_inspect.py "$LOL2_SLOT"` |
 
+| Tool | Command | Example result |
+|---|---|---|
+| Job menu | `python tools/lol.py --help` | level, text, translate, music, movie, sound, save, patch, mod |
+| Interactive map | `python tools/level_viewer.py --data "$LOL2_DAT" --check` | L1_DC page with 3,860 entries |
+| Level copy editor | `python tools/level_edit.py --data "$LOL2_DAT" --check` | 15 original archives copied byte-identically and 2 placement kinds verified |
+| Translation tables | `python tools/translate.py --data "$LOL2_DAT" --check` | 8 tables, 988 rows, 6 indexed fonts |
+| Edition fingerprints | `python tools/edition.py --data "$LOL2_DAT" --check` | English GOG release, DOS 1.30, all 6 fingerprints match |
+| Fields from a save | `python tools/lol.py save page "$LOL2_SLOT" --out ../lol2-out/save.html` | Writes save.html with stored values and commands for making an edited copy |
+| Archive workspace | `python tools/modkit.py --data "$LOL2_DAT" --check` | Byte-identical rebuild of 22 files from 25 editable entries |
+| Patch maker | `python tools/patch.py make --data "$LOL2_DAT" "my mod output" --title "My edit" --out ../lol2-out/edit.json` | Writes a version 3 patch and reports the changed files |
+| Movie directory | `python tools/media_convert.py movie --data "$LOL2_DAT" --list --file MOVIES.MIX` | MOVIES.MIX: 28 movie entries |
+| XMIDI directory and events | `python tools/lol2_xmi_reader.py --data "$LOL2_DAT" --check` | 33 named FORM entries and 33 sequences |
+
 ## Change a number in your own copy
 
 The [mod kit](tools/README.md#modkitpy) turns the game's tables into files you can edit, and the [patch tool](docs/formats/patch.md) turns your change into a small patch file that can be applied and undone. The tools only read your game folder; everything they write goes into new folders you name, outside the game and this repository. Try changes on a **copy** of the game, never on the folder you play from. Patches must not remove or bypass copy protection.
