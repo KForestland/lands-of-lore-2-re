@@ -63,6 +63,12 @@ def media_files(game):
     return data
 
 
+def foreign_level_edit():
+    from level_edit import document
+
+    return document(LEVEL, b"a different map", [])
+
+
 def inspect_jobs(test):
     test.assertIn(TRANSLATE_FROM, test.job("text", "--data", test.game, "loose-options", "--id", "1"))
     data = media_files(test.root / "Media fixture")
