@@ -211,7 +211,7 @@ The [README](../README.md#change-a-number-in-your-own-copy) walks through the wh
 
 - `make` compares the game folder (`--data`) with a folder of changed files. The output folder of `modkit.py build` works as it is, and so does a copy of the game folder in which only some files changed.
 - File names in the patch start at the game folder holding `LOLG.DAT` and `DAT`, whether you give that folder or its `DAT` folder, so a patch made from one applies to the other. A change made in `DAT` is named `DAT/GLOBAL.MIX`, never the copy beside `DAT`.
-- `apply` writes nothing until every check has passed: the old bytes, for a program patch the whole file's SHA-256, and the undo. Applying a patch twice, or to another edition, is refused with one sentence.
+- `apply` writes nothing until every check has passed: each replaced span's SHA-256, the whole-file SHA-256 for a program patch, and the undo. Keep `undo.json` private because it holds original game bytes.
 - Program patches: copy the program file (`LOLG.DAT` or `LOLG.EXE`) into a new folder, at the same path it has in the game folder, change a byte with a hex editor, for example one letter of a message, and run `make` with that folder. The patch records the program's SHA-256 and applies only to that exact file. A program change may replace at most 16 bytes at a time and 256 in all, never changes the file length, and never touches copy-protection code.
 - `GLOBAL.MIX` ships twice, byte for byte the same: in the game folder and in `DAT`. The mod kit unpacks both as separate edit files (`0002_GLOBAL.MIX_items.json` and `0008_GLOBAL.MIX_items.json`). Which copy the game opens has not been shown (not known), so make the same change in both; the patch then names both files.
 

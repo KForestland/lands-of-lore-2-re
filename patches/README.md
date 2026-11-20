@@ -1,8 +1,8 @@
 # Patches
 
-Small checked edits for a reader's own copy of the original game. A patch file holds the changed bytes and the expected old bytes, not a game file. A patch must not remove or bypass a disc check, a serial check or any other copy protection, and none here does. The format and its limits are on the [patch format page](../docs/formats/patch.md). This folder has the list. It does not yet hold a patch file: the faults below are not a few proven bytes that these pages could show before and after in the running DOS 1.30 game.
+Small checked edits for a reader's own copy of the original game. A patch records the replacement bytes and a hash of the span it replaces. A patch must not remove or bypass a disc check, a serial check or any other copy protection, and none here does. The format and its limits are on the [patch format page](../docs/formats/patch.md). This folder has the list. It does not yet hold a patch file: the faults below are not a few proven bytes that these pages could show before and after in the running DOS 1.30 game.
 
-The file format is `lol-patch-2`. `kind` is `data` or `program`. A program patch also names the game (`lol2`) and the SHA-256 of each program file before the change. Each change has `file`, `entry`, `offset`, `old` and `new`. `entry` is 0 for a loose program. `offset` is a decimal count from the start of that file.
+The format is `lol-patch-3`. Each change lists its file, entry, offset, old span length and SHA-256, and new bytes. Keep `undo.json` private. It holds original game bytes from your copy.
 
 These pages read DOS 1.30 (`LOLG.DAT` version string at file `+0x1C4714`, date `Dec 03 1997` at `+0x1C4749`). That build is already the patched retail DOS release. The open-question list does not name the scene faults below. Those questions are unread fields and producers. These pages did not find another retail fault, with a file and an offset, on the level pages.
 
