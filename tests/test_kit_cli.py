@@ -59,6 +59,20 @@ class ToolKit(unittest.TestCase):
     def test_read_only_and_media_jobs(self):
         fixture.inspect_jobs(self)
 
+    @unittest.skipUnless(find_spec("numpy") and shutil.which("ffmpeg") and shutil.which("ffprobe"),
+                         "LoL2 movie conversion requires NumPy, FFmpeg and FFprobe")
+    def test_movie_export(self):
+        game = self.root / "Movie fixture"
+        fixture.media_files(game)
+        if self.lowercase:
+            fixture.lowercase(game)
+        out = self.root / "movie"
+        self.assertIn("1 frames at 15 fps, 2 audio samples",
+                      self.job("movie", "--data", game, "--file", "TEST.MIX", "--entry", "0", "--out", out))
+        output, = out.iterdir()
+        self.assertEqual(output.name.lower(), "test-0.mkv")
+        self.assertEqual(output.read_bytes()[:4], bytes.fromhex("1a45dfa3"))
+
     def test_mod_patch_and_private_undo(self):
         work, built, applied, reverted = [self.root / name for name in ("work", "built", "applied", "reverted")]
         self.assertIn("editable entries", self.job("mod", "unpack", self.game, work))

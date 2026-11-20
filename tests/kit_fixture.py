@@ -38,12 +38,26 @@ def make_fixture(game):
     return source_slot()
 
 
+def movie_bytes():
+    """One 4×4 frame, an invented palette and two mono PCM samples."""
+    def chunk(tag, payload):
+        return struct.pack(">4sI", tag, len(payload)) + payload + bytes(len(payload) % 2)
+
+    header = bytearray(42)
+    struct.pack_into("<5H4BH", header, 0, 2, 0, 1, 4, 4, 4, 4, 15, 1, 256)
+    struct.pack_into("<HBB", header, 0x18, 22050, 1, 16)
+    palette = bytes((0, 0, 0, 32, 12, 49)) + bytes(762)
+    frame = chunk(b"CPL0", palette) + chunk(b"CBF0", bytes([1]) * 16) + chunk(b"VPT0", bytes(2))
+    payload = b"WVQA" + chunk(b"VQHD", header) + chunk(b"SND0", bytes.fromhex("0500faff")) + chunk(b"VQFR", frame)
+    return chunk(b"FORM", payload)
+
+
 def media_files(game):
     """Independent fixture for the jobs that read the music-name table."""
     data = game / DATA
     data.mkdir(parents=True)
     (data / "L1_DC.MIX").write_bytes(write_mix([], 0))
-    movie = b"FORM" + struct.pack(">I", 4) + b"WVQA"
+    movie = movie_bytes()
     aud = struct.pack("<HIIBBHHI", 22050, 10, 2, 2, 99, 2, 2, 0xDEAF) + b"yz"
     (data / "TEST.MIX").write_bytes(write_mix([(1, 0, movie), (2, len(movie), aud)], len(movie) + len(aud)))
     image = bytearray(0x1CE10C + 35 * 4)
