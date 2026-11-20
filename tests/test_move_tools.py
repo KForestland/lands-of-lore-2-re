@@ -23,6 +23,12 @@ class Moves(unittest.TestCase):
             self.assertEqual(count, 1)
             self.assertEqual(result[4:8], struct.pack("<hh", 8, 10))
             self.assertEqual((result[:4], result[8:]), (raw[:4], raw[8:]))
+            editor.validate_coordinates(raw, result)
+            editor.validate_coordinates(result, raw)
+            unrelated = bytearray(result)
+            unrelated[8] ^= 1
+            with self.assertRaisesRegex(ValueError, "only the two coordinate words"):
+                editor.validate_coordinates(raw, unrelated)
             with self.assertRaisesRegex(ValueError, "must stay"):
                 editor.changed(raw, [["item-7", 11, 1]])
             with self.assertRaisesRegex(ValueError, "repeated"):

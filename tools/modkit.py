@@ -46,6 +46,14 @@ def repack(rows, previous, size):
     return write_mix([(key, offsets[i], blob) for i, (key, _, blob) in enumerate(rows)], size - base + shift)
 
 
+def patch_validator(name, key, blob):
+    if Path(name).stem.upper() in {Path(file).stem for file in LEVEL_FILES} and blob.startswith(
+            struct.pack("<II", 18, 5300)):
+        from level_edit import validate_coordinates
+        return validate_coordinates
+    return None
+
+
 def layout(name, key, blob):
     archive = Path(name).name.upper()
     if archive == "GLOBAL.MIX" and key == ITEMS_KEY:

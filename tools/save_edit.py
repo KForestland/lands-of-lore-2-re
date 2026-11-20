@@ -98,7 +98,7 @@ def page_fields(raw):
     facts = [("Position (X / Y)", f"{x / 65536:g} / {y / 65536:g}"),
              ("Current level ID", slot.state[-5]), ("Stored region", region)]
     return [("name", "Slot name", name, name, 43, status("name")),
-            ("heading", "Heading word", f"{heading:#06x}", heading, 65535, status("heading")),
+            ("heading", "Heading word", f"{heading:#06x}", f"{heading:#06x}", 65535, status("heading")),
             ("position-from", "Position group", shown("position-from", slot), None, None, status("position-from"))], facts
 
 

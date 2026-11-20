@@ -81,7 +81,9 @@ function draw() {
         stroke:'#f2c46b', 'stroke-width':1.35, fill:'#f2c46b24'
     }));
     const [cx,cy] = svgPoint(moves.get(chooser.value) || [x,y]);
-    preview.append(graphic('circle', {cx, cy, r:3.1, fill:'#f2c46b', stroke:'#14171a', 'stroke-width':1.4}));
+    const radius = 5 * map.viewBox.baseVal.width / 900;
+    preview.append(graphic('circle', {cx, cy, r:radius, fill:'#f2c46b', stroke:'#14171a',
+                                     'stroke-width':1.4, 'vector-effect':'non-scaling-stroke'}));
 }
 function setPicking(state) {
     picking = state;
@@ -166,6 +168,7 @@ field('export').onclick = () => {
     link.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
 };
+new MutationObserver(draw).observe(map, {attributes:true, attributeFilter:['viewBox']});
 status();
 }
 """

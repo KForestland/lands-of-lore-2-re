@@ -6,6 +6,7 @@ import struct
 from cli_errors import run_cli
 from level_html import Plan, main
 from level_move_ui import sections
+from level_edit_data import placement_name
 from lol2_export_scripts import PLACED_ITEMS, TABLES, section
 from lol2_level_report import level_files
 from lol2_level_schematic import edge_type, parse_geometry
@@ -74,7 +75,8 @@ def view(data, stem, gates):
             at = i * stride
             x, y = struct.unpack_from("<hh", stored, at)
             region, = struct.unpack_from("<H", stored, at + 0x0A)
-            plan.dot((x << 16, y << 16), f"{key}-{i}", f"{kind[:-1]} {i}", kind,
+            name = placement_name(data, raw, key, i, offset + at)
+            plan.dot((x << 16, y << 16), f"{key}-{i}", name or f"{kind[:-1]} {i}", kind,
                      {"Row": i, "Stored X / Y": f"{x} / {y}",
                       "Stored region word": region if region != 0xFFFF else "none",
                       "Source": f"{archive.name} +{base + offset + at:#x}"}, color, f"{prefix}{i}")

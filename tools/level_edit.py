@@ -10,7 +10,8 @@ from cli_errors import ReaderArgumentParser, run_cli
 from level_html import find_data, installation_root
 import level_edit_data as adapter
 import modkit
-from modkit_core import archive_parts, digest, output_folder, read_json, replace_members
+import patch
+from modkit_core import archive_parts, digest, output_folder, read_json, replace_members, write_json
 
 
 FORMAT = modkit.GAME + "-level-moves-1"
@@ -81,6 +82,24 @@ def changed(raw, moves):
     return bytes(result), count
 
 
+def validate_coordinates(original, edited):
+    """Accept only edits the level tool can reproduce from valid original placements."""
+    if len(edited) != len(original):
+        raise ValueError("A placement patch must keep the level entry the same size.")
+    _, sites = fields(original)
+    moves = []
+    for key, site in sites.items():
+        xy = unpack_from("<hh", edited, site.offset)
+        if xy != (site.x, site.y):
+            moves.append([key, *xy])
+    if changed(original, moves)[0] != edited:
+        raise ValueError("A placement patch may change only the two coordinate words of existing items or props.")
+
+
+def archive_name(data, path):
+    return path.relative_to(installation_root(data))
+
+
 def rebuild(data, change):
     if (not isinstance(change, dict) or set(change) != {"format", "level", "source", "moves"}
             or change["format"] != FORMAT or not isinstance(change["level"], str)):
@@ -97,22 +116,36 @@ def rebuild(data, change):
     return path, replace_members(modkit, path.name, original, rows, {at: edited}), count
 
 
-def apply(data, change, output):
+def apply(data, change, output, share=False):
     path, rebuilt, count = rebuild(data, change)
     with output_folder(output, data, installation_root(data)) as stage:
-        written = stage / path.name
+        name = archive_name(data, path)
+        written = stage / name
+        written.parent.mkdir(parents=True, exist_ok=True)
         written.write_bytes(rebuilt)
         if written.read_bytes() != rebuilt:
             raise ValueError("The copied archive did not read back byte for byte.")
-    return path.name, count
+        if share and count:
+            title = f"{change['level']} placement moves"
+            try:
+                document = patch.make(installation_root(data), stage, title, "Moves within their original region or surface.")
+                _, files, undo = patch.prepare(installation_root(data), document)
+            except patch.PatchLimitError as error:
+                raise ValueError(f"{error}. Use fewer moves or apply without --patch.") from None
+            if files != {name.as_posix(): rebuilt}:
+                raise ValueError("The patch did not reproduce the copied archive.")
+            write_json(stage / "level-patch.json", document)
+            write_json(stage / patch.UNDO, undo)
+    return name.as_posix(), count
 
 
 def verify(data, change, output):
     path, rebuilt, count = rebuild(data, change)
-    file = output / path.name
+    name = archive_name(data, path)
+    file = output / name
     if not file.is_file() or file.read_bytes() != rebuilt:
         raise ValueError(f"{file} does not match the verified copy.")
-    return path.name, count
+    return name.as_posix(), count
 
 
 def check(data):
@@ -127,7 +160,7 @@ def check(data):
             empty = document(level, raw, [])
             baseline = folder / level
             apply(data, empty, baseline)
-            if (baseline / path.name).read_bytes() != original:
+            if (baseline / archive_name(data, path)).read_bytes() != original:
                 raise ValueError(f"{level} did not copy its unchanged archive byte for byte.")
             levels += 1
             outline, sites = fields(raw)
@@ -140,7 +173,7 @@ def check(data):
                     if -32768 <= x <= 32767 and -32768 <= y <= 32767 and contains(outline[site.anchor], x, y):
                         edit = document(level, raw, [[site.key, x, y]])
                         sample = folder / kind
-                        apply(data, edit, sample)
+                        apply(data, edit, sample, share=True)
                         verify(data, edit, sample)
                         moved.add(kind)
                         break
@@ -159,8 +192,11 @@ def main():
     mode = parser.add_mutually_exclusive_group()
     mode.add_argument("--verify", action="store_true", help="compare an existing copy to the requested moves")
     mode.add_argument("--check", action="store_true", help="test the level corpus in temporary copies")
+    parser.add_argument("--patch", action="store_true", help="also write a data patch and private undo file")
     args = parser.parse_args()
     data = find_data(args.data, "DAT", adapter.MARKER)
+    if args.patch and (args.verify or args.check):
+        parser.error("Use --patch only when writing a new edited copy.")
     if args.check:
         if args.changes or args.copy_folder:
             parser.error("Use --check with only --data.")
@@ -168,9 +204,12 @@ def main():
         return 0
     if not (args.changes and args.copy_folder):
         parser.error("Give the downloaded change file and --out, or use --check.")
-    run = verify if args.verify else apply
-    name, count = run(data, read_json(args.changes), args.copy_folder)
-    print(f"Verified {count} moves in {name} at {args.copy_folder}.")
+    change = read_json(args.changes)
+    if args.verify:
+        name, count = verify(data, change, args.copy_folder)
+    else:
+        name, count = apply(data, change, args.copy_folder, share=args.patch)
+    print(f"Verified {count} move{'' if count == 1 else 's'} in {name} at {args.copy_folder}.")
     return 0
 
 

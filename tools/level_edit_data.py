@@ -1,4 +1,8 @@
 """LoL2 MIX placement fields used by the level editor."""
+from functools import lru_cache
+from struct import unpack_from
+
+from lol2_item_labels import OBJ5, PAIRS, TABLE, item_definitions, native_hash
 from lol2_export_scripts import PLACED_ITEMS, TABLES, section
 from lol2_level_report import level_files as levels
 from lol2_level_schematic import parse_geometry
@@ -29,3 +33,31 @@ def fields(raw):
             offset, count, _ = section(raw, start, count_at, stride)
             records.extend((f"{key}-{i}", offset + i * stride) for i in range(count))
     return outline, records
+
+
+@lru_cache(maxsize=1)
+def item_names(data):
+    identities = {unpack_from("<I", row, 0x18)[0]: f"Item definition {index}"
+                  for index, row in enumerate(item_definitions(data))}
+    image_path = data.parent / "LOLG.DAT"
+    if image_path.is_file():
+        image = image_path.read_bytes()
+        for i in range(PAIRS):
+            pointer, = unpack_from("<I", image, OBJ5 + TABLE + 8 * i)
+            label = image[OBJ5 + pointer:OBJ5 + pointer + 64].split(b"\0", 1)[0]
+            key = native_hash(label)
+            if key in identities and label and label.isascii():
+                identities[key] = label.decode("ascii")
+    return identities
+
+
+def placement_name(data, raw, kind, row, at):
+    if kind == "placed_item":
+        identity, = unpack_from("<I", raw, at + 0x20)
+        label = item_names(data).get(identity, f"Item identity {identity:#010x}")
+    elif kind == "prop":
+        template, = unpack_from("<H", raw, at + 0x20)
+        label = f"Prop template {template}"
+    else:
+        return None
+    return f"{label} · row {row}"

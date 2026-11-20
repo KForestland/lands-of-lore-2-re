@@ -8,6 +8,16 @@ from lol2_text_writer import read_trr, trr_sources, write_trr
 from lol2_westwood_hash import ww_hash_v2
 
 
+CHARSET = "the mapped game font encoding"
+
+
+def warning_fonts(file, label):
+    name = label.upper()
+    if name in {"OPTTEXT.TRR", "AE4C441B.TRR", "3C33F3F7.TRR", "9A4429F3.TRR"}:
+        return lambda font: font.upper().endswith(("/OPTION_L.FNT", "/OPTION_H.FNT"))
+    return None
+
+
 def font_sources(base):
     names = {ww_hash_v2(name): name for name in ("STD6P.FNT", "STD8P.FNT", "OPTION_L.FNT", "OPTION_H.FNT")}
     archives = {"LOCAL.MIX", "SETUP.MIX"}
@@ -81,7 +91,7 @@ def write(label, blob, changes):
         try:
             value = encode(text)
         except UnicodeError:
-            raise ValueError(f"Row {i + 1} has a character outside the mapped glyphs. Choose a character listed by translate fonts.") from None
+            raise ValueError(f"CSV row {i + 2} has a character outside the mapped glyphs. Choose a character listed by translate fonts.") from None
         rows[i] = rows[i][0], value
     if sum(len(value) + 1 for _, value in rows) + 8 * len(rows) + 4 > 0xFFFFFFFF:
         raise ValueError("This TRR exceeds the 32-bit offset range. Shorten the new text.")
