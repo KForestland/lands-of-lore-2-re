@@ -15,6 +15,13 @@ level, action, native instruction and values for each observation.
 
 Some probes were also tried on edited saves: copies of a game-written save with a few bytes changed. [Edited saves](EDITED_SAVES.md) lists those runs and what a game-written save would still add.
 
+## Launch-record rule and the runs of 20 November
+
+Since 20 November 08:41 UTC every game launch must show four things in its record: (a) any debugger port listens on the local machine only, shown in the run log while it is up; (b) one new folder and one set of logs per launch, nothing overwritten; (c) a process listing after each launch; (d) every launch reported, failed ones included, with every live memory edit listed by address and bytes. The runs of 20 November below were made before that rule and did not meet it; their results stay as recorded observations, and no question state rests on them alone. A later run under the rule can confirm or replace them.
+
+- The run for Q9, Q12 and Q3 (message 0x26, `bb_brth`, room archive opens): (a) not shown; (b) not met, a debugger script and a launch log were overwritten and the next probe ran in the same folder; (c) not met; (d) not met, a failed file-open trace and a likely defeat were not reported.
+- The run for Q13 and Q10 (cue words, mode decision): (a) not shown; (b) not met, it reused the previous probe's folder; (c) not met, the cleanup record was empty; (d) met for its one launch, with no live edit.
+
 ## Remaining probes
 
 ### Q9. What starts the timed message 0x26?
