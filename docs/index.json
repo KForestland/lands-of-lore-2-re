@@ -529,12 +529,15 @@
         "tools/lol2_loose.py",
         "tools/lol2_mix_writer.py",
         "tools/lol2_numbers.py",
+        "tools/lol2_parse_le.py",
         "tools/lol2_plot_branches.py",
         "tools/lol2_progression.py",
         "tools/lol2_save_inspect.py",
         "tools/lol2_save_native.py",
         "tools/lol2_save_writer.py",
         "tools/lol2_text_writer.py",
+        "tools/lol2_texture_container.py",
+        "tools/lol2_vqa_v2_decode.py",
         "tools/lol2_westwood_writer.py",
         "tools/lol2_xmi_reader.py",
         "tools/rating.py"
@@ -607,7 +610,8 @@
       "question_references": [],
       "tools": [
         "tools/history/draracle/build_creature_group_review.py",
-        "tools/history/draracle/extract_block_sprite_frames.py"
+        "tools/history/draracle/extract_block_sprite_frames.py",
+        "tools/lol2_texture_container.py"
       ]
     },
     {
@@ -1316,7 +1320,8 @@
       "answers": [],
       "question_references": [],
       "tools": [
-        "tools/lol2_cache_seed.py"
+        "tools/lol2_cache_seed.py",
+        "tools/lol2_parse_le.py"
       ]
     },
     {

@@ -40,7 +40,7 @@ def find_le_header(data):
     pos = 0
     while pos < len(data) - 16:
         idx = data.find(b'LE', pos)
-        if idx == -1:
+        if idx == -1 or idx + 10 > len(data):
             return None
         # Check byte_order and word_order are both 0 (little-endian)
         if data[idx + 2] == 0 and data[idx + 3] == 0:
@@ -85,6 +85,51 @@ def segment_type(flags):
         return "UNKNOWN"
 
 
+def page_map_entry(data, offset):
+    """Physical page number (big-endian u24) and one-byte page kind."""
+    prefix, middle, suffix, kind = struct.unpack_from('4B', data, offset)
+    return (prefix << 16) | (middle << 8) | suffix, kind
+
+
+def check_retail_layout(data):
+    """Verify the object, page and fixup directory layout of DOS retail 1.30."""
+    le = find_le_header(data)
+    if le != 0x3BCB4 or data[0x39024:0x39026] != b'MZ':
+        raise ValueError('expected the DOS 1.30 embedded MZ and LE headers')
+
+    def field(offset):
+        return struct.unpack_from('<I', data, le + offset)[0]
+
+    pages, size, last = field(0x14), field(0x28), field(0x2C)
+    objects, page_map = le + field(0x40), le + field(0x48)
+    fixup_pages, fixup_records = le + field(0x68), le + field(0x6C)
+    import_modules, page_data = le + field(0x70), 0x39024 + field(0x80)
+    if (pages, size, last, field(0x44)) != (340, 0x1000, 0xA8B, 5):
+        raise ValueError('LE page sizes or object count differ')
+    if not (objects == 0x3BD78 and page_map == objects + 5 * 24
+            and page_map + 4 * pages <= fixup_pages
+            and fixup_pages + 4 * (pages + 1) == fixup_records
+            and fixup_records <= import_modules <= page_data == 0x8F024):
+        raise ValueError('LE table boundaries differ')
+    if page_data + (pages - 1) * size + last != len(data):
+        raise ValueError('data pages do not reach the end of the retail file')
+    expected = ((16, 0x10000, 1, 1), (1243752, 0x20000, 2, 304),
+                (72, 0x150000, 306, 1), (82432, 0x160000, 307, 0),
+                (1171360, 0x180000, 307, 34))
+    for i, row in enumerate(expected):
+        virtual, base, _, first, count, reserved = struct.unpack_from('<6I', data, objects + 24*i)
+        if (virtual, base, first, count) != row or reserved:
+            raise ValueError(f'LE object {i + 1} differs')
+    if any(page_map_entry(data, page_map + 4*i) != (i + 1, 0) for i in range(pages)):
+        raise ValueError('LE physical page mapping differs')
+    fixups = struct.unpack_from(f'<{pages + 1}I', data, fixup_pages)
+    if (fixups[0] != 0 or fixups[-1] != import_modules - fixup_records
+            or any(a > b for a, b in zip(fixups, fixups[1:]))):
+        raise ValueError('LE fixup boundaries differ')
+    print(f'CHECK LE: 5 objects, {pages} stored pages, {len(fixups)} fixup boundaries, '
+          f'{fixups[-1]} fixup bytes, file end 0x{len(data):X}')
+
+
 def main():
     parser = ReaderArgumentParser(
         description="Read the DOS4GW LE headers and objects in the original LOLG.DAT."
@@ -100,6 +145,7 @@ def main():
 
     parser.add_argument("--data", help="the game's DAT folder (default: $LOL2_DAT)")
     parser.add_argument("--out", help="explicit directory for segment files")
+    parser.add_argument("--check", action="store_true", help="verify the DOS retail 1.30 LE layout")
     args = parser.parse_args()
 
     input_file = args.exe_path
@@ -113,6 +159,8 @@ def main():
     if args.out and args.output_dir:
         parser.error("use only one output directory")
     output_dir = args.out or args.output_dir
+    if args.check and output_dir:
+        parser.error("--check does not take an output directory")
     if output_dir:
         output_dir = refuse_repo_output(output_dir)
         input_dir = os.path.dirname(os.path.realpath(input_file))
@@ -121,6 +169,9 @@ def main():
 
     with open(input_file, "rb") as f:
         data = f.read()
+    if args.check:
+        check_retail_layout(data)
+        return 0
 
     file_size = len(data)
     print(f"File: {input_file}")
@@ -269,10 +320,8 @@ def main():
 
     # --- Parse Object Page Table and extract segments ---
     # LE page table entry format (4 bytes):
-    #   Bytes 0-1: Page Data Offset (high word of 24-bit value)
-    #   Byte 2:    Page Data Offset (low byte of 24-bit value)
+    #   Bytes 0-2: One-based physical page number in big-endian order
     #   Byte 3:    Type/flags (0=Legal, 1=Iterated, 2=Invalid, 3=Zeroed)
-    # The 24-bit offset = (high16 << 8) | low8, giving a 1-based page number
     # Actual file offset = data_pages_off + (page_number - 1) * page_size
 
     page_table_abs = le_off + obj_page_off
@@ -280,11 +329,9 @@ def main():
     print(f"First 10 page table entries (raw bytes):")
     for i in range(min(10, num_pages)):
         entry_bytes = data[page_table_abs + i*4 : page_table_abs + i*4 + 4]
-        vals = struct.unpack_from('<HBB', entry_bytes, 0)
-        u32 = struct.unpack_from('<I', entry_bytes, 0)[0]
+        number, kind = page_map_entry(entry_bytes, 0)
         print(f"  Page {i+1}: raw={entry_bytes.hex()} "
-              f"as_u32=0x{u32:08X} "
-              f"high16=0x{vals[0]:04X} low8=0x{vals[1]:02X} flags=0x{vals[2]:02X}")
+              f"physical={number} flags=0x{kind:02X}")
 
     if output_dir is None:
         return
@@ -300,11 +347,7 @@ def main():
             global_page_idx = start_page - 1 + p  # 0-based index into page table
             pte_off = page_table_abs + global_page_idx * 4
 
-            pte_high = struct.unpack_from('<H', data, pte_off)[0]
-            pte_low = data[pte_off + 2]
-            pte_flags = data[pte_off + 3]
-
-            page_num = (pte_high << 8) | pte_low  # 24-bit page number, 1-based
+            page_num, pte_flags = page_map_entry(data, pte_off)
 
             if pte_flags == 0:  # Legal/valid page
                 if page_num == 0:
@@ -313,7 +356,7 @@ def main():
                 else:
                     page_file_off = data_pages_off + (page_num - 1) * page_size
                     # Last page might be smaller
-                    is_last_global = (global_page_idx == num_pages - 1)
+                    is_last_global = (page_num == num_pages)
                     if is_last_global and last_page_sz > 0:
                         actual_size = last_page_sz
                     else:

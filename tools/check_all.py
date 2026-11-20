@@ -17,7 +17,7 @@ TOOLS = ["repo_guard", "lol2_mix_parser", "lol2_mix_writer", "lol2_level_writer"
          "lol2_analyze_disarm_rearm", "lol2_guest_trace_summary", "lol2_aud_decode", "lol2_vqa_v2_decode",
          "lol2_level_report", "lol2_progression", "lol2_plot_branches", "lol2_instance_field", "lol2_level_map", "lol2_level_schematic", "lol2_media_check", "lol2_level_notes", "lol2_text_tables",
          "lol2_hmi_midi", "lol2_hmi_writer", "lol2_xmi_reader", "lol2_item_labels", "rating", "example_images", "lol2_save_native", "lol2_save_inspect", "lol2_save_writer",
-         "lol2_cache_seed", "lol2_speech_names", "lol2_loose", "lol2_inspect", "lol2_numbers", "doc_index", "doc_links", "doc_format_offsets"]
+         "lol2_cache_seed", "lol2_speech_names", "lol2_loose", "lol2_parse_le", "lol2_inspect", "lol2_numbers", "doc_index", "doc_links", "doc_format_offsets"]
 
 QUICK_SKIP = {"lol2_instance_field", "lol2_aud_decode", "lol2_mix_writer", "lol2_vqa_v2_decode"}
 

@@ -42,6 +42,15 @@ past its file data. **CONFIRMED.** A reference to a cell such as `0xB7D80`
 can identify runtime storage without being a location to seek inside the
 executable.
 
+**CONFIRMED.** `python3 tools/lol2_parse_le.py --check --data DAT`
+checks all five object extents and 340 page rows. Each page map row has
+a big-endian three-byte physical page number and a zero kind at `+3`.
+For page 257 the row at `0x3C1F0` is `00 01 01 00`. LE `+0x2C`
+sets the last page's length to `0xA8B`, reaching EOF at `0x1E2AAF`.
+LE `+0x68` and `+0x6C` locate the 341 monotonic fixup boundaries and
+337,375 bytes of fixup records. The last boundary reaches the module
+import table at `LE+0x531C8`. The check verifies fixup extents.
+
 ## Selected executable tables
 
 These locations and table roles are **CONFIRMED** by their consumers.

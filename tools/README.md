@@ -388,7 +388,7 @@ Run `python3 tools/lol2_numbers.py --check` to compare the generated item, spell
 ### Added 2026-10
 - `lol2_sound_bank.py` — list or extract the named AUD sound bank in `LOCALLNG.MIX` (1008 clips)
 - `lol2_media_check.py` — one `CHECK` line for the movie scene ids, a sound-bank row, the music stem hashes and 47 room modules, among other media checks. Writes nothing. `--data` is the DAT folder. Pages: `docs/lol2-movie-scenes.md`, `docs/lol2-sound-cues.md`, `docs/lol2-music-selection.md`, `docs/lol2-room-archives.md`.
-- `lol2_texture_container.py` — level `.TE_` containers (LZO1X). Decodes the ten raw flags, including `0x80A9`. Its standalone `--check --data DAT` verifies 38,361 descriptors.
+- `lol2_texture_container.py` — level `.TE_` containers (LZO1X). Decodes the ten raw flags, including `0x80A9`. Its standalone `--check --data DAT` verifies 38,361 descriptors, walks 30,597 row-span mips to their last byte and checks the 1,844 `0x1246` frame groups; `rows --mix L16_CA.MIX --index 1507 --mip 0` lists one mip's row headers.
 - `lol2_source_format.py` + `lol2_export_scripts.py` — export a level's header tables and command streams to JSON (stdlib only)
 - `lol2_level_map.py` — top-down schematic map of a level from its region table (no game pixels)
   - example: `python3 tools/lol2_level_map.py --data DAT --level 1 --out l1_map.png`
@@ -400,14 +400,14 @@ Run `python3 tools/lol2_numbers.py --check` to compare the generated item, spell
   - example: `python3 tools/lol2_plot_branches.py --data DAT`
 - `lol2_instance_field.py` — the sixteen readers and writers of instance byte +5, and the selector handlers of opcodes 2, 6, 9 and 15. `--check` requires the marked tables in `docs/lol2-item-handlers.md` and `docs/lol2-script-opcodes.md` to match. Part of `check_all.py`.
   - example: `python3 tools/lol2_instance_field.py --data DAT`
-- `lol2_vqa_v2_decode.py` — VQA v2 pointer-table decoder, including 4×2 blocks and `CIND`-scheduled codebooks (needs NumPy; Pillow for `--out`). `--check` is a chunk census and one sample of each layout. `--full` walks every movie and checks all 52,187 indexed `VPRZ`/`VPTR` frames in memory. `--out` refuses a path inside the repository
+- `lol2_vqa_v2_decode.py` — VQA v2 pointer-table decoder, including 4×2 blocks and `CIND`-scheduled codebooks (needs NumPy; Pillow for `--out`). `--check` is a chunk census and one sample of each layout. `--full` walks every movie and checks all 52,187 indexed `VPRZ`/`VPTR` frames in memory. `--inspect-lcw FRAME` (with `--entry`) lists one absolute-mode `VPTZ` packet's reads from unwritten offsets. `--out` refuses a path inside the repository
 
 ### Container Utilities
 - `lol2_westwood_hash.py` — Westwood MIX hash functions (TD/RA era and TS/RA2 era)
   - example: `python3 tools/lol2_westwood_hash.py --help`
 
 ### Executable Analysis
-- `lol2_parse_le.py` — DOS4GW LE (Linear Executable) header and page report for LOLG.DAT. `--out` requests explicit segment extraction.
+- `lol2_parse_le.py` — DOS4GW LE (Linear Executable) header and page report for LOLG.DAT. `--check` verifies the DOS 1.30 objects, 340 page-map rows and fixup boundaries. `--out` requests explicit segment extraction.
   - example: `python3 tools/lol2_parse_le.py --help`
 
 ### Entity & Trace Analysis

@@ -39,6 +39,38 @@ Details are in [lol2-vqa-v2.md](../lol2-vqa-v2.md#format-notes).
 - **Two frames stay open:** `L20_BBI.MIX` entry 25 frame 115, and `SPKSTON2.MIX` entry 4 frame 492. Both are relative copies inside an absolute-mode LCW stream (long back-references are distances from the start of the output; these commands are the short form). On frame 115 the command bytes are `00 00` at input 23,847: distance 0, with 30,400 bytes already written. On frame 492 the command bytes are `22 a2`: distance 674, with 564 bytes already written. Every other pointer table in those two movies finishes.
 - **Game folder:** the folder next to `DAT/` holds 11 more movies (in `SETUP.MIX` and others), all version 2. This check does not re-read them.
 
+### Structure of the two exceptional packets
+
+**CONFIRMED.** The structure reader follows the absolute-mode command widths
+at `LOLG.DAT` code `0x158D8F–0x158E18` and records source offsets whose bytes
+were unwritten by this packet. VQHD dimensions at `+0x06` through `+0x0B`
+imply 32,000 pointer bytes for each frame. The counts below report the
+stored commands through the first `0x80`. The native routine can also
+stop at its caller's output bound (`0x158D69–0x158D86`).
+
+| VPTZ payload start in MIX | Stored bytes | Through `0x80` | Output from lengths | Commands needing external bytes |
+|---|---:|---:|---:|---:|
+| `L20_BBI.MIX+0x35202D6` | 24,660 | 24,660 | 32,010 | 1 |
+| `SPKSTON2.MIX+0x17695E8` | 21,655 | 752 | 1,059 | 21 |
+
+The second packet still falls short of a pointer plane after the first
+unwritten-source copy. At packet `+0x227`, its next absolute copy needs
+43 bytes starting at output offset 12,255 with only 572 bytes written.
+The first terminator is at packet `+0x2EF`. The first packet's command
+lengths reach 32,010 bytes, 10 past the plane; with a 32,000-byte bound
+the native loop clamps the last copy there. **UNCONFIRMED:** where the later external bytes come
+from, and which pixels the native draw shows from the short plane.
+The older five-byte observation covers only the first copy. To settle
+the remaining picture, correlate the actual compressed buffer, output
+limit and retained output at `0x172828–0x172838` with the draw's codebook.
+
+The default `--check` pins both layouts. To print their command offsets
+and source ranges without creating frames, use `--inspect-lcw`:
+
+```sh
+python3 tools/lol2_vqa_v2_decode.py --data DAT SPKSTON2.MIX --entry 4 --inspect-lcw 492
+```
+
 ## Worked example
 
 `L4_HJI.MIX` entry 67 (key 0x63CF4BD8, 50,468 bytes). Its `VQHD` begins:

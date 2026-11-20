@@ -79,7 +79,14 @@ def _lcw(src: bytes, where: str) -> bytes:
 
 def lcw(src: bytes) -> bytes:
     """Strict Westwood LCW (Format80). The stream must end with 0x80."""
-    d = bytearray()
+    return _read_lcw(src)
+
+
+def _read_lcw(src: bytes, *, extent_limit=None):
+    """Parse absolute-mode LCW, or measure output and external-history reads."""
+    d = bytearray() if extent_limit is None else None
+    written = 0
+    history = []
     i = 0
     n = len(src)
 
@@ -88,30 +95,40 @@ def lcw(src: bytes) -> bytes:
             raise VQAError(f'LCW: truncated command at {i}')
 
     while True:
+        if extent_limit is not None and written > extent_limit:
+            raise VQAError(f'LCW: output extent {written} exceeds {extent_limit}')
         need(1)
+        start = i
         op = src[i]
         i += 1
         if op == 0x80:
-            return bytes(d)
+            return bytes(d) if d is not None else (i, written, history)
         if op < 0x80:
             need(1)
             count = ((op & 0x70) >> 4) + 3
             off = ((op & 0x0F) << 8) | src[i]
             i += 1
-            s = len(d) - off
+            s = written - off
             if off == 0 or s < 0:
-                raise VQAError(f'LCW: relative reference {off} outside output at {i}')
+                if d is not None:
+                    raise VQAError(f'LCW: relative reference {off} outside output at {i}')
+                needed = count if off == 0 else min(count, -s)
+                history.append((start, written, s, needed))
         elif op < 0xC0:
             count = op & 0x3F
             need(count)
-            d += src[i:i + count]
+            if d is not None:
+                d += src[i:i + count]
             i += count
+            written += count
             continue
         elif op == 0xFE:
             need(3)
             count = src[i] | src[i + 1] << 8
-            d += bytes([src[i + 2]]) * count
+            if d is not None:
+                d += bytes([src[i + 2]]) * count
             i += 3
+            written += count
             continue
         else:
             if op == 0xFF:
@@ -124,10 +141,14 @@ def lcw(src: bytes) -> bytes:
                 count = (op & 0x3F) + 3
                 s = src[i] | src[i + 1] << 8
                 i += 2
-            if s >= len(d):
-                raise VQAError(f'LCW: absolute reference {s} outside output ({len(d)}) at {i}')
-        for k in range(count):
-            d.append(d[s + k])
+            if s >= written:
+                if d is not None:
+                    raise VQAError(f'LCW: absolute reference {s} outside output ({written}) at {i}')
+                history.append((start, written, s, count))
+        if d is not None:
+            for k in range(count):
+                d.append(d[s + k])
+        written += count
 
 
 def header(blob: bytes) -> tuple:
@@ -621,6 +642,16 @@ def check(folder, full=False) -> int:
         return 1
     total, streams, layouts, staged, single, bad = _census(folder)
     bits = _sample_decode(folder, bad)
+    for name, entry, frame, expected in (
+        ('L20_BBI.MIX', 25, 115, (24660, 24660, 32010, 32000, 1, (23847, 30400, 30400, 3))),
+        ('SPKSTON2.MIX', 4, 492, (21655, 752, 1059, 32000, 21, (547, 564, -110, 5))),
+    ):
+        try:
+            size, consumed, written, declared, history = pointer_table_extent(_entry_blob(folder, name, entry), frame)
+            if (size, consumed, written, declared, len(history), next(iter(history), ())) != expected:
+                raise VQAError('LCW structure census differs')
+        except VQAError as error:
+            bad.append(f'{name}#{entry} frame {frame}: {error}')
     four = ', '.join(f'{k} {layouts.get(k, 0)}' for k in ('partial codebook', '4x2', 'parts 0'))
     ok = (not bad and total == 1948 and streams == 837 and layouts.get('partial codebook') == 976
           and layouts.get('4x2') == 5 and layouts.get('parts 0') == 130 and staged == 10 and single == 120)
@@ -644,7 +675,8 @@ def check(folder, full=False) -> int:
         return 0 if ok else 1
     print(f'CHECK vqa: {total} WVQA; pointer-table headers {sum(layouts.values())} ({four}; '
           f'of parts 0, {staged} stage CBPZ and {single} have a single CBFZ); '
-          f'pointer-stream {streams}; samples: {", ".join(bits)}; full frame walk is --full; '
+          f'pointer-stream {streams}; samples: {", ".join(bits)}; 2 exceptional LCW layouts; '
+          f'full frame walk is --full; '
           f'bad={bad[:3] or "none"}')
     return 0 if ok else 1
 
@@ -657,18 +689,38 @@ def _entry_blob(folder, mix_name, index):
     raise VQAError(f'{mix_name} entry {index} missing')
 
 
+def pointer_table_extent(blob, frame):
+    """Measure the VPTZ commands, with the unwritten source ranges left symbolic."""
+    top, fields = header(blob)
+    _supported(fields)
+    frames = [payload for tag, payload in top if tag == b'VQFR']
+    if not 0 <= frame < len(frames):
+        raise VQAError('frame outside VQFR directory')
+    tables = [payload for tag, payload in chunks(frames[frame]) if tag == b'VPTZ']
+    if len(tables) != 1 or not tables[0] or tables[0][0] == 0:
+        raise VQAError('expected one absolute-mode VPTZ')
+    src = tables[0]
+    extent = 2 * (fields['width'] // fields['block_w']) * (fields['height'] // fields['block_h'])
+    consumed, written, history = _read_lcw(src, extent_limit=extent + 0xFFFF)
+    return len(src), consumed, written, extent, history
+
+
 def main(argv=None) -> int:
     ap = ReaderArgumentParser(description='Decode LoL2 VQA v2 movies (see docs/lol2-vqa-v2.md).')
     ap.add_argument('path', type=Path, nargs='?', help='a .VQA file, or a MIX archive (read only)')
     ap.add_argument('--entry', type=int, help='MIX entry index to decode')
     ap.add_argument('--key', type=lambda s: int(s, 0), help='MIX entry key (hash) to decode')
     ap.add_argument('--out', type=Path, help='write PNG frames here (needs Pillow)')
+    ap.add_argument('--inspect-lcw', type=int, metavar='FRAME',
+                    help='measure one absolute-mode VPTZ packet and list reads from unwritten offsets')
     ap.add_argument('--check', action='store_true',
                     help='census and one sample of each layout; one line')
     ap.add_argument('--full', action='store_true',
                     help='with --check, also decode every movie (slow)')
     ap.add_argument('--data', type=Path, default=os.environ.get('LOL2_DAT'), help='DAT folder (default $LOL2_DAT)')
     a = ap.parse_args(argv)
+    if a.inspect_lcw is not None and (a.out is not None or a.check or a.full):
+        ap.error('--inspect-lcw is a read-only command for one movie')
     if a.out is not None:
         sys.path.insert(0, str(Path(__file__).resolve().parent))
         from lol2_cli import refuse_repo_output
@@ -691,6 +743,15 @@ def main(argv=None) -> int:
         else:
             blobs = [(f"entry {e['index']} key {e['key']:#010x}", data[e['offset']:e['offset'] + e['size']])
                      for e in entries if len(data) >= e['offset'] + 12 and data[e['offset'] + 8:e['offset'] + 12] == b'WVQA']
+    if a.inspect_lcw is not None:
+        if len(blobs) != 1:
+            ap.error('--inspect-lcw needs a single movie (give --entry or --key for a MIX)')
+        size, consumed, written, extent, history = pointer_table_extent(blobs[0][1], a.inspect_lcw)
+        print(f'VPTZ frame {a.inspect_lcw}: {consumed}/{size} bytes through terminator, '
+              f'{written}/{extent} output bytes by command lengths')
+        for offset, destination, source, count in history:
+            print(f'  input +0x{offset:X}: destination {destination}, source {source}, {count} external bytes')
+        return 0
     status = 0
     for name, blob in blobs:
         try:

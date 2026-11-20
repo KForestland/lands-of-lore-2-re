@@ -338,6 +338,21 @@ that starts on the row's zero and count words, four bytes before
 its first literal pixel. The texture-container check re-reads the
 full-width headers and the level-report check pins the selector.
 
+**CONFIRMED.** `tools/lol2_texture_container.py rows --mix L16_CA.MIX
+--index 1507 --mip 0 --data DAT` lists stored row headers and literal byte
+ranges. The first row header is at expanded bank `+0x1F969E9` and its
+eight literals start at `+0x1F969ED`. The same reader in `--check` walks
+all 30,593 ordinary span mips and the four `0x02AC` mips to their ends.
+It counts the high bits selected by `0x12603F–0x12604E` in the u16 at
+row +0.
+
+| Masked bits | Stored row headers | Literal bytes |
+|---|---:|---:|
+| `0x0000` | 1,763,538 | 37,116,988 |
+| `0x4000` | 520,408 | 36,316,989 |
+| `0x8000` | 3,554 | 252,207 |
+| `0xC000` | 4,265 | 435,669 |
+
 To distinguish pre-conversion from a bypass of this helper, follow
 IDs 7320/7322 from descriptor lookup at `0x1326FA–0x13273C`. Compare
 their original header and row-zero bytes with the pointer at

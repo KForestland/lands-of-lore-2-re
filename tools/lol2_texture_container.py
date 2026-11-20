@@ -24,6 +24,7 @@ package is needed. Reads only the user's own game files.
 Usage:
   lol2_texture_container.py info     --mix DAT/L1_DC.MIX
   lol2_texture_container.py material --mix DAT/L1_DC.MIX --index 1
+  lol2_texture_container.py rows     --mix DAT/L16_CA.MIX --index 1507 --mip 0
   lol2_texture_container.py export   --mix DAT/L1_DC.MIX --index 1 --out DIR
   lol2_texture_container.py blob     --mix DAT/L1_DC.MIX --out l1_dc.bin
   lol2_texture_container.py --check --data DAT
@@ -66,6 +67,7 @@ PAYLOAD_FLAGS = frozenset({
     0x008F, 0x00C7, 0x028E, 0x02AC, 0x02C6,
     0x20C7, 0x808F, 0x80C7, 0x828E, 0x82C6,
 })
+ROW_SPAN_FLAGS = frozenset({0x028E, 0x02AC, 0x02C6, 0x828E, 0x82C6})
 FIELD8_IS_ONE = frozenset({
     0x008B, 0x008F, 0x00A9, 0x028E, 0x02AC, 0x808B, 0x808F, 0x80A9, 0x828E,
 })
@@ -307,6 +309,18 @@ def cmd_export(args):
     print(f"wrote {len(d['mips'])} mip PNGs for descriptor {args.index} to {out}")
 
 
+def cmd_rows(args):
+    blob, _ = load_blob(args.mix, args.level)
+    d = descriptor(blob, args.index)
+    start = sections(blob)[3] + d["mip_offsets"][args.mip]
+    size = d["mip_sizes"][args.mip]
+    rows = list(row_spans(blob, start, size))
+    print(f"descriptor {args.index}, mip {args.mip}, expanded-bank offset +0x{start:X}")
+    for y, (header_at, bits, x, count) in enumerate(rows):
+        print(f"row {y:4d}  +0x{header_at:X}  bits 0x{bits:04X}  x {x:4d}  "
+              f"{count:4d} literal bytes at +0x{header_at + 4:X}")
+
+
 def cmd_blob(args):
     blob, info = load_blob(args.mix, args.level)
     Path(args.out).write_bytes(blob)
@@ -346,19 +360,22 @@ def _column_scores(pixels, width, height):
     return adj / na, sw / nw, sh / nh
 
 
-def validate_row_payload(blob, start, size):
-    """Frame one row header and its literal bytes per declared image row."""
-    flags, width, height, length = struct.unpack_from("<4H", blob, start)
+def row_spans(blob, start, size):
+    """Yield (header offset, high bits, column, count) for each stored row."""
     end = start + size
-    require(length == size - 8 and end <= len(blob), "invalid row payload size")
+    require(0 <= start <= end - 8 and end <= len(blob), "row record outside bank")
+    flags, width, height, length = struct.unpack_from("<4H", blob, start)
+    require(flags in ROW_SPAN_FLAGS and length == size - 8, "invalid row payload header")
     at = start + 8
     for _ in range(height):
         require(at + 4 <= end, "truncated row header")
         first, count = struct.unpack_from("<HH", blob, at)
         if flags == 0x02AC:
             require((first, count) == (0, width), "0x02AC row is not a full-width literal")
+        column = first & 0x3FFF
+        require(column + count <= width and at + 4 + count <= end, "row span exceeds dimensions")
+        yield at, first & 0xC000, column, count
         at += 4 + count
-        require((first & 0x3FFF) + count <= width and at <= end, "row span exceeds dimensions")
     require(at == end, "trailing bytes in row payload")
 
 
@@ -454,6 +471,9 @@ def check(data_dir):
     name_hit = name_total = 0
     height_mismatch = 0
     row_payloads = ambiguous_rows = column_payloads = raw_fallbacks = 0
+    span_counts = collections.Counter()
+    span_bytes = collections.Counter()
+    frame_groups = collections.Counter()
     book_count = short_books = book_tails = 0
     vectors = collections.Counter()
     scores = {flag: [0.0, 0.0, 0.0, 0] for flag in COLUMN_FLAGS}
@@ -463,11 +483,11 @@ def check(data_dir):
             continue
         path = os.path.join(data_dir, name)
         try:
-            _data, entry, _entry_name = find_texture_entry(path)
+            data, entry, _entry_name = find_texture_entry(path)
         except ValueError:
             continue
         levels += 1
-        raw = Path(path).read_bytes()[entry["offset"]:entry["offset"] + entry["size"]]
+        raw = data[entry["offset"]:entry["offset"] + entry["size"]]
         blob, _blocks = decode_lzo_container(raw)
         total = descriptor_count(blob)
         offsets = sections(blob)
@@ -526,6 +546,14 @@ def check(data_dir):
                         name_hit += 1
                 continue
             if flag == 0x1246:
+                group_size = d["field8"] & 0xff
+                ordinal = d["field8"] >> 8
+                if ordinal == 0 and 0 < group_size <= total - index:
+                    group = [descriptor(blob, index + j) for j in range(group_size)]
+                    if all(row["field8"] == (j << 8) | group_size and row["flags"] == flag
+                           for j, row in enumerate(group)):
+                        frame_groups["groups"] += 1
+                        frame_groups["frames"] += group_size
                 if (header_h != d["height"] or size != 22 + fourth or present != [0]
                         or (d["field10"] & 0xFF) != 1 or (d["field10"] >> 8) != 3):
                     bad.append(f"{name}#{index} bad 0x1246 size {size} fourth {fourth}")
@@ -543,12 +571,14 @@ def check(data_dir):
                     height_mismatch += 1
                     if not (d["width"] == 640 and d["height"] == 434 and header_h == 192):
                         bad.append(f"{name}#{index} unexpected height {header_h} vs {d['height']}")
-                if flag in (0x028E, 0x02AC, 0x02C6, 0x828E, 0x82C6):
+                if flag in ROW_SPAN_FLAGS:
                     for mip in present:
                         mip_start = payload + d["mip_offsets"][mip]
                         mip_size = d["mip_sizes"][mip]
                         try:
-                            validate_row_payload(blob, mip_start, mip_size)
+                            for _, row_bits, _, count in row_spans(blob, mip_start, mip_size):
+                                span_counts[row_bits] += 1
+                                span_bytes[row_bits] += count
                         except (ValueError, struct.error) as error:
                             bad.append(f"{name}#{index} mip {mip}: {error}")
                         else:
@@ -592,6 +622,12 @@ def check(data_dir):
         bad.append(f"column and raw payload counts {(column_payloads, raw_fallbacks)}")
     if (row_payloads, ambiguous_rows) != (30593, 4):
         bad.append(f"row payload counts {(row_payloads, ambiguous_rows)}")
+    if span_counts != {0: 1763538, 0x4000: 520408, 0x8000: 3554, 0xC000: 4265}:
+        bad.append(f"span high-bit counts {dict(span_counts)}")
+    if span_bytes != {0: 37116988, 0x4000: 36316989, 0x8000: 252207, 0xC000: 435669}:
+        bad.append(f"span byte counts {dict(span_bytes)}")
+    if frame_groups != {"groups": 1844, "frames": counts[0x1246]}:
+        bad.append(f"frame-group partition {dict(frame_groups)}")
     if name_total != 881 or name_hit != 0:
         bad.append(f"movie names {name_total} bare keys {name_hit}")
     for flag, (adj, stride_w, stride_h, count) in scores.items():
@@ -609,7 +645,8 @@ def check(data_dir):
             f"({name_hit} bare names are DAT keys); payload-length header {payload_n} "
             f"({height_mismatch} header-height mismatch); flag 0x1246 records {counts[0x1246]}; "
             f"{row_payloads} row spans and {ambiguous_rows} ambiguous spans, {column_payloads} compressed columns, "
-            f"{raw_fallbacks} raw fallback mips; {book_count} vector books, "
+            f"{raw_fallbacks} raw fallback mips; row counts {sorted(span_counts.items())}, "
+            f"literal bytes {sorted(span_bytes.items())}; frame groups {dict(frame_groups)}; {book_count} vector books, "
             f"{vectors['slots']} row slots, {vectors['short_indices']} indexes beyond decoded book data; empty {counts[0]}; rectangular raw samples store columns; "
             f"bad={'none' if not bad else '; '.join(bad[:6])}")
     print(line)
@@ -625,17 +662,20 @@ def main(argv=None):
     sub = parser.add_subparsers(dest="command")
     legacy = sub.add_parser("check", help="alias for --check")
     legacy.add_argument("--data", default=argparse.SUPPRESS, help="the game's DAT folder")
-    for name, fn in (("info", cmd_info), ("material", cmd_material),
+    for name, fn in (("info", cmd_info), ("material", cmd_material), ("rows", cmd_rows),
                      ("export", cmd_export), ("blob", cmd_blob)):
         p = sub.add_parser(name, description="Read a .TE_ texture bank from an original LoL2 level MIX.")
         p.add_argument("--data", default=argparse.SUPPRESS, help="the game's DAT folder")
         p.add_argument("--mix", required=True, help="level MIX path or a bare name, e.g. L1_DC.MIX")
         p.add_argument("--level", help="level name if it differs from the MIX file stem")
         p.set_defaults(func=fn)
-        if name in ("material", "export"):
+        if name in ("material", "export", "rows"):
             p.add_argument("--index", type=int, required=True, help="descriptor index")
+        if name in ("material", "export"):
             p.add_argument("--partial-mips", action="store_true",
                            help="accept fewer than five mip levels (count from field10)")
+        if name == "rows":
+            p.add_argument("--mip", type=int, choices=range(5), default=0, help="mipmap level")
         if name == "export":
             p.add_argument("--out", required=True, help="output directory")
             p.add_argument("--shade-row", type=int, default=None,

@@ -1,5 +1,20 @@
 # Creature frame group review
 
+## Original shipped texture banks
+
+**CONFIRMED.** The `0x1246` descriptors in the 15 original `.TE_` entries
+partition into 1,844 consecutive groups with 27,889 frames. `+0x08`
+gives the group size, and `+0x09` runs from zero to size minus one within
+each group. The table is section 2 of the expanded bank, located by the
+u32 at bank `+0x10`, with 56 bytes per descriptor. `0x1326FA–0x13270B`
+uses the low byte at `+0x08` as the multiplier for the resource selector
+and adds the base ID word at `+0x00`. The high-byte ordering is measured
+from the stored rows. Its use as a native input is **UNCONFIRMED**.
+`python3 tools/lol2_texture_container.py --check --data DAT` checks the
+partition and the associated vector records using the shipped archives.
+
+## Earlier cave cache measurements
+
 All1324 cave1246 descriptors partition exactly into93 groups. Descriptor
 byte8 is the group count; byte9 is the ordinal. Subtracting the ordinal
 from the descriptor index gives the group start. Each group has every
