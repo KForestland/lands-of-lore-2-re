@@ -2,6 +2,10 @@
 
 Newest first. One line per question worked on, new tool or visible change; each question bullet gives its state. Details are on the linked pages; the counts are in the [rating](../README.md#rating).
 
+## 20 November 2026
+
+- **Header bytes.** `LOLG.DAT` at file +0x3BCC4 is `00 02 00 00`. `lol2_cache_seed.py --check` re-reads those four bytes and does not interpret them ([executable tables](lol2-executable-tables.md)).
+
 ## 19 November 2026
 
 - **Header bytes.** `LOLG.DAT` at file +0x3BCCC is `02 00 00 00`. `lol2_cache_seed.py --check` re-reads those four bytes and does not interpret them ([executable tables](lol2-executable-tables.md)).

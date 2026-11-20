@@ -102,6 +102,8 @@ def compare(data):
         raise ValueError("LOLG.DAT+0x3BCBC differs")
     if program[0x3BCCC:0x3BCD0] != bytes.fromhex("02000000"):
         raise ValueError("LOLG.DAT+0x3BCCC differs")
+    if program[0x3BCC4:0x3BCC8] != bytes.fromhex("00020000"):
+        raise ValueError("LOLG.DAT+0x3BCC4 differs")
     for level, art, leved in BANK_FOLDERS:
         image, entry, _bank = find_texture_entry(data / f"{level}.MIX")
         raw = image[entry["offset"]:]
