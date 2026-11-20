@@ -69,17 +69,30 @@ Its 492-byte stream begins `00 B6 00 E0 01 E0 02 E0`. The first word
 `0xB600` advances six blocks without writing pixels, and the next
 three words select transparent vectors 0, 1 and 2.
 
-**CONFIRMED.** A walk of the 837 movies with the tool's `decode()`
-consumed 52,187 pointer-stream frames (a review count; `--check`
-asserts the 837 movies, not the frame total). All use 4×4 blocks. All commands
-completed within their row and consumed the exact stream length.
-The tool's `--check --full` walks the commands and checks vector
-indices against the selected codebook. **UNCONFIRMED.** The
-starting destination pixels of transparent draws on each seek and
-the equivalent behavior under other callback selections. Stream
-frames remain outside the tool's RGB export. Logging the destination
-buffer at callback `0x17D3D4` on the first frame after a seek settles
-it, as in the [frame-115 test](NEEDS_A_RUNNING_GAME.md#q12-which-history-do-two-exceptional-vqa-frames-read).
+**CONFIRMED.** `--check --full` expands 52,187 indexed frames in 837
+movies. Each emitted frame has exactly `VQHD.width × VQHD.height`
+bytes (`VQHD` payload +0x06 and +0x08), and each movie matches the
+frame count at payload +0x04. Every stored stream uses 4×4 blocks.
+The reader updates one destination across frames using the row
+progression and writes at `LOLG.DAT` `0x17D412–0x17D847`. Zero in an
+opaque vector writes palette index zero. Zero in a transparent vector
+or solid colour command preserves the prior destination. The stored
+`Cxxx` runs all have even counts, consistent with the native
+two-colour loop at `0x17D4D3–0x17D568`.
+
+`decode(blob, stream_pixels=True)` yields each frame's palette indices
+and a mask of pixels with known values. The mask starts clear and
+records pixels written since the first frame. The reader uses zero
+as a placeholder wherever the mask is clear. In the full check every
+one of the 52,187 frames still has some pixels with a clear mask.
+**UNCONFIRMED.** The
+native starting destination at callback `0x17D3D4` after initialisation
+or a seek, and equivalent behaviour under other callbacks. Capturing
+the native destination at that entry would settle these cases.
+The pointer-stream check keeps both arrays in memory. The smaller
+`--check` path draws all 20 frames of `CAN.MIX` entry 22 and checks
+the written-pixel mask for 2,948 known pixels on the first frame
+and 3,088 on the last, out of 5,440 pixels per frame.
 
 The two exceptional `VPTZ` frames use the ordinary pointer-table
 path. The absolute mode of `0x158D58` still permits short relative
@@ -108,8 +121,7 @@ pixels in two frames. This decoder is a reimplementation, not an execution of th
 `lol2_vqa_decode.py` is a chunk inspector: it lists `VQHD` fields and the chunk types (codebook, pointer,
 palette and audio chunks) of every VQA entry in a MIX, and does not produce pixels. `lol2_vqa_v2_decode.py`
 decodes pixels for version 2 pointer-table movies (4×4 and 4×2, partial or scheduled codebooks, and the
-raw `CBF0`/`CBP0`/`VPT0` forms). Malformed data raises `VQAError`. A `VPRZ`/`VPTR` movie is checked through the codebook and pointer
-commands. Frame export is available for pointer tables. The tool does not decode audio: top-level chunks other
+raw `CBF0`/`CBP0`/`VPT0` forms). Malformed data raises `VQAError`. The full check also expands `VPRZ`/`VPTR` commands into indexed frame buffers. Frame export is available for pointer tables. The tool does not decode audio: top-level chunks other
 than `VQHD`, `VQFR` and `CINF` are skipped. An unknown sub-chunk inside a frame raises `VQAError`.
 
 ## Checked
@@ -121,7 +133,7 @@ above was not re-run for this note.
 
 Run over every `WVQA` in `DAT/`. `--check` is the chunk census and one sample of each
 layout. `--full` walks every frame: 1,109 pointer-table movies pass, including the 4×2 movies and the
-byte-13 value 0 movies, and 837 pointer-stream movies have framed pointer commands. Two pointer-table frames require buffer history for their
+byte-13 value 0 movies, and 837 pointer-stream movies pass indexed frame expansion. Two pointer-table frames require buffer history for their
 relative LCW copies; the count is 1,109 + 837 + 2 = 1,948. Of the 130 movies with byte 13 equal to 0,
 10 stage `CBPZ` parts and 120 have a single `CBFZ`. `L4_HJI.MIX` entry 67 still expands to 9 of 9 frames.
 

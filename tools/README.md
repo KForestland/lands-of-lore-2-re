@@ -400,7 +400,7 @@ Run `python3 tools/lol2_numbers.py --check` to compare the generated item, spell
   - example: `python3 tools/lol2_plot_branches.py --data DAT`
 - `lol2_instance_field.py` — the sixteen readers and writers of instance byte +5, and the selector handlers of opcodes 2, 6, 9 and 15. `--check` requires the marked tables in `docs/lol2-item-handlers.md` and `docs/lol2-script-opcodes.md` to match. Part of `check_all.py`.
   - example: `python3 tools/lol2_instance_field.py --data DAT`
-- `lol2_vqa_v2_decode.py` — VQA v2 pointer-table decoder, including 4×2 blocks and `CIND`-scheduled codebooks (needs NumPy; Pillow for `--out`). `--check` is a chunk census and one sample of each layout. `--full` walks every movie. `VPRZ`/`VPTR` movies are checked only as far as the codebook. `--out` refuses a path inside the repository
+- `lol2_vqa_v2_decode.py` — VQA v2 pointer-table decoder, including 4×2 blocks and `CIND`-scheduled codebooks (needs NumPy; Pillow for `--out`). `--check` is a chunk census and one sample of each layout. `--full` walks every movie and checks all 52,187 indexed `VPRZ`/`VPTR` frames in memory. `--out` refuses a path inside the repository
 
 ### Container Utilities
 - `lol2_westwood_hash.py` — Westwood MIX hash functions (TD/RA era and TS/RA2 era)

@@ -19,8 +19,8 @@ Rules checked against the original movies (see docs/lol2-vqa-v2.md):
   The size on frame 0 is the compressed length of that frame's CBFZ.
 - Top-level VQFL chunks are seek snapshots. Linear playback skips them.
 - VPRZ (LCW) and VPTR (raw) are a different pointer stream. The codebook still
-  has to be whole vectors; their u16 commands are validated (validate_pointer_stream)
-  but not expanded to pixels.
+  has to be whole vectors. The full check draws the indexed commands into a
+  persistent frame and tracks pixels that depend on the initial destination.
 
 Malformed data and unknown chunks raise VQAError.
 
@@ -207,8 +207,8 @@ def _book(raw: bytes, vec: int, where: str):
     return raw
 
 
-def validate_pointer_stream(raw: bytes, columns: int, rows: int, vectors: int, where: str):
-    """Check the indexed VPR command words at LOLG.DAT 0x17D412–0x17D847."""
+def pointer_runs(raw: bytes, columns: int, rows: int, vectors: int, where: str):
+    """Yield validated row runs from the indexed callback at 0x17D412–0x17D847."""
     at = 0
     block = 0
     while block < columns * rows:
@@ -219,6 +219,8 @@ def validate_pointer_stream(raw: bytes, columns: int, rows: int, vectors: int, w
         opcode = word >> 12
         count = 1
         vector = None
+        colours = None
+        transparent = False
         if opcode < 8:
             vector = word
         elif opcode == 0xA:
@@ -231,31 +233,75 @@ def validate_pointer_stream(raw: bytes, columns: int, rows: int, vectors: int, w
                 vector = nested
             elif nested >= 0xC000:
                 vector = nested & 0xFFF
+                transparent = True
+            else:
+                colours = nested & 0xFF
         elif opcode == 0xB:
             count = (word >> 8) & 0xF
+            colours = word & 0xFF
         elif opcode == 0xC:
             count = word & 0xFFF
             if count & 1 or at + count > len(raw):
                 raise VQAError(f'{where}: invalid literal colour span at {at}')
+            colours = raw[at + 1:at + count:2], raw[at:at + count:2]
             at += count
         elif opcode == 0xE:
             vector = word & 0xFFF
-        elif opcode != 0xF:
+            transparent = True
+        elif opcode == 0xF:
+            colours = word & 0xFF
+        else:
             raise VQAError(f'{where}: unknown pointer command {word:#06x}')
         if not count or block % columns + count > columns:
             raise VQAError(f'{where}: pointer run {word:#06x} crosses a row at block {block}')
         if vector is not None and vector >= vectors:
             raise VQAError(f'{where}: vector {vector} outside codebook of {vectors}')
+        yield count, vector, transparent, colours
         block += count
     if at != len(raw):
         raise VQAError(f'{where}: {len(raw) - at} unread pointer bytes')
 
 
-def decode(blob: bytes, pixels: bool = False):
-    """Yield ('vpt', rgb_or_None) or ('stream', None) for each frame.
+def validate_pointer_stream(raw: bytes, columns: int, rows: int, vectors: int, where: str):
+    for _ in pointer_runs(raw, columns, rows, vectors, where):
+        pass
 
-    rgb is an (H, W, 3) uint8 array when pixels is set and the frame uses a
-    pointer table. A VPRZ/VPTR frame yields 'stream' and is not expanded.
+
+def draw_pointer_stream(raw, book, destination, known, where):
+    """Apply indexed runs in place. The separate mask tracks which pixels were written."""
+    import numpy as np
+
+    rows, columns = destination.shape[:2]
+    selectors = []
+    solids = len(book)
+    for count, vector, transparent, colours in pointer_runs(raw, columns, rows, solids, where):
+        if vector is not None:
+            selectors.extend([~vector if transparent else vector] * count)
+        elif isinstance(colours, tuple):
+            for hi, lo in zip(*colours):
+                selectors.extend(((solids + hi) if hi else ~solids,
+                                  (solids + lo) if lo else ~solids))
+        else:
+            selectors.extend([(solids + colours) if colours else ~solids] * count)
+
+    selector = np.asarray(selectors).reshape(rows, columns)
+    transparent = selector < 0
+    index = np.where(transparent, ~selector, selector)
+    colour = index >= solids
+    pixels = np.empty_like(destination)
+    pixels[colour] = (index[colour] - solids).astype(np.uint8)[:, None, None]
+    pixels[~colour] = book[index[~colour]]
+    mask = (pixels != 0) | ~transparent.reshape(rows, columns, 1, 1)
+    np.copyto(destination, pixels, where=mask)
+    known |= mask
+
+
+def decode(blob: bytes, pixels: bool = False, *, stream_pixels: bool = False):
+    """Yield a frame kind and optional pixels.
+
+    Table pixels (H, W, 3) are RGB. Stream pixels are an (indices, known)
+    pair of (H, W) arrays. Indices whose known mask is false depend on the
+    initial destination. Both arrays are snapshots of the linear draw state.
     """
     top, f = header(blob)
     _supported(f)
@@ -268,6 +314,9 @@ def decode(blob: bytes, pixels: bool = False):
     w, h, per = f['width'], f['height'], f['parts']
     gx, gy = w // bw, h // bh
     n = gx * gy
+    if stream_pixels:
+        destination = np.zeros((gy, gx, bh, bw), np.uint8)
+        known = np.zeros_like(destination, dtype=bool)
     vqfr = [pl for t, pl in top if t == b'VQFR']
     if not vqfr:
         raise VQAError('no VQFR frames')
@@ -323,7 +372,15 @@ def decode(blob: bytes, pixels: bool = False):
             tag = next(iter(pointers))
             where = f'VQFR {fi} {tag.decode()}'
             raw = _lcw(parts[tag], where) if tag == b'VPRZ' else parts[tag]
-            validate_pointer_stream(raw, gx, gy, len(cb) // vec, where)
+            if stream_pixels:
+                if (bw, bh) != (4, 4):
+                    raise VQAError(f'{where}: indexed callback requires 4x4 blocks')
+                book = np.frombuffer(cb, np.uint8).reshape(-1, bh, bw)
+                draw_pointer_stream(raw, book, destination, known, where)
+                rgb = tuple(grid.transpose(0, 2, 1, 3).flatten().reshape(h, w)
+                            for grid in (destination, known))
+            else:
+                validate_pointer_stream(raw, gx, gy, len(cb) // vec, where)
         else:
             raw = _lcw(parts[b'VPTZ'], f'VQFR {fi} VPTZ') if b'VPTZ' in parts else parts[b'VPT0']
             if len(raw) != 2 * n:
@@ -364,7 +421,7 @@ def frames(blob: bytes):
     """Yield RGB frames for a pointer-table movie. Raises if any frame is a pointer stream."""
     for kind, rgb in decode(blob, pixels=True):
         if kind != 'vpt':
-            raise VQAError('pointer stream (VPRZ/VPTR) is not expanded to pixels')
+            raise VQAError('RGB export is available for pointer-table movies')
         yield rgb
 
 
@@ -498,6 +555,13 @@ def _sample_decode(folder, bad):
         n = sum(1 for _ in frames(_entry_blob(folder, 'L4_HJI.MIX', 67)))
         if n != 9:
             bad.append(f'L4_HJI.MIX entry 67 expanded {n} frames')
+    if samples[('CAN.MIX', 22)] is not None and not any(b.startswith('CAN.MIX#22') for b in bad):
+        blob = _entry_blob(folder, 'CAN.MIX', 22)
+        known_counts = [int(known.sum()) for _, (_, known) in decode(blob, stream_pixels=True)]
+        if len(known_counts) != 20 or known_counts[0] != 2948 or known_counts[-1] != 3088:
+            bad.append('CAN.MIX#22: indexed sample has unexpected written-pixel counts')
+        else:
+            bits.append('CAN.MIX entry 22 20/20 indexed')
     return bits
 
 
@@ -506,6 +570,8 @@ def _walk_all(folder):
     bad = []
     layouts = {}
     streams = 0
+    stream_frames = 0
+    unknown_frames = 0
     total = 0
     for mix in sorted(Path(folder).glob('*.[Mm][Ii][Xx]')):
         data = mix.read_bytes()
@@ -521,14 +587,21 @@ def _walk_all(folder):
             try:
                 _, f = header(blob)
                 saw = {'vpt': 0, 'stream': 0}
-                for kind, _rgb in decode(blob, pixels=False):
+                for kind, rendered in decode(blob, stream_pixels=True):
                     saw[kind] += 1
+                    if kind == 'stream':
+                        indices, known = rendered
+                        shape = f['height'], f['width']
+                        if indices.shape != shape or indices.nbytes != shape[0] * shape[1] or known.shape != shape:
+                            raise VQAError(f'indexed frame does not match VQHD extent {shape}')
+                        unknown_frames += not known.all()
                 if saw['vpt'] + saw['stream'] != f['frames']:
                     raise VQAError(f"decoded {saw['vpt'] + saw['stream']} of {f['frames']} frames")
                 if saw['stream'] and saw['vpt']:
                     raise VQAError('frame mixes a pointer table with a pointer stream')
                 if saw['stream']:
                     streams += 1
+                    stream_frames += saw["stream"]
                 else:
                     key = _layout(f, False)
                     layouts[key] = layouts.get(key, 0) + 1
@@ -538,7 +611,7 @@ def _walk_all(folder):
     # one the decoder reports; it is not a separate filter on the movie name.
     open_rel = [b for b in bad if 'relative reference' in b]
     bad = [b for b in bad if b not in open_rel]
-    return total, streams, layouts, open_rel, bad
+    return total, streams, stream_frames, unknown_frames, layouts, open_rel, bad
 
 
 def check(folder, full=False) -> int:
@@ -552,18 +625,19 @@ def check(folder, full=False) -> int:
     ok = (not bad and total == 1948 and streams == 837 and layouts.get('partial codebook') == 976
           and layouts.get('4x2') == 5 and layouts.get('parts 0') == 130 and staged == 10 and single == 120)
     if full:
-        w_total, w_streams, w_layouts, open_rel, w_bad = _walk_all(folder)
+        w_total, w_streams, w_frames, w_unknown, w_layouts, open_rel, w_bad = _walk_all(folder)
         bad.extend(w_bad)
         named = '; '.join(open_rel) if open_rel else 'none'
         print(f'CHECK vqa full: {w_total} WVQA; pointer tables {sum(w_layouts.values())} '
               f'(partial codebook {w_layouts.get("partial codebook", 0)}, 4x2 {w_layouts.get("4x2", 0)}, '
-              f'parts 0 {w_layouts.get("parts 0", 0)}); pointer-stream {w_streams}; '
+              f'parts 0 {w_layouts.get("parts 0", 0)}); pointer-stream {w_streams} movies, '
+              f'{w_frames} indexed frames ({w_unknown} depend on the initial buffer); '
               f'relative-reference frames: {named}; bad={bad[:3] or "none"}')
         expected_relative_references = {
             'L20_BBI.MIX#25: VQFR 115 VPTZ: LCW: relative reference 0 outside output at 23849',
             'SPKSTON2.MIX#4: VQFR 492 VPTZ: LCW: relative reference 674 outside output at 549',
         }
-        ok = (ok and not bad and w_total == 1948 and w_streams == 837
+        ok = (ok and not bad and w_total == 1948 and w_streams == 837 and w_frames == 52187
               and sum(w_layouts.values()) == 1109 and w_layouts.get('partial codebook') == 974
               and w_layouts.get('4x2') == 5 and w_layouts.get('parts 0') == 130
               and len(open_rel) == 2 and set(open_rel) == expected_relative_references)
@@ -630,14 +704,14 @@ def main(argv=None) -> int:
             status = 1
             continue
         if saw['stream']:
-            kind = 'pointer stream (codebook checked, pixels not expanded)'
+            kind = 'pointer stream (use --check --full to verify indexed pixels)'
         else:
             kind = _layout(f, False)
         print(f"{name}: v{f['version']} {f['width']}x{f['height']} {f['frames']} frames, "
               f"{f['block_w']}x{f['block_h']} blocks, {f['fps']} fps, parts {f['parts']}: {kind}")
         if a.out is not None and len(blobs) == 1:
             if saw['stream']:
-                ap.error('this movie uses a pointer stream; pixels are not written')
+                ap.error('RGB export is available for pointer-table movies')
             print(f'wrote {save_frames(blob, a.out)} frames to {a.out}')
     if a.out is not None and len(blobs) != 1:
         ap.error('--out needs a single movie (give --entry or --key for a MIX)')
