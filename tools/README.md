@@ -11,7 +11,7 @@ details, sharing the drawing and interface in `level_html.py`.
 
 ## Setup
 
-- Python 3.10+
+- Python 3.10 or later
 - `pip install -r requirements.txt`: Pillow (picture output), capstone (disassembly checks), numpy (movie decoder)
 - `liblzo2` (`apt install liblzo2-2` on Debian/Ubuntu) for packed saves,
   level textures and the full `check_all.py` suite
@@ -429,7 +429,7 @@ CHECK repo_guard: N tracked files; game files, media, stray images, files over 3
 
 See [Draracle findings](../docs/draracle-restoration.md). Run
 `python3 tools/history/draracle/run_geometry_pipeline.py --game-root /path/to/lol2 --out /path/to/output`.
-This requires Python 3.10+ and Capstone 5, and produces corrected geometry and
+This requires Python 3.10 or later and Capstone 5, and produces corrected geometry and
 wall-record evidence from pinned original files.
 
 Run `python3 tools/lol2_numbers.py --check` to compare the generated item, spell, creature and form tables with the page. It prints `CHECK numbers: LoL2 tables match docs/NUMBERS.md`. [Numbers at a glance](../docs/NUMBERS.md)

@@ -2,7 +2,7 @@
 
 [Format quick reference](QUICK_REFERENCE.md) pairs each documented game format with a command and its evidence; the [format pages](formats/README.md) give one short page per format, each with a worked example.
 
-You need Python 3.10+, the packages in `requirements.txt`, `liblzo2` and your
+You need Python 3.10 or later, the packages in `requirements.txt`, `liblzo2` and your
 own copy of *Lands of Lore: Guardians of Destiny*. Point the tools at its
 `DAT` folder once.
 
