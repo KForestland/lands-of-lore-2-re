@@ -145,6 +145,8 @@ reused. Frame 492 reads five bytes at offsets −110 through −106 from the
 selected base. The clamp at `0x158DA3–0x158DA8` limits copy length by output
 capacity, while `0x158DAE–0x158DB2` uses the computed source.
 
+A measure-only parse of the two payloads finds one out-of-range command in frame 115, at input 23,847: length 3, distance 0, after 30,400 bytes. The stream then ends at 32,010 output bytes. Frame 492's 21 out-of-range copies split into 11 reads from before the output (59 bytes; the first is the known 5 bytes at -110) and 10 absolute copies from past the bytes written so far (279 bytes).
+
 **UNCONFIRMED.** The source bytes and the active codebook in the two
 specific frames are still open, apart from the frame-492 source bytes
 read in an [edited-save run](#scene-probes-from-edited-copies). The Extras menu exposed the intro and

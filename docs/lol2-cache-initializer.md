@@ -165,6 +165,6 @@ A new writable cache records the current bank sizes.
 
 **What was measured.** The first decoded block of the `L3_DH.MIX` texture bank is 1,048,576 bytes and begins `12 00 00 00 A2 06 00 00 F3 50 01 00 F3 50 01 00`. Inside that block the art path starts at offset 153 and the leved path starts at offset 410.
 
-**What was tried.** This decode is the same first block the page already uses for the folder names. The page already records the fifteen seed-to-bank size deltas and the version strings in `LOLG.DAT`.
+**What was tried.** This decode is the same first block the page already uses for the folder names. The page already records the fifteen seed-to-bank size deltas and the version strings in `LOLG.DAT`. A byte search of this copy finds each of the twelve differing sizes twice in `CDCACHE.LS_` and nowhere in `LOLG.DAT` or `LOLG.EXE`.
 
 **What would settle it.** Compare the same named first dwords, and the installer seed rows by the same name hash, in an earlier original edition.
