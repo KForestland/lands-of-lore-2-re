@@ -87,7 +87,9 @@ The first external call at file `ARENA.MIX+0x377` takes table
 offset +0x18, which resolves to `0xEF028` via file
 `LOLG.DAT+0x1CF968`. The seven absolute-indirect call sites in the
 module use host offsets `0x18`, `0x1C`,
-`0x54`, `0x68` and `0x84`. The initialization copies some
+`0x54`, `0x68` and `0x84`. Across the 47 room modules the same
+host-table copy resolves 3134 absolute indirect calls to 63 host
+functions ([spoken lines](lol2-speech.md)). The initialization copies some
 slots to displacements that differ from their offsets in the host table.
 
 **CONFIRMED.** One room-change import is host table +0x88 → `0xEF558`.

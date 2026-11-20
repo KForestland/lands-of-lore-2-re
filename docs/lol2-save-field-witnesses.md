@@ -107,8 +107,8 @@ Both loaders apply section-specific fixups after the read
 
 | Section | Field or payload | Writer address | Reader address | Meaning |
 |---|---|---|---|---|
-| Slot +0x094 | u32 | `0xE777D` | Bulk header read at `0xE687E` | **UNCONFIRMED** semantic role. The writer supplies zero. |
-| Slot +0x098 | u32 | `0xE78B1` | Bulk header read at `0xE687E` | **UNCONFIRMED** consumer of value 1. |
+| Slot +0x094 | u32 | `0xE777D` | Bulk header reads at `0xE6168`, `0xE6283`, `0xE687E` and `0xEB7AE` | **UNCONFIRMED** semantic role. The writer supplies zero (`xor ecx, ecx` at `0xE7770`). All four reads pass the 0x25A-byte buffer to `0xEB82C`, which does not address this dword, and no code in the four reading functions addresses it. |
+| Slot +0x098 | u32 | `0xE78B1` | `cmp dword [ebp-0x156], 0` at `0xE62D2` in `0xE61F4` | **CONFIRMED.** Preview flag. The writer stores the constant from `mov edx, 1` at `0xE78A0`. When it is nonzero the reader allocates an image of width +0x9C and height +0xA0 (`0xE62FA`), seeks to +0xA4 (`0xE630E`) and reads the preview through `0xEB600` (`0xE6323`); when it is zero it skips the preview. |
 | Slot +0x20A…+0x259 | 20 level lengths | `0xE7BA5`, `0xE7C56` | `0xEB8D0–0xEB8EA` | **CONFIRMED.** Byte lengths of levels 1–20. A zero length skips that level's version comparison. |
 | L block +0xD4 | address-map status | `0xE9719` clears, `0xEB30D` sets 1, `0xE83DF` writes header | `0xE97AC` | **CONFIRMED.** Fixup failure flag. `0xEB2EC–0xEB30D` sets it when a nonnull pointer fails all 26 ranges. The map starts four bytes into the block, so map +0xD0 is block +0xD4. Residue in short blocks is **UNCONFIRMED**; see the stack watch above. |
 | G4 | +0 and following bytes | `0xE8723` | UI strike callers of `0x88D2C`, e.g. `0x7DAC0` | UI and combat context. Individual fields beyond those joined in the [item note](lol2-item-format.md) remain **UNCONFIRMED**. |
@@ -168,7 +168,7 @@ The following probes isolate the residual table cells.
 
 | Cell | Settling test |
 |---|---|
-| Slot +0x94/+0x98 | Trace the two dwords after the 0x25A-byte read at `0xE687E` through the offset checks, then compare the same fields when the writer at `0xE777D`/`0xE78B1` runs for a new and an overwritten slot. |
+| Slot +0x94 | The writer stores zero. The four 0x25A-byte reads pass the buffer to `0xEB82C`, which does not address it, and the four reading functions do not either. Follow the header pointers that `0xE66F4` passes to callees (+0xA8 at `0xE6B55` and `0xE6D19`, +0x180 at `0xE6DEA`) for a read of +0x94. |
 | G4/G5/G6/G8 | Trap reads of the restored addresses after `0xE6CFC`. Use one combat overlay for G4, one movie resume for G5, the rebased G6 +8 value at `0xE95B4`, and one menu toggle for G8. Pair the first read with its selector and byte displacement. |
 | G7/G9/G10 | Log the index supplied to `0xEF39B` at each cue/scene caller, then find the matching set and clear. For G9, trace row-indexed readers of the byte array from `0x9567B` for any mask other than 1. For G10, sample the globals selected at `0xE87E2` on either side of one `0xE0A67` frame. |
 | L0–2, L3/4 and L5/6 | Trace each input passed to the selector arms `0xE8940–0xE89B8` back to the level initializer, allowing indexed/structure-relative writes. Follow pointer and count from the two 0x1C-byte headers through the reader at `0x66474` and observe one selected 8-byte row. |
@@ -245,8 +245,8 @@ of either row before assigning meaning.
 
 ### Q11
 
-**What was measured.** At `0xE78B1` the six bytes are `89 95 5A FE FF FF`, storing `edx` at `[ebp-0x1A6]`. The next instruction is `8B 40 04`, and that displacement is header +0x98 when the header base is `ebp-0x23E`.
+**What was measured.** At `0xE78B1` the six bytes are `89 95 5A FE FF FF`, storing `edx` at `[ebp-0x1A6]`. `edx` was set to 1 at `0xE78A0` and is not written again before that store. With the header base at `ebp-0x23E`, `[ebp-0x1A6]` is header +0x98. The next instruction, `8B 40 04` at `0xE78B7`, reads `[eax+4]`, and the store at `0xE78BA` writes that value to `[ebp-0x1A2]`, header +0x9C. The following copy of `[eax+8]` lands at header +0xA0. Header +0x94 is the zero stored at `0xE777D` from `xor ecx, ecx` at `0xE7770`.
 
-**What was tried.** This read is the writer the witness table names for header +0x98. The page already records that writer, the bulk header read at `0xE687E`, and the header base at `ebp-0x23E`.
+**What was tried.** Four functions read the 0x25A-byte header: `0xE6110` (read `0xE6168`), `0xE61F4` (`0xE6283`), `0xE66F4` (`0xE687E`) and `0xEB784` (`0xEB7AE`). Each passes the buffer to `0xEB82C`. That validator makes no call, and through the return at `0xEB904` it does not address +0x94 or +0x98: its constant displacements avoid both, and its indexed reads `[edx+0x40]` and `[edx+0x206]` take the level range from the rows at data `0xCA20`, which ends at 20 for level ids 0–20, so they stop at +0x90 and +0x256. **CONFIRMED** `0xE61F4` tests +0x98 at `0xE62D2` (`83 BD AA FE FF FF 00`, header base `ebp-0x1EE`) and, when it is nonzero, reads +0xA0, +0x9C and +0xA4 to load the preview image, so +0x98 is the preview flag. The four reading functions, followed through their branches with the stack depth tracked, do not address +0x94.
 
-**What would settle it.** Use the per-field read addresses in the save witness table, starting with header +0x94/+0x98 after `0xE687E`.
+**What would settle it.** A read of +0x94 in a callee that receives a pointer into the header (`0xE66F4` passes +0xA8 and +0x180). The validator and the four reading functions are not that reader.

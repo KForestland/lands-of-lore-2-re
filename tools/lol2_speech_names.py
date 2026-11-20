@@ -4,7 +4,8 @@
 --data is the game DAT folder, or $LOL2_DAT. LOLG.DAT sits in the parent of
 that folder. --check re-reads the format bytes, the switch, the eight arms,
 the branch that skips the .aud probe, two MCEL.MIX keys, the MCEL module's
-import of the category switch and the cue table loaded from LOCALLNG.MIX.
+import of the category switch, the cue table loaded from LOCALLNG.MIX, and
+the absolute indirect calls of the 47 room modules.
 It writes nothing unless --out is set, and then only the check line.
 """
 
@@ -270,6 +271,165 @@ def cue_footer(dat_dir):
     return bank, start + directory, footer, cues
 
 
+def _host_load(body, at):
+    """mov reg, [eax+disp] whose displacement is a host-table offset. Returns (reg, offset, next)."""
+    if at + 2 > len(body) or body[at] != 0x8B:
+        return None
+    modrm = body[at + 1]
+    reg = (modrm >> 3) & 7
+    mode = modrm & 0xC7
+    if mode == 0x80 and at + 6 <= len(body):
+        return reg, struct.unpack_from("<I", body, at + 2)[0], at + 6
+    if mode == 0x40 and at + 3 <= len(body) and body[at + 2] < 0x80:
+        return reg, body[at + 2], at + 3
+    if mode == 0x00:
+        return reg, 0, at + 2
+    return None
+
+
+def _slot_copies(body, sites):
+    """Relocated slot (body offset) to the host-table offset copied into it.
+
+    The last copy of a run loads through eax and stores with A3, because that load
+    overwrites the table pointer. Earlier copies are mov reg, [eax+disp]; mov [slot], reg.
+    """
+    slots = {}
+    limit = len(body)
+    for at in range(limit):
+        loaded = _host_load(body, at)
+        if loaded is None:
+            continue
+        reg, host_off, nxt = loaded
+        slot = disp_at = None
+        if reg == 0 and nxt + 5 <= limit and body[nxt] == 0xA3:
+            slot = struct.unpack_from("<I", body, nxt + 1)[0]
+            disp_at = nxt + 1
+        elif nxt + 6 <= limit and body[nxt] == 0x89 and body[nxt + 1] == ((reg << 3) | 5):
+            slot = struct.unpack_from("<I", body, nxt + 2)[0]
+            disp_at = nxt + 2
+        if slot is None or disp_at not in sites or host_off % 4 or host_off > 0x13C:  # 80 slots, 0xE92C..0xEA6B
+            continue
+        previous = slots.get(slot)
+        if previous is not None and previous != host_off:
+            raise ValueError("room slot %X filled twice" % slot)
+        slots[slot] = host_off
+    return slots
+
+
+def _function_calls(image, va):
+    """Direct call targets of the function at va, following its branches to every ret.
+
+    Returns (targets, extent): extent is the end of the last reached instruction minus va.
+    """
+    import capstone  # only the room-import census needs it
+    from capstone.x86 import X86_OP_IMM
+
+    decoder = capstone.Cs(capstone.CS_ARCH_X86, capstone.CS_MODE_32)
+    decoder.detail = True
+    seen, targets, work, end = set(), set(), [va], va
+    while work:
+        at = work.pop()
+        while at not in seen:
+            insn = next(decoder.disasm(image[at + CODE_BIAS:at + CODE_BIAS + 16], at), None)
+            if insn is None:
+                raise ValueError("host function decode at 0x%X" % at)
+            seen.add(at)
+            end = max(end, insn.address + insn.size)
+            name = insn.mnemonic
+            if name == "ret":
+                break
+            operand = insn.operands[0] if insn.operands else None
+            if name == "call" and operand.type == X86_OP_IMM:
+                targets.add(operand.imm)
+            elif name == "jmp":
+                if operand.type != X86_OP_IMM:
+                    break
+                at = operand.imm
+                continue
+            elif name.startswith("j") and operand.type == X86_OP_IMM:
+                work.append(operand.imm)
+            at = insn.address + insn.size
+    return targets, end - va
+
+
+def check_room_imports(dat_dir, image):
+    """The 47 room modules' absolute indirect calls, resolved through the host-table copy."""
+    from lol2_media_check import BANNER, cstr, mix_dir, read_at, room_module_layout
+
+    host_file = DATA_BIAS + 0xE92C
+    modules = []
+    for index in range(46):
+        ptr = struct.unpack_from("<I", image, DATA_BIAS + 0xEA6C + 4 * index)[0]
+        prefix = cstr(image, DATA_BIAS + ptr)
+        cut = prefix.find("_")
+        path = os.path.join(dat_dir, prefix[:cut].upper() + ".MIX")
+        _size, _body, entries = mix_dir(path)
+        hits = []
+        for entry in entries:
+            if entry["size"] < 0x68:
+                continue
+            raw = read_at(path, entry["offset"], entry["size"])
+            if raw[:len(BANNER)] == BANNER:
+                hits.append(raw)
+        if len(hits) != 1:
+            raise ValueError("%s code entries %s" % (prefix, len(hits)))
+        modules.append((hits[0], 0x34))
+    arena = os.path.join(dat_dir, "ARENA.MIX")
+    _size, _body, entries = mix_dir(arena)
+    modules.append((read_at(arena, entries[1]["offset"], entries[1]["size"]), 0x2C))
+    if len(modules) != 47:
+        raise ValueError("room module count")
+
+    counts = {}
+    callers = {}
+    total = 0
+    for raw, dispatch in modules:
+        body_length, _offset, sites = room_module_layout(raw, dispatch)
+        body = raw[len(BANNER) + 16:len(BANNER) + 16 + body_length]
+        sites = set(sites)
+        slots = _slot_copies(body, sites)
+        for at in range(len(body) - 6):
+            if body[at:at + 2] != b"\xFF\x15" or at + 2 not in sites:
+                continue
+            total += 1
+            slot = struct.unpack_from("<I", body, at + 2)[0]
+            host_off = slots.get(slot)
+            if host_off is None:
+                raise ValueError("unresolved room call")
+            stored = struct.unpack_from("<I", image, host_file + host_off)[0]
+            va = (stored + RELOC) & 0xFFFFFFFF
+            counts[va] = counts.get(va, 0) + 1
+            callers.setdefault(va, set()).add(id(raw))
+    if total != 3134 or len(counts) != 63 or counts.get(0xEE784) != 763 or counts.get(0xF16D8) != 31:
+        raise ValueError("room import census %s %s" % (total, len(counts)))
+    if len(callers[0xEE784]) != 37 or len(callers[0xF16D8]) != 28:
+        raise ValueError("room import callers")
+    # Each host function is walked through its branches to every ret: none calls the text
+    # loader directly, and the longest (0xEE784) ends 0x5DF bytes after its entry.
+    extents = {}
+    for va in counts:
+        targets, extents[va] = _function_calls(image, va)
+        if 0xCF014 in targets:
+            raise ValueError("room import calls the text loader")
+    if max(extents.values()) != 0x5DF or extents[0xEE784] != 0x5DF:
+        raise ValueError("room import extents")
+    # Indirectly, host +0xC4 (0xEE540) reaches the loader through the menu 0xB9204.
+    for site, target in ((0xEE692, 0x7555C), (0x7559B, 0x74ECC), (0x74F99, 0xB9204), (0xB93CF, 0xCF014)):
+        if image[site + CODE_BIAS] != 0xE8 or rel_target(image, site) != target:
+            raise ValueError("menu route to the text loader")
+    if (struct.unpack_from("<I", image, host_file + 0xC4)[0] + RELOC) & 0xFFFFFFFF != 0xEE540:
+        raise ValueError("host slot +0xC4")
+    window = bytes.fromhex(
+        "8b4424068b15cc690200c1f8106a00668b044225ffff0000508b54240c5268683c0200e80429ffff83c410c3"
+    )
+    if image[0xF16D8 + CODE_BIAS:0xF16D8 + CODE_BIAS + len(window)] != window:
+        raise ValueError("cue index import")
+    if rel_target(image, 0xF16FB) != 0xE4004:
+        raise ValueError("cue index import calls cleanup")
+    if struct.unpack_from("<I", image, host_file + 0x13C)[0] + RELOC != 0xF16D8:
+        raise ValueError("host slot +0x13C")
+
+
 def check(dat_dir):
     image = open(parent_file(dat_dir, "LOLG.DAT"), "rb").read()
     if len(image) != 1977007:
@@ -358,6 +518,7 @@ def check(dat_dir):
             first_hash = key
     if ww_hash_v1(ALIAS) != first_hash:
         raise ValueError("alias hash")
+    check_room_imports(dat_dir, image)
     return ("CHECK speech: format at file 0x1C427A; switch at 0xF133C enters "
             "eight arms through slots at 0xF131C; cue id from table 0x269CC "
             "calls 0xE3924; the reader loads 404 footer words from the EFX bank; "

@@ -12,7 +12,7 @@ Run the checks: `python3 tools/check_all.py` with `$LOL2_DAT` set: 46 checks, al
 
 <!-- rating:begin -->
 - **Files read:** 83 of 83 files in `DAT` (1,915.6 of 1,915.6 MiB) have their whole layout read by a tool here: every byte belongs to a known header, directory, entry, chunk, segment or resource, or to zero padding between them; the DOS part of `SETUP.EXE` is counted by its length (what is inside an entry may still be only partly understood).
-- **Rules traced:** the pages mark 742 statements CONFIRMED (proved from the program code or the files) and 178 UNCONFIRMED (a reading not yet proved), on 121 current pages; old notes kept as history are not counted.
+- **Rules traced:** the pages mark 746 statements CONFIRMED (proved from the program code or the files) and 176 UNCONFIRMED (a reading not yet proved), on 121 current pages; old notes kept as history are not counted.
 - **Seen in the running game:** 4 of 9 probes that need the original game running are answered (a question can have more than one probe); 0 of them rest on edited saves only.
 - **Open questions:** 20 numbered questions: 5 answered, 14 mostly answered, 1 partly answered.
 <!-- rating:end -->
@@ -38,7 +38,7 @@ Run the checks: `python3 tools/check_all.py` with `$LOL2_DAT` set: 46 checks, al
 | Spells | [Costs, acquisition and rewards](lol2-spells.md), [spell dispatch](lol2-spell-dispatch.md) | `lol2_numbers --check`: the effect rows at `LOLG.DAT+0x1CC980` and school rows at `+0x1CCB44` join across all 113 effects | Q9 |
 | Saves | [Native save format](lol2-save-format.md), [save sections](lol2-save-sections.md) | 27 slots from the reference `SAVEGAME` folder (written by the original game during one player's play, not shipped) and 149 nonempty level blocks checked; 6,765 nonempty level spans decode to their stated lengths; one pickup compared in a running game ([save sections](lol2-save-sections.md#controlled-pickup-in-l20_bb)) | Q11 |
 | Executable | [Addresses and tables](lol2-executable-tables.md) | `lol2_parse_le`: the DOS 1.30 LE header, 5 objects, all 340 page-map rows, 341 fixup boundaries (337,375 record bytes) and the last page reaching the end of `LOLG.DAT` | |
-| Text | [Message tables](lol2-text-tables.md), [spoken lines](lol2-speech.md) | `lol2_text_tables.py` re-reads the five named TRR tables. `lol2_speech_names.py` re-reads the name format, the category switch, two `MCEL.MIX` keys, the MCEL import of the switch and the cue-table loader, and checks all 404 cue words | Q13 |
+| Text | [Message tables](lol2-text-tables.md), [spoken lines](lol2-speech.md) | `lol2_text_tables.py` re-reads the five named TRR tables. `lol2_speech_names.py` re-reads the name format, the category switch, two `MCEL.MIX` keys, the MCEL import of the switch and the cue-table loader, checks all 404 cue words, and resolves the 3134 indirect calls of the 47 room modules | Q13 |
 
 ## Tools
 

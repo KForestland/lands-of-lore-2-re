@@ -29,6 +29,10 @@ def check(executable):
         (0xE95B4, 0xEB2C8), (0xD36FE, 0x115D6C),
         (0x64DBE, 0x66664), (0xE8020, 0x145F2C), (0x7CF23, 0xFA5C4),
         (0xE7C47, 0x118864), (0xE68BB, 0xEB82C),
+        (0xEB7AE, 0x118820), (0xEB7D9, 0xEB82C),
+        (0xE6168, 0x118820), (0xE61AF, 0xEB82C),
+        (0xE6283, 0x118820), (0xE62C2, 0xEB82C),
+        (0xE62FA, 0x1510E9), (0xE630E, 0x118BEC), (0xE6323, 0xEB600),
         (0xA053E, 0x67460), (0xA0553, 0x110754),
         (0x9E053, 0x67424), (0x9DCD1, 0x110724),
     ):
@@ -52,6 +56,16 @@ def check(executable):
         (0xE7B79, "8d45cc"), (0xE7BA5, "c70000000000"),
         (0xE7C53, "8b556e0102"),
         (0xEB8D0, "8b8a060200008d34850000000085c974ce8b4a40"),
+        (0xE7770, "31c9"), (0xE777D, "898d56feffff"),
+        (0xE78A0, "ba01000000"), (0xE78B1, "89955afeffff"),
+        (0xE78B7, "8b4004"), (0xE78BA, "89855efeffff"),
+        (0xE686C, "685a020000"), (0xE6890, "3d5a020000"), (0xE68B8, "89e0"),
+        (0xEB7A1, "685a020000"), (0xEB7A8, "8d442404"),
+        (0xE615B, "685a020000"), (0xE6162, "8d442404"),
+        # Preview reader: header at ebp-0x1EE; +0x98 tested, then +0xA0, +0x9C and +0xA4 read.
+        (0xE6274, "685a020000"), (0xE627B, "8d8512feffff"),
+        (0xE62D2, "83bdaafeffff007454"), (0xE62EB, "8b95b2feffff"),
+        (0xE62F2, "8b8daefeffff"), (0xE6306, "8bb5b6feffff"),
         (0x5DE52, "8b15e82c02008d04950000000029d08b15782d0200c1e00201d0"),
         (0x9E037, "6a008b6c24085557e8a8ab070083c40c8b44243c505789838c000000"),
         (0x9DC9D, "6a008b5c2424538b8c24bc06000051e83baf070083c40c8b44245cc1e803"),
@@ -62,6 +76,7 @@ def check(executable):
         start = address + CODE_BIAS
         if image[start:start + len(expected)] != expected:
             raise ValueError(f"save or clock instruction at 0x{address:X}")
+    _validator_skips_header_dwords(image)
     # Adjustment arms are stored object-relative; adding 0x59024 gives the analysis address.
     table = 0x1205D8
     for section, target in ((26, 0xE97AC), (27, 0xE97AC),
@@ -78,6 +93,44 @@ def check(executable):
                 raise ValueError(f"section {section} data selector")
     return ("CHECK native save: header, global and level payload paths, "
             "timer restore and menu clock restart, actor links and automap markers")
+
+
+def _validator_skips_header_dwords(image):
+    """The validator after the four header reads does not address +0x94 or +0x98.
+
+    Its constant displacements avoid both dwords and it makes no call. Its two indexed
+    reads, [edx+0x40] and [edx+0x206] with edx = header + 4*level, take the level range
+    from bytes +5/+6 of the 8-byte rows at data 0xCA20; for level ids 0-20 the range
+    ends at 20, so the reads stop at +0x90 and +0x256.
+    """
+    import capstone
+    from capstone.x86 import X86_OP_MEM
+
+    start, end = 0xEB82C, 0xEB904
+    if image[end + CODE_BIAS] != 0xC3:
+        raise ValueError("header validator return")
+    decoder = capstone.Cs(capstone.CS_ARCH_X86, capstone.CS_MODE_32)
+    decoder.detail = True
+    cursor = start
+    indexed = set()
+    for insn in decoder.disasm(image[start + CODE_BIAS:end + CODE_BIAS], start):
+        if insn.address != cursor:
+            raise ValueError("header validator disassembly")
+        if insn.mnemonic == "call":
+            raise ValueError("header validator call")
+        for operand in insn.operands:
+            if operand.type == X86_OP_MEM and operand.mem.disp in (0x94, 0x98):
+                raise ValueError("header validator reads +0x94 or +0x98")
+            if operand.type == X86_OP_MEM and operand.mem.base == capstone.x86.X86_REG_EDX:
+                indexed.add(operand.mem.disp)
+        cursor = insn.address + insn.size
+    if cursor != end:
+        raise ValueError("header validator span")
+    if indexed != {0x40, 0x206}:
+        raise ValueError("header validator indexed reads")
+    data = 0x1C1024 + 0xCA20
+    if max(image[data + 8 * level + 6] for level in range(21)) != 20:
+        raise ValueError("header validator level range")
 
 
 def check_surface_tables(data_dir):

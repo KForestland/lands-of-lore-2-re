@@ -102,8 +102,10 @@ The TRR scan covered every MIX archive in `DAT` and beside it (except
 `CDCACHE.MIX`) and the loose TRRs, and finds only the eight tables
 above; the nine direct calls of the loader `0xCF014` name only the five message
 files. The eight spoken-line arms pass a cue to `0xE3924`, which stores it on the voice at
-`0xE3A08` ([Q13 close-out](lol2-speech.md#q13)). **Test:** follow
-indirect calls from the other room modules and match an index to voice
-+4 or the table index from `0xEEB17`; a text reader found that way, or
-a second container not read through `0xCF014`, would settle it. Until
-then this is [Q13](OPEN_QUESTIONS.md), partly answered.
+`0xE3A08` ([Q13 close-out](lol2-speech.md#q13)). **Test:** the 47 room
+modules' 3134 absolute indirect calls resolve to 63 host functions, and
+none of those calls `0xCF014` directly; host +0xC4 reaches it four
+calls deep, in the options menu `0xB9204`. Host slot +0x13C (`0xF16D8`)
+indexes the cue words and calls `0xE4004`. A text reader outside those
+63 functions, or a second container not read through `0xCF014`, would
+settle it. Until then this is [Q13](OPEN_QUESTIONS.md), partly answered.

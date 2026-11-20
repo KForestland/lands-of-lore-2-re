@@ -288,7 +288,11 @@ these rows use, so it is not needed to reproduce them.
 - **UNCONFIRMED.** The meanings of unlabelled slot-header bytes remain
   open. All 27 headers were checked against the fixed-size write at
   `0xE7CE1–0xE7CFE`. The 20 level stamps end at +0x93. The dword at
-  +0x94 is explicitly zeroed at `0xE777D`. The 20 level lengths at
+  +0x94 is explicitly zeroed at `0xE777D` (`xor ecx, ecx` at `0xE7770`).
+  +0x98 stores the constant 1 from `0xE78A0` at `0xE78B1`. The 20 level lengths at
   +0x20A through +0x259 are now mapped in the [save header](lol2-save-format.md#slot-header-and-directory).
-  To name +0x94 and +0x98, watch both dwords just after the header reads
-  at `0xE687E` and `0xEB7AE`, and distinguish a typed read from a bulk copy.
+  +0x98 is the preview flag: `0xE61F4` tests it at `0xE62D2` before it
+  loads the preview. The four header reads (`0xE6168`, `0xE6283`,
+  `0xE687E`, `0xEB7AE`) pass the 0x25A bytes to `0xEB82C`, which does not
+  address +0x94, and the four reading functions do not either. A read of
+  +0x94 in a callee given a pointer into the header would name it.

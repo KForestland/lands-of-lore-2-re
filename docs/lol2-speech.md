@@ -169,10 +169,23 @@ the voice. The 533 direct uses above are the player, the cleanup call,
 a compare with voice +4, the null test or the shutdown store, and are
 not that reader. The five
 known TRR tables from `0xCF014` also have different row counts from the
-1,179-row EFX bank. To settle it, follow indirect calls from the other
-room modules and match an index to voice +4 or the table index from
-`0xEEB17`. The loaded table links to the bank rows at the offsets
-above. A text consumer would need its own code or data witness.
+1,179-row EFX bank. The 47 room modules make 3134 absolute indirect
+calls, each through a slot copied from the host table at `0xE92C`.
+Those calls resolve to 63 host functions. Each function was walked
+through its branches to every return (the longest, `0xEE784`, ends
+0x5DF bytes after its entry), and none calls `0xCF014` directly. The
+modules make no call through a register or a register-based address (linear disassembly).
+Through its own callees, host +0xC4 (`0xEE540`, 14 calls) reaches the
+loader four calls deep (`0xEE692`, `0x7559B`, `0x74F99`) in the menu
+`0xB9204`, which loads `opttext.trr` at `0xB93CF`; that is the option
+text, not a cue reader. Deeper callees of the other functions were not
+walked. 763 of the calls, from 37
+modules, enter `0xEE784`. Host slot +0x13C is `0xF16D8` (31 calls from
+28 modules): the dword at `[esp+6]`, shifted right by 16, is the low
+word of the second argument, and that word indexes the cue table at
+`0x269CC` before the call to `0xE4004`. A text reader is still not
+among these imports. A reader outside these 63 functions, or a second
+container, would settle it.
 
 ## Close-out
 
@@ -180,6 +193,6 @@ above. A text consumer would need its own code or data witness.
 
 **What was measured.** At `0xE3A08` the three bytes are `89 43 04`, storing the dword loaded from `[esp+0x40]` by `8B 44 24 40` at `0xE3A01` into `[ebx+4]`. The other arm at `0xE3AF9` is `89 42 04`.
 
-**What was tried.** This disassembly sits inside the player already walked from `0xE3924` to `0xE3AA6`. The page already counts 533 direct uses of the cue-table pointer, including 21 compares with voice +4.
+**What was tried.** This disassembly sits inside the player already walked from `0xE3924` to `0xE3AA6`. The page already counts 533 direct uses of the cue-table pointer, including 21 compares with voice +4. The 47 room modules' 3134 absolute indirect calls resolve to 63 host functions, and none of those calls `0xCF014` directly (each walked to every return). Host +0xC4 reaches it only four calls deep, in the options menu `0xB9204`. Host slot +0x13C (`0xF16D8`) indexes the cue words and calls `0xE4004`.
 
-**What would settle it.** The running-game test is not yet run ([probes not yet run](NEEDS_A_RUNNING_GAME.md#probes-not-yet-run)). Follow indirect calls from the other room modules and match an index to voice +4 or the table index from `0xEEB17`. The direct pointer loads are not that reader.
+**What would settle it.** The running-game test is not yet run ([probes not yet run](NEEDS_A_RUNNING_GAME.md#probes-not-yet-run)). A text reader outside these 63 host functions, or a second container, would settle it. The direct pointer loads are not that reader.
