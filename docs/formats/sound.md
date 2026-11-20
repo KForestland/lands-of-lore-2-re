@@ -6,7 +6,7 @@
 |---|---|---|
 | Sound effects and voice | `LOCALLNG.MIX` entry 4 (key 1570429112): one bank of named AUD files; opcode 20 passes a 16-bit cue id | [audio-inventory.md](../audio-inventory.md), [sound cues](../lol2-sound-cues.md) |
 | Music (digital) | `DMUSIC.MIX` (next to `DAT/`; give the tools its full path): 33 AUD IMA tracks, 32 of them `MUSIC\<stem>.AUD`; opcode 210 selects the stem | [lol2-music-2026-11.md](../lol2-music-2026-11.md), [music selection](../lol2-music-selection.md) |
-| Music (MIDI) | `LOCAL.MIX` (104 entries) holds 33 `HMI-MIDISONG` files, 32 of them `MUSIC\<stem>.HMI` (a flag byte chooses `.AUD` or `.HMI`, see music selection). The event stream converts to standard MIDI. The same archive also holds 33 IFF `FORM` entries; entry 0 starts `FORM` / `XDIR`, and those are not decoded here | [music note](../lol2-music-2026-11.md), [music selection](../lol2-music-selection.md) |
+| Music (MIDI) | `LOCAL.MIX` (104 entries) holds 33 `HMI-MIDISONG` files, 32 of them `MUSIC\<stem>.HMI` (a flag byte chooses `.AUD` or `.HMI`, see music selection). The event stream converts to standard MIDI. The same archive also holds 33 IFF `FORM` entries; entry 0 starts `FORM` / `XDIR`, and those are [XMIDI scores](xmi.md) checked by `lol2_xmi_reader.py` | [music note](../lol2-music-2026-11.md), [music selection](../lol2-music-selection.md) |
 | Movies | VQA version 2 in room and level archives | [lol2-vqa-v2.md](../lol2-vqa-v2.md) |
 
 ## Sound bank layout

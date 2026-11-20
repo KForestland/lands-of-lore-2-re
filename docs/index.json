@@ -805,7 +805,8 @@
       "question_references": [],
       "tools": [
         "tools/lol2_aud_decode.py",
-        "tools/lol2_sound_bank.py"
+        "tools/lol2_sound_bank.py",
+        "tools/lol2_xmi_reader.py"
       ]
     },
     {
