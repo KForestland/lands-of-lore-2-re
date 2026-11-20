@@ -48,7 +48,31 @@ write and stack if it occurs, then whether the same object reaches
 identify that trial's producer. The already-known lesson and
 effect-0x0A cast provide zero-valued controls.
 
-Not yet run; see [Probes not yet run](#probes-not-yet-run).
+**CONFIRMED, live edit, not settling (2026-11-20).** The same
+game-written autosave (`e2393dbe4d2b`, no bytes changed) was loaded
+and, in memory only, the lesson object's learned count was set from
+5 to 0. That object is data `0x2375D`, the one handler 34 pushes
+for `0x8619C` at `0x96FE7`; its count is at +0x9C and its list at
++0xA0 held 2, 1, 0, 3 and 4. Using the lesson item (inventory page
+0, key W) then fetched the `push 0x23` at `0x86229` with the count
+still 0, player +0x185 zero and form +0x1AB zero. Over a few seconds
+of standing still (duration not recorded) a write watch on the low
+byte of +0x185 stayed silent and the `push 0x26` at `0xD2E50` was
+not fetched. This does not show that the lesson cannot arm the
+timer. `0xD2E30–0xD2E37` skips the countdown and the send whenever
++0x185 is zero, so a nonzero store must come first. The watch
+covered one byte and reports only a changed value, so a store that
+leaves the low byte zero would not show. The window also ended
+before the queued 0x23 message was shown to its end: its acquisition
+dispatch at `0x81DF4` and the append at `0x86418` were not watched.
+[Absent-ID lesson, live edit](lol2-spell-dispatch.md#absent-id-lesson-branch-live-edit)
+
+**Next test.** Repeat the same live edit and use, but log all four
+bytes of +0x185 at every fetch of `0xD2E30`, break at `0x86418` and
+see the count rise to 1, and record the duration. Then run the
+form-change trial.
+
+Run once with a live edit; still open. See [Probes not yet run](#probes-not-yet-run).
 
 ### Q10. Which observation path a live mode-2 creature takes
 
@@ -122,7 +146,28 @@ and the native `bb_brth` frame 115 remain open. The relocated
 late slot had already reached prop 87 state 14.
 [Exact edits and frame-492 trace](formats/vqa.md#scene-probes-from-edited-copies)
 
-Not yet run; see [Probes not yet run](#probes-not-yet-run).
+**BLOCKED, edited-save run with a live edit (2026-11-20).** The same
+relocated copy (`5a34d0c63a97`: fourteen bytes at slot +0x180, listed
+in [the byte table](formats/vqa.md#scene-probes-from-edited-copies))
+loaded beside prop 87. In memory, prop 87's row (pool pointer at data
+`0xDB590`, row stride 0x38) held position (−1496, 4268, −20) and
++0x25 = 14. Live edit: +0x25 was set to 13. Standing, closing the
+inventory, stepping and clicking beside the prop did not fetch the
+movie call at `0x172838`. The short copy at `0x158DB2` ran six times
+for other users of the decoder, at distances 1 to 17 with no movie
+playing, and never at distance 0. Frame 115 is decoded only while
+`bb_brth` plays, so it could not be reached here. The state byte alone
+does not start the scene: predicate 219 tests +0x25 = 13 when prop
+87's kind-6 record receives value 20, and group `0x02E8` sends that
+value after its own state-13 write.
+[Live edit details](formats/vqa.md#scene-probes-from-edited-copies)
+
+**Next test.** Let group `0x02E8` run in the game: a native level-20
+slot from before timer slot 12 expires, or a live edit of that timer
+once its memory place is found. Then watch `0x172838` and
+`0x158DB2` as below.
+
+Run once on an edited copy; still blocked. See [Probes not yet run](#probes-not-yet-run).
 
 ### Q17. What on-screen action reaches these records?
 
@@ -178,7 +223,7 @@ state until then. Addresses follow the convention at the top of this
 page: code at `LOLG.DAT` analysis addresses, data as displacements from
 the object-5 base.
 
-- **Timed message 0x26 (not run).** Settles the producer in
+- **Timed message 0x26 (run once 2026-11-20, open).** Settles the producer in
   [Q9](OPEN_QUESTIONS.md). Full test:
   [Q9](#q9-what-starts-the-timed-message-0x26). Setup: the late
   game-written level-20 slot used for the
@@ -189,8 +234,11 @@ the object-5 base.
   acquisition ID the player does not have yet, then let the character
   change form (player +0x1AB). Result: a nonzero write to +0x185 that
   reaches `0xD2E57` on the same object names the producer. Only zero
-  values repeat the known controls.
-- **Movie frame 115 of `bb_brth` (not run).** Settles the frame-115
+  values repeat the known controls. Run 2026-11-20 (live edit: learned
+  count 5 → 0): the 0x23 push was fetched, the low byte of +0x185 did
+  not change and 0x26 was not sent in a few seconds. Next: watch all
+  four bytes until the 0x23 message ends ([Q9](#q9-what-starts-the-timed-message-0x26)).
+- **Movie frame 115 of `bb_brth` (run once 2026-11-20, blocked).** Settles the frame-115
   history in [Q12](OPEN_QUESTIONS.md). Full test:
   [Q12](#q12-which-history-do-two-exceptional-vqa-frames-read).
   Setup: a level-20 slot from before timer slot 12 expires, so prop 87
@@ -202,7 +250,11 @@ the object-5 base.
   source, destination, capacity and the bytes already there. A short
   self-copy from the current destination matches the static reading;
   anything else is the original history. Log the active codebook too.
-- **How `ARENA.MIX` is opened (not run).** Settles the open part of
+  Run 2026-11-20 on the relocated copy with prop 87 +0x25 set 14 → 13
+  in memory: no movie, so no frame 115. Setting the state does not send
+  the value-20 event; group `0x02E8` must run
+  ([Q12](#q12-which-history-do-two-exceptional-vqa-frames-read)).
+- **How `ARENA.MIX` is opened (run once 2026-11-20, open).** Settles the open part of
   [Q3](OPEN_QUESTIONS.md). Setup: any game-written slot; no room is
   known to lead to the Arena, so there is no edited-placement recipe.
   Watch: the archive constructor `0x11C654`, logging the name it is
@@ -212,6 +264,13 @@ the object-5 base.
   letter case) gives its caller, which is the route. No such call over
   the stated play means that play does not open it. Details:
   [the extra ARENA archive](lol2-room-archives.md#the-extra-arena-archive).
+  Run 2026-11-20 in two DOS sessions, watch armed after startup (in the
+  second, during the opening movie): each load into L20_BB made three
+  constructor calls, `l20_bb.MIX` (return `0x9BFB1`), `l20_bbI.MIX`
+  (`0x9C030`) and `CDCACHE.MIX` (`0x119C53`), and none named ARENA.
+  Startup before the watch and hub room changes were not covered. Next:
+  arm at program start and change rooms through a hub
+  ([room archives](lol2-room-archives.md#the-extra-arena-archive)).
 - **Who reads the 404 cue words (not run).** Settles the text side of
   [Q13](OPEN_QUESTIONS.md). Setup: any game-written slot. Watch: after
   the loader's read at `0xE3742`, take the table pointer stored at data

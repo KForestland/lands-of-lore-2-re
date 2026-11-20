@@ -187,4 +187,4 @@ index at `0xED5B5`; match the index to the room-name table.
 
 **What was tried.** This scan counted direct relative calls into that constructor. The page already records that the 46-name table at file `0x1CFA90` does not include `ARENA`, and that `ARENA.MIX` is not a stored string.
 
-**What would settle it.** The running-game test is not yet run ([probes not yet run](NEEDS_A_RUNNING_GAME.md#probes-not-yet-run)). Trace an indirect host wrapper into constructor `0x11C654` with the name `ARENA.MIX`.
+**What would settle it.** The running-game test was run once and left it open: from the opening movie through a load into L20_BB no constructor call named ARENA ([room archives](lol2-room-archives.md#the-extra-arena-archive), [probes](NEEDS_A_RUNNING_GAME.md#probes-not-yet-run)). Trace an indirect host wrapper into constructor `0x11C654` with the name `ARENA.MIX`, from program start and through hub room changes.

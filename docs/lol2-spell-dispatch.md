@@ -371,6 +371,31 @@ trial record the first nonzero writer with its call stack
 and follow the same player through `0xD2E57–0xD2E61` to check
 whether expiry sends 0x26.
 
+#### Absent-ID lesson branch, live edit
+
+**CONFIRMED, running-game observation with a live memory edit
+(2026-11-20).** The DOS 1.30 game loaded the same autosave
+(`e2393dbe4d2b`, unedited) on a private display with null audio.
+Handler 34 pushes data `0x2375D` and ID 4 for `0x8619C`
+(`0x96FE5–0x96FEC`), and `0x8619C` reads the count at that object's
++0x9C and the IDs from +0xA0 (`0x861AD`, `0x861CD`). In memory the
+count was 5 with IDs 2, 1, 0, 3 and 4. It was set to 0 before use, so
+ID 4 was absent. Using the lesson item (inventory page 0, key W)
+fetched `push 0x23` at `0x86229`, just before the send at `0x86230`.
+At that moment the count was still 0, player +0x185 was zero and form
++0x1AB was zero.
+
+**Not settling.** A write watch on the low byte of player +0x185 stayed
+silent and `push 0x26` at `0xD2E50` was not fetched during a few
+seconds standing still; the duration was not recorded. The update
+reaches `0xD2E50` only when +0x185 is nonzero at `0xD2E30` and at or
+below zero after the subtraction (`0xD2E37`, `0xD2E4E`). The watch
+covered one byte and reports changed values only, so a store that
+keeps the low byte zero would be missed. The queued 0x23 message was
+not followed to its acquisition dispatch at `0x81DF4` or the append at
+`0x86418`. A repeat that logs all four bytes at each `0xD2E30` fetch
+and runs until the count reads 1 would close this branch either way.
+
 ## Close-out
 
 ### Q9
@@ -379,4 +404,4 @@ whether expiry sends 0x26.
 
 **What was tried.** This scan classified every embedded `85 01 00 00` in the code object. The page already records the two zero stores and the lesson use that left the field at zero.
 
-**What would settle it.** The running-game test is not yet run ([timed message 0x26](NEEDS_A_RUNNING_GAME.md#q9-what-starts-the-timed-message-0x26)). A runtime watch on player +0x185 distinguishes the first nonzero store from its observed expiration at `0xD2E57`.
+**What would settle it.** The running-game test was run once with a live edit and left it open ([absent-ID lesson](#absent-id-lesson-branch-live-edit), [timed message 0x26](NEEDS_A_RUNNING_GAME.md#q9-what-starts-the-timed-message-0x26)). A runtime watch on player +0x185 distinguishes the first nonzero store from its observed expiration at `0xD2E57`.

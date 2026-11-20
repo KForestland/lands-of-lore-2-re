@@ -101,6 +101,17 @@ stored at `+0xAC1` (`MENT_`). The corresponding original calls at
 `+0x2456` and `+0x748`. Those three callers resolve through the
 46-name table.
 
+**CONFIRMED, running-game observation (2026-11-20).** In the DOS 1.30
+game, loading L20_BB from a game-written level-20 slot called
+`0x11C654` three times: `l20_bb.MIX` from `0x9BFAC` (return
+`0x9BFB1`), `l20_bbI.MIX` from `0x9C02B` (return `0x9C030`) and
+`CDCACHE.MIX` from `0x119C4E` (return `0x119C53`). So the two dynamic
+calls above open the level archive and its movie archive from the
+level stem. A copy of the same slot with only the position bytes
+edited gave the same three calls; there every constructor call was
+logged from the opening movie on, and none named ARENA. Startup
+before the watch and hub room changes were not covered.
+
 **UNCONFIRMED.** Whether the retail game opens `ARENA.MIX` by a
 secondary route. The direct constructor calls and the imports
 above give no such witness. Trace the room-related indirect calls

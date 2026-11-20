@@ -282,3 +282,21 @@ timer slot 12 expires, watch group `0x02E8`
 (`L20_BB.MIX+0xEC61D1`), and follow its state-13 write and
 value-20 dispatch to group `0x0302`. The position edit alone
 left the post-scene state in place.
+
+**BLOCKED, edited-save run with a live memory edit (2026-11-20).**
+The same copy `5a34d0c63a97` was loaded again in the DOS 1.30 game
+(private display, null audio). The reviewer rebuilt it byte for byte
+from `e2393dbe4d2b` with the fourteen bytes above; no other byte
+differs. In memory, prop 87's row was found through the pool pointer
+at data `0xDB590` (rows at pool +0, stride at pool +0xC = 0x38): row
+87 held (−1496, 4268, −20) in 16.16 and +0x25 = 14. Live edit: +0x25
+was set to 13. Standing, closing the inventory, stepping and clicking
+beside the prop did not fetch the pointer LCW call at `0x172838`. The
+short copy `0x158DB2` ran six times for other callers of `0x158D58`
+(destination near `0x102CF046`, distances 1, 11, 15, 9, 1 and 17, no
+movie playing) and never at distance 0. Frame 115 belongs to
+`bb_brth`, so it could not be reached without that playback.
+**UNCONFIRMED.** Why the scene did not start: setting the byte does
+not deliver the value-20 event to prop 87's kind-6 record, which group
+`0x02E8` sends after its state-13 write. Letting group `0x02E8` run
+(timer slot 12) is still the route.

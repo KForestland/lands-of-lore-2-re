@@ -12,7 +12,7 @@ rules an edit must keep (position fields, saved pointer ranges, repacked
 chunk lengths and directory starts, no extra checksum) are in
 [editing a copy of an original slot](lol2-save-format.md#editing-a-copy-of-an-original-slot).
 
-All three runs below belong to probes that are still open. None of them
+All the runs below belong to probes that are still open. None of them
 answers a probe on its own; the [rating](../README.md#rating) counts how
 many answered probes rest on edited saves only.
 
@@ -42,6 +42,30 @@ many answered probes rest on edited saves only.
 - **A native save would add:** a slot from before timer slot 12
   expires, so the scene can still play. An earlier game-written level-20
   slot has that prop state at zero.
+- **Recipe:** source `e2393dbe4d2b` (1,612,845 bytes); the fourteen
+  bytes at slot `+0x180` (X, Y, the third header dword and the
+  following word) become `00 00 6A FA 00 00 A4 10 00 00 EC FF 23 01`, giving
+  `5a34d0c63a97`. Re-applied by a reviewer to a fresh copy: identical,
+  no other byte changed.
+- **Second run, with a live edit (2026-11-20):** the same copy, and in
+  memory prop 87 +0x25 set from 14 to 13. No movie started while
+  standing, stepping and clicking beside the prop, so frame 115 was not
+  reached. The byte alone does not send the value-20 event that starts
+  the scene ([details](formats/vqa.md#scene-probes-from-edited-copies)).
+
+## Q9. Lesson with an absent ID (live edit, not a save edit)
+
+- **Question:** what starts the timed message 0x26?
+  ([probe](NEEDS_A_RUNNING_GAME.md#q9-what-starts-the-timed-message-0x26))
+- **Edited:** nothing in the save (`e2393dbe4d2b` as written by the
+  game). After loading, the learned count at data `0x2375D` +0x9C was
+  set in memory from 5 to 0.
+- **Showed:** using the lesson item reached the message-0x23 push at
+  `0x86229`. Player +0x185 stayed zero in its low byte and 0x26 was not
+  sent in a few seconds, which leaves the question open
+  ([details](lol2-spell-dispatch.md#absent-id-lesson-branch-live-edit)).
+- **A native save would add:** a character who has not yet learned the
+  lesson's ID, so no memory edit is needed.
 
 ## Q17. Level-8 controls 69 and 114
 
