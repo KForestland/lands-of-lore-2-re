@@ -101,7 +101,30 @@ clear and 0x0A set, action 1 and 9 distinguish the remembered
 bit's two settings. A transition to a different mode calls for
 a trace of that actor's mode store with the same target snapshot.
 
-Not yet run; see [Probes not yet run](#probes-not-yet-run).
+**CONFIRMED, partial runtime result (2026-11-20).** A game-written
+L8_SJ slot (`9a46a2bdecb4`, no bytes changed) was loaded and a read
+watch put on the first byte of the compare at `0xA32B4`
+(`cmp dword [ebx+0x34], 0x22574`; the immediate is the relocated
+player object, data `0x22574`). One actor reached it: guest pointer
+`0x1130680C`, target +0x34 the live player `0x101D0574`, +0x9D `0x82`,
++0xB4 `0x24`, +0xB9 `0` and +0xAA (action) 1. Reaching `0xA32B4` means
+the +0xB4 bit-0x20 test at `0xA32A7` had passed. The script logged a
+hit only when the actor state was new, and no second state was logged
+while standing and walking a few steps; no creature was on screen.
+The instructions after the compare were not watched, so the branch
+taken was not seen. From these bytes the code goes `0xA32D6` (mask
+0x05 clear) → `0xA3344` (mask 0x0A set) → `0xA334D` (+0xB9 bit 0x02
+clear) → action 9 at `0xA337D`; that is a static reading, not an
+observation. This was not a named encounter and no portal edge was
+crossed. [Live entry to the player-target branch](lol2-creature-observation.md#live-entry-to-the-player-target-branch)
+
+**Next test.** Break at `0xA32D6`, `0xA3362` and `0xA337D` as well as
+`0xA32B4`, log every hit (not only new states) and the time, and play
+the approach and the portal step with one named creature, from a
+game-written slot or an edited placement.
+
+Run once on a game-written slot, outside a named encounter; still open.
+See [Probes not yet run](#probes-not-yet-run).
 
 ### Q12. Which history do two exceptional VQA frames read?
 
@@ -271,7 +294,7 @@ the object-5 base.
   Startup before the watch and hub room changes were not covered. Next:
   arm at program start and change rooms through a hub
   ([room archives](lol2-room-archives.md#the-extra-arena-archive)).
-- **Who reads the 404 cue words (not run).** Settles the text side of
+- **Who reads the 404 cue words (run once 2026-11-20, open).** Settles the text side of
   [Q13](OPEN_QUESTIONS.md). Setup: any game-written slot. Watch: after
   the loader's read at `0xE3742`, take the table pointer stored at data
   `0x269CC` and set read watches on the cue words, at least on the
@@ -283,7 +306,22 @@ the object-5 base.
   from any other address, followed into text, is the text reader.
   Only known readers bound the scenes played. Details:
   [cue consumers](lol2-speech.md#cue-consumers-after-playback-starts).
-- **Shade index on one L10_DC wall (not run).** Settles the open step
+  Run 2026-11-20 on the game-written L8_SJ slot `9a46a2bdecb4`: the
+  pointer was set and the flag byte at data `0x269C4` was 0. Read
+  watches on indexes 161, 167, 174 and 197 (words 298, 276, 286 and
+  323, as in the file) saw no read in about six seconds of standing
+  and a few seconds of walking; 162, 168, 198 and 199 were not watched
+  (four hardware watch slots). No room scene, dialogue or combat ran.
+  The documented way into these eight indexes is the category switch
+  `0xF133C`, called from a room module (the MCEL room of L4_HJ); L8_SJ
+  does not load MCEL, so this run could not show a known read either
+  ([observation](lol2-speech.md#running-game-observation-in-l8_sj)).
+  Next: a game-written L4_HJ slot, two sessions of four watches, and
+  enter the MCEL room.
+- **Shade index on one L10_DC wall (not run).** Not blocked: two
+  game-written slots have active level 10 (slot +0x17C), SHA-256
+  prefixes `0b7d5498dc88` and `7eac342b547a`. The 2026-11-20 session
+  skipped it, saying no such slot was available. Settles the open step
   of [Q5](OPEN_QUESTIONS.md). Setup: a game-written slot in L10_DC.
   Watch: the return of the evaluator `0x1319B4` (the two sums, the
   clamp at `0x131D16–0x131D4D`), then the scalar caller at `0x129C23`
@@ -296,7 +334,13 @@ the object-5 base.
   unchanged settles the scalar path; a different row shows the span
   interpolation. Details:
   [shade row](lol2-event-producers.md#scalar-shade-row-and-packed-colour).
-- **One Huline Temple quad (not run).** Settles the open step of
+- **One Huline Temple quad (not run, blocked).** No game-written slot
+  has active level 14. The one slot that holds an L14_HT block
+  (`33f5496e93b1`) is in L16_CA, and no L16_CA transition command leads
+  back to L14_HT ([level graph](lol2-level-graph.md)). Needed: a
+  game-written slot inside L14_HT. L8_SJ has a transition command into
+  L14_HT, so walking there from the L8_SJ slot is an untried alternative.
+  Settles the open step of
   [Q16](OPEN_QUESTIONS.md). Setup: a game-written slot in L14_HT, in
   view of the window in region 0 (rows 7,448 to 7,451). Watch: the
   material dispatch at `0x11496D` (expect material 181 for row 7,448
@@ -307,7 +351,7 @@ the object-5 base.
   match the [replayed quads](formats/walls.md#worked-example-a-window-in-the-huline-temple)
   after projection confirm the static model; a difference shows what
   clipping or the sampler adds.
-- **Two mode decisions in named encounters (not run).** Settles more
+- **Two mode decisions in named encounters (run once 2026-11-20, open).** Settles more
   of [Q10](OPEN_QUESTIONS.md). Full test:
   [Q10](#q10-which-observation-path-a-live-mode-2-creature-takes).
   Setup: two edited copies with the party placed near one named
@@ -317,7 +361,12 @@ the object-5 base.
   Play: approach in sight, then step behind a portal edge. Result: with
   +0x9D mask 0x05 clear and 0x0A set, action 1 or action 9 shows the
   remembered bit; a change to another mode needs a trace of that
-  actor's mode store.
+  actor's mode store. Run 2026-11-20 on the unedited L8_SJ slot, with
+  no edited placement and no named creature: one actor with target
+  the player reached `0xA32B4` with +0x9D `0x82`, +0xB4 `0x24` and
+  +0xB9 `0`; the branch after the compare was not watched
+  ([Q10](#q10-which-observation-path-a-live-mode-2-creature-takes)).
+  Next: the two edited placements, with breaks after the compare.
 - **Nonpositive hit contributions (not run).** Settles the open
   nonpositive and descriptor-flag cases on the
   [combat page](lol2-combat-ai.md#hit-context-and-reduction); no

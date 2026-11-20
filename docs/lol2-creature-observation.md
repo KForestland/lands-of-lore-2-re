@@ -76,6 +76,29 @@ with that bit clear. Set breakpoints on `0xA32B4`, `0xA3362` and
 `0xA337D` to capture a qualifying actor with the same target on both
 sides of a portal.
 
+### Live entry to the player-target branch
+
+**CONFIRMED, running-game observation (2026-11-20).** The same
+game-written L8_SJ slot (`9a46a2bdecb4`, unedited) was loaded and a
+read watch set on the first byte of `0xA32B4`, `81 7B 34 74 25 02 00`
+(`cmp dword [ebx+0x34], 0x22574`, LOLG.DAT file `0xDA2B4`). The
+immediate is the relocated player object, data `0x22574`; `0xA32A0`
+stores the same value when +0x34 is null. The guest pointer
+`0x1130680C` reached it with target +0x34 = `0x101D0574` (the live
+player), +0x9D `0x82`, +0xB4 `0x24`, +0xB9 `0` and +0xAA 1. Fetching
+`0xA32B4` means the +0xB4 bit-0x20 test at `0xA32A7` passed, so this is
+a live actor on the player-target branch that the distance witness
+above (+0xB4 `0x04`) did not take. The run logged only new actor
+states and saw no second one while the party stood and walked a few
+steps; no creature was on screen. The instructions after the compare
+were not watched. From the bytes recorded the code would take
+`0xA3344` (mask 0x05 clear, 0x0A set) and, with +0xB9 bit 0x02 clear,
+store action 9 at `0xA337D`; that step is not observed.
+
+**UNCONFIRMED.** The branch taken after `0xA32B4` and a portal
+crossing on this path. Break at `0xA32D6`, `0xA3362` and `0xA337D` and
+log every hit.
+
 ## Other mode branches
 
 **CONFIRMED.** Mode 3 jumps to the waypoint path when +0xB5 bit 0x10
@@ -224,4 +247,4 @@ caller to establish their uses.
 
 **What was tried.** This census read +0x25 of every 56-byte actor row. The page already records the +0x21 mask counts on those rows and the mode-8 branch at `0xA2C63`.
 
-**What would settle it.** The running-game test is not yet run ([probes not yet run](NEEDS_A_RUNNING_GAME.md#probes-not-yet-run)). Capture observation +0x9E and both update bytes for mode 8 at `0xA2C63`, then compare the requested action at `0xA2E84` with the install at `0xA7DC4`.
+**What would settle it.** The running-game test was run once outside a named encounter: one actor reached the player-target compare at `0xA32B4`, and the branch after it was not watched ([live entry](#live-entry-to-the-player-target-branch), [probes](NEEDS_A_RUNNING_GAME.md#probes-not-yet-run)). Capture observation +0x9E and both update bytes for mode 8 at `0xA2C63`, then compare the requested action at `0xA2E84` with the install at `0xA7DC4`.

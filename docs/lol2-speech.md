@@ -127,6 +127,24 @@ This arm runs when the selector at +0x1C is 2 or 100
 `lol2_speech_names.py --check` walks those relocation pages and
 checks that instruction census and the cleanup call above.
 
+### Running-game observation in L8_SJ
+
+**CONFIRMED, running-game observation (2026-11-20).** A game-written
+L8_SJ slot (`9a46a2bdecb4`, unedited) was loaded outdoors. The table
+pointer at data `0x269CC` was set and the flag byte at data `0x269C4`
+was 0, so bit 0 was clear. The words at indexes 161, 167, 174 and 197
+held 298, 276, 286 and 323, the same as the file words in the table
+above. Read watches on those four words saw no read in about six
+seconds of standing and a few seconds of walking north. Indexes 162,
+168, 198 and 199 were not watched. No room scene, dialogue or combat
+ran.
+
+This does not test the known readers. The documented route into these
+eight indexes is the category switch `0xF133C`, and its documented
+caller is the MCEL room module below, which L4_HJ requests and L8_SJ
+does not ([level graph](lol2-level-graph.md)). The run shows only that
+nothing else read those four words in that window.
+
 ### Room callbacks during the cue
 
 **CONFIRMED.** The original MCEL WOM provides an external caller of the category
@@ -195,4 +213,4 @@ container, would settle it.
 
 **What was tried.** This disassembly sits inside the player already walked from `0xE3924` to `0xE3AA6`. The page already counts 533 direct uses of the cue-table pointer, including 21 compares with voice +4. The 47 room modules' 3134 absolute indirect calls resolve to 63 host functions, and none of those calls `0xCF014` directly (each walked to every return). Host +0xC4 reaches it only four calls deep, in the options menu `0xB9204`. Host slot +0x13C (`0xF16D8`) indexes the cue words and calls `0xE4004`.
 
-**What would settle it.** The running-game test is not yet run ([probes not yet run](NEEDS_A_RUNNING_GAME.md#probes-not-yet-run)). A text reader outside these 63 host functions, or a second container, would settle it. The direct pointer loads are not that reader.
+**What would settle it.** The running-game test was run once in L8_SJ, where no read of four category words occurred and the documented caller is not loaded ([observation](#running-game-observation-in-l8_sj), [probes](NEEDS_A_RUNNING_GAME.md#probes-not-yet-run)). A text reader outside these 63 host functions, or a second container, would settle it. The direct pointer loads are not that reader.
