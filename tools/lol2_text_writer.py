@@ -28,16 +28,18 @@ def write_trr(rows):
     return struct.pack(f"<{len(header)}I", *header) + contents
 
 
-def trr_sources(data):
-    for name in sorted(data.parent.iterdir()):
-        if name.suffix.upper() == ".TRR":
-            yield name.name, 0, name.read_bytes()
+def trr_sources(data, indexed=False):
+    for folder in (data.parent, data):
+        for name in sorted(folder.iterdir()):
+            if name.is_file() and name.suffix.upper() == ".TRR":
+                blob = name.read_bytes()
+                yield (name, 0, None, 0, blob) if indexed else (name.name, 0, blob)
     for folder in (data, data.parent):
         for name in lol2_cli.mix_files(folder):
             if name.upper() == "CDCACHE.MIX":
                 continue
             source = (folder / name).read_bytes()
-            for row in parse_mix(source):
+            for index, row in enumerate(parse_mix(source)):
                 start, size = row["offset"], row["size"]
                 if size < 16:
                     continue
@@ -51,7 +53,8 @@ def trr_sources(data):
                     parse_trr(blob, name)
                 except ValueError:
                     continue
-                yield name, start, blob
+                yield ((folder / name, index, row["key"], start, blob)
+                       if indexed else (name, start, blob))
 
 
 def check(data, listing=False):

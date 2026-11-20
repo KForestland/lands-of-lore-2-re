@@ -88,6 +88,7 @@ function select(id) {
     currentRecord = record;
     selected = document.getElementById(record.target || id);
     if (selected) selected.classList.add('chosen');
+    document.dispatchEvent(new CustomEvent('plan-selected', {detail: id}));
     document.querySelector('#detail-title').textContent = record.label;
     document.querySelector('#center').disabled = !selected;
     document.querySelector('#center').onclick = () => focus(record);
@@ -168,6 +169,7 @@ class Plan:
         self.title, self.source = title, source
         self.shapes, self.records, self.legend = [], [], {}
         self.counts = Counter()
+        self.edit_controls = self.edit_script = ''
         self.fixed = fixed
         x, y = zip(*points)
         self.left, self.top, self.bottom = min(x), max(y), min(y)
@@ -231,6 +233,7 @@ class Plan:
 <figcaption class="legend">{legends}</figcaption>
 </figure>
 <aside>
+{self.edit_controls}
 <h2>Find on the plan</h2>
 <label for="filter">Show</label><select id="filter">{options}</select>
 <label for="query">Name or number</label><input id="query" type="search" placeholder="Filter the list">
@@ -243,6 +246,7 @@ class Plan:
 <footer>{source}</footer>
 <script id="records" type="application/json">{records}</script>
 <script>{SCRIPT}</script>
+{self.edit_script}
 </html>
 """
 

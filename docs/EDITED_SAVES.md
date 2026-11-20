@@ -81,3 +81,23 @@ many answered probes rest on edited saves only.
 - **A native save would add:** the same clicks from a place reached in
   ordinary play, the first visible change, and a click with an item in
   hand for comparison.
+
+## See the fields in an offline page
+
+Run from the tools repository with Python 3.10 or newer. Use a fresh HTML
+file outside the game and save folders.
+
+```sh
+python3 tools/lol.py save page '/path/to/your/original save' --out "../my save fields.html"
+```
+
+Open the page in your browser. It displays the current values and the evidence
+status for each editable field. Choose your terminal and a new save path outside the repository and save folder.
+For a field you want to change, enter the value and copy its command. Run the
+command from the tools repository. It writes one edited copy. For a second edit
+to the same save, generate a page from the first copy and choose another output
+filename. Keep the page private because it contains your save name and path.
+
+**CONFIRMED.** The page reads the slot name from `+0x00` and the current
+level and player position group from `+0x17C` onward. See
+[the documented save layout](lol2-save-format.md).

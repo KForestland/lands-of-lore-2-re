@@ -31,7 +31,7 @@ These are counts of work done, not a percentage of how complete the project is. 
 
 <!-- rating:begin -->
 - **Files read:** 83 of 83 files in `DAT` (1,915.6 of 1,915.6 MiB) have their whole layout read by a tool here: every byte belongs to a known header, directory, entry, chunk, segment or resource, or to zero padding between them; the DOS part of `SETUP.EXE` is counted by its length (what is inside an entry may still be only partly understood).
-- **Rules traced:** the pages mark 767 statements CONFIRMED (proved from the program code or the files) and 181 UNCONFIRMED (a reading not yet proved), on 127 current pages; old notes kept as history are not counted.
+- **Rules traced:** the pages mark 771 statements CONFIRMED (proved from the program code or the files) and 182 UNCONFIRMED (a reading not yet proved), on 129 current pages; old notes kept as history are not counted.
 - **Seen in the running game:** 4 of 9 probes that need the original game running are answered (a question can have more than one probe); 0 of them rest on edited saves only.
 - **Open questions:** 20 numbered questions: 5 answered, 14 mostly answered, 1 partly answered.
 <!-- rating:end -->
@@ -87,6 +87,10 @@ The [mod kit](tools/README.md#modkitpy) turns the game's tables into files you c
 
 Type these in this repository's folder. Put quotes around paths with spaces. On Windows type `py -3` instead of `python3`, and `\` instead of `/` inside paths if you like; copy folders with Explorer. Each command ends with one summary line, or one sentence saying what is wrong.
 
+[Translate text tables](docs/TRANSLATION.md).
+
+[Move placements on a level plan](docs/LEVEL_EDITOR.md).
+
 1. Unpack: `python3 tools/modkit.py unpack "/path/to/LoL2" "my mod work"`
 2. Change one number: `GLOBAL.MIX`, with the item table, ships twice (in the game folder and in `DAT`) and which one the game opens is not known, so change both. In `my mod work/edits/` two files end in `_GLOBAL.MIX_items.json` (the numbers in front may differ on your copy): one says `"file": "GLOBAL.MIX"` near the top, the other `"file": "DAT/GLOBAL.MIX"`. Open both in a text editor; in the first row of each, change `"strike_ticks": 45` to `"strike_ticks": 40` (the item's strike countdown, [numbers](docs/NUMBERS.md)). Change nothing else.
 3. Build and check: `python3 tools/modkit.py build "/path/to/LoL2" "my mod work" "my mod output"`, then the same with `verify`. Both end with `22 archives or loose tables, 2 changed (GLOBAL.MIX, DAT/GLOBAL.MIX)`.
@@ -95,6 +99,8 @@ Type these in this repository's folder. Put quotes around paths with spaces. On 
 6. Apply the patch to the copy: `python3 tools/patch.py apply --data "/path/to/LoL2 test copy" "faster strikes.json" --out "patched files"`. Copy everything in `patched files` except `undo.json` into `LoL2 test copy`, keeping the `DAT` folder, and replace the files there.
 7. Read it back: `python3 tools/modkit.py unpack "/path/to/LoL2 test copy" "check work"`; the same two files in `check work/edits` now say 40. Play the copy to try it.
 8. Undo: `python3 tools/patch.py apply --data "/path/to/LoL2 test copy" "patched files/undo.json" --out "restored files"`, then copy the files in `restored files` (except `undo.json`) into the copy in the same way. The copy is then byte for byte the original again.
+
+[Open the documented fields of a save in your browser](docs/EDITED_SAVES.md#see-the-fields-in-an-offline-page).
 
 A saved game can be changed in a copy too: `python3 tools/save_edit.py set '/path/to/LoL2/SAVEGAME/$MUSEUM_.000' heading 0x4000 --out "my edited save.000"` prints the old and the new value. Save names begin with `$`, so on Linux and macOS put them in single quotes. More in the [cookbook](docs/COOKBOOK.md#share-a-change-as-a-patch).
 

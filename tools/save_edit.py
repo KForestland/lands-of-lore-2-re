@@ -7,6 +7,7 @@ import struct
 from cli_errors import ReaderArgumentParser, run_cli
 from lol2_save_writer import parse_slot, write_slot
 from modkit_core import output_path
+import save_page
 
 FIELDS = ("name", "heading", "position-from")
 # Fields a DOS 1.30 edited-save run has shown the game loading (docs/lol2-save-format.md).
@@ -89,6 +90,18 @@ def status(field):
     return "UNCONFIRMED: no edited copy of this field has been loaded by the game yet; keep a backup of your saves"
 
 
+def page_fields(raw):
+    slot = read_slot(raw)
+    name = slot.name_area.split(b"\0")[0].decode("latin-1")
+    x, y, heading, region = slot.state[-4:]
+    heading &= 0xFFFF
+    facts = [("Position (X / Y)", f"{x / 65536:g} / {y / 65536:g}"),
+             ("Current level ID", slot.state[-5]), ("Stored region", region)]
+    return [("name", "Slot name", name, name, 43, status("name")),
+            ("heading", "Heading word", f"{heading:#06x}", heading, 65535, status("heading")),
+            ("position-from", "Position group", shown("position-from", slot), None, None, status("position-from"))], facts
+
+
 def main():
     try:
         return run()
@@ -101,7 +114,7 @@ def run():
     parser = ReaderArgumentParser(
         description=__doc__,
         epilog="Example: save_edit.py set '/path/to/SAVEGAME/$MUSEUM_.000' heading 0x4000 --out 'my edited save.000' (save names begin with $; on Linux and macOS use single quotes).")
-    commands = parser.add_subparsers(dest="command", metavar="set")
+    commands = parser.add_subparsers(dest="command", metavar="{page,set}")
     commands.required = True
     setter = commands.add_parser("set", help="write a copy of the save with one field changed",
                                  description="Write a copy of the save with one field changed.")
@@ -110,9 +123,20 @@ def run():
     setter.add_argument("value", help="the new value: a name, a heading 0-65535, "
                                       "or for position-from another save of the same level")
     setter.add_argument("--out", required=True, type=Path, help="the new save file to write, outside the game and save folders")
+    viewer = commands.add_parser("page", help="write an offline page for the save's documented fields")
+    viewer.add_argument("save", type=Path, help="an original save file; only read")
+    viewer.add_argument("--out", required=True, type=Path, help="a new .html file outside the game and save folders")
     args = parser.parse_args()
     if not args.save.is_file():
         raise ValueError(f"save not found: {args.save}")
+    if args.command == "page":
+        try:
+            fields, facts = page_fields(args.save.read_bytes())
+        except (struct.error, IndexError, KeyError, UnicodeError):
+            raise ValueError("The save could not be read as an original LoL2 slot.") from None
+        path = save_page.write(args.save, args.out, "LoL2", fields, facts)
+        print(f"Wrote {path}. Open it in your browser.")
+        return 0
     path = output_path(args.out, args.save.resolve().parent, args.save)
     if not path.parent.is_dir():
         raise ValueError(f"the folder {path.parent} does not exist; create it first or choose another place")

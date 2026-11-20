@@ -297,7 +297,9 @@
         "Q12",
         "Q17"
       ],
-      "tools": []
+      "tools": [
+        "tools/lol.py"
+      ]
     },
     {
       "path": "docs/EDITIONS.md",
@@ -357,6 +359,16 @@
         "tools/check_all.py",
         "tools/lol2_loose.py",
         "tools/rating.py"
+      ]
+    },
+    {
+      "path": "docs/LEVEL_EDITOR.md",
+      "title": "Move a placement on a level plan",
+      "answers": [],
+      "question_references": [],
+      "tools": [
+        "tools/level_edit.py",
+        "tools/lol.py"
       ]
     },
     {
@@ -547,6 +559,15 @@
         "tools/lol2_level_report.py",
         "tools/lol2_numbers.py",
         "tools/lol2_progression.py"
+      ]
+    },
+    {
+      "path": "docs/TRANSLATION.md",
+      "title": "Translate the original text",
+      "answers": [],
+      "question_references": [],
+      "tools": [
+        "tools/lol.py"
       ]
     },
     {
@@ -1950,7 +1971,10 @@
         "tools/history/draracle/extract_cave_sprite_sequences.py",
         "tools/history/draracle/run_geometry_pipeline.py",
         "tools/history/draracle/verify_huline_wall_spans.py",
+        "tools/level_edit.py",
+        "tools/level_edit_data.py",
         "tools/level_html.py",
+        "tools/level_move_ui.py",
         "tools/level_viewer.py",
         "tools/lol.py",
         "tools/lol2_analyze_disarm_rearm.py",
@@ -2004,7 +2028,11 @@
         "tools/patch.py",
         "tools/rating.py",
         "tools/repo_guard.py",
-        "tools/save_edit.py"
+        "tools/save_edit.py",
+        "tools/save_page.py",
+        "tools/translate.py",
+        "tools/translate_data.py",
+        "tools/translate_fonts.py"
       ]
     },
     {

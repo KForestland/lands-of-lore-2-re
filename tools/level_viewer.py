@@ -5,6 +5,7 @@ import struct
 
 from cli_errors import run_cli
 from level_html import Plan, main
+from level_move_ui import sections
 from lol2_export_scripts import PLACED_ITEMS, TABLES, section
 from lol2_level_report import level_files
 from lol2_level_schematic import edge_type, parse_geometry
@@ -88,6 +89,7 @@ def view(data, stem, gates):
                    "Gate": guard if guard != "none" else "No predicate on this event record.",
                    "Script": f"Stream {stream}, group {group} ({group:#x})"},
                   target=target if target in shapes else None)
+    plan.edit_controls, plan.edit_script = sections(plan, stem, raw)
     return plan
 
 

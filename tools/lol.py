@@ -12,6 +12,7 @@ from cli_errors import ReaderArgumentParser, run_cli
 JOBS = {
     "level": ("level_viewer.py", (), "Look at an interactive level plan"),
     "text": ("lol2_inspect.py", (), "Read original game text"),
+    "translate": ("translate.py", (), "Export, build and verify translations"),
     "music": ("lol2_hmi_midi.py", (), "Inspect original game music (convert HMI to MIDI)"),
     "movie": ("media_convert.py", (), "Convert a movie to MKV"),
     "sound": ("media_convert.py", (), "Convert a sound to WAV"),
