@@ -263,6 +263,25 @@
       ]
     },
     {
+      "path": "docs/CORRECTIONS.md",
+      "title": "Corrections",
+      "answers": [],
+      "question_references": [
+        "Q1",
+        "Q6",
+        "Q10",
+        "Q11",
+        "Q12",
+        "Q13",
+        "Q17"
+      ],
+      "tools": [
+        "tools/check_all.py",
+        "tools/lol2_numbers.py",
+        "tools/lol2_parse_le.py"
+      ]
+    },
+    {
       "path": "docs/EDITED_SAVES.md",
       "title": "Runs on edited saves",
       "answers": [],

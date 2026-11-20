@@ -7,7 +7,7 @@ File +0x100 is `bd 01 68 0c df 07 91 0f df 07 95 0f df 07 89 10`, in the part be
 `lol2_cache_seed.py --check` re-reads those sixteen bytes.
 File +0x25C begins `DOS/4G  Copyright`. The same check re-reads those seventeen bytes and does not interpret them.
 File +0x3BCBC, eight bytes after the LE signature at file `0x3BCB4`, is `02 00 01 00`. The same check re-reads those four bytes and does not interpret them.
-File +0x3BCCC is `02 00 00 00`. The same check re-reads those four bytes and does not interpret them.
+File +0x3BCCC is `02 00 00 00`: LE `+0x18`, the object that holds the program entry (object 2; see the entry paragraph below).
 File +0x3BCC4 is `00 02 00 00`. The same check re-reads those four bytes and does not interpret them.
 The embedded MZ starts at file `0x39024`. Its LE header begins at
 `0x3BCB4` with bytes `4C 45 00 00`. LE header +0x28 specifies a

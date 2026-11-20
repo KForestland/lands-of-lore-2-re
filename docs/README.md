@@ -3,6 +3,7 @@
 Start with **[START_HERE.md](START_HERE.md)** (by goal) or **[How Lands of Lore II works](HOW_THE_GAME_WORKS.md)** (a walkthrough), then:
 
 - [STATUS.md](STATUS.md): what is documented, which tool checks it, and what is open.
+- [CORRECTIONS.md](CORRECTIONS.md): what these pages got wrong, how it was caught and the commit that fixed it.
 - [formats/](formats/README.md): one short page per file format, each with a worked example from the game files.
 - [levels/](levels/README.md): one generated sheet per level.
 - Pages on the game's program and rules:

@@ -12,7 +12,7 @@ It contains documentation, tools and small tables of numbers. It contains no gam
 - **Recipes:** [cookbook](docs/COOKBOOK.md), seven short runs with the command and the first lines it prints.
 - **Numbers at a glance:** [item combat inputs, effect costs, creature definitions and form requests](docs/NUMBERS.md), tables generated from the original files by `tools/lol2_numbers.py`.
 - **What is still unknown:** the [open questions](docs/OPEN_QUESTIONS.md), counted in the [rating](#rating); most open points are the meaning of specific fields and effects. Some can only be settled by watching the original game run. Answered probes are counted in the rating; which ones and how: [NEEDS_A_RUNNING_GAME](docs/NEEDS_A_RUNNING_GAME.md#answered-probes). Some probes were also tried on [edited saves](docs/EDITED_SAVES.md), copies of a game-written save with a few bytes changed.
-- **What changed lately:** [what's new](docs/WHATS_NEW.md), newest first.
+- **What changed lately:** [what's new](docs/WHATS_NEW.md), newest first. What the pages got wrong, how it was caught and the commit that fixed it: [corrections](docs/CORRECTIONS.md).
 - **The three games:** [LoL1](https://github.com/KForestland/lands-of-lore-1-re) · [LoL2](https://github.com/KForestland/lands-of-lore-2-re) · [LoL3](https://github.com/KForestland/Lands-of-lore-3-re) ([what they share](docs/series-formats.md), [how the engine changed](docs/engine-evolution.md), [how they gate progress and scale numbers](docs/series-progress-and-numbers.md)).
 
 ![The first level, L1_DC, drawn from its region table by tools/lol2_level_map.py](docs/images/l1_dc_regions.png)
@@ -25,7 +25,7 @@ These are counts of work done, not a percentage of how complete the project is. 
 
 <!-- rating:begin -->
 - **Files read:** 83 of 83 files in `DAT` (1,915.6 of 1,915.6 MiB) have their whole layout read by a tool here: every byte belongs to a known header, directory, entry, chunk, segment or resource, or to zero padding between them; the DOS part of `SETUP.EXE` is counted by its length (what is inside an entry may still be only partly understood).
-- **Rules traced:** the pages mark 747 statements CONFIRMED (proved from the program code or the files) and 176 UNCONFIRMED (a reading not yet proved), on 121 current pages; old notes kept as history are not counted.
+- **Rules traced:** the pages mark 747 statements CONFIRMED (proved from the program code or the files) and 176 UNCONFIRMED (a reading not yet proved), on 122 current pages; old notes kept as history are not counted.
 - **Seen in the running game:** 4 of 9 probes that need the original game running are answered (a question can have more than one probe); 0 of them rest on edited saves only.
 - **Open questions:** 20 numbered questions: 5 answered, 14 mostly answered, 1 partly answered.
 <!-- rating:end -->
