@@ -51,6 +51,8 @@ LE `+0x68` and `+0x6C` locate the 341 monotonic fixup boundaries and
 337,375 bytes of fixup records. The last boundary reaches the module
 import table at `LE+0x531C8`. The check verifies fixup extents.
 
+**CONFIRMED.** LE `+0x18` and `+0x1C` (file `+0x3BCCC` and `+0x3BCD0`, bytes `02 00 00 00` and `0C 7B 0F 00`) give the entry as object 2 offset `0xF7B0C`. Object 2 starts at stored page 2 (file `0x90024`), so the entry is file `0x187B30`, code address `0x150B30`. Its first instruction `EB 76` jumps over the compiler's copyright text to `0x150BA8`. The same check pins the two fields and the jump.
+
 ## Selected executable tables
 
 These locations and table roles are **CONFIRMED** by their consumers.

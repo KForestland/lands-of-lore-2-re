@@ -104,6 +104,8 @@ def check_retail_layout(data):
     objects, page_map = le + field(0x40), le + field(0x48)
     fixup_pages, fixup_records = le + field(0x68), le + field(0x6C)
     import_modules, page_data = le + field(0x70), 0x39024 + field(0x80)
+    if (field(0x18), field(0x1C)) != (2, 0xF7B0C) or data[0x187B30:0x187B32] != bytes.fromhex('eb76'):
+        raise ValueError('LE entry object or offset differs')
     if (pages, size, last, field(0x44)) != (340, 0x1000, 0xA8B, 5):
         raise ValueError('LE page sizes or object count differ')
     if not (objects == 0x3BD78 and page_map == objects + 5 * 24
@@ -126,7 +128,7 @@ def check_retail_layout(data):
     if (fixups[0] != 0 or fixups[-1] != import_modules - fixup_records
             or any(a > b for a, b in zip(fixups, fixups[1:]))):
         raise ValueError('LE fixup boundaries differ')
-    print(f'CHECK LE: 5 objects, {pages} stored pages, {len(fixups)} fixup boundaries, '
+    print(f'CHECK LE: entry object 2 +0xF7B0C, 5 objects, {pages} stored pages, {len(fixups)} fixup boundaries, '
           f'{fixups[-1]} fixup bytes, file end 0x{len(data):X}')
 
 
