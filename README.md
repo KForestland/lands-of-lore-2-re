@@ -25,7 +25,7 @@ These are counts of work done, not a percentage of how complete the project is. 
 
 <!-- rating:begin -->
 - **Files read:** 83 of 83 files in `DAT` (1,915.6 of 1,915.6 MiB) have their whole layout read by a tool here: every byte belongs to a known header, directory, entry, chunk, segment or resource, or to zero padding between them; the DOS part of `SETUP.EXE` is counted by its length (what is inside an entry may still be only partly understood).
-- **Rules traced:** the pages mark 734 statements CONFIRMED (proved from the program code or the files) and 175 UNCONFIRMED (a reading not yet proved), on 120 current pages; old notes kept as history are not counted.
+- **Rules traced:** the pages mark 737 statements CONFIRMED (proved from the program code or the files) and 176 UNCONFIRMED (a reading not yet proved), on 121 current pages; old notes kept as history are not counted.
 - **Seen in the running game:** 4 of 9 probes that need the original game running are answered (a question can have more than one probe); 0 of them rest on edited saves only.
 - **Open questions:** 20 numbered questions: 5 answered, 14 mostly answered, 1 partly answered.
 <!-- rating:end -->
@@ -43,7 +43,7 @@ python3 -m venv .venv && . .venv/bin/activate
 python3 -m pip install -r requirements.txt
 export LOL2_DAT="/path/to/your/LOL2/DAT"
 python3 tools/check_all.py --quick              # lists the checks it skips
-python3 tools/check_all.py                      # full suite of 44 checks
+python3 tools/check_all.py                      # full suite of 45 checks
 python3 -m unittest discover -s tests
 python3 tools/lol2_mix_parser.py --data "$LOL2_DAT" L1_DC.MIX   # list the entries of level 1's archive
 python3 tools/full_report.py --out "../lol2-out/report"

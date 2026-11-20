@@ -11,6 +11,7 @@ Each page: what the file is, its layout, a worked example with real bytes from t
 | [entity-records.md](entity-records.md) | 147-byte records in level archives | `lol2_entity_field_analyzer.py` | records and their containing structure CONFIRMED (Q19 answered) |
 | [items.md](items.md) | `GLOBAL.MIX` item table | `lol2_mix_parser.py` | header and counts CONFIRMED; Q8 |
 | [sound.md](sound.md) | `LOCALLNG.MIX` sound bank, music, movies | `lol2_sound_bank.py`, `lol2_aud_decode.py`, `lol2_vqa_v2_decode.py` | bank, 453 AUD entries in `DAT/` and 64 in the game-folder archives CONFIRMED; Q12, Q15; movies on [vqa.md](vqa.md) |
+| [xmi.md](xmi.md) | 33 XMIDI scores in `LOCAL.MIX` | `lol2_xmi_reader.py` | original IFF extents, TIMB pairs and EVNT event streams checked |
 | [compression.md](compression.md) | LZO1X blocks, Westwood LZ77 | `lol2_texture_container.py`, `lol2_decompress_westwood.py`, `lol2_decompress_sphere.py` (the `options.shp` shapes) | LZO CONFIRMED on the data; LZ77 code and its eleven callers' buffers CONFIRMED, source files partly open (Q1) |
 | [geometry.md](geometry.md) | vertex and region tables of the level data entry | `lol2_level_report.py` | region neighbours, corners, heights, slope flags CONFIRMED (code + 15 levels); other words open (Q16) |
 | [maps.md](maps.md) | top-down map drawn from the region table | `lol2_level_map.py` | 52,669 polygons CONFIRMED; native marker input traced at `0x64DB7 → 0x145F2C`; visited-area shading open |

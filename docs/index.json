@@ -98,6 +98,7 @@
     "Q15": {
       "state": "Answered",
       "answer_pages": [
+        "docs/formats/xmi.md",
         "docs/lol2-music-2026-11.md",
         "docs/lol2-music-selection.md"
       ]
@@ -535,6 +536,7 @@
         "tools/lol2_save_writer.py",
         "tools/lol2_text_writer.py",
         "tools/lol2_westwood_writer.py",
+        "tools/lol2_xmi_reader.py",
         "tools/rating.py"
       ]
     },
@@ -676,7 +678,8 @@
         "tools/lol2_source_format.py",
         "tools/lol2_texture_container.py",
         "tools/lol2_vqa_v2_decode.py",
-        "tools/lol2_westwood_hash.py"
+        "tools/lol2_westwood_hash.py",
+        "tools/lol2_xmi_reader.py"
       ]
     },
     {
@@ -836,6 +839,17 @@
         "tools/history/draracle/lol2_extract_wall_records.py",
         "tools/history/draracle/verify_huline_wall_spans.py",
         "tools/lol2_level_report.py"
+      ]
+    },
+    {
+      "path": "docs/formats/xmi.md",
+      "title": "XMIDI scores in LOCAL.MIX",
+      "answers": [
+        "Q15"
+      ],
+      "question_references": [],
+      "tools": [
+        "tools/lol2_xmi_reader.py"
       ]
     },
     {
@@ -1888,6 +1902,7 @@
         "tools/lol2_vqa_v2_decode.py",
         "tools/lol2_westwood_hash.py",
         "tools/lol2_westwood_writer.py",
+        "tools/lol2_xmi_reader.py",
         "tools/rating.py",
         "tools/repo_guard.py"
       ]

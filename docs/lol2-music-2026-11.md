@@ -70,7 +70,7 @@ The tool writes a format-1 file per song. The division is 120, the value of the 
 ## What is still open
 
 - What the scaled words stored by opcode 210 arms 4 to 9 change in playback. The stores themselves are in [the selection note](lol2-music-selection.md).
-- The 33 `FORM` entries in `LOCAL.MIX` (entry 0 starts `FORM` / `XDIR`). They are not HMI songs.
+- Which original build or configuration plays the [33 XMIDI scores](formats/xmi.md) in `LOCAL.MIX`.
 - Whether the game's timer matches the 120-tick division above.
 
 ### Writing the original scores
