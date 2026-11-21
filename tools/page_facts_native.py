@@ -3,6 +3,7 @@ from functools import lru_cache
 from struct import iter_unpack, unpack_from
 
 from cli_errors import game_path
+from page_facts_auto import x86_operand
 
 DATA_ENV = "LOL2_DAT"
 GAME_MARKER = "LOLG.DAT"
@@ -149,13 +150,7 @@ def read_witness(data, spec):
     if kind == "absolute_operand":
         va = args[0]
         offset = va + 0x37000
-        if raw[offset] in {0x68, *range(0xB8, 0xC0)}:
-            operand = offset + 1
-        elif raw[offset:offset + 2] == b"\xc7\x00":  # mov dword [eax], imm32
-            operand = offset + 2
-        else:
-            raise ValueError(f"no supported absolute operand at {name} VA {va:#x}")
-        return unpack_from("<I", raw, operand)[0], f"{name} instruction at VA {va:#x}"
+        return x86_operand(raw[offset:offset + 8], 4), f"{name} instruction at VA {va:#x}"
     if kind == "slot_level_count":
         at = 0xE7B3D + 0x37000
         if raw[at:at + 2] != b"\x83\xfe" or raw[at + 3] != 0x7E:
