@@ -578,7 +578,7 @@ The check also runs in `check_all.py` and GitHub Actions. It needs no game data.
 
 `doc_format_offsets.py` checks six format-page offsets against the readers that decode those fields, using small synthetic files. It runs in `check_all.py` and needs no game data. [Check audit](../docs/CHECK_AUDIT.md)
 
-`page_facts.py --check --data DAT` compares documented claims with the original files and lists changes to inventoried prose. `page_facts_auto.py` reads supported citation forms. `page_facts_native.py` reads original executable, archive and region fields for the witnesses. Without `--data`, the documentation gate runs and reports which byte comparisons were skipped.
+`page_facts.py` with `--check --data DAT` compares documented claims with the original files and lists changes to inventoried prose. `page_facts_auto.py` reads supported citation forms. `page_facts_native.py` reads original executable, archive and region fields for the witnesses. Without `--data`, the documentation gate runs and reports which byte comparisons were skipped.
 
 `check_all.py --quick` skips the instance-field scan, MIX writer, AUD decoder and VQA check. It lists each skip and reports the total elapsed time for the checks it ran.
 
