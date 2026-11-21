@@ -11,7 +11,8 @@ GAME_MARKER = "LOLG.DAT"
 def game_file(data, name):
     if name.startswith("DAT/"):
         return game_path(data, name[4:])
-    return game_path(data.resolve().parent, name)
+    beside = game_path(data.resolve().parent, name)
+    return beside if beside.is_file() else game_path(data, name)
 
 
 @lru_cache(maxsize=8)
@@ -88,6 +89,29 @@ def corner_step(raw):
     return best
 
 
+def wall_run_edge(raw):
+    start = unpack_from("<I", raw, 0x0C)[0]
+    count = unpack_from("<I", raw, 0x58)[0]
+    total = unpack_from("<I", raw, 0x54)[0]
+    runs = [(unpack_from("<H", raw, at + 0x1A)[0], raw[at + 0x1E])
+            for at in range(start, start + 44 * count, 44)]
+
+    def partitions(last):
+        intervals = sorted((first - (length - 1 if last else 0), length)
+                           for first, length in runs if length)
+        end = 0
+        for begin, length in intervals:
+            if begin != end:
+                return False
+            end += length
+        return end == total
+
+    results = [name for last, name in ((False, "first"), (True, "last")) if partitions(last)]
+    if len(results) != 1:
+        raise ValueError("wall runs do not establish a unique endpoint")
+    return results[0]
+
+
 def edition_status(data):
     path = game_file(data, GAME_MARKER)
     if not path.is_file():
@@ -108,9 +132,14 @@ def read_witness(data, spec):
         return wsa_first_delta(raw)
     if kind == "music_stem":
         return music_stem(raw, *args)
+    if kind == "le_pages":
+        le = raw.index(b"LE\0\0", 0x3B000, 0x3C000)
+        return unpack_from("<I", raw, le + 0x14)[0], f"{name}+{le + 0x14:#x}, LE module page count"
     member, base = mix_member(raw, args[0])
     if kind == "handler_count":
         return handler_count(member, args[1]), f"{name} entry {args[0]:#010x} at +{base:#x}, handler byte +0x42"
     if kind == "corner_step":
         return corner_step(member), f"{name} entry {args[0]:#010x} at +{base:#x}, reciprocal region edges"
+    if kind == "wall_run_edge":
+        return wall_run_edge(member), f"{name} entry {args[0]:#010x} at +{base:#x}, partition of the wall table"
     raise ValueError(f"unknown byte witness {kind!r}")

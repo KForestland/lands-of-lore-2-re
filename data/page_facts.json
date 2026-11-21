@@ -104,6 +104,32 @@
           "kind": "hex"
         }
       ]
+    },
+    "geometry.wall_run.edge": {
+      "reader": [
+        "wall_run_edge",
+        "DAT/L1_DC.MIX",
+        2971673856
+      ],
+      "anchors": [
+        {
+          "page": "docs/formats/walls.md",
+          "before": "| region word 13 (+0x1A) | ",
+          "after": " row of the region",
+          "kind": "word"
+        }
+      ]
+    }
+  },
+  "automatic": {
+    "executable": "LOLG.DAT",
+    "counts": {
+      "lol2_parse_le.py": {
+        "page rows": [
+          "le_pages",
+          "LOLG.DAT"
+        ]
+      }
     }
   }
 }

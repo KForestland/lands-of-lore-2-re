@@ -17,6 +17,7 @@ import sys
 
 from cli_errors import ReaderArgumentParser, run_cli
 from doc_links import FENCE_OPEN
+from page_facts_auto import observed as observe_auto, probes as automatic_probes
 
 ROOT = Path(__file__).resolve().parents[1]
 REGISTRY = "data/page_facts.json"
@@ -148,7 +149,7 @@ def locate(body, anchor):
     return body.count("\n", 0, match.start("value")) + 1, match["value"]
 
 
-def scan(root, registry):
+def scan(root, registry, automatic=None):
     pages = dict(read_pages(root))
     anchors, claims, issues = defaultdict(Counter), {}, []
     for fact_id, fact in registry.items():
@@ -163,9 +164,14 @@ def scan(root, registry):
             anchors[page][(line, value)] += 1
             claims[fact_id].append((page, line, value, anchor["kind"]))
 
-    facts, inventory = [], {}
+    facts, inventory, inferred = [], {}, []
     for page, body in pages.items():
         measured = dict(measured_lines(body))
+        if automatic:
+            for claim in automatic_probes(body, measured, automatic):
+                inferred.append((page, claim))
+                if claim.reader[0] != "arithmetic":
+                    anchors[page][(claim.line, claim.shown)] += 1
         for line, _ in anchors[page]:
             measured.setdefault(line, body.splitlines()[line - 1])
         pending = []
@@ -188,7 +194,7 @@ def scan(root, registry):
                 pending.append([line, digest])
         if pending:
             inventory[page] = pending
-    return facts, inventory, claims, issues
+    return facts, inventory, claims, issues, inferred
 
 
 def inventory_errors(current, saved):
@@ -221,11 +227,12 @@ def summary(facts):
 
 
 def coverage(root=ROOT):
-    return summary(scan(root, load(root, REGISTRY)["facts"])[0])
+    registry = load(root, REGISTRY)
+    return summary(scan(root, registry["facts"], registry.get("automatic"))[0])
 
 
 def main():
-    from page_facts_native import DATA_ENV, edition_status, read_witness
+    from page_facts_native import DATA_ENV, edition_status, game_file, read_witness
 
     parser = ReaderArgumentParser(description=__doc__)
     parser.add_argument("--data", type=Path, default=os.environ.get(DATA_ENV))
@@ -235,7 +242,7 @@ def main():
     modes.add_argument("--inventory", action="store_true")
     args = parser.parse_args()
     registry = load(ROOT, REGISTRY)
-    facts, inventory, claims, issues = scan(ROOT, registry["facts"])
+    facts, inventory, claims, issues, inferred = scan(ROOT, registry["facts"], registry.get("automatic"))
     if args.inventory:
         if not issues:
             print_inventory(inventory)
@@ -251,6 +258,18 @@ def main():
     detail = ""
     if args.check:
         skip = edition_status(args.data) if args.data else "no original data folder supplied"
+        for page, claim in inferred:
+            try:
+                result = observe_auto(claim, None if skip else args.data, read_witness, game_file)
+                if result is None:
+                    continue
+                observed, source = result
+                if observed != claim.expected:
+                    value = observed.hex(" ") if isinstance(observed, bytes) else repr(observed)
+                    wanted = claim.expected.hex(" ") if isinstance(claim.expected, bytes) else repr(claim.expected)
+                    issues.append(f"{page}:{claim.line}: {claim.shown!r} claims {wanted}, read {value} from {source}")
+            except (OSError, ValueError, IndexError) as error:
+                issues.append(f"{page}:{claim.line}: {error}")
         if skip:
             detail = f"; skipped {registry['edition']} byte witnesses: {skip}"
         else:
