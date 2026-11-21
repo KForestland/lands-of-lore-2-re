@@ -61,6 +61,27 @@ Two published remedies, re-read from this copy:
 
 A patch file for this edit (one program change of two bytes, with the SHA-256 of this 2,847-byte `LOLG.EXE`) was made, and applied and undone on a copy. It is not shipped. On 20 November 2026 a player loaded a game-written save in the Huline village and walked into the tavern on the unpatched game (DOSBox 0.74-3, `memsize=30`): the scene played, with no crash and no memory message. So on that setup the fault does not occur, and the patch has nothing to fix there. What could still show it: a DOSBox setup with less memory than `memsize=30`, or a real DOS machine with less extended memory, or the Windows version of the game, which this page does not cover. If you see the memory message in the cantina, the two bytes above are the published edit; please report the setup.
 
+## Fixes
+
+### Cemetery priest after giving away the Bracers
+
+**What goes wrong.** In the Dracoid Cemetery, a player who has the urn and the priest's ashes but gave away the Bracers of the Dead finds the carved door shut. The priest scene never starts. A player who kept the Bracers gets the scene.
+
+**What the patch changes.** [cemetery-priest.json](cemetery-priest.json) changes 19 bytes in the predicate table of `DAT/L10_DC.MIX` (four spans from `+0xE8523`). The script commands and triggers stay as they are. Region 3754 at `L10_DC.MIX+0xC8E432` selects the urn and ashes scene (group 802) only when shared byte 37, the Bracers being worn, is 1. The patch uses four unused predicate rows so that the same scene is also selected when that byte is 0. All other combinations select what they did before: of the 324 combinations of the five bytes involved, 321 are unchanged. The other three are this case. [Predicate fields](../docs/lol2-script-events.md#predicates-and-shared-bytes)
+
+**It gives back a path the game already has.** With the Bracers kept and no patch, the door opens into the same hall (folder 0092). Without the patch and with the Bracers given away, the door stays shut (folder 0089). With the patch it opens (folders 0090, 0096, 0097). After undo it stays shut again (folder 0091). These runs used an edited test save made from a game-written one, labelled `EDITED 212 CEMETERY`.
+
+**The priest's answer.** OWNER-RESULT-MONDAY: the owner's run on the patched copy, with what the priest said and whether the ankh appeared.
+
+**Apply and undo.** Work on a copy of the game folder:
+
+```sh
+python3 tools/patch.py apply --data "GAME COPY" --out "../lol2-cemetery-patched" patches/cemetery-priest.json
+python3 tools/patch.py apply --data "GAME COPY" --out "../lol2-cemetery-restored" "../lol2-cemetery-patched/undo.json"
+```
+
+Copy `DAT/L10_DC.MIX` from the output folder into the copy's `DAT` folder. A second apply is refused. Undo restores the original archive byte for byte.
+
 ## Comfort
 
 Optional changes of this program. They are not mixed with the tavern note, and they are not mixed with each other. A patch is written only where one small edit has a single on or off result. A speed or a time with no chosen new number is described and left unpatched.

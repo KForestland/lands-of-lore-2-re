@@ -1,0 +1,41 @@
+{
+  "format": "lol-patch-3",
+  "game": "lol2",
+  "kind": "data",
+  "title": "Dracoid Cemetery priest after giving away the Bracers",
+  "description": "Lets the urn and ashes scene start when the Bracers of the Dead were given away, as it already does when they are kept.",
+  "changes": [
+    {
+      "file": "DAT/L10_DC.MIX",
+      "entry": 0,
+      "offset": 951587,
+      "old_length": 15,
+      "old_sha256": "5322fecfc92a5e3248a297a3df3eddfb9bd9049504272e4f572b87fa36d4b3bd",
+      "new": "060468046707046004680604570454"
+    },
+    {
+      "file": "DAT/L10_DC.MIX",
+      "entry": 0,
+      "offset": 951673,
+      "old_length": 2,
+      "old_sha256": "96a296d224f285c67bee93c30f8a309157f0daa35dc5b87e410b78630a09cfc7",
+      "new": "0454"
+    },
+    {
+      "file": "DAT/L10_DC.MIX",
+      "entry": 0,
+      "offset": 951689,
+      "old_length": 1,
+      "old_sha256": "2e7d2c03a9507ae265ecf5b5356885a53393a2029d241394997265a1a25aefc6",
+      "new": "58"
+    },
+    {
+      "file": "DAT/L10_DC.MIX",
+      "entry": 0,
+      "offset": 951699,
+      "old_length": 1,
+      "old_sha256": "aaa9402664f1a41f40ebbc52c9993eb66aeb366602958fdfaa283b71e64db123",
+      "new": "56"
+    }
+  ]
+}
