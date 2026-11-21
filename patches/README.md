@@ -8,6 +8,17 @@ These pages read DOS 1.30 (`LOLG.DAT` version string at file `+0x1C4714`, date `
 
 How to start the game on a current machine is [Running](RUNNING.md).
 
+## Where each reported fault sits
+
+One line per report. Script means a quest or scene order. State means a flag, a form, or where the player stands. Program means bytes in the executable or its stub. A few-byte patch is a short edit of those files. A setting and a reload are not that patch. The notes under the later headings are the same reports, written out.
+
+- Cantina crash while Baccata speaks (wiki Bugs; GOG support). Program: `LOLG.EXE` digits `32 34` at file `0x4A6`, the `24` in `VirtualSize:24`. A few-byte patch can exist: those two digits become `33 32`. It was applied and undone on a copy and is not shipped. Folders 0035 and 0036 walked the same way before and after that edit, stayed outside, and showed no memory message. On 20 November 2026 the owner entered the tavern on the unpatched game (DOSBox 0.74-3, `memsize=30`) and it did not crash.
+- Cemetery barrel will not tip (wiki Bugs). State: human form, the top of the barrel, a clear path, or leaving and reloading. No file offset. No few-byte patch.
+- Temple bowl creates aloe and can block the caretaker (wiki Bugs). Script. The 1.30 notes already claim this fix. No further byte is isolated. No few-byte patch is attempted.
+- Daniel's blade and the settlement gate (walkthroughs). Script: the order of that scene. No byte is isolated. No few-byte patch.
+- Silver leaf missing after the bracers were given to Dawn (GOG forum, January 2023). State: that gift comes first. No byte is isolated. No few-byte patch.
+- Belial's statue stuck in its courtyard (same GOG report). Program setting: `options.ini` key `Video_Variable_Frame_Rate` at `LOLG.DAT+0x1C28BA`. The reported remedy is turning that setting off. No program byte edit was found. No few-byte patch is attempted.
+
 ## Already claimed by the 1.30 notes
 
 The 1.06-to-1.30 notes name two gameplay fixes. Both are already claimed for this build. They are not repeated as new patches.
