@@ -93,7 +93,7 @@ What you can look at with your own copy of the game. Run from the clone with `ex
 | Archive workspace | `python tools/modkit.py --data "$LOL2_DAT" --check` | Byte-identical rebuild of 22 files from 25 editable entries |
 | Patch maker | `python tools/patch.py make --data "$LOL2_DAT" "my mod output" --title "My edit" --out ../lol2-out/edit.json` | Writes a version 3 patch and reports the changed files |
 | Interactive level plan | `python3 tools/lol.py level --data "$LOL2_DAT" --level L1_DC --out "../LoL2 plans"` | Open `L1_DC.html` for regions, placement rows and exit gates. |
-| Movie and sound conversion | [Copy the commands in First ten minutes](docs/FIRST_TEN_MINUTES.md#convert-a-movie-or-sound) | `CAN-22.mkv` and `GLOBAL-342.wav` in folders you choose |
+| Movie and sound conversion | [Copy the commands in First ten minutes](docs/FIRST_TEN_MINUTES.md#convert-a-movie-or-sound) | `CAN-22.mkv` and `GLOBAL-342.wav` in folders you choose, with letter case from the original archives |
 | XMIDI directory and events | `python tools/lol2_xmi_reader.py --data "$LOL2_DAT" --check` | 33 named FORM entries and 33 sequences |
 
 ## Change a number in your own copy

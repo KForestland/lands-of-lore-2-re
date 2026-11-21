@@ -9,9 +9,9 @@ Open the folder for the copy you play. Find `LOLG.DAT` in that folder and
 open the `DAT` folder next to it. Look for `L9_DR.MIX` and `L1_DC.MIX`
 directly inside `DAT`. Lowercase names such as `l9_dr.mix` also work.
 
-If a search finds several copies of `L1_DC.MIX`, use the one in the `DAT`
-folder beside `LOLG.DAT` in your chosen installation. Copy the full path
-of that `DAT` folder.
+If you have several installations or test copies, start with the installation
+you normally launch. Copy the full path to its `DAT` folder, with both
+marker files inside and `LOLG.DAT` one folder up.
 
 ## Download the tools
 
@@ -81,8 +81,8 @@ xdg-open "$out/first-level.png"
 
 You should see an overhead plan with numbered item and actor placements.
 If the tool cannot find a game file, check the markers in
-[Find your game files](#find-your-game-files). If the open command fails, open
-`first-level.png` from the output folder in your browser.
+[Find your game files](#find-your-game-files). If no window opens, open
+`first-level.png` from the output folder in a browser on your desktop.
 
 To draw the picture again, choose a new picture file name in both lines.
 
@@ -133,9 +133,10 @@ Linux
 .venv/bin/python tools/lol.py sound --data "$data" --file GLOBAL.MIX --entry 342 --out "$out/sound"
 ```
 
-Open `CAN-22.mkv` in the movie folder or `GLOBAL-342.wav` in the sound
-folder with a media player. The movie has 20 frames. The sound has
-22,050 samples. [How to choose a different entry](COOKBOOK.md#convert-a-movie-or-sound)
+Open the files named in the tool output from the `movie` or `sound` folder.
+The filenames keep the archive names' letter case. A lowercase installation
+produces `can-22.mkv` and `global-342.wav`. The movie has 20 frames. The sound
+has 22,050 samples. [How to choose a different entry](COOKBOOK.md#convert-a-movie-or-sound)
 
 ## Find another job
 
