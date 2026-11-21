@@ -149,12 +149,30 @@ callers, e.g. `0x72E59`), and the table indexes (`[ebx+0x414]` from
 `[ebp+0x18]` at `0x7935C`, and `[ebx+0x415]`) are not bounded in the
 code; an index of 8 or more in the `0xC4D8` table would read past it.
 To settle it, show that every object reaching `0x15C116` comes from
-`0x15BB9C` and bound the index arguments at their producers. Also open:
-the stem read at `0x9C35E` from `[ebp+0x18]`. The function holding
-the call at `0x9C3E8` copies that string into `[ebp-0x16c]`, appends
-the five bytes at cell `0xBFF` (`.tex`, address loaded at `0x9C39E`)
-and at `0x9C3E8` passes the buffer as the second argument of
-`0x9D894` (its only direct caller). The open at `0x9D8E4` uses that name before
+`0x15BB9C` and bound the index arguments at their producers.
+
+### Level texture filename
+
+**CONFIRMED.** The table at data `0xCA20` (file `LOLG.DAT+0x1CDA44`)
+has one eight-byte row per level number 0–20. The first dword is
+the stem pointer. Slot 0 holds `.\`, and slots 2, 6, 11, 15 and 18
+hold empty strings. All 15 other rows hold
+`sphere<n>\<level>\<level>`. At `0x9C040` the level loader starts the
+name with the context string at +0x558. The initializer copies an empty
+string there from data `0xBCC` (`0x9BC32–0x9BC6A`).
+The loader appends the indexed stem at `0x9C06E–0x9C094` and
+passes that buffer as argument 2 to `0x9C0E4` (`0x9C0C6–0x9C0CF`).
+The latter reads the same argument at `0x9C35E`, appends `.tex`
+from data `0xBFF`, and passes the result to `0x9D894` at `0x9C3E8`.
+
+For example, slot 20's stem is `sphere3\l20_bb\l20_bb`. The
+file opener at `0x9D8E4` receives that stem with `.tex` appended.
+The cache lookup at `0x119268–0x119279` substitutes an underscore
+for the final character when looking up the compressed member.
+Hashing the resulting `sphere3\l20_bb\l20_bb.te_` gives
+`0xC2871391`. The member begins at `L20_BB.MIX+0x2A`.
+`lol2_media_check.py --check` pins the filename instructions and
+checks this join on all 15 levels. The open at `0x9D8E4` uses that name before
 the test of `0x223D6` at `0x9D907`, and that test does not write the
 byte. The row at `0x9DE84` takes its packed length from the third
 dword of the 12-byte record read at `0x9DE42`, so this arm can still
@@ -188,4 +206,4 @@ leading-u32 experiment does not detect this framing.
 
 **What was tried.** This scan counted those embedded address bytes in the code object, matched them to the 66 LE fixups whose target is `0x223D6`, classified the 219 fixups to `0x223C0–0x223E0`, and disassembled the six direct callers of the row builder at `0x66E8C`. Stores through a register were not searched. The page already records the 66 relocation reads and that the direct absolute store forms are absent.
 
-**What would settle it.** The branches at `0x15BEE1` and `0x15C50D` already have 21 named witnesses. Still open are the stem argument at `[ebp+0x18]` that `0x9C3E8` suffixes with `.tex`, the first argument of `0x15C9DA`, and the pointers passed to `0x151F0A` and `0x15A2A0`.
+**What would settle it.** The level stem is resolved by the [15 archive joins](#level-texture-filename). The remaining tests are to identify the first argument of `0x15C9DA` and follow the buffers passed to `0x151F0A` and `0x15A2A0` to their file-open calls.

@@ -258,6 +258,41 @@ def check_global_texture_books(image, local, entries):
         raise ValueError("global texture book count")
 
 
+def check_level_texture_names(image, dat_dir):
+    """Join the level filename builder's table to the shipped texture members."""
+    code = 0x37000
+    for address, encoding in (
+        (0x9BC32, "be cc 0b 00 00"),
+        (0x9C039, "8d bc 24 10 01 00 00 8d b5 58 05 00 00"),
+        (0x9C060, "8b b4 24 3c 02 00 00 8d bc 24 10 01 00 00 8b 34 f5 20 ca 00 00"),
+        (0x9C0C6, "8d 84 24 20 01 00 00 50 55 e8 10 00 00 00"),
+        (0x9C35E, "8b 75 18"),
+        (0x9C3E3, "50 8b 75 14 56 e8 a7 14 00 00"),
+        (0x9D8E1, "6a 01 55 e8 47 ae 07 00"),
+        (0x119268, "89 e7 b2 5f 29 c9 49 31 c0 f2 ae f7 d1 49 8d 7b 08 88 54 0c ff"),
+    ):
+        expected = bytes.fromhex(encoding)
+        start = address + code
+        if image[start:start + len(expected)] != expected:
+            raise ValueError(f"level texture filename instruction at {address:#x}")
+
+    if cstr(image, OBJ5 + 0xBCC) or cstr(image, OBJ5 + 0xBFF) != ".tex":
+        raise ValueError("level texture filename prefix or suffix changed")
+    stems = [cstr(image, OBJ5 + u32(image, OBJ5 + 0xCA20 + 8 * slot))
+             for slot in range(21)]
+    if stems[0] != ".\\" or [slot for slot, stem in enumerate(stems) if not stem] != [2, 6, 11, 15, 18]:
+        raise ValueError("level filename table holes changed")
+    for stem in stems[1:]:
+        if not stem:
+            continue
+        level = stem.rsplit("\\", 1)[-1]
+        path = game_path(dat_dir, level.upper() + ".MIX")
+        key = ww_hash_v1(stem + ".te_")
+        _, _, entries = mix_dir(path)
+        if sum(row["key"] == key and row["offset"] == 0x2A for row in entries) != 1:
+            raise ValueError(f"level texture member does not match the filename table for {level}")
+
+
 def check_vqa_buffer_callbacks(image):
     """Check the DOS movie allocator and memory-lock callback arms."""
     code_bias = 0x37000
@@ -339,6 +374,7 @@ def check_wsa_frames(image, local, entries):
 def check(dat_dir):
     image, names = scene_names(dat_dir)
     check_vqa_buffer_callbacks(image)
+    check_level_texture_names(image, dat_dir)
     formats = image[OBJ5 + 0x2C84:OBJ5 + 0x2CC0]
     if formats[:3] != b"ss-" or b"%s.vqa" not in formats or b"outtakes\\%s" not in formats:
         raise ValueError("movie format strings moved")
@@ -539,7 +575,8 @@ def check(dat_dir):
     return ("CHECK media: scene limit 85; L12 opcode 21/20/210 at 9823886/9821090/9823696; "
             "citadel L12_CMI entry 21; lolg MOVIES entry 2; bank 1179 row 1049 0190108e.aud; "
             "32 table stems and CREDITS in both formats; "
-            "47 room modules contain 8469 relocations; 15 global texture books; 640 WSA deltas")
+            "47 room modules contain 8469 relocations; "
+            "15 level texture names join the shipped banks; 15 global texture books; 640 WSA deltas")
 
 
 def main(argv):

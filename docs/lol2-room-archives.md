@@ -60,7 +60,13 @@ matching room-table row.
 movie-path calls at `0x9BFAC` and `0x9C02B` use a stem from
 `[0xCA20 + 8*i]`; the suffixes at `LOLG.DAT+0x1C1BFE` and
 `+0x1C1C03` are `.MIX` and `I.MIX` (`0x9BE06–0x9BE40`,
-`0x9BFDC–0x9C02B`). The remaining 11 calls (10 rows) use the following names. File offsets in the
+`0x9BFDC–0x9C02B`). `0x15CB7E` finds the last backslash
+and returns its address. The caller advances by one at `0x9BE19`,
+so it starts each name with just the level leaf. The
+[level-stem census](formats/compression.md#level-texture-filename)
+accounts for all 15 populated level rows. None has an `arena`
+leaf, ruling out a valid level-row selection as its source in both
+calls. The remaining 11 calls (10 rows) use the following names. File offsets in the
 right column refer to the original executable.
 
 | Constructor call | Name source | File offset |
