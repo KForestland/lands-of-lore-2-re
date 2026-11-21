@@ -2,6 +2,18 @@
 
 Newest first. One line per question worked on, new tool or visible change; each question bullet gives its state. Details are on the linked pages; the counts are in the [rating](../README.md#rating).
 
+## 21 November 2026
+
+- **Finding your game folder, maps and media.** The [first ten minutes](FIRST_TEN_MINUTES.md) page now says which folder to give, and walks through opening an interactive level plan and converting a movie or sound.
+- **Where each reported fault sits.** The patch page places every reported original fault. For four of them it gives the DOS 1.30 script records and what would settle the report: the cemetery barrel, the temple bowl, Daniel's blade, and the Silverleaf after giving away the Bracers of the Dead ([patches](../patches/README.md#retail-script-checks)).
+- **Script condition patches.** A patch may now change rows of a level's condition table, keeping the table's place, row count and row length. The level tool checks the operators and operand types, and that every nested reference stays inside the table and ends ([patch format](formats/patch.md)). A candidate fix for the missing cemetery priest is being tested in the game. It is not shipped yet.
+- **Intro-skip note corrected.** In the 20 November runs the opening movie played on both copies, and those runs did not reach player control, so walking was not tested ([patches](../patches/README.md)).
+- **DOSBox settings marked.** Every line of the running page is marked as tried here (with its launch folders), read from the files, or reported elsewhere ([running](../patches/RUNNING.md)).
+- **Damaged saves.** A save file cut in half is refused with one line and no output file; a test now keeps it that way.
+- **Level texture names (Q1 stays mostly answered).** The level name is traced into the texture opener, and all 15 texture banks are matched. Each open question now says in one line what was tried and what would settle it ([open questions](OPEN_QUESTIONS.md)).
+- **Probes still waiting.** The 21 November pass stopped at setup for the timed message `0x26`, movie frame 115 and `ARENA.MIX`. The page says why for each one ([running-game probes](NEEDS_A_RUNNING_GAME.md)).
+- **Glossary and checks.** New glossary rows explain tool words in plain language. A failed check now prints the last twenty lines of its error output, and the workspace check accepts paths through symbolic links.
+
 ## 20 November 2026
 
 - **Moving items and props.** The level plans export moves of existing items and props inside their own regions, for a copy ([level editor](LEVEL_EDITOR.md)).
