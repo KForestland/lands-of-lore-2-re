@@ -36,6 +36,13 @@ No few-byte script edit is isolated for these. The remedy the reports give is to
 
 ### Retail script checks
 
+A geometry patch can edit the five-byte rows in the existing predicate
+table. Keep the table offset, row count and entry length. Edited rows must
+use the documented operators and operand types. Recursive references must
+stay in the table and terminate. Test the original and the edited script in
+their matching game states before releasing a patch.
+[Predicate fields](../docs/lol2-script-events.md#predicates-and-shared-bytes)
+
 | Report | DOS 1.30 records | What would settle the report |
 |---|---|---|
 | Cemetery barrel | `L10_DC.MIX+0xD15B4C` names `Barrel_in_ready_position`. The level's predicate rows and framed commands have no direct reference to that indexed local byte. | Record the barrel object, player form and positions just before a failed push and a successful push in 1.30. |

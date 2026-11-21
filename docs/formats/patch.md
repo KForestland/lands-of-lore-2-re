@@ -187,13 +187,6 @@ loose TRR tables.
 [MIX and TRR readers](../ROUND_TRIP.md) ·
 [Executable addresses](https://github.com/KForestland/lands-of-lore-2-re/blob/main/docs/lol2-executable-tables.md)
 
-A geometry patch can edit the five-byte rows in the existing predicate
-table. Keep the table offset, row count and entry length. Edited rows must
-use the documented operators and operand types. Recursive references must
-stay in the table and terminate. Test the original and the edited script in
-their matching game states before releasing a patch.
-[Predicate fields](../lol2-script-events.md#predicates-and-shared-bytes)
-
 ## LoL3
 
 **File names** start at the game folder holding `LOL3.DAT` and `DAT`. If
