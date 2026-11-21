@@ -22,7 +22,7 @@ Run these from the repository folder. Set the data variable as shown under Setup
 | Tool | Example | Output |
 |---|---|---|
 | Job menu | `python tools/lol.py --help` | level, text, translate, music, movie, sound, save, patch, mod |
-| Interactive map | `python tools/level_viewer.py --data "$LOL2_DAT" --check` | L1_DC page with 3,860 entries |
+| Interactive map | `python3 tools/lol.py level --data "$LOL2_DAT" --level L1_DC --out "../LoL2 plans"` | `L1_DC.html` with 3,860 entries |
 | Level copy editor | `python tools/level_edit.py --data "$LOL2_DAT" --check` | 15 original archives copied byte-identically and 2 placement kinds verified |
 | Translation tables | `python tools/translate.py --data "$LOL2_DAT" --check` | 8 tables, 988 rows, 6 indexed fonts |
 | Edition fingerprints | `python tools/edition.py --data "$LOL2_DAT" --check` | English GOG release, DOS 1.30, all 6 fingerprints match |
@@ -30,6 +30,7 @@ Run these from the repository folder. Set the data variable as shown under Setup
 | Archive workspace | `python tools/modkit.py --data "$LOL2_DAT" --check` | Byte-identical rebuild of 22 files from 25 editable entries |
 | Patch maker | `python tools/patch.py make --data "$LOL2_DAT" "my mod output" --title "My edit" --out ../lol2-out/edit.json` | Writes a version 3 patch and reports the changed files |
 | Movie directory | `python tools/media_convert.py movie --data "$LOL2_DAT" --list --file MOVIES.MIX` | MOVIES.MIX: 28 movie entries |
+| Movie and sound | [Conversion commands](../docs/FIRST_TEN_MINUTES.md#convert-a-movie-or-sound) | `CAN-22.mkv` with 20 frames, and `GLOBAL-342.wav` with 22,050 samples |
 | XMIDI directory and events | `python tools/lol2_xmi_reader.py --data "$LOL2_DAT" --check` | 33 named FORM entries and 33 sequences |
 
 The commands also exercise these Python modules through their user-facing tools.

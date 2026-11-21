@@ -94,6 +94,33 @@ Click a region or placement to see its details. Choose **Props** under **Show** 
 to show the placement numbers. To repeat the command, choose a new
 subfolder such as `plans-2` in both lines.
 
+## Convert a movie or sound
+
+For the movie, install FFmpeg and check that `ffmpeg -version` and
+`ffprobe -version` both work in the same terminal. The NumPy install
+line is needed for the movie. Sound conversion uses the Python you
+set up above.
+
+Windows PowerShell
+
+```powershell
+.\.venv\Scripts\python.exe -m pip install numpy
+.\.venv\Scripts\python.exe tools/lol.py movie --data "$data" --file CAN.MIX --entry 22 --out "$out\movie"
+.\.venv\Scripts\python.exe tools/lol.py sound --data "$data" --file GLOBAL.MIX --entry 342 --out "$out\sound"
+```
+
+Linux
+
+```sh
+.venv/bin/python -m pip install numpy
+.venv/bin/python tools/lol.py movie --data "$data" --file CAN.MIX --entry 22 --out "$out/movie"
+.venv/bin/python tools/lol.py sound --data "$data" --file GLOBAL.MIX --entry 342 --out "$out/sound"
+```
+
+Open `CAN-22.mkv` in the movie folder or `GLOBAL-342.wav` in the sound
+folder with a media player. The movie has 20 frames. The sound has
+22,050 samples. [How to choose a different entry](COOKBOOK.md#convert-a-movie-or-sound)
+
 ## Find another job
 
 Use the same Python command with `tools/lol.py` to list the jobs.

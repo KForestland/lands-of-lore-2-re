@@ -11,6 +11,7 @@ import wave
 from cli_errors import ReaderArgumentParser, run_cli
 from level_html import counted, find_data, installation_root
 from lol2_aud_decode import decode_aud, decode_ima_adpcm_block, is_aud, write_wav
+from lol2_cli import DEFAULT_DATA
 from lol2_media_check import mix_dir
 from lol2_source_format import parse_mix
 from lol2_vqa_v2_decode import chunks, decode, header
@@ -217,7 +218,8 @@ def main(mode=None):
         parser.add_argument("mode", choices=("movie", "sound"))
     else:
         parser.set_defaults(mode=mode)
-    parser.add_argument("--data", required=True, help="your game folder or its DAT folder")
+    parser.add_argument("--data", default=DEFAULT_DATA, required=DEFAULT_DATA is None,
+                        help="your game folder or its DAT folder (default: $LOL2_DAT)")
     parser.add_argument("--file", help="MIX archive or loose file name or path")
     parser.add_argument("--entry", type=int, help="zero-based MIX entry number from --list")
     parser.add_argument("--list", action="store_true", help="list media archives or entries in the archive named by --file")

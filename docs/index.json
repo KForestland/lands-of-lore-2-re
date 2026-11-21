@@ -213,7 +213,6 @@
         "tools/lol2_numbers.py",
         "tools/lol2_save_inspect.py",
         "tools/lol2_xmi_reader.py",
-        "tools/media_convert.py",
         "tools/modkit.py",
         "tools/patch.py",
         "tools/rating.py",
