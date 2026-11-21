@@ -1,9 +1,17 @@
 # First ten minutes
 
 Draw a level from your own installed copy of Lands of Lore II.
-You need Python 3.10 or later with the Pillow package, a web browser, and the
-game's `DAT` folder. Find the folder containing `L1_DC.MIX`.
+You need Python 3.10 or later, the Pillow package and a web browser.
 
+## Find your game files
+
+Open the folder for the copy you play. Find `LOLG.DAT` in that folder and
+open the `DAT` folder next to it. Look for `L9_DR.MIX` and `L1_DC.MIX`
+directly inside `DAT`. Lowercase names such as `l9_dr.mix` also work.
+
+If a search finds several copies of `L1_DC.MIX`, use the one in the `DAT`
+folder beside `LOLG.DAT` in your chosen installation. Copy the full path
+of that `DAT` folder.
 
 ## Download the tools
 
@@ -21,12 +29,16 @@ If the command is missing or the version is below 3.10, install a
 current Python 3 release with the Python launcher, then reopen PowerShell.
 [Python for Windows](https://www.python.org/downloads/windows/)
 
-Paste these lines, replacing the path after `$data =` with
-the folder you found above. Keep the quotation marks around paths.
+Run this line, then paste the folder path when PowerShell asks for it.
+
+```powershell
+$data = (Read-Host 'Paste the path to your game folder').Trim('"')
+```
+
+Then paste these lines.
 
 ```powershell
 Set-Location "$HOME\Downloads\lands-of-lore-2-re-main"
-$data = 'C:\Games\Lands of Lore II\DAT'
 $out = "$HOME\Downloads\LoL2 output"
 New-Item -ItemType Directory -Force "$out" | Out-Null
 ```
@@ -49,12 +61,16 @@ Start-Process "$out\first-level.png"
 
 Open a terminal. If `python3 --version` reports a version below 3.10,
 install a newer Python with your distribution's package manager. On Ubuntu or Debian, `sudo apt install python3-venv` installs the venv module.
-Paste these lines, replacing the path after `data=` with the folder you
-found above.
+Run this line, paste the folder path and press Enter again.
+
+```sh
+IFS= read -r data
+```
+
+Then paste these lines.
 
 ```sh
 cd "$HOME/Downloads/lands-of-lore-2-re-main"
-data="$HOME/Games/Lands of Lore II/DAT"
 out="$HOME/Downloads/LoL2 output"
 mkdir -p "$out"
 python3 -m venv .venv
@@ -64,8 +80,8 @@ xdg-open "$out/first-level.png"
 ```
 
 You should see an overhead plan with numbered item and actor placements.
-If the tool cannot find a game file, check that the path points to the
-folder containing `L1_DC.MIX`. If the open command fails, open
+If the tool cannot find a game file, check the markers in
+[Find your game files](#find-your-game-files). If the open command fails, open
 `first-level.png` from the output folder in your browser.
 
 To draw the picture again, choose a new picture file name in both lines.
