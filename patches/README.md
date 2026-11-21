@@ -13,9 +13,9 @@ How to start the game on a current machine is [Running](RUNNING.md).
 One line per report. Script means a quest or scene order. State means a flag, a form, or where the player stands. Program means bytes in the executable or its stub. A few-byte patch is a short edit of those files. A setting and a reload are not that patch. The notes under the later headings are the same reports, written out.
 
 - Cantina crash while Baccata speaks (wiki Bugs; GOG support). Program: `LOLG.EXE` digits `32 34` at file `0x4A6`, the `24` in `VirtualSize:24`. A few-byte patch can exist: those two digits become `33 32`. It was applied and undone on a copy and is not shipped. Folders 0035 and 0036 walked the same way before and after that edit, stayed outside, and showed no memory message. On 20 November 2026 the owner entered the tavern on the unpatched game (DOSBox 0.74-3, `memsize=30`) and it did not crash.
-- Cemetery barrel will not tip (wiki Bugs). State: human form, the top of the barrel, a clear path, or leaving and reloading. No file offset. No few-byte patch.
-- Temple bowl creates aloe and can block the caretaker (wiki Bugs). Script. The 1.30 notes already claim this fix. No further byte is isolated. No few-byte patch is attempted.
-- Daniel's blade and the settlement gate (walkthroughs). Script: the order of that scene. No byte is isolated. No few-byte patch.
+- Cemetery barrel will not tip (wiki Bugs). State: the upright barrel needs an empty-hand pick before its fall and roll callbacks. In human form, click the top from inside the tomb with the route clear. Reload before the attempt if it stalls. No verified byte fix.
+- Temple bowl creates aloe and can block the caretaker (wiki Bugs). DOS 1.30 already admits two or more entrance-bowl offerings when it loads this level. Bring Aloe and Poison Paint and offer them to the matching bowls. No further patch is needed for the overcount.
+- Daniel's knife and the settlement gate (walkthroughs). Recover the knife Daniel drops, visit the Temple, then present the recovered knife to the guard. The guard checks its exact identity and the story flags. No verified faulty branch.
 - Silver leaf missing after the bracers were given to Dawn (GOG forum, January 2023). State: that gift comes first. No byte is isolated. No few-byte patch.
 - Belial's statue stuck in its courtyard (same GOG report). Program setting: `options.ini` key `Video_Variable_Frame_Rate` at `LOLG.DAT+0x1C28BA`. The reported remedy is turning that setting off. No program byte edit was found. No few-byte patch is attempted.
 
@@ -23,14 +23,14 @@ One line per report. Script means a quest or scene order. State means a flag, a 
 
 The 1.06-to-1.30 notes name two gameplay fixes. Both are already claimed for this build. They are not repeated as new patches.
 
-- Huline Temple altar. The note says that using more than one aloe and poison paint no longer locks out the lightning strike on the corpse. The Lands of Lore wiki Bugs page still says that selecting the bowl can create aloe and then block the caretaker action, and that an earlier save is the remedy. No further byte is isolated here. To see it, use the altar bowls in the Huline Temple.
-- Cemetery barrel. The same note says the barrel in the Dracoid Cemetery can be pushed over and rolled down to the lower room in all circumstances. The wiki still says it sometimes will not tip, and gives human form, the top of the barrel, a clear path, or leaving and reloading. That is placement, not a located byte. No further byte change is isolated here.
+- Huline Temple altar. The note says that extra offerings no longer block the caretaker strike. The DOS 1.30 loader writes the greater-or-equal operator into predicate row 15 in memory for level 14. The archive still holds equality. The empty-hand Aloe grant is on prop 82, and the empty-hand event on entrance bowl 370 plays a prop animation.
+- Cemetery barrel. The same note claims the barrel can always tip and roll to the lower room. The report advises human form, clicking the top, clearing the path, and reloading if necessary. The original script has an empty-hand event for tipping and separate callbacks for falling, rolling and spilling. A failed pick and an interrupted roll need different controls.
 
 ## Quest-order reports
 
 No few-byte script edit is isolated for these. The remedy the reports give is to keep the item, or to reload to before the choice.
 
-- Daniel's blade. Walkthroughs say he drops the blade and the settlement gate wants it back. That is the order of the scene. No published byte edit was found.
+- Daniel's knife. Learn of Daniel, give him the knife, recover it after the encounter and visit the Temple before going to the settlement. The guard has an acceptance branch outside the five-second warning state. Both acceptance branches require the recovered knife and the ordinary story flags.
 - Silver leaf after the bracers. A GOG forum report (January 2023, "Dracoid cemetery bug") says the cemetery ghost is absent, and the silver leaf never appears, if the bracers were given to Dawn first. No byte is isolated here. To see the report, finish the ruins, give the bracers to Dawn, and return to the ghost's house.
 - Belial's statue. The same report says the statue stuck in its courtyard, and that turning variable frame rate off let it move. The program stores the key `Video_Variable_Frame_Rate` at `LOLG.DAT+0x1C28BA`. No published byte edit of the program was found. The key is a setting in `options.ini`, not a patch.
 
@@ -45,9 +45,9 @@ their matching game states before releasing a patch.
 
 | Report | DOS 1.30 records | What would settle the report |
 |---|---|---|
-| Cemetery barrel | `L10_DC.MIX+0xD15B4C` names `Barrel_in_ready_position`. The level's predicate rows and framed commands have no direct reference to that indexed local byte. | Record the barrel object, player form and positions just before a failed push and a successful push in 1.30. |
-| Temple bowl | Empty-hand actions on prop 82 at `L14_HT.MIX+0xB31894` and `+0xB318A2` advance its state 1 → 2 → 3 and each grant aloe. Separate props 285 and 370 increment local bytes 9 and 8, with continuation predicates at `+0xB487AD` and `+0xB487A3` that test for exactly 2. Prop 285 also changes its own state, which gates repeat use. | Record which prop is used, the two counters and the corpse scene when repeating aloe and paint in a 1.30 save. |
-| Daniel's blade | The placed item at `L8_SJ.MIX+0xCEB6E4` uses the War blade identity. Separate scene groups store `GV_DANIEL_KILLED` at `+0xCD51E8` or `GV_DANIEL_SPARED` at `+0xCD51AC`. | Use a save in which the correct blade is still present and the intended handover fails. |
+| Cemetery barrel | Upright prop 477 has one mode-0 kind-4 event at `L10_DC.MIX+0xC81A7F`. It names group 17170, which hands off to falling control 177. Its completion starts rolling control 176, whose own completion places the spill. The upright event has no script predicate. | Compare a failed and successful empty-hand pick of prop 477. If both tip, compare the two results of the rolling callback. |
+| Temple bowl | Raw predicate 15 at `L14_HT.MIX+0xB487A3` tests local byte 8 for equality with 2. `LOLG.DAT+0x9DA15–0x9DA2D` changes the loaded operator to greater or equal when the active level is 14. That row gates both entrance-bowl completions and the caretaker hit. [Predicate loader](../docs/lol2-script-events.md#predicates-and-shared-bytes) | If 1.30 still stalls, record the exact object selected, the offering counter and the caretaker action from the same save. |
+| Daniel's knife | Guard actor 113 has two kind-4 records at `L8_SJ.MIX+0xCD883A` and `+0xCD8848`. Both match definition 29 (`0xEBFE13F0`) and require local bytes 9 and 32 to be zero. The placed War Blade at `+0xCEB6E4` has another identity. | Check the held identity and the two local bytes if an otherwise normal admission fails. |
 | Silverleaf after giving away the bracers | Bracer removal clears shared byte 37. Region 3754 at `L10_DC.MIX+0xC8E432` uses that byte to admit the urn and ashes scene. The separate bush path at `+0xC8E45C` and `+0xC8E46A` checks shared byte 16 and local byte 10. | Compare the priest scene and the bush on a save made before entering region 3754, with the urn and ashes already obtained and the bracers given away. |
 
 ## Tavern crash while Baccata speaks
