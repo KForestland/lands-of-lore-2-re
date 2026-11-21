@@ -21,15 +21,23 @@ def read_file(path):
 
 
 def mix_member(data, key):
+    rows = mix_directory(data)
+    match = [(offset, size) for name, offset, size in rows if name == key]
+    if len(match) != 1:
+        raise ValueError(f"expected one in-range MIX entry with key {key:#x}")
+    offset, size = match[0]
+    return memoryview(data)[offset:offset + size], offset
+
+
+def mix_directory(data):
     count, body_size = unpack_from("<HI", data)
     body = 6 + 12 * count
     if body + body_size != len(data):
         raise ValueError("MIX directory and data lengths disagree")
-    rows = [(body + offset, size) for name, offset, size in iter_unpack("<III", data[6:body]) if name == key]
-    if len(rows) != 1 or sum(rows[0]) > len(data):
-        raise ValueError(f"expected one in-range MIX entry with key {key:#x}")
-    offset, size = rows[0]
-    return memoryview(data)[offset:offset + size], offset
+    rows = [(name, body + offset, size) for name, offset, size in iter_unpack("<III", data[6:body])]
+    if any(offset + size > len(data) for _, offset, size in rows):
+        raise ValueError("MIX entry exceeds its payload")
+    return rows
 
 
 def wsa_first_delta(image):
@@ -128,6 +136,31 @@ def read_witness(data, spec):
     if kind == "file_size":
         return path.stat().st_size, name
     raw = read_file(path)
+    if kind == "archive_size":
+        entry = args[0]
+        _, offset, size = mix_directory(raw)[entry]
+        return size, f"{name} entry {entry} at +{offset:#x}"
+    if kind == "archive_form_type":
+        forms = [raw[at + 8:at + 12] for _, at, size in mix_directory(raw)
+                 if size >= 12 and raw[at:at + 4] == b"FORM"]
+        if not forms or set(forms) - {b"XDIR", b"XMID"}:
+            raise ValueError(f"{name} has no uniform XMIDI form entries")
+        return "XMIDI scores", f"{name}, the FORM member type fields"
+    if kind == "absolute_operand":
+        va = args[0]
+        offset = va + 0x37000
+        if raw[offset] in {0x68, *range(0xB8, 0xC0)}:
+            operand = offset + 1
+        elif raw[offset:offset + 2] == b"\xc7\x00":  # mov dword [eax], imm32
+            operand = offset + 2
+        else:
+            raise ValueError(f"no supported absolute operand at {name} VA {va:#x}")
+        return unpack_from("<I", raw, operand)[0], f"{name} instruction at VA {va:#x}"
+    if kind == "slot_level_count":
+        at = 0xE7B3D + 0x37000
+        if raw[at:at + 2] != b"\x83\xfe" or raw[at + 3] != 0x7E:
+            raise ValueError("save writer level bound moved")
+        return raw[at + 2], f"{name} VA {at - 0x37000:#x}, save writer's inclusive level bound"
     if kind == "wsa_first_delta":
         return wsa_first_delta(raw)
     if kind == "music_stem":

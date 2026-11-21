@@ -119,6 +119,34 @@
           "kind": "word"
         }
       ]
+    },
+    "save.level_count": {
+      "reader": [
+        "slot_level_count",
+        "LOLG.DAT"
+      ],
+      "anchors": [
+        {
+          "page": "docs/lol2-save-format.md",
+          "before": "numbered global sections and ",
+          "after": " numbered level blocks",
+          "kind": "number"
+        }
+      ]
+    },
+    "music.form.format": {
+      "reader": [
+        "archive_form_type",
+        "LOCAL.MIX"
+      ],
+      "anchors": [
+        {
+          "page": "docs/formats/xmi.md",
+          "before": "members beginning with `FORM` are ",
+          "after": ".",
+          "kind": "text"
+        }
+      ]
     }
   },
   "automatic": {
@@ -130,6 +158,10 @@
           "LOLG.DAT"
         ]
       }
-    }
+    },
+    "archive_entries": [
+      ".MIX"
+    ],
+    "absolute_operands": true
   }
 }

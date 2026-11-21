@@ -25,6 +25,11 @@ RECORD = re.compile(
     rf"Its (?P<body>{DECIMAL})-byte [^.\n]+ is followed by a (?P<tag>{DECIMAL})-byte"
 )
 COMMAND = re.compile(r"`(?:python3?\s+)?(?:tools/)?([\w-]+\.py)\s+--check(?:[^`\n]+)?`")
+ARCHIVE_ENTRY = re.compile(
+    rf"`(?P<file>{FILE})`\s+entry\s+(?P<entry>\d+)\s+is\s+(?P<value>{DECIMAL}) bytes\b"
+)
+ENTRY_SIZE = re.compile(rf"\bEntry (?P<entry>\d+) is (?P<value>{DECIMAL}) bytes\b")
+OPERAND = re.compile(rf"\bat `(?P<value>{OFFSET})` \(`(?P<instruction>{OFFSET})`\)")
 
 
 @dataclass(frozen=True)
@@ -65,6 +70,23 @@ def probes(text, measured, config):
         if eligible(match):
             found.append(Claim(line(match.start("body")), match["body"], parse_number(match["body"]),
                                ("arithmetic", parse_number(match["total"]), parse_number(match["tag"]))))
+    extensions = tuple(config.get("archive_entries", []))
+    if extensions:
+        matches = [(match, match["file"]) for match in ARCHIVE_ENTRY.finditer(text)]
+        title_archive = re.search(rf"^# [^\n]+ in (?P<file>{FILE})\s*$", text, re.M)
+        if title_archive:
+            matches.extend((match, title_archive["file"]) for match in ENTRY_SIZE.finditer(text))
+        for match, name in matches:
+            if eligible(match) and name.upper().endswith(extensions):
+                value = match["value"]
+                found.append(Claim(line(match.start("value")), value, parse_number(value),
+                                   ("archive_size", name, int(match["entry"]))))
+    if config.get("absolute_operands"):
+        for match in OPERAND.finditer(text):
+            if eligible(match):
+                value = match["value"]
+                found.append(Claim(line(match.start("value")), value, int(value, 16),
+                                   ("absolute_operand", config["executable"], int(match["instruction"], 16))))
     counts = config.get("counts", {})
     for command in COMMAND.finditer(text):
         if not eligible(command):

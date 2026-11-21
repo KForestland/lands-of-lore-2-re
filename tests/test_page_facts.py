@@ -27,6 +27,10 @@ CONFIRMED `OUTSIDE.DAT` has 2 records.
         result = dict(page_facts.measured_lines(text))
         self.assertEqual(set(result), {3, 4, 10})
 
+    def test_mixed_labels_keep_only_the_confirmed_claim(self):
+        body = "CONFIRMED. Offset is 0x70. UNCONFIRMED. Size is 40 bytes."
+        self.assertEqual(dict(page_facts.measured_lines(body)), {1: "CONFIRMED. Offset is 0x70."})
+
     def test_mutation_reports_the_original_page_line(self):
         with tempfile.TemporaryDirectory() as kind:
             root = pathlib.Path(kind)
