@@ -9,7 +9,7 @@ the absolute indirect calls of the 47 room modules.
 It writes nothing unless --out is set, and then only the check line.
 """
 
-from cli_errors import run_cli
+from cli_errors import run_cli, game_path
 import os
 import struct
 import sys
@@ -47,7 +47,7 @@ CUE_WITNESSES = {161: 298, 162: 317, 167: 276, 168: 291, 174: 286, 197: 323, 198
 
 
 def parent_file(dat_dir, name):
-    path = os.path.join(os.path.dirname(os.path.abspath(dat_dir)), name)
+    path = str(game_path(os.path.dirname(os.path.abspath(dat_dir)), name))
     if not os.path.isfile(path):
         raise FileNotFoundError("%s is not in the parent of the DAT folder" % name)
     return path
@@ -362,7 +362,7 @@ def check_room_imports(dat_dir, image):
         ptr = struct.unpack_from("<I", image, DATA_BIAS + 0xEA6C + 4 * index)[0]
         prefix = cstr(image, DATA_BIAS + ptr)
         cut = prefix.find("_")
-        path = os.path.join(dat_dir, prefix[:cut].upper() + ".MIX")
+        path = str(game_path(dat_dir, prefix[:cut].upper() + ".MIX"))
         _size, _body, entries = mix_dir(path)
         hits = []
         for entry in entries:
@@ -374,7 +374,7 @@ def check_room_imports(dat_dir, image):
         if len(hits) != 1:
             raise ValueError("%s code entries %s" % (prefix, len(hits)))
         modules.append((hits[0], 0x34))
-    arena = os.path.join(dat_dir, "ARENA.MIX")
+    arena = str(game_path(dat_dir, "ARENA.MIX"))
     _size, _body, entries = mix_dir(arena)
     modules.append((read_at(arena, entries[1]["offset"], entries[1]["size"]), 0x2C))
     if len(modules) != 47:
@@ -485,7 +485,7 @@ def check(dat_dir):
     if stored != tuple(va - RELOC for va in arms):
         raise ValueError("switch slots")
 
-    path = os.path.join(dat_dir, "MCEL.MIX")
+    path = str(game_path(dat_dir, "MCEL.MIX"))
     raw, entries, base = read_mix_with_hashes(path)
     by_hash = {}
     for index, (key, offset, size) in enumerate(entries):

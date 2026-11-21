@@ -13,7 +13,7 @@ Item handlers read these values as [[0x96904]] + 8*pair + 4.
 handlers 2, 8, 83 and 91-93 (pairs 17, 15, 22 and 37). Prints indexes only.
 """
 
-from cli_errors import run_cli
+from cli_errors import run_cli, game_path
 import os
 import struct
 import sys
@@ -39,7 +39,7 @@ def native_hash(text):
 
 
 def item_layout(dat_dir):
-    with open(os.path.join(dat_dir, "GLOBAL.MIX"), "rb") as source:
+    with open(str(game_path(dat_dir, "GLOBAL.MIX")), "rb") as source:
         raw = source.read()
     count = struct.unpack_from("<H", raw)[0]
     base = 6 + 12 * count
@@ -59,7 +59,7 @@ def item_definitions(dat_dir):
 
 
 def join(dat_dir):
-    image = open(os.path.join(os.path.dirname(os.path.abspath(dat_dir)), "LOLG.DAT"), "rb").read()
+    image = open(str(game_path(os.path.dirname(os.path.abspath(dat_dir)), "LOLG.DAT")), "rb").read()
     rows = item_definitions(dat_dir)
     by_identity = {struct.unpack_from("<I", row, 0x18)[0]: i for i, row in enumerate(rows)}
     values = []

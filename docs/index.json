@@ -195,8 +195,12 @@
       ],
       "tools": [
         "tools/check_all.py",
+        "tools/edition.py",
         "tools/example_images.py",
         "tools/full_report.py",
+        "tools/level_edit.py",
+        "tools/level_viewer.py",
+        "tools/lol.py",
         "tools/lol2_disassemble_scripts.py",
         "tools/lol2_event_browser.py",
         "tools/lol2_hmi_midi.py",
@@ -208,11 +212,14 @@
         "tools/lol2_mix_parser.py",
         "tools/lol2_numbers.py",
         "tools/lol2_save_inspect.py",
+        "tools/lol2_xmi_reader.py",
+        "tools/media_convert.py",
         "tools/modkit.py",
         "tools/patch.py",
         "tools/rating.py",
         "tools/repo_guard.py",
-        "tools/save_edit.py"
+        "tools/save_edit.py",
+        "tools/translate.py"
       ]
     },
     {
@@ -534,6 +541,15 @@
         "tools/lol2_text_tables.py",
         "tools/lol2_texture_container.py",
         "tools/rating.py"
+      ]
+    },
+    {
+      "path": "docs/TOOL_CHECK_AUDIT.md",
+      "title": "Reader tool check audit",
+      "answers": [],
+      "question_references": [],
+      "tools": [
+        "tools/doc_links.py"
       ]
     },
     {

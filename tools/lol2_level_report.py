@@ -22,7 +22,7 @@ No game text, pictures or sound are written; only ids, counts and offsets.
   lol2_level_report.py --data DAT --out DIR --level 9   # one level
   lol2_level_report.py --check --data DAT               # one line: every level reads cleanly, and docs/levels matches the tool
 """
-from cli_errors import run_cli
+from cli_errors import run_cli, game_path
 import os
 import sys
 from collections import Counter, defaultdict
@@ -43,7 +43,7 @@ ITEM_KEY = 0xED7EC08D  # GLOBAL.MIX entry with the 170 x 91-byte item definition
 def item_identities(data_dir):
     """Map item identity (record +0x18) -> record number, from DAT/GLOBAL.MIX."""
     import struct
-    b = (Path(data_dir) / "GLOBAL.MIX").read_bytes()
+    b = game_path(Path(data_dir), "GLOBAL.MIX").read_bytes()
     r = [x for x in S.parse_mix(b) if x["key"] == ITEM_KEY][0]
     e = b[r["offset"]:r["offset"] + r["size"]]
     base, n = struct.unpack_from("<I", e, 4)[0], struct.unpack_from("<I", e, 0x34)[0]
@@ -174,7 +174,7 @@ def scene_names(data_dir):
     """The 86-name movie scene table in LOLG.DAT (file 0x1CF58C; name pointers are data addresses,
     file = data + 0x1C1024), limit dword at file 0x1CF764 (docs/lol2-movie-scenes.md)."""
     import struct
-    exe = Path(data_dir).resolve().parent / "LOLG.DAT"
+    exe = game_path(Path(data_dir).resolve().parent, "LOLG.DAT")
     if not exe.exists():
         return {}
     b = exe.read_bytes()
@@ -312,7 +312,7 @@ def check_l8_controls(data_dir):
     """Join the original control and prop placements to their region rows."""
     from struct import unpack_from
 
-    source = (Path(data_dir) / "L8_SJ.MIX").read_bytes()
+    source = game_path(Path(data_dir), "L8_SJ.MIX").read_bytes()
     entry, geometry = S.level_geometry(source)
     vertices, _, regions = unpack_from("<3I", geometry, 4)
     props, controls = unpack_from("<2I", geometry, 0x14)
@@ -344,7 +344,7 @@ def check_l8_controls(data_dir):
 
 
 def read_level(data_dir, stem):
-    path = Path(data_dir) / f"{stem}.MIX"
+    path = game_path(Path(data_dir), f"{stem}.MIX")
     b = path.read_bytes()
     rows = S.parse_mix(b)
     geo, geo_raw = S.level_geometry(b)
@@ -357,7 +357,7 @@ def read_level(data_dir, stem):
     records = E.extract_entities(b, start, count)
     ent_entry = (odf["index"], start - odf["offset"], start)
     scripts = X.export(path)
-    companion = Path(data_dir) / f"{stem}I.MIX"
+    companion = game_path(Path(data_dir), f"{stem}I.MIX")
     comp = None
     if companion.exists():
         cb = companion.read_bytes()
@@ -365,7 +365,7 @@ def read_level(data_dir, stem):
         for r in S.parse_mix(cb):
             e = cb[r["offset"]:r["offset"] + r["size"]]
             kinds["AUD sound" if is_aud(e) else "VQA movie" if e[:4] == b"FORM" and e[8:12] == b"WVQA" else "other"] += 1
-        comp = (companion.name, len(cb), kinds)
+        comp = (companion.name.upper(), len(cb), kinds)
     gs = geometry_stats(geo_raw)
     gs["groups"] = groups(geo_raw)
     gs["wall_rows"] = wall_stats(geo_raw)
@@ -551,7 +551,7 @@ def main():
         nonexit_group_count = sum(len({key for key, *_ in rows}) for _, _, _, rows in exit_checks)
         nonexit_slots = {slot for _, _, _, slots in nonexit_shared for slot in slots}
         try:
-            check_render_routes((Path(a.data).resolve().parent / "LOLG.DAT").read_bytes())
+            check_render_routes(game_path(Path(a.data).resolve().parent, "LOLG.DAT").read_bytes())
         except (OSError, ValueError) as error:
             bad.append(str(error))
         expected_shared = [(0x5E93F4, 0x5EC32A, [52]), (0x5E93FA, 0x5EC336, [52])]

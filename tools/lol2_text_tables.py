@@ -7,7 +7,7 @@ TCEL.MIX sit inside it. --check re-reads those bytes and prints one line.
 It writes nothing unless --out is set, and then only counts.
 """
 
-from cli_errors import run_cli
+from cli_errors import run_cli, game_path
 import os
 import struct
 import sys
@@ -22,7 +22,7 @@ def u32(blob, off):
 
 
 def parent_file(dat_dir, name):
-    path = os.path.join(os.path.dirname(os.path.abspath(dat_dir)), name)
+    path = str(game_path(os.path.dirname(os.path.abspath(dat_dir)), name))
     if not os.path.isfile(path):
         raise FileNotFoundError("%s is not in the parent of the DAT folder" % name)
     return path
@@ -149,7 +149,7 @@ def check(dat_dir):
     if high != {0x81, 0x82}:
         raise ValueError("credits high bytes %s" % sorted(high))
 
-    movies = os.path.join(dat_dir, "MOVIES.MIX")
+    movies = str(game_path(dat_dir, "MOVIES.MIX"))
     movie_credits, _entries = mix_entry(movies, 28)
     if movie_credits != loaded["credits.trr"][0]:
         raise ValueError("MOVIES entry 28 is not the credits table")
@@ -185,7 +185,7 @@ def check(dat_dir):
         raise ValueError("LANGUAGE.ENG")
 
     for name in ("TEXT.MIX", "TCEL.MIX"):
-        data, entries, base = read_mix_with_hashes(os.path.join(dat_dir, name))
+        data, entries, base = read_mix_with_hashes(str(game_path(dat_dir, name)))
         for key, offset, size in entries:
             if is_trr(data[base + offset:base + offset + size]):
                 raise ValueError("%s contains a TRR entry" % name)

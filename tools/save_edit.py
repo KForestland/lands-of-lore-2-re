@@ -4,7 +4,7 @@ from dataclasses import replace
 from pathlib import Path
 import struct
 
-from cli_errors import ReaderArgumentParser, run_cli
+from cli_errors import ReaderArgumentParser, run_cli, input_path
 from lol2_save_writer import parse_slot, write_slot
 from modkit_core import output_path
 import save_page
@@ -118,13 +118,13 @@ def run():
     commands.required = True
     setter = commands.add_parser("set", help="write a copy of the save with one field changed",
                                  description="Write a copy of the save with one field changed.")
-    setter.add_argument("save", type=Path, help="an original save file; only read")
+    setter.add_argument("save", type=input_path, help="an original save file; only read")
     setter.add_argument("field", choices=FIELDS)
     setter.add_argument("value", help="the new value: a name, a heading 0-65535, "
                                       "or for position-from another save of the same level")
     setter.add_argument("--out", required=True, type=Path, help="the new save file to write, outside the game and save folders")
     viewer = commands.add_parser("page", help="write an offline page for the save's documented fields")
-    viewer.add_argument("save", type=Path, help="an original save file; only read")
+    viewer.add_argument("save", type=input_path, help="an original save file; only read")
     viewer.add_argument("--out", required=True, type=Path, help="a new .html file outside the game and save folders")
     args = parser.parse_args()
     if not args.save.is_file():

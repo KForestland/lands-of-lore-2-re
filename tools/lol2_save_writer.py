@@ -6,7 +6,7 @@ from pathlib import Path
 import re
 import struct
 
-from cli_errors import ReaderArgumentParser, run_cli
+from cli_errors import ReaderArgumentParser, run_cli, game_path
 from lol2_save_header import HEADER_SIZE
 from lol2_save_inspect import GLOBAL_FLAGS, LEVEL_FLAGS, LEVEL_HEADER, directory, level_sections, verify_slot
 
@@ -158,7 +158,7 @@ def main():
     fixture = synthetic_slot()
     if parse_slot(write_slot(fixture)) != fixture:
         raise ValueError("synthetic LoL2 slot changed while rebuilding")
-    paths = [args.slot] if args.slot else sorted(path for path in (args.data.resolve().parent / "SAVEGAME").glob("$*")
+    paths = [args.slot] if args.slot else sorted(path for path in game_path(args.data.resolve().parent, "SAVEGAME").glob("$*")
                                                if path.is_file() and re.fullmatch(r"\.(?:\d{3}|XXX)", path.suffix.upper()))
     blocks = 0
     for path in paths:

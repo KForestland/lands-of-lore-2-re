@@ -13,7 +13,7 @@ Usage:
 Environment variables:
   LOL2_DAT  - path to the LoL2 DAT/ directory (default: current directory)
 """
-from cli_errors import run_cli
+from cli_errors import run_cli, game_path
 import os
 import struct
 
@@ -72,7 +72,7 @@ def main():
         n = rows = signed = unsigned = 0
         bad = []
         for f in lol2_cli.mix_files(a.data):
-            path = os.path.join(a.data, f)
+            path = str(game_path(a.data, f))
             data, entries, base = read_mix_with_hashes(path)
             n += 1
             try:
@@ -95,7 +95,7 @@ def main():
         return 0 if not bad else 1
     if not a.mix:
         ap.print_help(); return 2
-    path = a.mix if os.path.isabs(a.mix) else os.path.join(a.data, a.mix)
+    path = a.mix if os.path.isabs(a.mix) else str(game_path(a.data, a.mix))
     data, entries, base = read_mix_with_hashes(path)
     if a.index is not None:
         if not 0 <= a.index < len(entries):

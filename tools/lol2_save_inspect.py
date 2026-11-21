@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Inspect a player save written by the original DOS 1.30 game. Prints to stdout."""
-from cli_errors import ReaderArgumentParser, run_cli
+from cli_errors import ReaderArgumentParser, run_cli, game_path
 from ctypes import byref, c_size_t, create_string_buffer
 from functools import lru_cache
 import os
@@ -317,8 +317,8 @@ def main():
                 paths = [args.slot]
             else:
                 root = args.data.resolve().parent
-                check_native(root / "LOLG.DAT")
-                paths = sorted(path for path in (root / "SAVEGAME").glob("$*")
+                check_native(game_path(root, "LOLG.DAT"))
+                paths = sorted(path for path in game_path(root, "SAVEGAME").glob("$*")
                                if path.is_file() and re.fullmatch(r"\.(?:\d{3}|XXX)", path.suffix.upper()))
             count = sum(verify_slot(path.read_bytes()) for path in paths)
             print(f"CHECK save inspector: {len(paths)} game-written player saves and {count} level blocks"

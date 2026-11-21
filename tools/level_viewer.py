@@ -3,7 +3,7 @@
 from collections import defaultdict
 import struct
 
-from cli_errors import run_cli
+from cli_errors import run_cli, game_path
 from level_html import Plan, main
 from level_move_ui import sections
 from level_edit_data import placement_name
@@ -43,7 +43,7 @@ def progression(data, _selected):
 
 
 def view(data, stem, gates):
-    archive = data / f"{stem}.MIX"
+    archive = game_path(data, f"{stem}.MIX")
     entry, raw = level_geometry(archive.read_bytes())
     base = entry["offset"]
     vertices, regions, _ = parse_geometry(raw)

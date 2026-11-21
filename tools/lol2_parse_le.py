@@ -8,7 +8,7 @@ with valid byte/word order fields (both 0) since the standard e_lfanew
 mechanism is not used in bound DOS4GW executables.
 """
 
-from cli_errors import ReaderArgumentParser, run_cli
+from cli_errors import ReaderArgumentParser, run_cli, game_path
 import os as _os, sys as _sys
 _sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))
 from lol2_cli import refuse_repo_output  # noqa: E402
@@ -152,11 +152,11 @@ def main():
 
     input_file = args.exe_path
     if args.data and not input_file:
-        input_file = os.path.join(os.path.dirname(os.path.realpath(args.data)), "LOLG.DAT")
+        input_file = str(game_path(os.path.dirname(os.path.realpath(args.data)), "LOLG.DAT"))
     if not input_file:
         data = os.environ.get("LOL2_DAT")
         input_file = os.environ.get("LOL2_EXE") or (
-            os.path.join(os.path.dirname(os.path.realpath(data)), "LOLG.DAT") if data else "lol2_game/LOLG.DAT"
+            str(game_path(os.path.dirname(os.path.realpath(data)), "LOLG.DAT")) if data else "lol2_game/LOLG.DAT"
         )
     if args.out and args.output_dir:
         parser.error("use only one output directory")

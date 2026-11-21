@@ -15,7 +15,38 @@ Use `level_viewer.py --check` to write and read back one plan in a temporary fol
 
 `edition.py` reads names, file sizes and SHA-256 to identify a measured game copy. `--check` verifies the full fingerprint in `check_all.py`. [Edition fingerprints](../docs/EDITIONS.md)
 
+## Reader tool examples
+
+Run these from the repository folder. Set the data variable as shown under Setup. Create `../lol2-out` before using the save or patch example, and set `LOL2_SLOT` to your save file.
+
+| Tool | Example | Output |
+|---|---|---|
+| Job menu | `python tools/lol.py --help` | level, text, translate, music, movie, sound, save, patch, mod |
+| Interactive map | `python tools/level_viewer.py --data "$LOL2_DAT" --check` | L1_DC page with 3,860 entries |
+| Level copy editor | `python tools/level_edit.py --data "$LOL2_DAT" --check` | 15 original archives copied byte-identically and 2 placement kinds verified |
+| Translation tables | `python tools/translate.py --data "$LOL2_DAT" --check` | 8 tables, 988 rows, 6 indexed fonts |
+| Edition fingerprints | `python tools/edition.py --data "$LOL2_DAT" --check` | English GOG release, DOS 1.30, all 6 fingerprints match |
+| Fields from a save | `python tools/lol.py save page "$LOL2_SLOT" --out ../lol2-out/save.html` | Writes save.html with stored values and commands for making an edited copy |
+| Archive workspace | `python tools/modkit.py --data "$LOL2_DAT" --check` | Byte-identical rebuild of 22 files from 25 editable entries |
+| Patch maker | `python tools/patch.py make --data "$LOL2_DAT" "my mod output" --title "My edit" --out ../lol2-out/edit.json` | Writes a version 3 patch and reports the changed files |
+| Movie directory | `python tools/media_convert.py movie --data "$LOL2_DAT" --list --file MOVIES.MIX` | MOVIES.MIX: 28 movie entries |
+| XMIDI directory and events | `python tools/lol2_xmi_reader.py --data "$LOL2_DAT" --check` | 33 named FORM entries and 33 sequences |
+
+The commands also exercise these Python modules through their user-facing tools.
+
+| Modules | Command above | What they produce |
+|---|---|---|
+| `level_html.py` | Interactive map | Searchable entries and drawing in one offline page |
+| `level_edit_data.py` reads placement fields for the editor, and `level_move_ui.py` supplies the move controls | Level copy editor | Controls in the offline map and placement data for the editor |
+| `save_edit.py`, `save_page.py` | Fields from a save | An offline field page with one command per editable field |
+| `modkit_core.py` | Archive workspace | Manifest, editable entries and verified archive copies |
+| `translate_data.py`, `translate_fonts.py` | Translation tables | Counts for the rebuilt text tables and indexed fonts |
+
+The [reader tool check audit](../docs/TOOL_CHECK_AUDIT.md) lists the mistakes tested on generated files.
+
 ## Setup
+
+For game data, give `--data` either your installation folder or its `DAT` folder. The readers accept mixed, uppercase or lowercase filenames and keep the spelling of files they copy.
 
 - Python 3.10 or later
 - `pip install -r requirements.txt`: Pillow (picture output), capstone (disassembly checks), numpy (movie decoder)

@@ -31,7 +31,7 @@ These are counts of work done, not a percentage of how complete the project is. 
 
 <!-- rating:begin -->
 - **Files read:** 83 of 83 files in `DAT` (1,915.6 of 1,915.6 MiB) have their whole layout read by a tool here: every byte belongs to a known header, directory, entry, chunk, segment or resource, or to zero padding between them; the DOS part of `SETUP.EXE` is counted by its length (what is inside an entry may still be only partly understood).
-- **Rules traced:** the pages mark 778 statements CONFIRMED (proved from the program code or the files) and 183 UNCONFIRMED (a reading not yet proved), on 129 current pages; old notes kept as history are not counted.
+- **Rules traced:** the pages mark 778 statements CONFIRMED (proved from the program code or the files) and 183 UNCONFIRMED (a reading not yet proved), on 130 current pages; old notes kept as history are not counted.
 - **Seen in the running game:** 4 of 9 probes that need the original game running are answered (a question can have more than one probe); 0 of them rest on edited saves only.
 - **Open questions:** 20 numbered questions: 5 answered, 14 mostly answered, 1 partly answered.
 <!-- rating:end -->
@@ -80,6 +80,19 @@ What you can look at with your own copy of the game. Run from the clone with `ex
 | The rules behind a topic | `python3 tools/lol2_inspect.py --data "$LOL2_DAT" rules motion` |
 | Music as standard MIDI | `python3 tools/lol2_hmi_midi.py --data "$LOL2_DAT" --out ../lol2-out/midi` |
 | A saved game you made | `python3 tools/lol2_save_inspect.py "$LOL2_SLOT"` |
+
+| Tool | Command | Example result |
+|---|---|---|
+| Job menu | `python tools/lol.py --help` | level, text, translate, music, movie, sound, save, patch, mod |
+| Interactive map | `python tools/level_viewer.py --data "$LOL2_DAT" --check` | L1_DC page with 3,860 entries |
+| Level copy editor | `python tools/level_edit.py --data "$LOL2_DAT" --check` | 15 original archives copied byte-identically and 2 placement kinds verified |
+| Translation tables | `python tools/translate.py --data "$LOL2_DAT" --check` | 8 tables, 988 rows, 6 indexed fonts |
+| Edition fingerprints | `python tools/edition.py --data "$LOL2_DAT" --check` | English GOG release, DOS 1.30, all 6 fingerprints match |
+| Fields from a save | `python tools/lol.py save page "$LOL2_SLOT" --out ../lol2-out/save.html` | Writes save.html with stored values and commands for making an edited copy |
+| Archive workspace | `python tools/modkit.py --data "$LOL2_DAT" --check` | Byte-identical rebuild of 22 files from 25 editable entries |
+| Patch maker | `python tools/patch.py make --data "$LOL2_DAT" "my mod output" --title "My edit" --out ../lol2-out/edit.json` | Writes a version 3 patch and reports the changed files |
+| Movie directory | `python tools/media_convert.py movie --data "$LOL2_DAT" --list --file MOVIES.MIX` | MOVIES.MIX: 28 movie entries |
+| XMIDI directory and events | `python tools/lol2_xmi_reader.py --data "$LOL2_DAT" --check` | 33 named FORM entries and 33 sequences |
 
 ## Change a number in your own copy
 

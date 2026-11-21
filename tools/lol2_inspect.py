@@ -7,7 +7,7 @@ Examples: lol2_inspect.py --data DAT item 68
 
 All commands print to standard output. They read the supplied installation.
 """
-from cli_errors import ReaderArgumentParser, run_cli
+from cli_errors import ReaderArgumentParser, run_cli, game_path
 import argparse
 import os
 from pathlib import Path
@@ -85,14 +85,14 @@ def cache_lines(data):
         position = "absent" if pointer == 0xFFFFFFFF else f"0x{pointer:X}"
         yield (f"{level} CDCACHE.LS_+0x{address:X}  seed length {old}  current bank {new}"
                f"  old position {position}")
-    for row in parse_mix((data.parent / "CACHEBAK.MIX").read_bytes()):
+    for row in parse_mix(game_path(data.parent, "CACHEBAK.MIX").read_bytes()):
         yield (f"CACHEBAK.MIX+0x{row['offset']:X}  entry {row['index']}  "
                f"key 0x{row['key']:08X}  {row['size']} bytes")
 
 
 def room_lines(data, stem):
     # The code member's native name key is documented in lol2-room-archives.md.
-    path = data / (stem.upper() + ".MIX")
+    path = game_path(data, stem.upper() + ".MIX")
     member, payload = read_key(path, ww_hash_v1(f"WOMS\\{stem.upper()}_.WOM"))
     body_size, entry, fixups = room_module_layout(payload)
     base = member["offset"]
@@ -106,7 +106,7 @@ def animation_lines(data, image, requested, frame_index):
     name = next((name for name in panel_names(image) if name.casefold() == requested.casefold()), None)
     if name is None:
         raise ValueError("choose a native panel name: " + ", ".join(panel_names(image)))
-    member, payload = read_key(data.parent / "LOCAL.MIX", ww_hash_v1(name))
+    member, payload = read_key(game_path(data.parent, "LOCAL.MIX"), ww_hash_v1(name))
     count, width, height, spans = wsa_frames(payload)
     start = member["offset"]
     yield f"{name} LOCAL.MIX+0x{start:X}  {width}x{height}  {count} frames, {len(spans)} stored deltas"
@@ -124,7 +124,7 @@ def music_lines(data, image, stem):
     if stem != "CREDITS" and stem not in names:
         raise ValueError("choose an executable music stem or CREDITS")
     name = credits_hmi if stem == "CREDITS" else f"MUSIC\\{stem}.HMI"
-    member, song = read_key(data.parent / "LOCAL.MIX", ww_hash_v1(name))
+    member, song = read_key(game_path(data.parent, "LOCAL.MIX"), ww_hash_v1(name))
     if not song.startswith(b"HMI-MIDISONG"):
         raise ValueError("the named member is not an HMI song")
     offsets = track_table(song)
@@ -160,7 +160,7 @@ def scene_lines(data, names, index, only_level):
                 raise ValueError(f"{archive.name}: unframed commands")
             matches = [meta["offset"] + base + at for at, command in commands if command[0] == 21 and command[4] == index]
             if matches:
-                yield f"  {archive.name} stream {stream}: {len(matches)} opcode-21 references; first +0x{matches[0]:X}"
+                yield f"  {archive.name.upper()} stream {stream}: {len(matches)} opcode-21 references; first +0x{matches[0]:X}"
 
 
 def trr_lines(blob, label, base=0, identifier=None):
@@ -180,8 +180,8 @@ def trr_lines(blob, label, base=0, identifier=None):
 def text_lines(data, table, identifier):
     filename, index = TRR_SOURCES[table]
     if index is None:
-        return trr_lines((data.parent / filename).read_bytes(), filename, identifier=identifier)
-    path = (data if table == "movie-credits" else data.parent) / filename
+        return trr_lines(game_path(data.parent, filename).read_bytes(), filename, identifier=identifier)
+    path = game_path(data if table == "movie-credits" else data.parent, filename)
     _, _, entries = mix_dir(path)
     row = pick(entries, index, "MIX entry")
     return trr_lines(read_at(path, row["offset"], row["size"]), filename, row["offset"], identifier)
@@ -262,12 +262,12 @@ def rule_lines(topic):
 
 
 def loose_lines(data):
-    wave = describe_wave(data / "AUTOPLAY.WAV")
+    wave = describe_wave(game_path(data, "AUTOPLAY.WAV"))
     channels, rate, bits = wave["fmt"]
     yield f"AUTOPLAY.WAV  {wave['size']} bytes  PCM {channels} channel(s), {rate} Hz, {bits} bits"
     for at, chunk, size in wave["chunks"]:
         yield f"  +0x{at:X}  {chunk.decode('ascii', 'replace')}  {size} payload bytes"
-    ne = describe_ne(data / "SETUP.EXE")
+    ne = describe_ne(game_path(data, "SETUP.EXE"))
     yield f"SETUP.EXE  {ne['size']} bytes  NE header +0x{ne['ne']:X}"
     for i, (start, end, relocs) in enumerate(ne["segments"], 1):
         yield f"  Segment {i}  +0x{start:X} to +0x{end:X}  {relocs} relocations"

@@ -10,7 +10,7 @@ fields its matcher reads. The commands column names every command in that group.
   lol2_plot_branches.py --data DAT
   lol2_plot_branches.py --check --data DAT
 """
-from cli_errors import run_cli
+from cli_errors import run_cli, game_path
 import os
 import re
 import sys
@@ -93,7 +93,7 @@ def collect(data_dir):
     rows = []
     stems = level_files(data_dir)
     for stem in stems:
-        scripts = X.export(Path(data_dir) / f"{stem}.MIX")
+        scripts = X.export(game_path(Path(data_dir), f"{stem}.MIX"))
         predicates = [bytes.fromhex(entry) for entry in scripts["predicate_table"]["entries"]]
         listed = owners(scripts)
         groups = {}

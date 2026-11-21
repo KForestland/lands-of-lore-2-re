@@ -9,7 +9,7 @@ Extracts all fixed-stride records, catalogs tags, and computes simple per-tag
 field invariants for the first staged 24-word prefix.
 """
 
-from cli_errors import run_cli
+from cli_errors import run_cli, game_path
 import json
 import os
 import struct
@@ -28,7 +28,7 @@ def main() -> int:
   lol2_l9dr_census.py --check     # how many 147-byte slots carry a printable tag
 """)
     a = ap.parse_args()
-    MIX_PATH = os.path.join(a.data, "L9_DR.MIX")
+    MIX_PATH = str(game_path(a.data, "L9_DR.MIX"))
     with open(MIX_PATH, "rb") as f:
         data = f.read()
 

@@ -4,7 +4,7 @@ from hashlib import sha256
 from pathlib import Path
 from struct import unpack_from
 
-from cli_errors import run_cli
+from cli_errors import run_cli, game_path
 import lol2_cli
 from lol2_entity_field_analyzer import LEVEL_FILES, RECORD_SIZE, locate_entity_table
 from lol2_export_scripts import export
@@ -83,7 +83,7 @@ def action_target(image, action):
 
 
 def render(data):
-    schools, effects, selectors = native((data.parent / "LOLG.DAT").read_bytes())
+    schools, effects, selectors = native(game_path(data.parent, "LOLG.DAT").read_bytes())
     begin, rows = item_layout(data)
     if len(rows) != 170:
         raise ValueError("expected 170 item records")
@@ -98,14 +98,14 @@ def render(data):
                       f"`{unpack_from('<H',row,0x3D)[0]:04X}`", row[0x44], " · ".join(descriptors) or "—"))
     creatures, form_calls = [], []
     for name in LEVEL_FILES:
-        path = data / name
+        path = game_path(data, name)
         image = path.read_bytes()
-        _, start, count = locate_entity_table(image, path.stem)
+        _, start, count = locate_entity_table(image, path.stem.upper())
         for slot in range(count):
             at = start + RECORD_SIZE * slot
             hp, = unpack_from("<H", image, at + 0x63)
             attack = image[at + 0x81]
-            creatures.append((path.stem, slot, f"`+0x{at:X}`", hp, attack, max(1, attack // 10)))
+            creatures.append((path.stem.upper(), slot, f"`+0x{at:X}`", hp, attack, max(1, attack // 10)))
         parsed = export(path)
         if parsed["unsupported"]:
             raise ValueError(f"{name}: unframed script bytes")
@@ -121,7 +121,7 @@ def render(data):
                     duration = "0" if operand == 0 else "`0xD6D2C` arm"
                 else:
                     duration = f"{15*low}–{15*(low+high)}" if high else str(15*low)
-                form_calls.append((path.stem, f"`+0x{command['file_offset']:X}`",
+                form_calls.append((path.stem.upper(), f"`+0x{command['file_offset']:X}`",
                                    f"`{selector:#04x}`", f"`{operand:#04x}`", duration))
     return "\n\n".join([
         "# LoL2 numbers at a glance",

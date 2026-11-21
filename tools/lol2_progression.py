@@ -10,7 +10,7 @@ at [0x26E54]. object+0x25 is the byte at [0xB7D80]+0x25.
   lol2_progression.py --data DAT --out FILE   # write the page
   lol2_progression.py --check --data DAT      # docs/PROGRESSION.md equals the page
 """
-from cli_errors import run_cli
+from cli_errors import run_cli, game_path
 import os
 import re
 import sys
@@ -100,7 +100,7 @@ def collect(data_dir):
     names = {int(stem.split("_")[0][1:]): stem for stem in level_files(data_dir)}
     rows, writes = [], {}
     for stem in level_files(data_dir):
-        scripts = X.export(Path(data_dir) / f"{stem}.MIX")
+        scripts = X.export(game_path(Path(data_dir), f"{stem}.MIX"))
         predicates = [bytes.fromhex(entry) for entry in scripts["predicate_table"]["entries"]]
         by_group = linked_events(scripts)
         level = scripts["level"]

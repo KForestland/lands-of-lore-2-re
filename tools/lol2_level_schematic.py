@@ -8,7 +8,7 @@
 The PNG is a schematic. It uses original geometry and placement records,
 with labels drawn by Pillow. Use --focus to inspect a dense area.
 """
-from cli_errors import run_cli
+from cli_errors import run_cli, game_path
 from level_html import find_data, new_picture
 from dataclasses import dataclass
 from pathlib import Path
@@ -188,7 +188,7 @@ def draw(stem, verts, regs, placements, focus, radius, size):
 
 
 def load(data, stem):
-    _, raw = level_geometry((data / f"{stem}.MIX").read_bytes())
+    _, raw = level_geometry(game_path(data, f"{stem}.MIX").read_bytes())
     return parse_geometry(raw)
 
 

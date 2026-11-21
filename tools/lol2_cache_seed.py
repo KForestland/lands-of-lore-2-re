@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Read the shipped LoL2 cache seed and original texture banks."""
 import ctypes
-from cli_errors import ReaderArgumentParser, run_cli
+from cli_errors import ReaderArgumentParser, run_cli, game_path
 import os
 import re
 import struct
@@ -46,8 +46,8 @@ def first_block(raw):
 
 
 def compare(data):
-    seed = (data.parent / "CDCACHE.LS_").read_bytes()
-    backup = (data.parent / "CACHEBAK.MIX").read_bytes()
+    seed = game_path(data.parent, "CDCACHE.LS_").read_bytes()
+    backup = game_path(data.parent, "CACHEBAK.MIX").read_bytes()
     count, size = struct.unpack_from("<HI", backup)
     body = 6 + 12 * count
     if (len(backup), count, size, body) != (131, 5, 65, 66):
@@ -60,7 +60,7 @@ def compare(data):
     for record in parse_records(seed):
         name = record["canonical_name"]
         level = name.rsplit("\\", 1)[-1].removesuffix(".tex").upper()
-        image, entry, bank_name = find_texture_entry(data / f"{level}.MIX")
+        image, entry, bank_name = find_texture_entry(game_path(data, f"{level}.MIX"))
         if name != bank_name.lower().removesuffix(".te_") + ".tex":
             raise ValueError(f"{level} seed and bank name differ")
         length, = struct.unpack_from("<I", image, entry["offset"])
@@ -80,7 +80,7 @@ def compare(data):
     )
     if tuple(texts) != names:
         raise ValueError("seed strings are not the 15 level names")
-    program = (data.parent / "LOLG.DAT").read_bytes()
+    program = game_path(data.parent, "LOLG.DAT").read_bytes()
     if program[0x1C4714:0x1C471C] != b"DOS 1.30":
         raise ValueError("executable version string")
     if program[0x1C4749:0x1C475D] != b"Dec 03 1997\x0017:51:02":
@@ -105,7 +105,7 @@ def compare(data):
     if program[0x3BCC4:0x3BCC8] != bytes.fromhex("00020000"):
         raise ValueError("LOLG.DAT+0x3BCC4 differs")
     for level, art, leved in BANK_FOLDERS:
-        image, entry, _bank = find_texture_entry(data / f"{level}.MIX")
+        image, entry, _bank = find_texture_entry(game_path(data, f"{level}.MIX"))
         raw = image[entry["offset"]:]
         head = first_block(raw).lower()
         art_name = art.lower().encode("ascii")

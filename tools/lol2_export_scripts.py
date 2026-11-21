@@ -22,7 +22,7 @@ raw hex. An opcode outside SIZES stops framing of that stream, is listed under
 
 Standard library only.
 """
-from cli_errors import ReaderArgumentParser, run_cli
+from cli_errors import ReaderArgumentParser, data_folder, input_path, run_cli
 import argparse
 import hashlib
 import json
@@ -245,8 +245,8 @@ def export(archive_path, include_items=False):
                   opcode_use={str(op): n for op, n in sorted(opcode_use.items(), key=lambda kv: (-kv[1], kv[0]))},
                   unlinked_record_kinds={str(k): n for k, n in sorted(unlinked.items(), key=str)},
                   unsupported=len(unsupported))
-    return dict(format=FORMAT, area=archive_path.stem, level=int(archive_path.stem.split('_')[0][1:]),
-                source=dict(file='DAT/' + archive_path.name, sha256=sha(archive), geometry_key=entry['key'],
+    return dict(format=FORMAT, area=archive_path.stem.upper(), level=int(archive_path.stem.split('_')[0][1:]),
+                source=dict(file='DAT/' + archive_path.name.upper(), sha256=sha(archive), geometry_key=entry['key'],
                             geometry_sha256=sha(raw), geometry_entry_offset=base, geometry_entry_size=entry['size']),
                 size_table={str(op): n for op, n in sorted(SIZES.items())},
                 streams=streams,
@@ -263,10 +263,11 @@ def export(archive_path, include_items=False):
 
 
 def find_archive(dat, level):
-    if re.fullmatch(r'\d+', level):
-        hits = sorted(p for p in dat.glob(f'L{int(level)}_*.MIX') if re.fullmatch(r'L\d+_[A-Z]{2}', p.stem.upper()))
+    archives = [p for p in dat.iterdir() if p.is_file() and p.suffix.upper() == ".MIX"]
+    if level.isdecimal():
+        hits = sorted(p for p in archives if re.fullmatch(rf"L{int(level)}_[A-Z]{{2}}", p.stem.upper()))
     else:
-        hits = [p for p in dat.glob('*.MIX') if p.stem.upper() == level.upper()]
+        hits = [p for p in archives if p.stem.upper() == level.upper()]
     if len(hits) != 1:
         raise SourceError(f'level {level!r}: expected one archive in {dat}, found {len(hits)}')
     return hits[0]
@@ -284,13 +285,13 @@ def main(argv=None):
             parser.error("use LEVEL --out FILE or the older GAME LEVEL FILE form")
         game_arg = args.level
         game = Path(os.environ.get("LOL2_GAME", "./lol2_game") if game_arg == "-" else game_arg)
-        dat = (game / "DAT").resolve()
+        dat = data_folder(input_path(game)).resolve()
         level, out = args.legacy[0], Path(args.legacy[1]).resolve()
     else:
         data_arg = args.data or os.environ.get("LOL2_DAT")
         if not data_arg or not args.out:
             parser.error("give --data or set LOL2_DAT and supply --out")
-        dat, level, out = Path(data_arg).resolve(), args.level, args.out.resolve()
+        dat, level, out = data_folder(input_path(data_arg)).resolve(), args.level, args.out.resolve()
     if dat.parent == out or dat.parent in out.parents:
         parser.error("give an output path outside the game directory")
     from lol2_cli import refuse_repo_output

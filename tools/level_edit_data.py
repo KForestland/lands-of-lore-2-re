@@ -1,4 +1,5 @@
 """LoL2 MIX placement fields used by the level editor."""
+from cli_errors import game_path
 from functools import lru_cache
 from struct import unpack_from
 
@@ -17,7 +18,7 @@ KINDS = {"prop", "placed_item"}
 def archive(data, level):
     if level not in levels(data):
         raise ValueError(f"{level} is not an original level archive.")
-    return data / f"{level}.MIX"
+    return game_path(data, f"{level}.MIX")
 
 
 def map_index(_level, original, _rows):
@@ -39,7 +40,7 @@ def fields(raw):
 def item_names(data):
     identities = {unpack_from("<I", row, 0x18)[0]: f"Item definition {index}"
                   for index, row in enumerate(item_definitions(data))}
-    image_path = data.parent / "LOLG.DAT"
+    image_path = game_path(data.parent, "LOLG.DAT")
     if image_path.is_file():
         image = image_path.read_bytes()
         for i in range(PAIRS):

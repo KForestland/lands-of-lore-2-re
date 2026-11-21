@@ -24,7 +24,7 @@ Usage:
 Environment variables:
   LOL2_DAT  - path to the LoL2 DAT/ directory (default: current directory)
 """
-from cli_errors import run_cli
+from cli_errors import run_cli, game_path
 import os
 import struct
 
@@ -182,7 +182,7 @@ def main():
         from lol2_mix_parser import read_mix_with_hashes
         tried = clean = 0
         for f in lol2_cli.mix_files(a.data):
-            data, entries, base = read_mix_with_hashes(os.path.join(a.data, f))
+            data, entries, base = read_mix_with_hashes(str(game_path(a.data, f)))
             for h, o, s in entries:
                 raw = data[base + o:base + o + s]
                 if s < 8:
@@ -218,7 +218,7 @@ def main():
     if not (a.mix and a.index is not None and a.out):
         ap.print_help(); return 2
     lol2_cli.refuse_repo_output(a.out)
-    path = a.mix if os.path.isabs(a.mix) else os.path.join(a.data, a.mix)
+    path = a.mix if os.path.isabs(a.mix) else str(game_path(a.data, a.mix))
     data, errors, consumed = decompress_mix_entry(path, a.index)
     with open(a.out, "wb") as f:
         f.write(data)

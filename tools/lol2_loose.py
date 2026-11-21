@@ -7,7 +7,7 @@ AUTOPLAY.WAV counts when its RIFF chunks tile the file. SETUP.EXE counts
 when the MZ image ends at an NE header and that header's tables, segments,
 relocation lists, zero padding and resources tile the file.
 """
-from cli_errors import run_cli
+from cli_errors import run_cli, game_path
 from pathlib import Path
 from struct import unpack_from
 
@@ -252,14 +252,14 @@ def main():
                 SETUP_SIZE, 0xA270, SEGMENT_RELOCS, b"SETUP", b"Guardians Setup Parser"):
             raise ValueError("SETUP.EXE layout differs")
         root = data.resolve().parent
-        image = (root / "LOLG.DAT").read_bytes()
+        image = game_path(root, "LOLG.DAT").read_bytes()
         if len(image) != PROGRAM_SIZE:
             raise ValueError(f"LOLG.DAT is {len(image)} bytes")
         if image.find(b"setup.exe") != 0x1C4B0E or image.count(b"setup.exe") != 1:
             raise ValueError("the lowercase setup.exe sentence moved")
         if b"AUTOPLAY" in image or b".WAV" in image or b".wav" in image:
             raise ValueError("LOLG.DAT names AUTOPLAY or a WAV file")
-        err = (root / "ERRTEXT.TRR").read_bytes()
+        err = game_path(root, "ERRTEXT.TRR").read_bytes()
         if len(err) != ERRTEXT_SIZE or err.find(b"SETUP.EXE") != 0x747 or err.count(b"SETUP.EXE") != 1:
             raise ValueError("ERRTEXT.TRR SETUP.EXE string moved")
     except (OSError, ValueError) as exc:
