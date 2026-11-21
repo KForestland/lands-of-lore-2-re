@@ -153,15 +153,17 @@
     "executable": "LOLG.DAT",
     "counts": {
       "lol2_parse_le.py": {
-        "page rows": [
-          "le_pages",
-          "LOLG.DAT"
-        ]
+        "page rows": "stored pages"
       }
     },
     "archive_entries": [
       ".MIX"
     ],
-    "absolute_operands": true
+    "absolute_operands": true,
+    "loose_files": [
+      "*.EXE",
+      "LOLG.DAT",
+      "DAT/*"
+    ]
   }
 }
