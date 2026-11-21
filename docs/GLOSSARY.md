@@ -39,6 +39,7 @@ These words mean the same thing in the notes for all three Lands of Lore games.
 | Mod kit | `tools/modkit.py`: it unpacks the game's text and number tables into files you can edit and builds changed copies of the archives into a new folder ([tools](../tools/README.md)). |
 | Patch | A small file (`lol-patch-3`) listing the new bytes, the lengths and SHA-256 hashes of the replaced spans, and the game it is for, made and applied by `tools/patch.py` ([patch format](formats/patch.md)). A *data patch* changes archives and tables; a *program patch* changes the game program and fits only the file with the recorded SHA-256. |
 | Undo patch | The private `undo.json` that `patch.py apply` writes beside the patched files. It holds the original bytes and restores them when applied to the patched copy. |
+| Byte-identical | Every byte matches between two files. An undo check compares the restored copy with the original. |
 | Copy of the game | A separate copy of your game folder for trying changes. The tools never write into the game folder you give them. |
 
 ## This game
@@ -103,6 +104,8 @@ These words mean the same thing in the notes for all three Lands of Lore games.
 | `--data` | The folder to read. Game readers accept the installation folder or its data folder as described in [First ten minutes](FIRST_TEN_MINUTES.md). |
 | `--out` | The file or folder you choose for the output. See the example for the tool to tell which it expects. |
 | `--check` | Run the tool’s built-in checks and print a result. Checks can use temporary copies. |
+| `--quick` | Run the shorter `check_all.py` suite. It prints the checks it skips. |
+| `--patch` | With `level_edit.py`, also write a shareable data patch and a private undo file when applying edits to a new copy. |
 | Translation table | A list of the game’s text entries. The translation tool writes a spreadsheet-friendly CSV file for each editable table. |
 | SHA-256 | A checksum used to compare a file or a byte span with a known copy. |
 | MKV | Matroska, the file container used for the movie conversion. It can hold video and audio in one file. |

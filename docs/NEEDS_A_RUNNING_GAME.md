@@ -247,6 +247,27 @@ the object supplying the predicate's state.
 
 ## Probes not yet run
 
+### 21 November slot and watch status
+
+The 21 November pass stopped at setup for the probes below. The earlier
+captures still apply. The edited copies used in follow-up work do not show
+how an ordinary playthrough reaches the same state.
+
+| Probe | Reason this pass did not settle it |
+|---|---|
+| Timed message `0x26` | The previous slot reached `0x23`. It needs the full four-byte watch through the end of that message. |
+| Movie frame 115 | The relocated late slot was already past the scene. The earlier level-20 slot `25ab2119ec3d` has prop 87 state zero. A relocation from it can approach the prop 242 event that starts the timer chain. The chain still needs to be observed. |
+| `ARENA.MIX` | The watch must cover startup and room changes through a hub. An ordinary level-4 slot is sufficient. |
+| Cue words | The earlier trace used L8_SJ and never opened MCEL. An original L4_HJ slot exists and permits a separate approach to movable 76, which owns the MCEL opener. |
+| Cemetery wall shade | The level-10 slots named below are available. No draw with the evaluator and the resulting shade row together was captured. |
+| Huline Temple quad | The corpus has no slot with L14_HT as the active level. A visited L14 block is present in a later slot, and switching its active level requires rebinding the player and renderer state. |
+| Named encounters | Two copies of the same original level-8 slot can approach live actors 45 and 76 separately. The target, flag and action reads across the portal are outstanding. |
+| Nonpositive hits | The actor-45 setup gives an encounter. No hit with a zero or negative working value has been caught. |
+| `0x02AC` mip | The L16_CA slot is available. The two descriptor IDs did not join to a stored wall material selector, so a wall-facing relocation has no verified target. The first live lookup can identify the drawn surface or object. |
+| Short block | A slot is available. The missing observation is the first write to the stack header before `0xE83D9`. |
+
+### Probe instructions
+
 These running-game tests have no result yet. A reader with the original
 game and a debugger can run them; the question each belongs to keeps its
 state until then. Addresses follow the convention at the top of this

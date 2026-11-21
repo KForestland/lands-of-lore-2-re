@@ -334,6 +334,8 @@
         "Q16"
       ],
       "tools": [
+        "tools/check_all.py",
+        "tools/level_edit.py",
         "tools/lol.py",
         "tools/lol2_decompress_sphere.py",
         "tools/lol2_inspect.py",
