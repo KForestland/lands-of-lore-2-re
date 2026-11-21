@@ -30,5 +30,5 @@ file-open trace that shows whether the game opens the name.
 
 **UNCONFIRMED** (what opens `DAT/SETUP.EXE`). `LOLG.DAT+0x1C4B0E` is the
 lowercase name inside the sentence at +0x1C4AEE, and `ERRTEXT.TRR+0x747`
-is `Please run SETUP.EXE.` Neither string is an open of this file.
+is the name inside the sentence `Please run SETUP.EXE.` at +0x73C. Neither string is an open of this file.
 Settling test: a file-open trace that shows whether the game opens it.
