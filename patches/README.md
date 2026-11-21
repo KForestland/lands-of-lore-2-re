@@ -73,6 +73,8 @@ Intro test at `0x14F041`, file `+0x186041` (decimal 1597505). The five new bytes
 
 The patch was applied and undone on a copy of this `LOLG.DAT`. The restored file matched the original. Two later launches watched it, each on its own fresh copy. The unpatched copy showed the Westwood card, then the title card, then the main menu. The patched copy showed the DOSBox card and then the main menu. The Westwood card, the title card, and the intro are not in that set.
 
+On 20 November 2026 folder 0042 was unpatched and folder 0043 had only this patch. After New Game and Normal, the opening movie played the same way on both copies: the same three scenes, and the end mean difference is 5.5 because the frame timing differs. The patch does not stop a new game or its opening movie. Player control was not reached in two minutes, so this run does not test walking. Folders 0039, 0040 and 0041 stopped before that movie and are not this pair.
+
 ```sh
 python3 tools/patch.py apply --data "GAME" --out "../lol2-intro-patched" patches/intro-skip.json
 python3 tools/patch.py apply --data "GAME COPY" --out "../lol2-intro-restored" "../lol2-intro-patched/undo.json"
