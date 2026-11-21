@@ -11,6 +11,8 @@ Expected output is in tools/README.md.
 """
 from cli_errors import run_cli, game_path
 import os
+from pathlib import Path
+import re
 import struct
 import sys
 
@@ -23,6 +25,7 @@ from lol2_westwood_hash import ww_hash_v1, ww_hash_v2  # noqa: E402
 
 OBJ5 = 0x1C1024
 SHA_PREFIX = "b27a3534"
+DOCS = Path(__file__).resolve().parents[1] / "docs"
 
 
 def mix_dir(path):
@@ -350,6 +353,19 @@ def wsa_frames(member):
 
 def check_wsa_frames(image, local, entries):
     """Join the native panel animation names and consume each compressed delta."""
+    page = "formats/compression.md"
+    text = (DOCS / page).read_text(encoding="utf-8")
+    claims = re.findall(r"\bfirst delta at `(0x[0-9a-fA-F]+)`", text)
+    if len(claims) != 1:
+        raise ValueError(f"{page}: expected one first-delta expansion address")
+    first_delta = int(claims[0], 16)
+    at = first_delta + 0x37000
+    # The first delta pushes the header flags, destination and source before the call.
+    setup = bytes.fromhex("66 8b 46 0c 50 8b 55 d4 52 8b 5d cc 53 e8")
+    if (image[at + 1 - len(setup):at + 1] != setup or at + 5 > len(image)
+            or first_delta + 5 + struct.unpack_from("<i", image, at + 1)[0] != 0x158D58):
+        raise ValueError(f"{page}: first delta at {claims[0]} does not match the loader's call to 0x158D58 in LOLG.DAT")
+
     names = panel_names(image)
     index = {row["key"]: row for row in entries}
     frames = decoded_bytes = 0
@@ -365,10 +381,35 @@ def check_wsa_frames(image, local, entries):
         raise ValueError("WSA animation corpus changed")
     for address, target in ((0x72E39, 0x15BB9C), (0x79397, 0x15BB9C),
                             (0x7AE1E, 0x15BB9C), (0x7B27D, 0x15BB9C),
-                            (0x15C08A, 0x15C3F4), (0x15BEE1, 0x158D58), (0x15C50D, 0x158D58)):
+                            (0x15C08A, 0x15C3F4), (0x15C50D, 0x158D58)):
         opcode, displacement = struct.unpack_from("<Bi", image, address + 0x37000)
         if opcode != 0xE8 or address + 5 + displacement != target:
             raise ValueError(f"WSA call at 0x{address:X}")
+
+
+def check_stem_table(stems):
+    page = "lol2-music-selection.md"
+    text = (DOCS / page).read_text(encoding="utf-8")
+    _, heading, section = text.partition("\n## The stem table\n")
+    if not heading:
+        raise ValueError(f"{page}: missing stem table")
+    table = section.partition("\n## ")[0]
+    documented = {}
+    for line in table.splitlines():
+        cells = [cell.strip() for cell in line.split("|")[1:-1]]
+        if len(cells) != 4 or not cells[0].isdecimal():
+            continue
+        for slot, name in (cells[:2], cells[2:]):
+            if not slot and not name:
+                continue
+            if not slot.isdecimal() or int(slot) in documented or not name:
+                raise ValueError(f"{page}: invalid or duplicate stem slot {slot!r}")
+            documented[int(slot)] = "" if name == "(empty)" else name
+    if documented.keys() != set(range(len(stems))):
+        raise ValueError(f"{page}: expected slots 0 through {len(stems) - 1}")
+    for index, native in enumerate(stems):
+        if documented[index] != native:
+            raise ValueError(f"{page}: slot {index} says {documented[index]!r}, LOLG.DAT has {native!r}")
 
 
 def check(dat_dir):
@@ -451,6 +492,7 @@ def check(dat_dir):
         stems.append(cstr(image, OBJ5 + ptr) if ptr else "")
     if stems[10] != "CLAWWAN1" or stems[29] != "SSARPIT1" or stems[3] != "badfile":
         raise ValueError("stem table moved")
+    check_stem_table(stems)
     if image[OBJ5 + 0x1244:OBJ5 + 0x1251] != b"MUSIC\\%s.AUD\x00":
         raise ValueError("AUD format moved")
     if image[OBJ5 + 0x1251:OBJ5 + 0x125E] != b"MUSIC\\%s.HMI\x00":
@@ -574,9 +616,10 @@ def check(dat_dir):
 
     return ("CHECK media: scene limit 85; L12 opcode 21/20/210 at 9823886/9821090/9823696; "
             "citadel L12_CMI entry 21; lolg MOVIES entry 2; bank 1179 row 1049 0190108e.aud; "
-            "32 table stems and CREDITS in both formats; "
+            "35 documented stem slots match LOLG.DAT, 32 names and CREDITS in both formats; "
             "47 room modules contain 8469 relocations; "
-            "15 level texture names join the shipped banks; 15 global texture books; 640 WSA deltas")
+            "15 level texture names join the shipped banks; 15 global texture books; "
+            "640 WSA deltas and documented first-delta call")
 
 
 def main(argv):
