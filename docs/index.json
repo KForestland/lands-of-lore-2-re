@@ -334,6 +334,7 @@
         "Q16"
       ],
       "tools": [
+        "tools/lol.py",
         "tools/lol2_decompress_sphere.py",
         "tools/lol2_inspect.py",
         "tools/lol2_westwood_hash.py",

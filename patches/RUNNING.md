@@ -1,10 +1,17 @@
 # Running the DOS 1.30 game on a current machine
 
-Read this against your own copy. The notes below come from the programs and the setup files in one English GOG tree, and from the strings those programs store. No game was launched for this page, so a setting is listed because the program names it, not because a play session scored it.
+Read this against your own copy. **Tried here** identifies a recorded run. **From files** identifies a setting read from the installed files. **Reported elsewhere** identifies a setting described in the supplied notes or by another player.
 
 The retail build in that tree is DOS 1.30. `LOLG.DAT` is 1,977,007 bytes. The version string `DOS 1.30` is at file `+0x1C4714` and the date `Dec 03 1997` is at `+0x1C4749`.
 
+## Setup tried here
+
+- **Tried here, folders 0042 and 0043.** DOSBox used `memsize=30`, `cycles=fixed 140000` and `LOLG.EXE -CD ..` from the installed game layout. Both copies reached the menu and played the opening movie after New Game and Normal. Audio output was disabled with `nosound=true` and `mididevice=none` for these runs. See the [run notes](README.md).
+- **Tried here, folders 0033 and 0034.** The original DOS program loaded the Huline village save. Left and Up turned and moved the party outside the tavern. The owner also entered the tavern on an unpatched DOSBox 0.74-3 copy with `memsize=30` on 20 November 2026. The no-crash result applies to that setup.
+
 ## Which programs are which
+
+**From files.** These are the program formats and the files they name.
 
 | File | What it is | Role |
 | --- | --- | --- |
@@ -20,17 +27,17 @@ The 1.30 notes also describe a Windows Direct3D build. The playable program in t
 
 ## What the DOS program asks for at startup
 
-`LOLG.EXE` does not contain `-CD` or `-LOWMEM`. Those switches are in `LOLG.DAT`.
+**From files.** The `-CD` and `-LOWMEM` strings are in `LOLG.DAT`.
 
-- `-CD` is at file `+0x1C5285`, in the same list as `-NOMIX` and `-PATH`. Two earlier copies of the letters `-CD` sit at `+0x1C49DC` and `+0x1C4A84`. Beside the first of those, the program stores `\DAT`, `\CD2`, `\CD3` and `\CD4`. The single-player DOSBox configuration that ships with this tree runs `lolg.exe -CD ..`, which points the switch at the parent of the mounted folder. Omit it only when the data already sits where the program looks without the switch.
-- `-LOWMEM` is at file `+0x1C53CD`. What it sets is on the [fault page](README.md). Use it for the cantina section, save, and start again without it. GOG support also says the video options can stay on the low settings afterwards, and that you put them back from the in-game video controls.
-- `-PATH` sits in that same list at file `+0x1C527F`. Two other copies of the letters are at `+0x1C1C19` and `+0x1C548C`. It is the prefix the program joins to data names.
+- `-CD` is at file `+0x1C5285`, in the same list as `-NOMIX` and `-PATH`. Two earlier copies of the letters `-CD` sit at `+0x1C49DC` and `+0x1C4A84`. Beside the first of those, the program stores `\DAT`, `\CD2`, `\CD3` and `\CD4`. The installed configuration uses `lolg.exe -CD ..`, which points the switch at the parent of the mounted folder. **Tried here:** this setting reached the menu in folders 0042 and 0043.
+- `-LOWMEM` is at file `+0x1C53CD`. What it sets is on the [fault page](README.md). **Reported elsewhere:** GOG support suggests using it for the cantina, saving, then starting again without it. Returning the in-game video controls to their previous values is part of that advice.
+- `-PATH` is at file `+0x1C527F`. Two other copies of the letters are at `+0x1C1C19` and `+0x1C548C`. It is the prefix the program joins to data names. Changing that prefix remains untested here.
 
-Sound setup is `lolsetup.ini`, named at `LOLG.DAT+0x1C4A9C`. The copy read here stores Sound Blaster ASP/16 for digital audio (port `0x220`, IRQ 5, DMA 5) and the same card for MIDI (port `0x388`). The 1.30 notes say a wrong or old 3Dfx driver is the usual reason DOS hardware acceleration fails. This page did not try a 3Dfx card.
+**From files.** Sound setup is `lolsetup.ini`, named at `LOLG.DAT+0x1C4A9C`. The copy read here stores Sound Blaster ASP/16 for digital audio (port `0x220`, IRQ 5, DMA 5) and the same card for MIDI (port `0x388`). **Reported elsewhere:** the 1.30 notes attribute some DOS hardware acceleration failures to the 3Dfx driver. Audible Sound Blaster output and 3Dfx acceleration remain untested here.
 
 ## Video and audio keys
 
-`options.ini` is named at `LOLG.DAT+0x1C2714`. These keys are in the program, with the file offset of each name:
+**From files and the supplied 1.30 notes.** `options.ini` is named at `LOLG.DAT+0x1C2714`. The recorded runs kept their settings. Changing the individual keys below remains untested here.
 
 | Key | File offset | What the 1.30 notes say |
 | --- | --- | --- |
@@ -47,11 +54,11 @@ Sound setup is `lolsetup.ini`, named at `LOLG.DAT+0x1C4A9C`. The copy read here 
 
 Each offset is the first byte of that name in this `LOLG.DAT`. The bytes just before several of the video names are the stored default word (`High`, `Large`, `Small`), not part of the key.
 
-The DOSBox configuration that ships with this tree sets `memsize=30`. One community note for the cantina, instead of `-LOWMEM`, raises that to 64 and points the extender at a small `DOS4GVM` file. The stub already contains its own sentence, `DOS4GVM=VirtualMemory:ON,VirtualSize:24M,...`, at `LOLG.EXE+0x481`. The two-digit edit of that sentence is the patch on the [fault page](README.md). It is not required to start the game.
+**Reported elsewhere.** One community note for the cantina raises `memsize` to 64 and points the extender at a small `DOS4GVM` file. **From files.** The stub contains `DOS4GVM=VirtualMemory:ON,VirtualSize:24M,...` at `LOLG.EXE+0x481`. See the [fault page](README.md) for the result of testing the two-digit edit.
 
 ## Movement keys
 
-Walk and turn use the arrow keys. `LOLG.DAT` stores a key-name table, each name three times (English, then French, then German). The English arrow names are `LEFT` at `+0x1C317C`, `UP` at `+0x1C31C5`, `DOWN` at `+0x1C31D3` and `RIGHT` at `+0x1C3232`. The keypad names are in the same table: `*LEFT` at `+0x1C325B`, `*UP` at `+0x1C328F`, `*DOWN` at `+0x1C32AF` and `*RIGHT` at `+0x1C32F5`.
+**Tried here:** Up and Left in the village, folders 0033 and 0034. **From files:** all four arrow keys are bound for walking or turning. `LOLG.DAT` stores each key name three times (English, then French, then German). The English arrow names are `LEFT` at `+0x1C317C`, `UP` at `+0x1C31C5`, `DOWN` at `+0x1C31D3` and `RIGHT` at `+0x1C3232`. The keypad names are in the same table: `*LEFT` at `+0x1C325B`, `*UP` at `+0x1C328F`, `*DOWN` at `+0x1C32AF` and `*RIGHT` at `+0x1C32F5`.
 
 The setting names begin at `Key_Move_Forward_1`, file `+0x1C3465`. This `options.ini` sets them once, in `[Keyboard]`:
 
@@ -72,6 +79,6 @@ The setting names begin at `Key_Move_Forward_1`, file `+0x1C3465`. This `options
 
 ## Cache and install
 
-The installer ships `CACHEBAK.MIX` (131 bytes) and `CDCACHE.LS_` (4,008 bytes, 15 records, every state -1). The game writes `CDCACHE.MIX` and `CDCACHE.LST` when it runs. Those two are one run's cache, not a file to copy between machines. On a reset the program copies the shipped list onto `CDCACHE.LST` and the 131-byte seed onto the cache archive, then extends it. The byte-level account is [Native texture cache initialization](../docs/lol2-cache-initializer.md). If a run asks to rebuild the cache, that is this reset, not a patch.
+**From files.** The installer ships `CACHEBAK.MIX` (131 bytes) and `CDCACHE.LS_` (4,008 bytes, 15 records, every state -1). The game writes `CDCACHE.MIX` and `CDCACHE.LST` when it runs. On a reset it copies the shipped list onto `CDCACHE.LST` and the 131-byte seed onto the cache archive, then extends it. The recorded runs used an existing cache. The [cache reader notes](../docs/lol2-cache-initializer.md) describe the reset from code and files.
 
 `INSTALL.EXE` and `SETUP.EXE` are the 16-bit Windows setup programs. `_SETUPDX.EXE` is the 32-bit helper and it looks for `SETUP.MIX` and `LOLSETUP.INI`. A short memory message in that helper says to run `Setup.exe` from Windows. None of these is the DOS game.

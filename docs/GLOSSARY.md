@@ -99,10 +99,18 @@ These words mean the same thing in the notes for all three Lands of Lore games.
 | Level plan | An overhead drawing from the level's geometry. The HTML plan opens in a web browser and lets you choose a map feature to read its details. |
 | Gate | A script condition that can control a level change. See [Progression](PROGRESSION.md). |
 | Output folder | A directory you choose for the files a tool writes. The level and media tools use a new folder outside the game and the repository. |
+| Job | An action chosen through `tools/lol.py JOB`. Run `python3 tools/lol.py JOB --help` to see its options. |
+| `--data` | The folder to read. Game readers accept the installation folder or its data folder as described in [First ten minutes](FIRST_TEN_MINUTES.md). |
+| `--out` | The file or folder you choose for the output. See the example for the tool to tell which it expects. |
+| `--check` | Run the tool’s built-in checks and print a result. Checks can use temporary copies. |
+| Translation table | A list of the game’s text entries. The translation tool writes a spreadsheet-friendly CSV file for each editable table. |
+| SHA-256 | A checksum used to compare a file or a byte span with a known copy. |
 | MKV | Matroska, the file container used for the movie conversion. It can hold video and audio in one file. |
 | FFV1 | The lossless video encoding inside the converted MKV. |
 | FFmpeg, FFprobe | Tools used to write the movie and count the frames and samples in the result. |
+| WAV | A sound file. The converter writes uncompressed sample values. |
 | PCM | Sound stored as a series of sample values. The WAV export writes those values without compression. |
+| Audio sample frame | One time step in a sound. A stereo sample frame has one sample per channel. |
 | Kind 12 event 2 | A region event record with kind byte 12 and event byte 2. These numbers identify the rule the engine checks. See [script events](lol2-script-events.md). |
 | Stream / group | One of the two stored command streams and the offset of the ordered commands within it. A group starts at the offset listed on the plan. |
 | Selector | A marker in the exit table for paired tests of the same slot against 0 and 1. See [Progression](PROGRESSION.md#exit-commands). |
