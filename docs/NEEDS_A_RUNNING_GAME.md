@@ -249,119 +249,10 @@ the object supplying the predicate's state.
 
 ### 21 November slot and watch status
 
-The 21 November pass stopped at setup for the probes below. The earlier
-captures still apply. The edited copies used in follow-up work do not show
-how an ordinary playthrough reaches the same state.
-
-| Probe | Reason this pass did not settle it |
-|---|---|
-| Timed message `0x26` | The previous slot reached `0x23`. It needs the full four-byte watch through the end of that message. |
-| Movie frame 115 | The relocated late slot was already past the scene. The earlier level-20 slot `25ab2119ec3d` has prop 87 state zero. A relocation from it can approach the prop 242 event that starts the timer chain. The chain still needs to be observed. |
-| `ARENA.MIX` | The watch must cover startup and room changes through a hub. An ordinary level-4 slot is sufficient. |
-| Cue words | The earlier trace used L8_SJ and never opened MCEL. An original L4_HJ slot exists and permits a separate approach to movable 76, which owns the MCEL opener. |
-| Cemetery wall shade | The level-10 slots named below are available. No draw with the evaluator and the resulting shade row together was captured. |
-| Huline Temple quad | The corpus has no slot with L14_HT as the active level. A visited L14 block is present in a later slot, and switching its active level requires rebinding the player and renderer state. |
-| Named encounters | Two copies of the same original level-8 slot can approach live actors 45 and 76 separately. The target, flag and action reads across the portal are outstanding. |
-| Nonpositive hits | The actor-45 setup gives an encounter. No hit with a zero or negative working value has been caught. |
-| `0x02AC` mip | The L16_CA slot is available. The two descriptor IDs did not join to a stored wall material selector, so a wall-facing relocation has no verified target. The first live lookup can identify the drawn surface or object. |
-| Short block | A slot is available. The missing observation is the first write to the stack header before `0xE83D9`. |
+The cemetery wall shade, timed message, movie frame, archive, cue, encounter, hit, mip and save-block watches need the loaded base of code object 2. The physical readback in folder 0110 returned zeros at the candidate base. The paged reads at the paused instruction pointer in folder 0112 failed on four attempts. The base needs a debugger that can resolve the descriptor base or read through the guest pager, and can verify known code bytes in the loaded object. This needs a debugger setup we do not have. The watches remain [open questions](OPEN_QUESTIONS.md#memory-watch-questions).
 
 ### Probe instructions
 
-These running-game tests have no result yet. A reader with the original
-game and a debugger can run them; the question each belongs to keeps its
-state until then. Addresses follow the convention at the top of this
-page: code at `LOLG.DAT` analysis addresses, data as displacements from
-the object-5 base.
-
-- **Timed message 0x26 (run once 2026-11-20, open).** Settles the producer in
-  [Q9](OPEN_QUESTIONS.md). Full test:
-  [Q9](#q9-what-starts-the-timed-message-0x26). Setup: the late
-  game-written level-20 slot used for the
-  [lesson control](lol2-spell-dispatch.md#controlled-use-of-the-level-20-lesson).
-  Watch: a write watch on player +0x185 (player pointer from
-  `0xD2E30`), and breaks at `0x86230` (message 0x23) and `0xD2E57`
-  (the clear before message 0x26). Play: use the lesson item for an
-  acquisition ID the player does not have yet, then let the character
-  change form (player +0x1AB). Result: a nonzero write to +0x185 that
-  reaches `0xD2E57` on the same object names the producer. Only zero
-  values repeat the known controls. Run 2026-11-20 (live edit: learned
-  count 5 → 0): the 0x23 push was fetched, the low byte of +0x185 did
-  not change and 0x26 was not sent in a few seconds. Next: watch all
-  four bytes until the 0x23 message ends ([Q9](#q9-what-starts-the-timed-message-0x26)).
-- **Movie frame 115 of `bb_brth` (run once 2026-11-20, blocked).** Settles the frame-115
-  history in [Q12](OPEN_QUESTIONS.md). Full test:
-  [Q12](#q12-which-history-do-two-exceptional-vqa-frames-read).
-  Setup: a level-20 slot from before timer slot 12 expires, so prop 87
-  is not yet in state 14; the
-  [edited L20_BB copy](formats/vqa.md#scene-probes-from-edited-copies)
-  had already played the scene. Watch: `0x172838` (pointer LCW) and
-  `0x158DB2` (the short copy). Play: let prop 87 play scene 65
-  (`L20_BBI.MIX` entry 25). Result: on frame 115 log the copy's
-  source, destination, capacity and the bytes already there. A short
-  self-copy from the current destination matches the static reading;
-  anything else is the original history. Log the active codebook too.
-  Run 2026-11-20 on the relocated copy with prop 87 +0x25 set 14 → 13
-  in memory: no movie, so no frame 115. Setting the state does not send
-  the value-20 event; group `0x02E8` must run
-  ([Q12](#q12-which-history-do-two-exceptional-vqa-frames-read)).
-- **How `ARENA.MIX` is opened (run once 2026-11-20, open).** Settles the open part of
-  [Q3](OPEN_QUESTIONS.md). Setup: any game-written slot; no room is
-  known to lead to the Arena, so there is no edited-placement recipe.
-  Watch: the archive constructor `0x11C654`, logging the name it is
-  given, and the name-driven room opener (`0xEDFAF–0xEDFB6`, room
-  import `0xEF558`). Play: the start, each hub room change and the
-  movies. Result: a constructor call with the name `ARENA.MIX` (any
-  letter case) gives its caller, which is the route. No such call over
-  the stated play means that play does not open it. Details:
-  [the extra ARENA archive](lol2-room-archives.md#the-extra-arena-archive).
-  Run 2026-11-20 in two DOS sessions, watch armed after startup (in the
-  second, during the opening movie): each load into L20_BB made three
-  constructor calls, `l20_bb.MIX` (return `0x9BFB1`), `l20_bbI.MIX`
-  (`0x9C030`) and `CDCACHE.MIX` (`0x119C53`), and none named ARENA.
-  Startup before the watch and hub room changes were not covered. Next:
-  arm at program start and change rooms through a hub
-  ([room archives](lol2-room-archives.md#the-extra-arena-archive)).
-- **Who reads the 404 cue words (run once 2026-11-20, open).** Settles the text side of
-  [Q13](OPEN_QUESTIONS.md). Setup: any game-written slot. Watch: after
-  the loader's read at `0xE3742`, take the table pointer stored at data
-  `0x269CC` and set read watches on the cue words, at least on the
-  eight category words (table index 161, 162, 167, 168, 174, 197, 198
-  and 199, two bytes each). Play: a scene that plays one of those
-  cues, such as the MCEL room callbacks. Result: the known readers are
-  the category arm (`0xEEAC2–0xEEAF9`), the voice loops
-  (`0xEEB39–0xEEBD3`) and the cleanup at `0xF0B98–0xF0C29`. A read
-  from any other address, followed into text, is the text reader.
-  Only known readers bound the scenes played. Details:
-  [cue consumers](lol2-speech.md#cue-consumers-after-playback-starts).
-  Run 2026-11-20 on the game-written L8_SJ slot `9a46a2bdecb4`: the
-  pointer was set and the flag byte at data `0x269C4` was 0. Read
-  watches on indexes 161, 167, 174 and 197 (words 298, 276, 286 and
-  323, as in the file) saw no read in about six seconds of standing
-  and a few seconds of walking; 162, 168, 198 and 199 were not watched
-  (four hardware watch slots). No room scene, dialogue or combat ran.
-  The documented way into these eight indexes is the category switch
-  `0xF133C`, called from a room module (the MCEL room of L4_HJ); L8_SJ
-  does not load MCEL, so this run could not show a known read either
-  ([observation](lol2-speech.md#running-game-observation-in-l8_sj)).
-  Next: a game-written L4_HJ slot, two sessions of four watches, and
-  enter the MCEL room.
-- **Shade index on one L10_DC wall (not run).** Not blocked: two
-  game-written slots have active level 10 (slot +0x17C), SHA-256
-  prefixes `0b7d5498dc88` and `7eac342b547a`. The 2026-11-20 session
-  skipped it, saying no such slot was available. Settles the open step
-  of [Q5](OPEN_QUESTIONS.md). Setup: a game-written slot in L10_DC.
-  Watch: the return of the evaluator `0x1319B4` (the two sums, the
-  clamp at `0x131D16–0x131D4D`), then the scalar caller at `0x129C23`
-  (row offset `(S >> 8) & 0xFF00` at `0x129C28–0x129C33`) and the
-  lookup at `0x12AA89–0x12AAA8`. For a wall drawn per vertex, follow
-  the callers `0x126E82`, `0x127BD6` or `0x1288DA` through clipping
-  (`0x133C68`, `0x133FF4`) to the span setup. Play: stand in view of
-  one wall and do not move. Result: for one primitive, log both sums,
-  `S` and the shade row it uses. Row `S >> 16` reaching the lookup
-  unchanged settles the scalar path; a different row shows the span
-  interpolation. Details:
-  [shade row](lol2-event-producers.md#scalar-shade-row-and-packed-colour).
 - **One Huline Temple quad (not run, blocked).** No game-written slot
   has active level 14. The one slot that holds an L14_HT block
   (`33f5496e93b1`) is in L16_CA, and no L16_CA transition command leads
@@ -379,48 +270,6 @@ the object-5 base.
   match the [replayed quads](formats/walls.md#worked-example-a-window-in-the-huline-temple)
   after projection confirm the static model; a difference shows what
   clipping or the sampler adds.
-- **Two mode decisions in named encounters (run once 2026-11-20, open).** Settles more
-  of [Q10](OPEN_QUESTIONS.md). Full test:
-  [Q10](#q10-which-observation-path-a-live-mode-2-creature-takes).
-  Setup: two edited copies with the party placed near one named
-  creature each (level, actor number), by the
-  [position recipe](lol2-save-format.md#editing-a-copy-of-an-original-slot).
-  Watch: `0xA32B4` for one actor whose target +0x34 is the player.
-  Play: approach in sight, then step behind a portal edge. Result: with
-  +0x9D mask 0x05 clear and 0x0A set, action 1 or action 9 shows the
-  remembered bit; a change to another mode needs a trace of that
-  actor's mode store. Run 2026-11-20 on the unedited L8_SJ slot, with
-  no edited placement and no named creature: one actor with target
-  the player reached `0xA32B4` with +0x9D `0x82`, +0xB4 `0x24` and
-  +0xB9 `0`; the branch after the compare was not watched
-  ([Q10](#q10-which-observation-path-a-live-mode-2-creature-takes)).
-  Next: the two edited placements, with breaks after the compare.
-- **Nonpositive hit contributions (not run).** Settles the open
-  nonpositive and descriptor-flag cases on the
-  [combat page](lol2-combat-ai.md#hit-context-and-reduction); no
-  numbered question holds them. Setup: an edited copy with the party
-  placed near one creature, by the
-  [position recipe](lol2-save-format.md#editing-a-copy-of-an-original-slot).
-  Watch: `0x62EB9` (the rounding `sar(fixed + 0xFFFF, 16)`) and the
-  descriptor switch at `0x62E6B`. Play: trade blows until a hit
-  arrives with a zero or negative working contribution. Result: log the
-  fixed value before the rounding, the switch arm taken for each flag
-  and the health the receiver sets at `0xA6CC8–0xA6CDF`.
-- **The `0x02AC` mip path (not run).** Settles the live `0x02AC`
-  branch of [Q14](OPEN_QUESTIONS.md). Setup: a game-written slot in
-  L16_CA, in view of a surface that uses descriptor 7320 or 7322 (rows
-  1507 and 1508). Watch: the selector `0x125FC4` and the book output
-  at `0x67052`. Play: stand still facing that surface. Result: the mip
-  pointer entering `0x125FC4` and the branch it takes on the record's
-  `0x20` bit, compared with the
-  [static read](lol2-level-texture-container.md#run-length-columns-and-raw-fallback-mips).
-- **The short-block dword `0xFF00FFFF` (not run).** Settles one
-  residual header field of [Q11](OPEN_QUESTIONS.md). Setup: any
-  game-written slot. Watch: the stack address passed at `0xE83D9` plus
-  0xD4, from before `0xE7F68`. Play: save the game, so that the writer
-  produces a short level block. Result: the instruction that leaves
-  `0xFF00FFFF` at that address is the producer. Details:
-  [short snapshot status](lol2-save-field-witnesses.md#short-snapshot-status).
 
 ## Answered probes
 
