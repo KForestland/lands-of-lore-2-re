@@ -15,6 +15,7 @@ Run the checks: `python3 tools/check_all.py` with `$LOL2_DAT` set: 51 checks, al
 - **Rules traced:** the pages mark 780 statements CONFIRMED (proved from the program code or the files) and 183 UNCONFIRMED (a reading not yet proved), on 130 current pages; old notes kept as history are not counted.
 - **Seen in the running game:** 4 of 9 probes that need the original game running are answered (a question can have more than one probe); 0 of them rest on edited saves only.
 - **Open questions:** 20 numbered questions: 5 answered, 14 mostly answered, 1 partly answered.
+- **Page facts:** 10/8,508 candidate literals registered with byte witnesses. The other literals are inventoried as prose-only.
 <!-- rating:end -->
 
 ## Where things stand (21 November 2026)

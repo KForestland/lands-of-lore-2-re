@@ -367,6 +367,7 @@
       "tools": [
         "tools/check_all.py",
         "tools/lol2_loose.py",
+        "tools/page_facts.py",
         "tools/rating.py"
       ]
     },
