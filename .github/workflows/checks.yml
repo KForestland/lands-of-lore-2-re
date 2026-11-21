@@ -55,5 +55,7 @@ jobs:
         run: python -m unittest discover -s tools/history/draracle
       - name: Check the documentation index
         run: python tools/doc_index.py --check
+      - name: Check the page-facts review inventory
+        run: python tools/page_facts.py --check
       - name: Check repository contents
         run: python tools/repo_guard.py --check

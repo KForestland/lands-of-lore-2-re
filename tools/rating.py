@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Read original LoL2 files and documentation to compute the rating.
 
-  rating.py --data DAT          # print the four lines
+  rating.py --data DAT          # print the rating lines
   rating.py --data DAT --check  # also require README.md and docs/STATUS.md to carry them
   rating.py --data DAT --labels # list pages with open labels, largest first
 
@@ -11,6 +11,7 @@ The lines are explained in docs/HOW_WE_RATE.md:
   Running game    probes on docs/NEEDS_A_RUNNING_GAME.md answered, out of all probes there
                   and how many of the answered ones rest on edited saves only
   Open questions  the state words of the At-a-glance table in docs/OPEN_QUESTIONS.md
+  Page facts      candidate literals covered by a registered byte witness
 """
 from cli_errors import run_cli
 import re
@@ -20,6 +21,7 @@ import struct
 
 import lol2_cli
 import lol2_loose
+from page_facts import coverage
 
 ROOT = Path(__file__).resolve().parent.parent
 BEGIN, END = "<!-- rating:begin -->", "<!-- rating:end -->"
@@ -131,6 +133,7 @@ def rating(data_dir):
         f"- **Rules traced:** the pages mark {confirmed:,} statements CONFIRMED (proved from the program code or the files) and {unconfirmed:,} UNCONFIRMED (a reading not yet proved), on {pages} current pages; old notes kept as history are not counted.",
         f"- **Seen in the running game:** {seen} of {needed} probes that need the original game running are answered (a question can have more than one probe); {edited} of them rest on edited saves only.",
         f"- **Open questions:** {count} numbered questions: {answered} answered, {mostly} mostly answered, {partly} partly answered.",
+        f"- **Page facts:** {coverage()} with byte witnesses. The other literals are inventoried as prose-only.",
     ]
 
 

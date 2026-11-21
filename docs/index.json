@@ -367,6 +367,7 @@
       "tools": [
         "tools/check_all.py",
         "tools/lol2_loose.py",
+        "tools/page_facts.py",
         "tools/rating.py"
       ]
     },
@@ -2043,6 +2044,9 @@
         "tools/media_convert.py",
         "tools/modkit.py",
         "tools/modkit_core.py",
+        "tools/page_facts.py",
+        "tools/page_facts_auto.py",
+        "tools/page_facts_native.py",
         "tools/patch.py",
         "tools/rating.py",
         "tools/repo_guard.py",
