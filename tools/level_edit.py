@@ -8,6 +8,8 @@ from tempfile import TemporaryDirectory
 
 from cli_errors import ReaderArgumentParser, run_cli
 from level_html import find_data, installation_root
+from lol2_export_scripts import PREDICATE_TABLE, section
+from lol2_source_format import GEOMETRY_HEADER_SIZE
 import level_edit_data as adapter
 import modkit
 import patch
@@ -94,6 +96,37 @@ def validate_coordinates(original, edited):
             moves.append([key, *xy])
     if changed(original, moves)[0] != edited:
         raise ValueError("A placement patch may change only the two coordinate words of existing items or props.")
+
+
+def validate_geometry_patch(original, edited):
+    """Accept placement moves or a fixed-size edit of the native predicate rows."""
+    if len(original) == len(edited) and len(original) >= GEOMETRY_HEADER_SIZE:
+        start, count, before = section(original, *PREDICATE_TABLE)
+        end = start + len(before)
+        if (start >= GEOMETRY_HEADER_SIZE and original[:start] == edited[:start]
+                and original[end:] == edited[end:] and before != edited[start:end]):
+            width = PREDICATE_TABLE[2]
+            after = edited[start:end]
+            checked = set()
+
+            def check_row(index, parents):
+                if index in parents or index >= count:
+                    raise ValueError("A predicate patch must use in-range references without cycles.")
+                if index in checked:
+                    return
+                op, left, left_arg, right, right_arg = after[index * width:(index + 1) * width]
+                if op > 7 or left not in (0, 2, 3, 4, 5) or right not in (0, 2, 3, 4, 5):
+                    raise ValueError("A predicate patch must use a supported operator and operands.")
+                for kind, arg in ((left, left_arg), (right, right_arg)):
+                    if kind == 4:
+                        check_row(arg, (*parents, index))
+                checked.add(index)
+
+            for at in range(0, len(before), width):
+                if before[at:at + width] != after[at:at + width]:
+                    check_row(at // width, ())
+            return
+    validate_coordinates(original, edited)
 
 
 def archive_name(data, path):

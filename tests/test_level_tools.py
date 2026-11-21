@@ -2,6 +2,7 @@
 import json
 from pathlib import Path
 import re
+from struct import pack_into
 import subprocess
 import sys
 from tempfile import TemporaryDirectory
@@ -15,6 +16,22 @@ from modkit_core import output_folder
 
 
 class ReaderTools(unittest.TestCase):
+    def test_predicate_patch_validates_references_in_both_directions(self):
+        from level_edit import validate_geometry_patch
+
+        table = 0x244
+        original = bytearray(table + 11)
+        pack_into("<II", original, 0xB8, 2, table)
+        edited = original.copy()
+        edited[table:table + 5] = bytes((0, 4, 1, 0, 0))
+        validate_geometry_patch(original, edited)
+        validate_geometry_patch(edited, original)
+
+        for reference in (0, 2):
+            edited[table + 2] = reference
+            with self.assertRaisesRegex(ValueError, "in-range references without cycles"):
+                validate_geometry_patch(original, edited)
+
     def test_plan_records_and_escape(self):
         plan = Plan("Example & test", [(0, 0), (8, 8)], "Synthetic layout")
         plan.polygon([(0, 0), (8, 0), (8, 8), (0, 8)], "region-0", "Region 0", "Regions",

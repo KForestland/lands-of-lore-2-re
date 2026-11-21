@@ -34,6 +34,15 @@ No few-byte script edit is isolated for these. The remedy the reports give is to
 - Silver leaf after the bracers. A GOG forum report (January 2023, "Dracoid cemetery bug") says the cemetery ghost is absent, and the silver leaf never appears, if the bracers were given to Dawn first. No byte is isolated here. To see the report, finish the ruins, give the bracers to Dawn, and return to the ghost's house.
 - Belial's statue. The same report says the statue stuck in its courtyard, and that turning variable frame rate off let it move. The program stores the key `Video_Variable_Frame_Rate` at `LOLG.DAT+0x1C28BA`. No published byte edit of the program was found. The key is a setting in `options.ini`, not a patch.
 
+### Retail script checks
+
+| Report | DOS 1.30 records | What would settle the report |
+|---|---|---|
+| Cemetery barrel | `L10_DC.MIX+0xD15B4C` names `Barrel_in_ready_position`. The level's predicate rows and framed commands have no direct reference to that indexed local byte. | Record the barrel object, player form and positions just before a failed push and a successful push in 1.30. |
+| Temple bowl | Empty-hand actions on prop 82 at `L14_HT.MIX+0xB31894` and `+0xB318A2` advance its state 1 → 2 → 3 and each grant aloe. Separate props 285 and 370 increment local bytes 9 and 8, with continuation predicates at `+0xB487AD` and `+0xB487A3` that test for exactly 2. Prop 285 also changes its own state, which gates repeat use. | Record which prop is used, the two counters and the corpse scene when repeating aloe and paint in a 1.30 save. |
+| Daniel's blade | The placed item at `L8_SJ.MIX+0xCEB6E4` uses the War blade identity. Separate scene groups store `GV_DANIEL_KILLED` at `+0xCD51E8` or `GV_DANIEL_SPARED` at `+0xCD51AC`. | Use a save in which the correct blade is still present and the intended handover fails. |
+| Silverleaf after giving away the bracers | Bracer removal clears shared byte 37. Region 3754 at `L10_DC.MIX+0xC8E432` uses that byte to admit the urn and ashes scene. The separate bush path at `+0xC8E45C` and `+0xC8E46A` checks shared byte 16 and local byte 10. | Compare the priest scene and the bush on a save made before entering region 3754, with the urn and ashes already obtained and the bracers given away. |
+
 ## Tavern crash while Baccata speaks
 
 The Lands of Lore wiki Bugs page and GOG support ("Lands of Lore 2 - crash while entering the Tavern") describe a memory failure when Luther enters the Huline village cantina and Baccata starts to speak. The failure text in this program is at `LOLG.DAT+0x1C5416` and begins `Memory allocation of`. These pages did not launch the game, so it did not see that line.

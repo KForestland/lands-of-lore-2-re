@@ -49,8 +49,8 @@ def repack(rows, previous, size):
 def patch_validator(name, key, blob):
     if Path(name).stem.upper() in {Path(file).stem for file in LEVEL_FILES} and blob.startswith(
             struct.pack("<II", 18, 5300)):
-        from level_edit import validate_coordinates
-        return validate_coordinates
+        from level_edit import validate_geometry_patch
+        return validate_geometry_patch
     return None
 
 
