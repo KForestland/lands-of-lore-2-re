@@ -39,9 +39,12 @@ def main():
         before = monotonic()
         p = subprocess.run([sys.executable, os.path.join(here, t + ".py"), "--check", "--data", a.data],
                            capture_output=True, text=True)
-        out = (p.stdout or p.stderr).strip().splitlines()
-        print(f"{out[-1] if out else t + ': no output'} [{monotonic() - before:.2f}s]")
+        out = (p.stdout if p.returncode else p.stdout or p.stderr).strip().splitlines()
+        summary = out[-1] if out else (f"{t}: exit {p.returncode}" if p.returncode else f"{t}: no output")
+        print(f"{summary} [{monotonic() - before:.2f}s]")
         if p.returncode:
+            for line in p.stderr.splitlines()[-20:]:
+                print(f"  {line}")
             failed.append(t)
     print(f"Total elapsed: {monotonic() - started:.2f}s")
     attempted = len(TOOLS) - len(quick_skipped)
