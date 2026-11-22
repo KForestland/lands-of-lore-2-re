@@ -6,6 +6,8 @@
 - **Historical cave geometry.** 50 additional unit tests.
 <!-- suite-counts:end -->
 
+The `game_names.py` job reads labels from the original files. Map markers use a stored creature tag where there is a confirmed definition link.
+
 Use `suite_counts.py` to refresh these counts after changing either suite. Run `python tools/suite_counts.py --write`.
 
 Read original LoL2 files and replay the checks cited in the reference pages. The [historical helper index](history/README.md) lists every archived script and fixture test.
