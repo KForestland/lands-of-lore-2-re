@@ -1,5 +1,7 @@
 # LoL2 Witness Map
 
+> History: this page records an earlier research snapshot. See the current [status](../docs/STATUS.md) for supported results.
+
 Date: 2026-03-23
 
 This map summarizes the key local witnesses behind the promoted compact-path branch result.

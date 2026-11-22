@@ -21,6 +21,6 @@ placement writer with cross-checks for vertices, neighbour links,
 subdivisions, wall spans and the script references to region indices.
 Start with a fixed-size edit and read it back. Adding rows will also need
 a relocation pass over offsets, counts and references in both command
-flavours. The mod kit edits the level's ODF numbers and TRRs.
+flavours. On 22 November 2026 the mod kit edits the level's ODF numbers and TRRs.
 [Level sections and their offsets](formats/level-data.md) ·
 [Script framing](lol2-level-script-format.md) · [Writer checks](ROUND_TRIP.md)

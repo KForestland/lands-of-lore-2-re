@@ -1,5 +1,7 @@
 # First ten minutes
 
+On Windows, you can use the [My Game program](../README.md#my-game) without installing Python.
+
 Draw a level from your own installed copy of Lands of Lore II.
 You need Python 3.10 or later, the Pillow package and a web browser.
 

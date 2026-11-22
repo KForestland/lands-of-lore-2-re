@@ -1,5 +1,7 @@
 # LoL2 Evidence Index
 
+> History: this page records an earlier research snapshot. See the current [status](../docs/STATUS.md) for supported results.
+
 Date: 2026-03-23
 
 This index lists the DOSBox trace captures behind the March 2026 notes. The captures themselves are not published; `<LOL2_OUT>` stands for the folder they were written to.

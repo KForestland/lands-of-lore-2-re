@@ -242,7 +242,9 @@
       "title": "Data",
       "answers": [],
       "question_references": [],
-      "tools": []
+      "tools": [
+        "tools/page_facts.py"
+      ]
     },
     {
       "path": "docs/CHECK_AUDIT.md",
