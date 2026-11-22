@@ -553,7 +553,6 @@
       ],
       "tools": [
         "tools/check_all.py",
-        "tools/lol.py",
         "tools/lol2_entity_field_analyzer.py",
         "tools/lol2_l9dr_census.py",
         "tools/lol2_speech_names.py",
@@ -728,7 +727,7 @@
     },
     {
       "path": "docs/closure-summary.md",
-      "title": "LoL2 Closure Summary",
+      "title": "LoL2 March 2026 Research Summary",
       "answers": [],
       "question_references": [],
       "tools": []
@@ -775,7 +774,7 @@
     },
     {
       "path": "docs/final-closure-memo.md",
-      "title": "LoL2 Final Closure Memo",
+      "title": "LoL2 March 2026 Research Memo",
       "answers": [],
       "question_references": [],
       "tools": []

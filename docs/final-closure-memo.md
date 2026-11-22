@@ -1,20 +1,20 @@
-# LoL2 Final Closure Memo
+# LoL2 March 2026 Research Memo
 
-> **History.** A note from an earlier pass, kept as a record. Current pages: [STATUS.md](STATUS.md) and [formats/](formats/README.md); where they differ, the current pages are right.
+> **History (March 2026).** The overall estimate of about 99% was withdrawn on 18 November 2026. See [current status](STATUS.md#where-this-stands).
 
-Current status: [Draracle restoration findings](draracle-restoration.md). This March memo is historical; its asset/provenance discussion is not the latest cave pipeline. The October 2026 results (sound bank, level textures, wall-material source, scripts, items) are in [current status](lol2-current-status.md).
+The [Draracle restoration findings](draracle-restoration.md) cover later work on the cave. The October 2026 results for the sound bank, level textures, wall materials, scripts and items are in the [October update](lol2-current-status.md#october-2026-update).
 
 Date: 2026-03-24
 
 ## Status
 
-The historical runtime/entity and render-format results are substantial but do not establish overall RE closure — the entity instantiation-to-rendering pipeline is fully decoded via native disassembly, and the wall texture format is proven 8bpp palette-indexed. The exact wall source path is not fully closed: one strong current candidate is LOCAL.MIX Entry 1 (1 of 39 textures extracted and visually confirmed), but that source identification is not runtime-traced as the renderer source and should be read as a provenance candidate rather than total closure by itself. Audio decode is sample-verified (1 music track and 1 dialogue clip verified; a tool exists for bulk extraction of 33 tracks + 1008 clips, but bulk extraction has not been run and verified end-to-end). All 24 entity descriptor fields are classified by cross-level statistical analysis with mixed proof levels (f12-f13 proven by runtime trace; f14=HP strongly inferred at 95.3% match; f0-f9 and f19-f23 inferred from type invariance and value ranges). Full-cave geometry, materials and gameplay restoration remain active.
+**Status (March 2026):** The overall estimate of about 99% was withdrawn on 18 November 2026. See [current status](STATUS.md#where-this-stands).
 
-This repo does not claim that every LoL2 asset family is solved to the same depth as LoL1. It does claim that the compact runtime path is now strong enough to serve as the public closure backbone for the current state of the project.
+The March work traced a compact path from entity creation to rendering and showed that the wall texture format is 8 bits per pixel with a palette. At the time, LOCAL.MIX Entry 1 was a candidate for the wall texture source based on one visual match. Later work established the [source for one drawn wall span](lol2-wall-material-provenance.md). The March audio check covered one music track and one dialogue clip. The March classification of the 24 entity descriptor fields included direct traces of f12 and f13 and statistical inferences for other fields.
 
-## Final Practical Result
+## March Runtime Trace
 
-The central LoL2 closure result is the compact `L1` control path:
+The March trace followed this compact `L1` control path:
 
 - `0E6C -> 0D53 -> 1A44 -> 5570 / 9BFC -> 9C76 -> 9C89 / 91D0 / A00F`
 
@@ -24,7 +24,7 @@ That path is now stable enough to support safe public statements about:
 - the bit-field register at `[+80] + 0xB4` (bits 2, 6, 7 independently controlled)
 - the fast/alternate loading-phase branch split (distributed across multiple bit tests in the rendering pipeline)
 
-## What Is Safely Closed
+## What the March Trace Showed
 
 - `L*_DC.MIX` descriptor families are live runtime inputs
 - `0070:0E6C` is the first observed parser/consumer site
@@ -71,9 +71,9 @@ That path is now stable enough to support safe public statements about:
 - Sound effects container location not confirmed
 - Full dialogue index table parsing (structure is known, bulk extraction is straightforward)
 
-## Safe Bottom Line
+## March Findings and Limits
 
-Significant restoration questions remain open. The current public repo captures the complete picture:
+These are the findings and limits recorded in March 2026. See [current status](STATUS.md#where-this-stands) for later results:
 
 - compact descriptor parsing feeds a live object/control path with C++ polymorphic dispatch
 - object-side bit-field semantics are real and disassembly-confirmed

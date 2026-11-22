@@ -1,5 +1,12 @@
 # LoL2 reverse-engineering status
 
+## Where this stands
+
+- **Almost done, with open questions.** Tools read the layout of [83 of 83 files in the English DOS 1.30 DAT folder](../README.md#rating).
+- The running game and before-and-after saves show how two [item pickups](NEEDS_A_RUNNING_GAME.md#q11-which-saved-rows-change-on-a-known-pickup) update the item rows: one dropped in play and one placed in the opening cave.
+- The triggers of [four exits](PROGRESSION.md#what-a-row-does-not-show) are still open. [Memory watches](NEEDS_A_RUNNING_GAME.md#21-november-slot-and-watch-status) are waiting for a verified code base. One [cemetery fix](../patches/README.md#retail-script-checks) is waiting for a before-and-after game test.
+- The [rating](HOW_WE_RATE.md) keeps separate counts for files, rules and tests in play. An overall percentage would combine measures of different things.
+
 <!-- suite-counts:begin -->
 - **Original game files.** 52 checks with the required files and dependencies. Quick mode selects 48.
 - **Synthetic data.** 122 unit tests.
@@ -23,15 +30,6 @@ Run the checks: `python3 tools/check_all.py` with `$LOL2_DAT` set. All checks pa
 - **Open questions:** 20 numbered questions: 5 answered, 14 mostly answered, 1 partly answered.
 - **Page facts:** 25/8,576 candidate literals registered with byte witnesses. The rest are inventoried so changes can be reviewed.
 <!-- rating:end -->
-
-## Where things stand (21 November 2026)
-
-A dated snapshot; the work continues and the table below is kept current.
-
-- **Known.** Every file in `DAT` has its whole layout read by a tool here (83 of 83). The program's page map, the 33 music scores, every indexed movie frame and the stored level exits with their guards are read from the original files. Upstream triggers for four exits remain open ([progression](PROGRESSION.md)).
-- **Open.** 15 of 20 numbered questions are not fully answered; most are "mostly answered" and wait on a running-game test or a game-written save ([open questions](OPEN_QUESTIONS.md)).
-- **Tests a reader with the game can run.** Each open point that needs the running game has its test, the save it needs and what the runs of 20 and 21 November did and did not show ([running-game probes](NEEDS_A_RUNNING_GAME.md)).
-- **Tools for your own copy.** Change text or numbers with the mod kit, make and undo patches, edit the name, heading or position of a save copy, open interactive level plans and convert movies and sounds: start with the [first ten minutes](FIRST_TEN_MINUTES.md) page or `python3 tools/lol.py`. Known original faults: [patches](../patches/README.md). What these pages got wrong: [corrections](CORRECTIONS.md).
 
 **Columns**: *Pages*: where it is described. *Tool check*: what `--check` measures on the game files. *Open*: numbered in [OPEN_QUESTIONS.md](OPEN_QUESTIONS.md).
 
