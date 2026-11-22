@@ -67,7 +67,7 @@ Optional changes of this program. They are not mixed with the tavern note, and t
 
 ### Intro movies
 
-Startup plays the opening Westwood card, the title clip, and the game intro, then goes on. The patch [intro-skip.json](intro-skip.json) makes two jumps. Code reading shows the second jump bypasses the startup intro even with `Run_Intro` set to `On` or the `-INTRO` switch. The first recorded comparison used `Run_Intro=Off`.
+Startup plays the opening Westwood card, the title clip and, when enabled, the opening movie. The patch [intro-skip.json](intro-skip.json) makes two jumps. It was tested with `Run_Intro` set to `On` and to `Off`. Code reading also shows that the second jump bypasses the movie requested by the `-INTRO` switch. The switch still needs a launch test.
 
 The title clip is `OUTTAKES\TITLE_E.VQA` at file `+0x1C5499`. Analysis `0x14F014` tests that name, and `0x14F02C` calls the opener `0xCF3C0`. The command `-MIJAS` at file `+0x1C5492` is tested at `0x14F003`. A hit jumps to `0x14F034` and the title is not opened. The patch takes that same jump.
 
@@ -87,7 +87,9 @@ Intro test at `0x14F041`, file `+0x186041` (decimal 1597505). The five new bytes
 | before | `85 C0` / `75 0D` / `80` | `test eax, eax` / `jne 0x14F052` / start of `cmp` |
 | after | `E9 9B 00 00 00` | `jmp 0x14F0E1` |
 
-The patch was applied and undone on a copy of this `LOLG.DAT`. The restored file matched the original. Two later launches watched it, each on its own fresh copy. The unpatched copy showed the Westwood card, then the title card, then the main menu. The patched copy showed the DOSBox card and then the main menu. The Westwood card, the title card, and the intro are not in that set.
+The patch was applied and undone on a copy of this `LOLG.DAT`. The restored file matched the original. In two launches with `Run_Intro=Off`, the unpatched copy showed the Westwood card and the title card before the main menu. The patched copy went from the DOSBox card to the main menu.
+
+On 22 November 2026, three DOSBox 0.74-3 launches used `Run_Intro=On`, each on a separate copy. The unpatched copy showed the Westwood card, the title and the opening movie. The patched copy went straight to the main menu. Undo restored the Westwood card, the title and the opening movie.
 
 On 20 November 2026 a comparison used an unmodified copy and a copy with just the intro patch. Both played the same three scenes after selecting New Game on Normal. The runs stopped before player control.
 
