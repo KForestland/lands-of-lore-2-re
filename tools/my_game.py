@@ -106,7 +106,7 @@ def saved_page(source, folder):
     image = (stem, name, png_bytes(plan), "png")
     heading &= 0xFFFF
     facts = catalogue("save", "Save summary for a bug report", ("Field", "Value"),
-                      (("Level", f"{name} ({level})"), ("X", x / 65536), ("Y", y / 65536),
+                      (("Level", f"{name} ({level})"), ("X", f"{x / 65536:.2f}"), ("Y", f"{y / 65536:.2f}"),
                        ("Facing (game units)", heading)),
                       "Copy these values into the issue if you report a fault. The page omits unconfirmed save fields.")
     routes = catalogue("exits", "Exits from this level", ("From", "To", "Arrival", "What to do", "When it works", "File record"),
