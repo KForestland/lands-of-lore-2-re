@@ -1,6 +1,6 @@
 # Patches
 
-Small checked edits for a reader's own copy of the original game. A patch records the replacement bytes and a hash of the span it replaces. A patch must not remove or bypass a disc check, a serial check or any other copy protection, and none here does. The format and its limits are on the [patch format page](../docs/formats/patch.md). This folder has the list. The fault notes below are not a patch file. The optional intro skip is a separate comfort patch.
+Small checked edits for a reader's own copy of the original game. A patch records the replacement bytes and a hash of the span it replaces. A patch must not remove or bypass a disc check, a serial check or any other copy protection, and none here does. The format and its limits are on the [patch format page](../docs/formats/patch.md). This folder has the list. One fault has a patch file, the [cemetery priest fix](#cemetery-priest-after-giving-away-the-bracers). The other fault notes are not patch files. The optional intro skip is a separate comfort patch.
 
 The format is `lol-patch-3`. Each change lists its file, entry, offset, old span length and SHA-256, and new bytes. Keep `undo.json` private. It holds original game bytes from your copy.
 
@@ -16,7 +16,7 @@ How to start the game on a current machine is [Running](RUNNING.md).
 | Cemetery barrel stays upright<br>[Open your save in My Game and paste the summary into the bug report](https://github.com/KForestland/Lands-of-lore-2-re/issues/new?template=bug_report.md). | In human form, empty the hand, click the top from inside the tomb and clear its path. Reload before the attempt if it stalls. | The script has separate pick, fall and roll events. [Reported faults](https://lands-of-lore.fandom.com/wiki/Bugs) |
 | Temple offering bowls and caretaker<br>[Open your save in My Game and paste the summary into the bug report](https://github.com/KForestland/Lands-of-lore-2-re/issues/new?template=bug_report.md). | Bring Aloe and Poison Paint to their matching bowls. | DOS 1.30 changes the predicate to admit two or more offerings on load (from code, not tried in the game). |
 | Daniel’s knife and the settlement gate<br>[Open your save in My Game and paste the summary into the bug report](https://github.com/KForestland/Lands-of-lore-2-re/issues/new?template=bug_report.md). | Recover Daniel’s knife after the encounter, visit the Temple and offer the recovered knife. | The guard requires the recovered knife’s identity and the story flags. |
-| Silverleaf after giving away the bracers<br>[Open your save in My Game and paste the summary into the bug report](https://github.com/KForestland/Lands-of-lore-2-re/issues/new?template=bug_report.md). | Keep the bracers until the priest and Silverleaf events, or reload before giving them away. | The cemetery predicate and a small candidate edit have been identified. The priest response and Silverleaf outcome need a before-and-after save test. |
+| Silverleaf after giving away the bracers<br>[Open your save in My Game and paste the summary into the bug report](https://github.com/KForestland/Lands-of-lore-2-re/issues/new?template=bug_report.md). | Apply the [cemetery priest fix](#cemetery-priest-after-giving-away-the-bracers), or keep the bracers until the priest has taken the ashes. Use a blue orb on the holder outside the hall before entering. | The fix lets the urn and ashes scene start with the bracers given away. A player saw the scene, the ankh and the way out on the patched game on 22 November 2026. The Silverleaf follows from the script and was not reached in that run. |
 | Belial’s statue sticks<br>[Open your save in My Game and paste the summary into the bug report](https://github.com/KForestland/Lands-of-lore-2-re/issues/new?template=bug_report.md). | Try `Video_Variable_Frame_Rate=No` in `options.ini`. | The measured installation already uses No. The workaround was reported for a copy where the option was enabled. |
 
 ## Already claimed by the 1.30 notes
@@ -31,7 +31,7 @@ Westwood's `PATCH.TXT`, distributed with the [English 1.30 update](https://www.p
 The reports advise keeping each quest item until its later scene. The program and archive evidence are below.
 
 - Daniel's knife. Learn of Daniel, give him the knife, recover it after the encounter and visit the Temple before going to the settlement. The guard has an acceptance branch outside the five-second warning state. Both acceptance branches require the recovered knife and the ordinary story flags.
-- Silver leaf after the bracers. A [January 2023 GOG forum report](https://www.gog.com/forum/general/lands_of_lore_2_guardians_of_destiny_dracoid_cemetery_bug) says the cemetery ghost is absent, and the silver leaf never appears, if the bracers were given to Dawn first. The candidate adjusts the gate in the predicate table, in four spans starting at `L10_DC.MIX+0xD15D4C`. The priest and Silverleaf outcome still needs the save test described below.
+- Silver leaf after the bracers. A [January 2023 GOG forum report](https://www.gog.com/forum/general/lands_of_lore_2_guardians_of_destiny_dracoid_cemetery_bug) says the cemetery ghost is absent, and the silver leaf never appears, if the bracers were given to Dawn first. The [cemetery priest fix](#cemetery-priest-after-giving-away-the-bracers) adjusts the gate in the predicate table, in four spans starting at `L10_DC.MIX+0xD15D4C`, so the priest scene starts with the bracers given away. A player has played that scene on the patched game. The Silverleaf follows from the script.
 - Belial's statue. The same report says the statue stuck in its courtyard, and that turning variable frame rate off let it move. The program stores the key `Video_Variable_Frame_Rate` at `LOLG.DAT+0x1C28BA`. No published byte edit of the program was found. The key is a setting in `options.ini`, not a patch.
 
 ### Retail script checks
@@ -48,7 +48,7 @@ their matching game states before releasing a patch.
 | Cemetery barrel | Upright prop 477 has one mode-0 kind-4 event at `L10_DC.MIX+0xC81A7F`. It names group 17170, which hands off to falling control 177. Its completion starts rolling control 176, whose own completion places the spill. The upright event has no script predicate. | Compare a failed and successful empty-hand pick of prop 477. If both tip, compare the two results of the rolling callback. |
 | Temple bowl | Raw predicate 15 at `L14_HT.MIX+0xB487A3` tests local byte 8 for equality with 2. `LOLG.DAT+0x9DA15–0x9DA2D` changes the loaded operator to greater or equal when the active level is 14. That row gates both entrance-bowl completions and the caretaker hit (from code, not tried in the game). [Predicate loader](../docs/lol2-script-events.md#predicates-and-shared-bytes) | If 1.30 still stalls, record the exact object selected, the offering counter and the caretaker action from the same save. |
 | Daniel's knife | Guard actor 113 has two kind-4 records at `L8_SJ.MIX+0xCD883A` and `+0xCD8848`. Both match definition 29 (`0xEBFE13F0`) and require local bytes 9 and 32 to be zero. The placed War Blade at `+0xCEB6E4` has another identity. | Check the held identity and the two local bytes if an otherwise normal admission fails. |
-| Silverleaf after giving away the bracers | Bracer removal clears shared byte 37. Region 3754 at `L10_DC.MIX+0xC8E432` uses that byte to admit the urn and ashes scene. The separate bush path at `+0xC8E45C` and `+0xC8E46A` checks shared byte 16 and local byte 10. | Compare the priest scene and the bush on a save made before entering region 3754, with the urn and ashes already obtained and the bracers given away. |
+| Silverleaf after giving away the bracers | Bracer removal clears shared byte 37. Region 3754 at `L10_DC.MIX+0xC8E432` uses that byte to admit the urn and ashes scene. The separate bush path at `+0xC8E45C` and `+0xC8E46A` checks shared byte 16 and local byte 10. | The priest scene with the bracers given away was played on the patched game (see the fix below). The bush path was not reached in that run. |
 
 ## Tavern crash while Baccata speaks
 
@@ -60,6 +60,38 @@ Two published remedies, re-read from this copy:
 - Change two bytes in `LOLG.EXE`. That file is the 2,847-byte DOS/4GW stub, not `LOLG.DAT`. One string begins at file `0x481`: `DOS4GVM=VirtualMemory:ON,VirtualSize:24M,SwapFileName:lolgswap.swp,SwapMin:20M,SwapInc:0`. The digits `24` are the bytes `32 34` at file `0x4A6` (decimal 1190) and `0x4A7`. The published edit stores `33 32` there, so the text reads `32M`. The length does not change. Those two bytes are characters in that string. They are not an instruction, so there is no instruction listing before and after: the stub reads the sentence. `LOLG.DAT+0x1E34E` is a different word, the option name `VirtualSize` beside `VirtualMemory` and `DeleteSwapFile`. It is not the number 24, and it is not part of this edit. `SETUPG.EXE` (2,262 bytes) carries its own copy of the same sentence, with `32 34` at file `0x466`. That file names `_SETUP.EXE` and `LOLG.DAT`. It is the setup stub. The tavern edit is only `LOLG.EXE`.
 
 A patch file for this edit (one program change of two bytes, with the SHA-256 of this 2,847-byte `LOLG.EXE`) was made, and applied and undone on a copy. It is not shipped. On 20 November 2026 a player loaded a game-written save in the Huline village and walked into the tavern on the unpatched game (DOSBox 0.74-3, `memsize=30`): the scene played, with no crash and no memory message. So on that setup the fault does not occur, and the patch has nothing to fix there. What could still show it: a DOSBox setup with less memory than `memsize=30`, or a real DOS machine with less extended memory, or the Windows version of the game, which this page does not cover. If you see the memory message in the cantina, the two bytes above are the published edit; please report the setup.
+
+## Fixes
+
+### Cemetery priest after giving away the Bracers
+
+**What goes wrong.** In the Dracoid Cemetery, a player who has the urn and the priest's ashes but gave away the Bracers of the Dead finds the carved door shut. The priest scene never starts. A player who kept the Bracers gets the scene.
+
+**What the patch changes.** [cemetery-priest.json](cemetery-priest.json) changes 19 bytes in the predicate table of `DAT/L10_DC.MIX` (four spans from `+0xE8523`). The script commands and triggers stay as they are. Region 3754 at `L10_DC.MIX+0xC8E432` selects the urn and ashes scene (group 802) only when shared byte 37, the Bracers being worn, is 1. The patch uses four unused predicate rows so that the same scene is also selected when that byte is 0. All other combinations select what they did before: of the 324 combinations of the five bytes involved, 321 are unchanged. The other three are this case. [Predicate fields](../docs/lol2-script-events.md#predicates-and-shared-bytes)
+
+**It gives back a path the game already has.** On 21 November 2026 four DOSBox launches used an edited test save made from a game-written one. With the Bracers kept and no patch, the door opened into the hall. With the Bracers given away and no patch, the door stayed shut. With the patch, it opened. After undo, it stayed shut again.
+
+**Played by a person.** On 22 November 2026 a player played the patched copy by hand in DOSBox, from an edited test save with the urn, the ashes and the three orbs, and the Bracers given away. Seen:
+- The blue orb went into the holder outside the hall, and the door opened.
+- The player walked in and gave the ashes to the priest.
+- The priest thanked the player for the ashes, said he can now rest, and told the player to take the ankh to the door and put three orbs in the slots.
+- The ankh was given, and the player walked back out through the open door.
+
+The same scene played on an unpatched copy with the Bracers kept. Not seen: the Silverleaf itself, which comes later in the game. That it follows is read from the script only.
+
+**For players.**
+- Before entering the priest's hall, put a blue orb in the holder outside. This opens the door for your way back out. A test save that starts inside the hall, with that holder unused, is shut in, with or without the patch.
+- Give the ashes to the priest. He gives you the ankh.
+- The Emperor's door needs the ankh and three orbs, one blue, one yellow and one white, in the matching holders. Keep a second blue orb for it.
+
+**Apply and undo.** Work on a copy of the game folder:
+
+```sh
+python3 tools/patch.py apply --data "GAME COPY" --out "../lol2-cemetery-patched" patches/cemetery-priest.json
+python3 tools/patch.py apply --data "GAME COPY" --out "../lol2-cemetery-restored" "../lol2-cemetery-patched/undo.json"
+```
+
+Copy `DAT/L10_DC.MIX` from the output folder into the copy's `DAT` folder. A second apply is refused. Undo restores the original archive byte for byte.
 
 ## Comfort
 
