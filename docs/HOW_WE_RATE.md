@@ -30,7 +30,7 @@ that would settle it). Older pages use PROVEN and UNKNOWN for the same two label
 labels, not importance: one CONFIRMED may cover a whole table and one
 UNCONFIRMED a single byte. It does **not** claim that unlabelled text is
 wrong or that labelled text is complete.
-Two samples of 30 CONFIRMED statements, taken by different rules, were re-derived from the bytes ([samples](CONFIRMED_SAMPLE.md)). First sample: 25 held, 3 held in part, 2 wrong (both corrected). Second sample: 21 held, 8 held in part, 1 overstated (corrected). Four statements first picked for both lists were replaced in the second, so 60 different statements were checked. A further sample on 21 November re-derived ten more statements from the original files. All ten held within the tested scope. [November 21 sample](CONFIRMED_SAMPLE.md#trust-round-2-on-21-november-2026)
+Two samples of 30 CONFIRMED statements, taken by different rules, were re-derived from the bytes ([samples](CONFIRMED_SAMPLE.md)). First sample: 25 held, 3 held in part, 2 wrong (both corrected). Second sample: 21 held, 8 held in part, 1 overstated (corrected). Four statements first picked for both lists were replaced in the second, so 60 different statements were checked. A further sample on 21 November re-derived ten more statements from the original files. All ten held within the tested scope. [November 21 sample](CONFIRMED_SAMPLE.md#independent-checks-on-21-november-2026)
 
 **Seen in the running game.** Of the probes on
 [NEEDS_A_RUNNING_GAME.md](NEEDS_A_RUNNING_GAME.md) (tests that the files

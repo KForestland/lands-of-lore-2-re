@@ -53,6 +53,8 @@ jobs:
         run: python -m unittest
       - name: Run historical cave geometry tests
         run: python -m unittest discover -s tools/history/draracle
+      - name: Check published suite counts
+        run: python tools/suite_counts.py --check
       - name: Check the documentation index
         run: python tools/doc_index.py --check
       - name: Check the page-facts review inventory

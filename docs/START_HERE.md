@@ -1,5 +1,11 @@
 # Start here, by goal
 
+<!-- suite-counts:begin -->
+- **Original game files.** 52 checks with the required files and dependencies. Quick mode selects 48.
+- **Synthetic data.** 122 unit tests.
+- **Historical cave geometry.** 50 additional unit tests.
+<!-- suite-counts:end -->
+
 [Format quick reference](QUICK_REFERENCE.md) pairs each documented game format with a command and its evidence; the [format pages](formats/README.md) give one short page per format, each with a worked example.
 
 You need Python 3.10 or later, the packages in `requirements.txt`, `liblzo2` and your
@@ -8,7 +14,7 @@ own copy of *Lands of Lore: Guardians of Destiny*. Point the tools at its
 
 ```bash
 export LOL2_DAT=/path/to/your/LOL2/DAT
-python3 tools/check_all.py         # the last line should read ALL 51 CHECKS PASSED
+python3 tools/check_all.py
 ```
 
 Words you do not know are in the [glossary](GLOSSARY.md). Short worked commands, with the first lines they print, are in the [cookbook](COOKBOOK.md). What is known and checked is in [STATUS.md](STATUS.md). Examples that write files (pictures, JSON) should write outside the clone, so nothing from your game ends up in the repository. To contribute, see [CONTRIBUTING](../CONTRIBUTING.md).

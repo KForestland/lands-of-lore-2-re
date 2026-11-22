@@ -17,7 +17,7 @@ Practical read:
 - `5570` stamps a fixed compact header/frame.
 - `9BFC` fills the variable/linkage tail.
 - `9C76` is the first proven downstream consumer.
-- `+80` is the live object/base lane.
+- `+80` is the live object/base path.
 - `A00F` is the last traced compact-path commit step into external object state.
 
 ## Prebuilt External State At `[+80] + 0xB4`
@@ -149,4 +149,4 @@ Safest current model:
 
 ## Current Safe Statement
 
-The compact `L1` control frame is a live runtime structure with a class-stable consumer path, an instance-varying `+80` object/base lane, and a bit-field register at `[+80] + 0xB4`. Disassembly proved A0C3 is a cleanup epilogue (clears bit 6 and returns), not a branch-steering site. The fast/alternate branch split (A396 vs E854/A40A families) is distributed across multiple bit tests in the rendering and animation pipeline, not localized to a single branch instruction. A00F sets bit 2 (activation), and the downstream behavior changes when this bit is suppressed because later code (6A50, A396) tests the bit-field state.
+The compact `L1` control frame is a live runtime structure with a class-stable consumer path, an instance-varying `+80` object/base path, and a bit-field register at `[+80] + 0xB4`. Disassembly proved A0C3 is a cleanup epilogue (clears bit 6 and returns), not a branch-steering site. The fast/alternate branch split (A396 vs E854/A40A families) is distributed across multiple bit tests in the rendering and animation pipeline, not localized to a single branch instruction. A00F sets bit 2 (activation), and the downstream behavior changes when this bit is suppressed because later code (6A50, A396) tests the bit-field state.

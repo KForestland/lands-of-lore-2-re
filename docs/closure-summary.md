@@ -20,7 +20,7 @@ The strongest current LoL2 result is the compact `L1` control path:
 
 That path is now stable enough to support safe statements about:
 
-- the live object/base lane at `+80`
+- the live object/base path at `+80`
 - the bit-field register at `[+80] + 0xB4`
 - the loading-phase fast-versus-alternate branch split
 
@@ -54,14 +54,14 @@ Under the tested compact witness:
   - `E854 / E861`
   - `A40A / A44B`
 
-This matters because it proves the object-side runtime lane contains real branch/state semantics before any final renderer claim is safe.
+This matters because it proves the object-side runtime path contains real branch/state semantics before any final renderer claim is safe.
 
 ## What Is Proven
 
 - `L*_DC.MIX` descriptor families are live runtime inputs
 - `0070:0E6C` is a stable parser/consumer site
 - the parser stages normalized runtime state
-- the compact path reaches a live object/control lane
+- the compact path reaches a live object/control path
 - the bit-field register at `[+80] + 0xB4` is prebuilt before `A00F`
 - the compact fast/alternate branch split is real in the tested loading-phase witness
 

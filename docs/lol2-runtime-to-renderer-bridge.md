@@ -42,18 +42,18 @@ For the tested compact witness:
 
 This matters because it proves, for the tested compact witness, that the descriptor path is not abstract metadata only. It feeds live object-side state.
 
-### 2. `+80` Is A Real Live Object/Base Lane
+### 2. `+80` Is A Real Live Object/Base path
 
 The compact-path work proved:
 
-- `+80` is the strongest live object/base lane on the compact path
-- `A00F` commits external writes relative to that live object/base lane
+- `+80` is the strongest live object/base path on the compact path
+- `A00F` commits external writes relative to that live object/base path
 - one of the important external targets is `[+80] + 0xB4`
 
 This matters because it gives the renderer question a stronger runtime anchor:
 
 - not just parser-side fields
-- but the live object lane those fields eventually affect
+- but the live object path those fields eventually affect
 
 ### 3. The Object-Side State Word Is Now Structurally Understood
 

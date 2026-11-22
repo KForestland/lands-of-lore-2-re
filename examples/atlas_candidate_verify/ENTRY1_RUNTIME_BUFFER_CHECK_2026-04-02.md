@@ -30,11 +30,11 @@ Observed:
 - no exact `8x8` patch reuse
 - no exact `16x16` patch reuse
 - best row agreement stayed very low:
-  - `3 / 128` for the two `128x128` wall-lane captures
+  - `3 / 128` for the two `128x128` wall-path captures
   - `16 / 128` for the `256x256` renderer-texture capture
   - `1 / 128` for the `128x64` renderer-source capture
 - simple `flip-x`, `flip-y`, and transpose row checks did not improve
-  the `128x128` wall-lane result
+  the `128x128` wall-path result
 
 ## Safe Interpretation
 
@@ -58,4 +58,4 @@ This pushes the next proof step toward one of these:
 2. prove a non-trivial transform from Entry 1 record `0` into the live
    wall-source surface
 3. demote Entry 1 further and return to the stronger runtime-proven
-   `MOVIES.MIX -> 0x106AF1xx -> 0x10394xxx` producer lane
+   `MOVIES.MIX -> 0x106AF1xx -> 0x10394xxx` producer path

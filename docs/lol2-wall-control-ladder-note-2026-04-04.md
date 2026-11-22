@@ -90,7 +90,7 @@ source images.
 They do not match:
 
 - the stable `0x106AB520` builder stream
-- the separate `0x10394CB6` stream/palette-side builder lane
+- the separate `0x10394CB6` stream/palette-side builder path
 - the captured internal sparse node images used at `ESI`
 
 Current safest read:

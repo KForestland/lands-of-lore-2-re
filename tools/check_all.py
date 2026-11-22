@@ -22,6 +22,12 @@ TOOLS = ["repo_guard", "edition", "lol2_mix_parser", "lol2_mix_writer", "lol2_le
 QUICK_SKIP = {"lol2_instance_field", "lol2_aud_decode", "lol2_mix_writer", "lol2_vqa_v2_decode"}
 
 
+def check_counts():
+    """Configured full and quick check counts, before data-dependent skips."""
+    full = len(TOOLS)
+    return full, full - len(QUICK_SKIP)
+
+
 def main():
     ap = ReaderArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--data", default=os.environ.get("LOL2_DAT"), required=os.environ.get("LOL2_DAT") is None)
@@ -46,14 +52,15 @@ def main():
             for line in p.stderr.splitlines()[-20:]:
                 print(f"  {line}")
             failed.append(t)
+    full, _ = check_counts()
     print(f"Total elapsed: {monotonic() - started:.2f}s")
-    attempted = len(TOOLS) - len(quick_skipped)
+    attempted = full - len(quick_skipped)
     if failed:
         print(f"{len(failed)} of {attempted} attempted checks FAILED: {', '.join(failed)}")
     elif quick_skipped:
         print(f"{attempted} CHECKS PASSED, {len(quick_skipped)} SKIPPED (quick mode)")
     else:
-        print(f"ALL {len(TOOLS)} CHECKS PASSED")
+        print(f"ALL {full} CHECKS PASSED")
     return 1 if failed else 0
 
 

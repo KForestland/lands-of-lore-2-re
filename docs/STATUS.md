@@ -1,8 +1,14 @@
 # LoL2 reverse-engineering status
 
+<!-- suite-counts:begin -->
+- **Original game files.** 52 checks with the required files and dependencies. Quick mode selects 48.
+- **Synthetic data.** 122 unit tests.
+- **Historical cave geometry.** 50 additional unit tests.
+<!-- suite-counts:end -->
+
 What is documented about the original game, which tool reads it, what the tools check on the game files, and what is open. This table replaces the "almost fully understood" summary of earlier pages: those pages ([understanding (history)](lol2-understanding-2026-11.md), [current status (history)](lol2-current-status.md), [closure summary (history)](closure-summary.md), [final closure memo (history)](final-closure-memo.md)) are kept as history.
 
-Run the checks: `python3 tools/check_all.py` with `$LOL2_DAT` set: 51 checks, all pass on the English DOS 1.30 copy with the listed requirements.
+Run the checks: `python3 tools/check_all.py` with `$LOL2_DAT` set. All checks pass on the English DOS 1.30 copy with the listed requirements.
 
 **Running-game results.** Answered probes are counted in the rating; which ones and how: [NEEDS_A_RUNNING_GAME](NEEDS_A_RUNNING_GAME.md#answered-probes). Runs on hand-edited copies of a game-written save: [edited saves](EDITED_SAVES.md).
 
@@ -15,7 +21,7 @@ Run the checks: `python3 tools/check_all.py` with `$LOL2_DAT` set: 51 checks, al
 - **Rules traced:** the pages mark 788 statements CONFIRMED (labelled as proved with a cited address or offset) and 184 UNCONFIRMED (a reading still open), on 130 current pages; old notes kept as history are not counted.
 - **Seen in the running game:** 4 of 9 probes that need the original game running are answered (a question can have more than one probe); 0 of them rest on edited saves only.
 - **Open questions:** 20 numbered questions: 5 answered, 14 mostly answered, 1 partly answered.
-- **Page facts:** 25/8,575 candidate literals registered with byte witnesses. The rest are inventoried so changes can be reviewed.
+- **Page facts:** 25/8,576 candidate literals registered with byte witnesses. The rest are inventoried so changes can be reviewed.
 <!-- rating:end -->
 
 ## Where things stand (21 November 2026)

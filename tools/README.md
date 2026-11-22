@@ -1,5 +1,13 @@
 # Tools
 
+<!-- suite-counts:begin -->
+- **Original game files.** 52 checks with the required files and dependencies. Quick mode selects 48.
+- **Synthetic data.** 122 unit tests.
+- **Historical cave geometry.** 50 additional unit tests.
+<!-- suite-counts:end -->
+
+Use `suite_counts.py` to refresh these counts after changing either suite. Run `python tools/suite_counts.py --write`.
+
 Read original LoL2 files and replay the checks cited in the reference pages. The [historical helper index](history/README.md) lists every archived script and fixture test.
 
 [Translation guide](../docs/TRANSLATION.md) covers `translate.py` , the FNT reader `translate_fonts.py`, and its game-specific `translate_data.py`.
@@ -116,7 +124,6 @@ Run each `--check` and print one line each, then a summary.
 $ python3 tools/check_all.py | sed -n '1,2p;$p'
 CHECK repo_guard: N tracked files; game files, media, stray images, files over 300 KB, machine paths, words from the local list, or commit identities and messages: none (0); private word list: not present, skipped
 CHECK mix: 81 MIX files, 2905 entries; this reader and lol2_source_format.parse_mix agree and every entry lies inside its file: 81/81; index sorted by signed key: 81/81 (by unsigned key: 20); bad=none
-ALL 51 CHECKS PASSED
 ```
 
 ### `modkit.py`

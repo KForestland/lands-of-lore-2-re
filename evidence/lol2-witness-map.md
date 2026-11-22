@@ -17,7 +17,7 @@ Core stable path:
 
 ## Important Addresses
 
-- live object/base lane:
+- live object/base path:
   - `+80`
 - bit-field register:
   - `[+80] + 0xB4`
