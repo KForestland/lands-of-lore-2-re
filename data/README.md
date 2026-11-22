@@ -1,5 +1,8 @@
 # Data
 
+> History: these working inventories record an earlier research snapshot. See the current [status](../docs/STATUS.md) for supported results.
+
+
 This folder is for machine-readable LoL2 inventory summaries.
 
 Read these first:

@@ -171,7 +171,7 @@ Data patches are for the original DOS game under DOSBox.
 Writes a copy of an original save with one field changed; the save itself is only read. Each run prints the old and the new value and one line saying whether the game has been shown to load such an edit (CONFIRMED) or not yet (UNCONFIRMED). Fields and their status: [cookbook](../docs/COOKBOOK.md#change-a-saved-game-a-copy).
 
 ```
-$ python3 tools/save_edit.py set '/path/to/LoL2/SAVEGAME/$MUSEUM_.000' heading 0x4000 --out "my edited save.000"
+$ python3 tools/save_edit.py set '/path/to/LoL2/SAVEGAME/$YOUR_SAVE.000' heading 0x4000 --out "my edited save.000"
 set: heading OLD -> 0x4000; copy written to /path/to/my edited save.000; the original save was only read
 UNCONFIRMED: no edited copy of this field has been loaded by the game yet; keep a backup of your saves
 ```

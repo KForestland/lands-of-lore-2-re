@@ -1,6 +1,6 @@
 # Message tables
 
-The executable loads five named message files through one reader. Each file is a count, an id table, an offset table, and NUL-terminated records. `TEXT.MIX` and `TCEL.MIX` are not these files. They are two of the 46 room archives ([room archives](lol2-room-archives.md)).
+The executable loads five named message files through one reader. Each file is a count, an id table, an offset table, and NUL-terminated records. `TEXT.MIX` and `TCEL.MIX` are not these files. They are two of the 47 room archives (46 named plus ARENA) ([room archives](lol2-room-archives.md)).
 
 `tools/lol2_text_tables.py --check` re-reads the four tables inside `LOCALLNG.MIX`, the same credits table in `MOVIES.MIX`, the three loose copies beside the game, and the two room archives. It writes nothing.
 

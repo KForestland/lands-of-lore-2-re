@@ -6,26 +6,26 @@ Run the checks: `python3 tools/check_all.py` with `$LOL2_DAT` set: 51 checks, al
 
 **Running-game results.** Answered probes are counted in the rating; which ones and how: [NEEDS_A_RUNNING_GAME](NEEDS_A_RUNNING_GAME.md#answered-probes). Runs on hand-edited copies of a game-written save: [edited saves](EDITED_SAVES.md).
 
-**Short format pages** (one per format, with a worked example from the game files): [formats/](formats/README.md), 13 pages; **level sheets**: [levels/](levels/README.md).
+**Short format pages** (one per format, with a worked example from the game files): [formats/](formats/README.md), 15 pages; **level sheets**: [levels/](levels/README.md).
 
 **Rating** (counted by `tools/rating.py`; see [how we rate](HOW_WE_RATE.md)):
 
 <!-- rating:begin -->
 - **Files read:** 83 of 83 files in `DAT` (1,915.6 of 1,915.6 MiB) have their whole layout read by a tool here: every byte belongs to a known header, directory, entry, chunk, segment or resource, or to zero padding between them; the DOS part of `SETUP.EXE` is counted by its length (what is inside an entry may still be only partly understood).
-- **Rules traced:** the pages mark 788 statements CONFIRMED (proved from the program code or the files) and 184 UNCONFIRMED (a reading not yet proved), on 130 current pages; old notes kept as history are not counted.
+- **Rules traced:** the pages mark 788 statements CONFIRMED (labelled as proved with a cited address or offset) and 184 UNCONFIRMED (a reading still open), on 130 current pages; old notes kept as history are not counted.
 - **Seen in the running game:** 4 of 9 probes that need the original game running are answered (a question can have more than one probe); 0 of them rest on edited saves only.
 - **Open questions:** 20 numbered questions: 5 answered, 14 mostly answered, 1 partly answered.
-- **Page facts:** 25/8,574 candidate literals registered with byte witnesses. The other literals are inventoried as prose-only.
+- **Page facts:** 25/8,575 candidate literals registered with byte witnesses. The rest are inventoried so changes can be reviewed.
 <!-- rating:end -->
 
 ## Where things stand (21 November 2026)
 
 A dated snapshot; the work continues and the table below is kept current.
 
-- **Known.** Every file in `DAT` has its whole layout read by a tool here (83 of 83). The program's page map, the 33 music scores, every indexed movie frame and every level exit with its guard are read from the original files ([progression](PROGRESSION.md)).
+- **Known.** Every file in `DAT` has its whole layout read by a tool here (83 of 83). The program's page map, the 33 music scores, every indexed movie frame and the stored level exits with their guards are read from the original files. Upstream triggers for four exits remain open ([progression](PROGRESSION.md)).
 - **Open.** 15 of 20 numbered questions are not fully answered; most are "mostly answered" and wait on a running-game test or a game-written save ([open questions](OPEN_QUESTIONS.md)).
 - **Tests a reader with the game can run.** Each open point that needs the running game has its test, the save it needs and what the runs of 20 and 21 November did and did not show ([running-game probes](NEEDS_A_RUNNING_GAME.md)).
-- **Tools for your own copy.** Change text or numbers with the mod kit, make and undo patches, edit a saved game, open interactive level plans and convert movies and sounds: start with the [first ten minutes](FIRST_TEN_MINUTES.md) page or `python3 tools/lol.py`. Known original faults: [patches](../patches/README.md). What these pages got wrong: [corrections](CORRECTIONS.md).
+- **Tools for your own copy.** Change text or numbers with the mod kit, make and undo patches, edit the name, heading or position of a save copy, open interactive level plans and convert movies and sounds: start with the [first ten minutes](FIRST_TEN_MINUTES.md) page or `python3 tools/lol.py`. Known original faults: [patches](../patches/README.md). What these pages got wrong: [corrections](CORRECTIONS.md).
 
 **Columns**: *Pages*: where it is described. *Tool check*: what `--check` measures on the game files. *Open*: numbered in [OPEN_QUESTIONS.md](OPEN_QUESTIONS.md).
 

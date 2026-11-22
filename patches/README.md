@@ -10,14 +10,14 @@ How to start the game on a current machine is [Running](RUNNING.md).
 
 ## Where each reported fault sits
 
-One line per report. Script means a quest or scene order. State means a flag, a form, or where the player stands. Program means bytes in the executable or its stub. A few-byte patch is a short edit of those files. A setting and a reload are not that patch. The notes under the later headings are the same reports, written out.
-
-- Cantina crash while Baccata speaks (wiki Bugs; GOG support). Program: `LOLG.EXE` digits `32 34` at file `0x4A6`, the `24` in `VirtualSize:24`. A few-byte patch can exist: those two digits become `33 32`. It was applied and undone on a copy and is not shipped. Folders 0035 and 0036 walked the same way before and after that edit, stayed outside, and showed no memory message. On 20 November 2026 the owner entered the tavern on the unpatched game (DOSBox 0.74-3, `memsize=30`) and it did not crash.
-- Cemetery barrel will not tip (wiki Bugs). State: the upright barrel needs an empty-hand pick before its fall and roll callbacks. In human form, click the top from inside the tomb with the route clear. Reload before the attempt if it stalls. No verified byte fix.
-- Temple bowl creates aloe and can block the caretaker (wiki Bugs). DOS 1.30 already admits two or more entrance-bowl offerings when it loads this level. Bring Aloe and Poison Paint and offer them to the matching bowls. No further patch is needed for the overcount.
-- Daniel's knife and the settlement gate (walkthroughs). Recover the knife Daniel drops, visit the Temple, then present the recovered knife to the guard. The guard checks its exact identity and the story flags. No verified faulty branch.
-- Silver leaf missing after the bracers were given to Dawn (GOG forum, January 2023). State: that gift comes first. No byte is isolated. No few-byte patch.
-- Belial's statue stuck in its courtyard (same GOG report). Program setting: `options.ini` key `Video_Variable_Frame_Rate` at `LOLG.DAT+0x1C28BA`. The reported remedy is turning that setting off. No program byte edit was found. No few-byte patch is attempted.
+| Report | What to try | Evidence |
+|---|---|---|
+| Cantina crash while Baccata speaks | Temporarily add `-LOWMEM` to the DOSBox start command. Save after the scene and remove the switch. [GOG Support](https://support.gog.com/hc/en-us/articles/214068365-Lands-Of-Lore-Guardians-of-Destiny) | On 20 November the unmodified game played the scene in DOSBox with `memsize=30`. |
+| Cemetery barrel stays upright | In human form, empty the hand, click the top from inside the tomb and clear its path. Reload before the attempt if it stalls. | The script has separate pick, fall and roll events. [Reported faults](https://lands-of-lore.fandom.com/wiki/Bugs) |
+| Temple offering bowls and caretaker | Bring Aloe and Poison Paint to their matching bowls. | DOS 1.30 changes the predicate to admit two or more offerings on load. This was traced in the program. |
+| Daniel’s knife and the settlement gate | Recover Daniel’s knife after the encounter, visit the Temple and offer the recovered knife. | The guard requires the recovered knife’s identity and the story flags. |
+| Silverleaf after giving away the bracers | Keep the bracers until the priest and Silverleaf events, or reload before giving them away. | The cemetery predicate and a small candidate edit have been identified. The priest response and Silverleaf outcome need a before-and-after save test. |
+| Belial’s statue sticks | Try `Video_Variable_Frame_Rate=No` in `options.ini`. | This is a reported workaround and a recognized setting. |
 
 ## Already claimed by the 1.30 notes
 
@@ -28,10 +28,10 @@ The 1.06-to-1.30 notes name two gameplay fixes. Both are already claimed for thi
 
 ## Quest-order reports
 
-No few-byte script edit is isolated for these. The remedy the reports give is to keep the item, or to reload to before the choice.
+The reports advise keeping each quest item until its later scene. The program and archive evidence are below.
 
 - Daniel's knife. Learn of Daniel, give him the knife, recover it after the encounter and visit the Temple before going to the settlement. The guard has an acceptance branch outside the five-second warning state. Both acceptance branches require the recovered knife and the ordinary story flags.
-- Silver leaf after the bracers. A GOG forum report (January 2023, "Dracoid cemetery bug") says the cemetery ghost is absent, and the silver leaf never appears, if the bracers were given to Dawn first. No byte is isolated here. To see the report, finish the ruins, give the bracers to Dawn, and return to the ghost's house.
+- Silver leaf after the bracers. A GOG forum report (January 2023, "Dracoid cemetery bug") says the cemetery ghost is absent, and the silver leaf never appears, if the bracers were given to Dawn first. The candidate adjusts the gate in the predicate table, in four spans starting at `L10_DC.MIX+0xD15D4C`. The priest and Silverleaf outcome still needs the save test described below.
 - Belial's statue. The same report says the statue stuck in its courtyard, and that turning variable frame rate off let it move. The program stores the key `Video_Variable_Frame_Rate` at `LOLG.DAT+0x1C28BA`. No published byte edit of the program was found. The key is a setting in `options.ini`, not a patch.
 
 ### Retail script checks
@@ -52,14 +52,14 @@ their matching game states before releasing a patch.
 
 ## Tavern crash while Baccata speaks
 
-The Lands of Lore wiki Bugs page and GOG support ("Lands of Lore 2 - crash while entering the Tavern") describe a memory failure when Luther enters the Huline village cantina and Baccata starts to speak. The failure text in this program is at `LOLG.DAT+0x1C5416` and begins `Memory allocation of`. These pages did not launch the game, so it did not see that line.
+The Lands of Lore wiki Bugs page and GOG support ("Lands of Lore 2 - crash while entering the Tavern") describe a memory failure when Luther enters the Huline village cantina and Baccata starts to speak. The failure text in this program is at `LOLG.DAT+0x1C5416` and begins `Memory allocation of`.
 
 Two published remedies, re-read from this copy:
 
 - Launch once with `-LOWMEM`, then save and start again without it. GOG support describes that switch. It is not a patch file. The characters `-LOWMEM` sit at `LOLG.DAT+0x1C53CD`. Startup code at analysis address `0x14EBDD` pushes that string and calls `0x15C5CC`. That routine calls `0x153C5C`, which walks the command text for those bytes. A nonzero result is stored in the three bytes at object-5 cells `0xB861`, `0xB862` and `0xB86C` (file `+0x1CC885`, `+0x1CC886` and `+0x1CC890`), which are zero in the stored program. A later test of `-8MB` (cell `0x1140`, file `+0x1C2164`) or `-16MB` (cell `0x1145`) also stores 1 at cell `0xB861`. At `0x9F1D8` a nonzero `0xB861` skips the following block. The same startup compares cell `0xB861` with zero and stores the opposite in the video-default byte at cell `0xBB5C`: the switch present leaves that byte 0.
 - Change two bytes in `LOLG.EXE`. That file is the 2,847-byte DOS/4GW stub, not `LOLG.DAT`. One string begins at file `0x481`: `DOS4GVM=VirtualMemory:ON,VirtualSize:24M,SwapFileName:lolgswap.swp,SwapMin:20M,SwapInc:0`. The digits `24` are the bytes `32 34` at file `0x4A6` (decimal 1190) and `0x4A7`. The published edit stores `33 32` there, so the text reads `32M`. The length does not change. Those two bytes are characters in that string. They are not an instruction, so there is no instruction listing before and after: the stub reads the sentence. `LOLG.DAT+0x1E34E` is a different word, the option name `VirtualSize` beside `VirtualMemory` and `DeleteSwapFile`. It is not the number 24, and it is not part of this edit. `SETUPG.EXE` (2,262 bytes) carries its own copy of the same sentence, with `32 34` at file `0x466`. That file names `_SETUP.EXE` and `LOLG.DAT`. It is the setup stub. The tavern edit is only `LOLG.EXE`.
 
-A patch file for this edit (one program change of two bytes, with the SHA-256 of this 2,847-byte `LOLG.EXE`) was made, and applied and undone on a copy. It is not shipped. On 20 November 2026 the owner of this copy loaded a game-written save in the Huline village and walked into the tavern on the unpatched game (DOSBox 0.74-3, `memsize=30`): the scene played, with no crash and no memory message. So on that setup the fault does not occur, and the patch has nothing to fix there. What could still show it: a DOSBox setup with less memory than `memsize=30`, or a real DOS machine with less extended memory, or the Windows version of the game, which this page does not cover. If you see the memory message in the cantina, the two bytes above are the published edit; please report the setup.
+A patch file for this edit (one program change of two bytes, with the SHA-256 of this 2,847-byte `LOLG.EXE`) was made, and applied and undone on a copy. It is not shipped. On 20 November 2026 a player loaded a game-written save in the Huline village and walked into the tavern on the unpatched game (DOSBox 0.74-3, `memsize=30`): the scene played, with no crash and no memory message. So on that setup the fault does not occur, and the patch has nothing to fix there. What could still show it: a DOSBox setup with less memory than `memsize=30`, or a real DOS machine with less extended memory, or the Windows version of the game, which this page does not cover. If you see the memory message in the cantina, the two bytes above are the published edit; please report the setup.
 
 ## Comfort
 
@@ -67,7 +67,7 @@ Optional changes of this program. They are not mixed with the tavern note, and t
 
 ### Intro movies
 
-Startup plays the opening Westwood card, the title clip, and the game intro, then goes on. The patch [intro-skip.json](intro-skip.json) is two jumps, so those are skipped even when `Run_Intro` is `On` and even when `-INTRO` is present.
+Startup plays the opening Westwood card, the title clip, and the game intro, then goes on. The patch [intro-skip.json](intro-skip.json) makes two jumps. Code reading shows the second jump bypasses the startup intro even with `Run_Intro` set to `On` or the `-INTRO` switch. The first recorded comparison used `Run_Intro=Off`.
 
 The title clip is `OUTTAKES\TITLE_E.VQA` at file `+0x1C5499`. Analysis `0x14F014` tests that name, and `0x14F02C` calls the opener `0xCF3C0`. The command `-MIJAS` at file `+0x1C5492` is tested at `0x14F003`. A hit jumps to `0x14F034` and the title is not opened. The patch takes that same jump.
 
@@ -89,7 +89,7 @@ Intro test at `0x14F041`, file `+0x186041` (decimal 1597505). The five new bytes
 
 The patch was applied and undone on a copy of this `LOLG.DAT`. The restored file matched the original. Two later launches watched it, each on its own fresh copy. The unpatched copy showed the Westwood card, then the title card, then the main menu. The patched copy showed the DOSBox card and then the main menu. The Westwood card, the title card, and the intro are not in that set.
 
-On 20 November 2026 folder 0042 was unpatched and folder 0043 had only this patch. After New Game and Normal, the opening movie played the same way on both copies: the same three scenes, and the end mean difference is 5.5 because the frame timing differs. The patch does not stop a new game or its opening movie. Player control was not reached in two minutes, so this run does not test walking. Folders 0039, 0040 and 0041 stopped before that movie and are not this pair.
+On 20 November 2026 a comparison used an unmodified copy and a copy with just the intro patch. Both played the same three scenes after selecting New Game on Normal. The runs stopped before player control.
 
 ```sh
 python3 tools/patch.py apply --data "GAME" --out "../lol2-intro-patched" patches/intro-skip.json

@@ -31,10 +31,10 @@ These are counts of work done, not a percentage of how complete the project is. 
 
 <!-- rating:begin -->
 - **Files read:** 83 of 83 files in `DAT` (1,915.6 of 1,915.6 MiB) have their whole layout read by a tool here: every byte belongs to a known header, directory, entry, chunk, segment or resource, or to zero padding between them; the DOS part of `SETUP.EXE` is counted by its length (what is inside an entry may still be only partly understood).
-- **Rules traced:** the pages mark 788 statements CONFIRMED (proved from the program code or the files) and 184 UNCONFIRMED (a reading not yet proved), on 130 current pages; old notes kept as history are not counted.
+- **Rules traced:** the pages mark 788 statements CONFIRMED (labelled as proved with a cited address or offset) and 184 UNCONFIRMED (a reading still open), on 130 current pages; old notes kept as history are not counted.
 - **Seen in the running game:** 4 of 9 probes that need the original game running are answered (a question can have more than one probe); 0 of them rest on edited saves only.
 - **Open questions:** 20 numbered questions: 5 answered, 14 mostly answered, 1 partly answered.
-- **Page facts:** 25/8,574 candidate literals registered with byte witnesses. The other literals are inventoried as prose-only.
+- **Page facts:** 25/8,575 candidate literals registered with byte witnesses. The rest are inventoried so changes can be reviewed.
 <!-- rating:end -->
 
 ## Quick start with git (for people who use git)
@@ -56,7 +56,7 @@ python3 tools/lol2_mix_parser.py --data "$LOL2_DAT" L1_DC.MIX   # list the entri
 python3 tools/full_report.py --out "../lol2-out/report"
 ```
 
-On the reference installation, the full suite took about 45 seconds and `--quick` took about 16. Quick mode skips the instance-field scan, MIX writer, AUD decoder and VQA check and prints each skip. Each run prints the time per check and the total. [Check audit](docs/CHECK_AUDIT.md)
+On the reference installation, the full suite took about a minute and `--quick` took about 16. Quick mode skips the instance-field scan, MIX writer, AUD decoder and VQA check and prints each skip. Each run prints the time per check and the total. [Check audit](docs/CHECK_AUDIT.md)
 
 The MIX command prints the archive path, then `Entries: 3`, then one line per entry with its name key, offset and size. The report command writes an inventory, level sheets and text counts to the named folder. On Windows, use `py -3 -m venv .venv` and `.\.venv\Scripts\python.exe` in place of `python3`. Set `$env:LOL2_DAT = 'D:\Games\LoL2\DAT'` in PowerShell, or pass `--data` with a quoted folder path to each tool.
 
@@ -92,7 +92,7 @@ What you can look at with your own copy of the game. Run from the clone with `ex
 | Fields from a save | `python tools/lol.py save page "$LOL2_SLOT" --out ../lol2-out/save.html` | Writes save.html with stored values and commands for making an edited copy |
 | Archive workspace | `python tools/modkit.py --data "$LOL2_DAT" --check` | Byte-identical rebuild of 22 files from 25 editable entries |
 | Patch maker | `python tools/patch.py make --data "$LOL2_DAT" "my mod output" --title "My edit" --out ../lol2-out/edit.json` | Writes a version 3 patch and reports the changed files |
-| Interactive level plan | `python3 tools/lol.py level --data "$LOL2_DAT" --level L1_DC --out "../LoL2 plans"` | Open `L1_DC.html` for regions, placement rows and exit gates. |
+| Interactive level plan | `python3 tools/lol.py level --data "$LOL2_DAT" --level L1_DC --out "../LoL2 plans"` | Open `L1_DC.html` for regions, placement rows and exit gates. Use `--level all` to write every level. |
 | Movie and sound conversion | [Copy the commands in First ten minutes](docs/FIRST_TEN_MINUTES.md#convert-a-movie-or-sound) | `CAN-22.mkv` and `GLOBAL-342.wav` in folders you choose, with letter case from the original archives |
 | XMIDI directory and events | `python tools/lol2_xmi_reader.py --data "$LOL2_DAT" --check` | 33 named FORM entries and 33 sequences |
 
@@ -117,7 +117,7 @@ Type these in this repository's folder. Put quotes around paths with spaces. On 
 
 [Open the documented fields of a save in your browser](docs/EDITED_SAVES.md#see-the-fields-in-an-offline-page).
 
-A saved game can be changed in a copy too: `python3 tools/save_edit.py set '/path/to/LoL2/SAVEGAME/$MUSEUM_.000' heading 0x4000 --out "my edited save.000"` prints the old and the new value. Save names begin with `$`, so on Linux and macOS put them in single quotes. More in the [cookbook](docs/COOKBOOK.md#share-a-change-as-a-patch).
+The save editor can change the name, heading or position of a copy: `python3 tools/save_edit.py set '/path/to/LoL2/SAVEGAME/$YOUR_SAVE.000' heading 0x4000 --out "my edited save.000"` prints the old and the new value. Save names begin with `$`, so on Linux and macOS put them in single quotes. More in the [cookbook](docs/COOKBOOK.md#share-a-change-as-a-patch).
 
 ## What you get
 
