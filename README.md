@@ -39,6 +39,12 @@ These are counts of work done, not a percentage of how complete the project is. 
 
 ## Quick start with git (for people who use git)
 
+<!-- suite-counts:begin -->
+- **Original game files.** 52 checks with the required files and dependencies. Quick mode selects 48.
+- **Synthetic data.** 122 unit tests.
+- **Historical cave geometry.** 50 additional unit tests.
+<!-- suite-counts:end -->
+
 Use Python 3.10 or later and your own copy of the English GOG release, DOS version 1.30. The tools recognize the original program `LOLG.DAT` by its SHA-256 prefix `b27a35341c6e877e`. Keep `DAT/` with the rest of the game folder so the readers can also find `LOLG.DAT` and the sibling MIX and TRR files.
 
 Install Pillow for pictures (10.1 up to 13; the image check accepts each measured rendering), Capstone 5 for disassembly checks and NumPy for VQA frame decoding. The full check uses all three and the system LZO library (`apt install liblzo2-2` on Debian or Ubuntu). The synthetic unit tests use the Python standard library.
@@ -50,7 +56,7 @@ python3 -m venv .venv && . .venv/bin/activate
 python3 -m pip install -r requirements.txt
 export LOL2_DAT="/path/to/your/LOL2/DAT"
 python3 tools/check_all.py --quick              # lists the checks it skips
-python3 tools/check_all.py                      # full suite of 51 checks
+python3 tools/check_all.py
 python3 -m unittest discover -s tests
 python3 tools/lol2_mix_parser.py --data "$LOL2_DAT" L1_DC.MIX   # list the entries of level 1's archive
 python3 tools/full_report.py --out "../lol2-out/report"

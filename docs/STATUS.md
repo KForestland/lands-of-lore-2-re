@@ -1,8 +1,14 @@
 # LoL2 reverse-engineering status
 
+<!-- suite-counts:begin -->
+- **Original game files.** 52 checks with the required files and dependencies. Quick mode selects 48.
+- **Synthetic data.** 122 unit tests.
+- **Historical cave geometry.** 50 additional unit tests.
+<!-- suite-counts:end -->
+
 What is documented about the original game, which tool reads it, what the tools check on the game files, and what is open. This table replaces the "almost fully understood" summary of earlier pages: those pages ([understanding (history)](lol2-understanding-2026-11.md), [current status (history)](lol2-current-status.md), [closure summary (history)](closure-summary.md), [final closure memo (history)](final-closure-memo.md)) are kept as history.
 
-Run the checks: `python3 tools/check_all.py` with `$LOL2_DAT` set: 51 checks, all pass on the English DOS 1.30 copy with the listed requirements.
+Run the checks: `python3 tools/check_all.py` with `$LOL2_DAT` set. All checks pass on the English DOS 1.30 copy with the listed requirements.
 
 **Running-game results.** Answered probes are counted in the rating; which ones and how: [NEEDS_A_RUNNING_GAME](NEEDS_A_RUNNING_GAME.md#answered-probes). Runs on hand-edited copies of a game-written save: [edited saves](EDITED_SAVES.md).
 

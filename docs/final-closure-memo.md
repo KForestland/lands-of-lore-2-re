@@ -10,7 +10,7 @@ Date: 2026-03-24
 
 The historical runtime/entity and render-format results are substantial but do not establish overall RE closure — the entity instantiation-to-rendering pipeline is fully decoded via native disassembly, and the wall texture format is proven 8bpp palette-indexed. The exact wall source path is not fully closed: one strong current candidate is LOCAL.MIX Entry 1 (1 of 39 textures extracted and visually confirmed), but that source identification is not runtime-traced as the renderer source and should be read as a provenance candidate rather than total closure by itself. Audio decode is sample-verified (1 music track and 1 dialogue clip verified; a tool exists for bulk extraction of 33 tracks + 1008 clips, but bulk extraction has not been run and verified end-to-end). All 24 entity descriptor fields are classified by cross-level statistical analysis with mixed proof levels (f12-f13 proven by runtime trace; f14=HP strongly inferred at 95.3% match; f0-f9 and f19-f23 inferred from type invariance and value ranges). Full-cave geometry, materials and gameplay restoration remain active.
 
-This repo does not claim that every LoL2 asset family is solved to the same depth as LoL1. It does claim that the compact runtime lane is now strong enough to serve as the public closure backbone for the current state of the project.
+This repo does not claim that every LoL2 asset family is solved to the same depth as LoL1. It does claim that the compact runtime path is now strong enough to serve as the public closure backbone for the current state of the project.
 
 ## Final Practical Result
 
@@ -20,7 +20,7 @@ The central LoL2 closure result is the compact `L1` control path:
 
 That path is now stable enough to support safe public statements about:
 
-- the live object/base lane at `+80`
+- the live object/base path at `+80`
 - the bit-field register at `[+80] + 0xB4` (bits 2, 6, 7 independently controlled)
 - the fast/alternate loading-phase branch split (distributed across multiple bit tests in the rendering pipeline)
 
@@ -29,7 +29,7 @@ That path is now stable enough to support safe public statements about:
 - `L*_DC.MIX` descriptor families are live runtime inputs
 - `0070:0E6C` is the first observed parser/consumer site
 - parser-side work stages normalized runtime state
-- the compact path reaches a live object/control lane
+- the compact path reaches a live object/control path
 - `[+80] + 0xB4` is a bit-field register prebuilt before `A00F`
 - A00F sets bit 2 (activation), A0C3 clears bit 6 (loading-complete), 91E4 sets bit 7 (allocated)
 - the fast-versus-alternate loading-phase branch split is real in the tested compact witness
@@ -75,7 +75,7 @@ That path is now stable enough to support safe public statements about:
 
 Significant restoration questions remain open. The current public repo captures the complete picture:
 
-- compact descriptor parsing feeds a live object/control lane with C++ polymorphic dispatch
+- compact descriptor parsing feeds a live object/control path with C++ polymorphic dispatch
 - object-side bit-field semantics are real and disassembly-confirmed
 - wall textures are proven 8bpp palette-indexed with a standard blit renderer
 - texture source provenance is narrowed but not fully closed: LOCAL.MIX Entry 1 remains one strong candidate model, but runtime source-pointer confirmation is still missing

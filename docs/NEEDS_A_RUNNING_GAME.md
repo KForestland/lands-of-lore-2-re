@@ -220,7 +220,7 @@ native save reached through ordinary play. In L8_SJ approach the
 two placements from the positions recorded in the level archive.
 Interact with an empty hand while breaking at `0x110ACD` (log request
 +0x32 kind, +0x20 object and +0x28 distance), `0xB5000` and `0xADDB0`;
-this needs a save close to the controls (one from the owner, see the
+this needs a save close to the controls (a game-written save, see the
 saves list). Identify the record from its group word and record
 the first visible before/after result and the player transform
 at `0xB2A96`. Group 12668 identifies control 69 and the exact
@@ -249,7 +249,7 @@ the object supplying the predicate's state.
 
 ### 21 November slot and watch status
 
-The cemetery wall shade, timed message, movie frame, archive, cue, encounter, hit, mip and save-block watches need the loaded base of code object 2. The physical readback in folder 0110 returned zeros at the candidate base. The paged reads at the paused instruction pointer in folder 0112 failed on four attempts. The base needs a debugger that can resolve the descriptor base or read through the guest pager, and can verify known code bytes in the loaded object. This needs a debugger setup we do not have. The watches remain [open questions](OPEN_QUESTIONS.md#memory-watch-questions).
+The cemetery wall shade, timed message, movie frame, archive, cue, encounter, hit, mip and save-block watches need the loaded base of code object 2. On 21 November the first physical read returned zeros at the candidate base. A second run tried four paged reads at the paused instruction pointer without a match. The base needs a debugger that can resolve the descriptor base or read through the guest pager, and can verify known code bytes in the loaded object. This needs a debugger setup we do not have. The watches remain [open questions](OPEN_QUESTIONS.md#memory-watch-questions).
 
 ### Probe instructions
 

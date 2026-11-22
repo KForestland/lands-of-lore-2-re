@@ -138,7 +138,7 @@ data rows 3 and 4 of `GLOBAL.MIX+0x6A3AC0`, frame record
 object 2 offset `0x5C913`, `0x5C913` + `0x59024` = `0xB5937`, which
 begins with `PUSH ESI`). Both gave the result above.
 
-## Trust round 2 on 21 November 2026
+## Independent checks on 21 November 2026
 
 Independent readers took ten randomly sampled proved table rows from each
 game's pages and checked the original files with their own readers. Across
@@ -146,9 +146,9 @@ the three games, 30 of 30 rows held within the scope checked. The full
 statement was checked in 29 rows. On one Lands of Lore III texture row,
 the layout held and the palette-source clause was outside the check.
 
-All ten sampled Lands of Lore II rows held on release `07c6d79`.
+All ten sampled Lands of Lore II rows held in the 21 November review.
 The check recounted map and event rows. The page calls `0xADD36`
 the dispatch site inside the routine.
 
 A separate set of deliberately wrong statements tested what readers and
-checks could catch. [Check audit](CHECK_AUDIT.md#trust-round-2-on-21-november-2026)
+checks could catch. [Check audit](CHECK_AUDIT.md#independent-checks-on-21-november-2026)

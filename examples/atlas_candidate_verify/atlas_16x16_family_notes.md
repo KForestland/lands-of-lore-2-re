@@ -69,7 +69,7 @@ Characteristics:
 - all begin with:
   - `u16 a`
   - `u16 b`
-  - then a structured-looking byte lane
+  - then a structured-looking byte path
 
 Examples:
 
@@ -107,7 +107,7 @@ That gives a stable first-pass read:
 - `u16 a`
 - `u16 b`
 - `mode-ish byte`
-- then a compact descriptor / encoded lane
+- then a compact descriptor / encoded path
 
 This is the strongest evidence so far that these are structured runtime
 records rather than raw LCW streams.
@@ -218,7 +218,7 @@ Repeated pair motifs in this family:
 Current best read:
 
 - 2-byte chunking fits this family better than 3/4/5-byte chunking
-- the lane looks fielded and pair-organized rather than bytecode-like
+- the path looks fielded and pair-organized rather than bytecode-like
 
 ### Flag `16` family
 
@@ -229,7 +229,7 @@ Records:
 Observed tendencies:
 
 - byte `4` is usually `5..7`
-- positions `8..15` again look tuple-like, but with a different lane
+- positions `8..15` again look tuple-like, but with a different path
   than flag `8`
 - no simple direct decode or simple skip-to-LCW decode was found
 
@@ -253,7 +253,7 @@ Repeated pair motifs in this family:
 
 Current best read:
 
-- this family also fits a short-pair lane better than larger tuple sizes
+- this family also fits a short-pair path better than larger tuple sizes
 - pair slots appear more stable than any 3/4/5-byte framing
 
 ### Flag `7` family
@@ -265,7 +265,7 @@ Records:
 Observed tendencies:
 
 - byte `5` is strikingly stable in this family (`0x6D`)
-- the rest of the lane still varies enough that these are not trivially
+- the rest of the path still varies enough that these are not trivially
   the same record with small deltas
 
 Examples:
@@ -288,7 +288,7 @@ Repeated pair motifs in this family:
 Current best read:
 
 - byte `5 = 0x6d` stays strikingly stable
-- the lane again looks more like a pair-coded descriptor surface than a
+- the path again looks more like a pair-coded descriptor surface than a
   direct LCW stream
 
 ## What The Prefix Probably Is Not
@@ -369,7 +369,7 @@ Reason:
 - zero-separated pair slots appear stable
 - 3/4/5-byte chunking looks substantially less regular
 
-This does not prove the lane is literally an array of `u16` fields, but
+This does not prove the path is literally an array of `u16` fields, but
 it strongly suggests the structure is organized around short field slots
 rather than free-form compressed bytes.
 
@@ -418,7 +418,7 @@ Best read:
 
 #### Slots 2-4 (`bytes 8..13`)
 
-These look like the densest control/descriptor lane.
+These look like the densest control/descriptor path.
 
 Why:
 
@@ -482,7 +482,7 @@ For the later `16x16` family:
 - bytes `0..3`: wrapper/header fields (`u16 a`, `u16 b`)
 - slot `0`: packed mode/class field
 - slots `1..4`: short descriptor/control fields
-- slots `5..9`: late descriptor or early body-transition lane
+- slots `5..9`: late descriptor or early body-transition path
 
 This is still a hypothesis, but it is much tighter than:
 
@@ -715,7 +715,7 @@ Best read:
 
 - the first 4 bytes are wrapper
 - the body starts at byte `4`
-- but the body itself still begins with a compact internal control lane,
+- but the body itself still begins with a compact internal control path,
   not immediately obvious final-pixel commands
 
 ### Skip-4 Decoded-Surface Check
@@ -819,7 +819,7 @@ Common tendency:
 
 Working read:
 
-- these are likely the strongest evidence for an extended descriptor lane
+- these are likely the strongest evidence for an extended descriptor path
   before the actual compressed body
 
 ## What This Changes

@@ -2,12 +2,12 @@
 
 Read this against your own copy. **Tried here** identifies a recorded run. **From files** identifies a setting read from the installed files. **Reported elsewhere** identifies a setting described in the supplied notes or by another player.
 
-The retail build in that tree is DOS 1.30. `LOLG.DAT` is 1,977,007 bytes. The version string `DOS 1.30` is at file `+0x1C4714` and the date `Dec 03 1997` is at `+0x1C4749`.
+The retail build in the test installation is DOS 1.30. `LOLG.DAT` is 1,977,007 bytes. The version string `DOS 1.30` is at file `+0x1C4714` and the date `Dec 03 1997` is at `+0x1C4749`.
 
 ## Setup tried here
 
-- **Tried here, folders 0042 and 0043.** DOSBox used `memsize=30`, `cycles=fixed 140000` and `LOLG.EXE -CD ..` from the installed game layout. Both copies reached the menu and played the opening movie after New Game and Normal. Audio output was disabled with `nosound=true` and `mididevice=none` for these runs. See the [run notes](README.md).
-- **Tried here, folders 0033 and 0034.** The original DOS program loaded the Huline village save. Left and Up turned and moved the party outside the tavern. The owner also entered the tavern on an unpatched DOSBox 0.74-3 copy with `memsize=30` on 20 November 2026. The no-crash result applies to that setup.
+- **Two menu and movie runs on 20 November.** DOSBox used `memsize=30`, `cycles=fixed 140000` and `LOLG.EXE -CD ..` from the installed game layout. Both copies reached the menu and played the opening movie after New Game and Normal. Audio output was disabled with `nosound=true` and `mididevice=none` for these runs. See the [run notes](README.md).
+- **Village control tests on 20 November.** The original DOS program loaded the Huline village save. Left and Up turned and moved the party outside the tavern. A player also entered the tavern on an unpatched DOSBox 0.74-3 copy with `memsize=30` on 20 November 2026. The no-crash result applies to that setup.
 
 ## Which programs are which
 
@@ -23,13 +23,13 @@ The retail build in that tree is DOS 1.30. `LOLG.DAT` is 1,977,007 bytes. The ve
 | `RUNGAME.EXE` | 16-bit Windows (NE) | Names the setup program. It is not a second copy of `LOLG.DAT`. |
 | `_SETUPDX.EXE` | 32-bit Windows (PE) | CD setup helper. Its text says it is a Windows 95 executable. |
 
-The 1.30 notes also describe a Windows Direct3D build. The playable program in this tree is the DOS pair `LOLG.EXE` plus `LOLG.DAT`. The Windows files here are setup and the 16-bit launcher.
+The 1.30 notes also describe a Windows Direct3D build. The playable program in the test installation is the DOS pair `LOLG.EXE` plus `LOLG.DAT`. The Windows files here are setup and the 16-bit launcher.
 
 ## What the DOS program asks for at startup
 
 **From files.** The `-CD` and `-LOWMEM` strings are in `LOLG.DAT`.
 
-- `-CD` is at file `+0x1C5285`, in the same list as `-NOMIX` and `-PATH`. Two earlier copies of the letters `-CD` sit at `+0x1C49DC` and `+0x1C4A84`. Beside the first of those, the program stores `\DAT`, `\CD2`, `\CD3` and `\CD4`. The installed configuration uses `lolg.exe -CD ..`, which points the switch at the parent of the mounted folder. **Tried here:** this setting reached the menu in folders 0042 and 0043.
+- `-CD` is at file `+0x1C5285`, in the same list as `-NOMIX` and `-PATH`. Two earlier copies of the letters `-CD` sit at `+0x1C49DC` and `+0x1C4A84`. Beside the first of those, the program stores `\DAT`, `\CD2`, `\CD3` and `\CD4`. The installed configuration uses `lolg.exe -CD ..`, which points the switch at the parent of the mounted folder. **Tried here:** this setting reached the menu in both menu runs on 20 November.
 - `-LOWMEM` is at file `+0x1C53CD`. What it sets is on the [fault page](README.md). **Reported elsewhere:** GOG support suggests using it for the cantina, saving, then starting again without it. Returning the in-game video controls to their previous values is part of that advice.
 - `-PATH` is at file `+0x1C527F`. Two other copies of the letters are at `+0x1C1C19` and `+0x1C548C`. It is the prefix the program joins to data names. Changing that prefix remains untested here.
 
@@ -58,7 +58,7 @@ Each offset is the first byte of that name in this `LOLG.DAT`. The bytes just be
 
 ## Movement keys
 
-**Tried here:** Up and Left in the village, folders 0033 and 0034. **From files:** all four arrow keys are bound for walking or turning. `LOLG.DAT` stores each key name three times (English, then French, then German). The English arrow names are `LEFT` at `+0x1C317C`, `UP` at `+0x1C31C5`, `DOWN` at `+0x1C31D3` and `RIGHT` at `+0x1C3232`. The keypad names are in the same table: `*LEFT` at `+0x1C325B`, `*UP` at `+0x1C328F`, `*DOWN` at `+0x1C32AF` and `*RIGHT` at `+0x1C32F5`.
+**Tried here:** Up and Left in the village controls tests on 20 November. **From files:** all four arrow keys are bound for walking or turning. `LOLG.DAT` stores each key name three times (English, then French, then German). The English arrow names are `LEFT` at `+0x1C317C`, `UP` at `+0x1C31C5`, `DOWN` at `+0x1C31D3` and `RIGHT` at `+0x1C3232`. The keypad names are in the same table: `*LEFT` at `+0x1C325B`, `*UP` at `+0x1C328F`, `*DOWN` at `+0x1C32AF` and `*RIGHT` at `+0x1C32F5`.
 
 The setting names begin at `Key_Move_Forward_1`, file `+0x1C3465`. This `options.ini` sets them once, in `[Keyboard]`:
 
