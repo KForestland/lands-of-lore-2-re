@@ -1,6 +1,6 @@
 # Re-deriving a sample of confirmed statements
 
-Two samples of 30 statements labelled confirmed were taken from the current
+The two 19–20 November samples of 30 statements labelled confirmed were taken from the current
 pages, each by its own rule, and checked again from the original bytes: the archives in `DAT/`
 and beside the game, `LOLG.DAT` disassembled at code address = file offset
 minus `0x37000`, and the shipped cache seed. No game, emulator or debugger
@@ -137,3 +137,18 @@ data rows 3 and 4 of `GLOBAL.MIX+0x6A3AC0`, frame record
 `01 08 32 00 08 00 24 00`) and the LE fixup (record at `0x51C5C` for
 object 2 offset `0x5C913`, `0x5C913` + `0x59024` = `0xB5937`, which
 begins with `PUSH ESI`). Both gave the result above.
+
+## Trust round 2 on 21 November 2026
+
+Independent readers took ten randomly sampled proved table rows from each
+game's pages and checked the original files with their own readers. Across
+the three games, 30 of 30 rows held within the scope checked. The full
+statement was checked in 29 rows. On one Lands of Lore III texture row,
+the layout held and the palette-source clause was outside the check.
+
+All ten sampled Lands of Lore II rows held on release `07c6d79`.
+The check recounted map and event rows. The page calls `0xADD36`
+the dispatch site inside the routine.
+
+A separate set of deliberately wrong statements tested what readers and
+checks could catch. [Check audit](CHECK_AUDIT.md#trust-round-2-on-21-november-2026)

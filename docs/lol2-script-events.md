@@ -57,9 +57,13 @@ An adjacent special arm at `0xF2EB9` can dispatch a kind-12
 record with stored event 6 when the caller requests event 2.
 In the player's region transition path, the walker gets event 3
 for the previous region at `0xD383C` and event 2 for the new
-one at `0xD39BB`. Those calls establish two uses of the event
-IDs. Other caller sequences remain **UNCONFIRMED**. At each entry to
-`0xAD7F4`, recover the return address and the event byte, then follow
+one at `0xD39BB`. When the new region's +0x28 mask 2 is clear,
+`0xD393A–0xD394A` sets it and sends event 4 before event 2.
+The alternate-region loop sends event 4 and sets the same bit at
+`0xD38CD–0xD38E1`. Both calls pass the comparison between
+the player's integer height and the region's integer +0x12 height.
+Other caller sequences remain **UNCONFIRMED**. At each entry to
+`0xF2D2C`, recover the return address and the event byte, then follow
 the last conditional branch at that caller.
 
 ## Object timers
