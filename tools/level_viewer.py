@@ -4,6 +4,7 @@ from collections import defaultdict
 import struct
 
 from cli_errors import run_cli, game_path
+from game_names import creature_tags, level_names
 from level_html import Plan, main
 from level_move_ui import sections
 from level_edit_data import placement_name
@@ -44,11 +45,14 @@ def progression(data, _selected):
 
 def view(data, stem, gates):
     archive = game_path(data, f"{stem}.MIX")
-    entry, raw = level_geometry(archive.read_bytes())
+    blob = archive.read_bytes()
+    entry, raw = level_geometry(blob)
+    titles = level_names(data)
+    tags = creature_tags(blob, stem)
     base = entry["offset"]
     vertices, regions, _ = parse_geometry(raw)
     exit_regions = {int(row[7].split()[1]) for row in gates if row[7].startswith("region ")}
-    plan = Plan(f"{stem} level plan", vertices,
+    plan = Plan(f"{titles.get(stem, stem)} level plan", vertices,
                 f"The map comes from {archive.name}. Source offsets show where records start in the archive. "
                 "Exit conditions come from the stored scripts.")
     plan.legend.update({"Region": "#587888", "Wall edge": "#9ab0bb",
@@ -76,6 +80,8 @@ def view(data, stem, gates):
             x, y = struct.unpack_from("<hh", stored, at)
             region, = struct.unpack_from("<H", stored, at + 0x0A)
             name = placement_name(data, raw, key, i, offset + at)
+            if key == "actor" and (tag := tags.get(stored[at + 0x20])):
+                name = f"{tag} · actor {i}"
             plan.dot((x << 16, y << 16), f"{key}-{i}", name or f"{kind[:-1]} {i}", kind,
                      {"Row": i, "Stored X / Y": f"{x} / {y}",
                       "Stored region word": region if region != 0xFFFF else "none",
@@ -86,7 +92,7 @@ def view(data, stem, gates):
         if selector:
             guard += " selector"
         target = label.replace(" ", "-").replace(":", "-")
-        plan.note(f"exit-{i}", f"Exit {i} to {dest}", "Exits",
+        plan.note(f"exit-{i}", f"Exit {i} to {titles.get(dest, dest)}", "Exits",
                   {"Destination entry": dest_entry, "Event": event,
                    "Gate": guard if guard != "none" else "No predicate on this event record.",
                    "Script": f"Stream {stream}, group {group} ({group:#x})"},

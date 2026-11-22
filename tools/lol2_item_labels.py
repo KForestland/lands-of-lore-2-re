@@ -38,20 +38,50 @@ def native_hash(text):
     return value
 
 
-def item_layout(dat_dir):
-    with open(str(game_path(dat_dir, "GLOBAL.MIX")), "rb") as source:
-        raw = source.read()
+def item_entry(dat_dir):
+    raw = game_path(dat_dir, "GLOBAL.MIX").read_bytes()
     count = struct.unpack_from("<H", raw)[0]
     base = 6 + 12 * count
     for i in range(count):
         key, offset, size = struct.unpack_from("<III", raw, 6 + 12 * i)
         if key == ITEMS_KEY:
-            entry = raw[base + offset:base + offset + size]
-            table, rows = struct.unpack_from("<I", entry, 4)[0], struct.unpack_from("<I", entry, 0x34)[0]
-            if table + STRIDE * rows > len(entry):
-                raise ValueError("item definitions overrun their MIX entry")
-            return base + offset + table, [entry[table + STRIDE * r:table + STRIDE * (r + 1)] for r in range(rows)]
+            start = base + offset
+            if start + size > len(raw):
+                raise ValueError("item entry overruns GLOBAL.MIX")
+            return start, raw[start:start + size]
     raise ValueError("item table entry not found in GLOBAL.MIX")
+
+
+def item_layout(dat_dir):
+    base, entry = item_entry(dat_dir)
+    table, rows = struct.unpack_from("<I", entry, 4)[0], struct.unpack_from("<I", entry, 0x34)[0]
+    if table + STRIDE * rows > len(entry):
+        raise ValueError("item definitions overrun their MIX entry")
+    return base + table, [entry[table + STRIDE * r:table + STRIDE * (r + 1)] for r in range(rows)]
+
+
+def display_names(dat_dir):
+    """Join each 30-byte name row to the corresponding definition identity."""
+    _, entry = item_entry(dat_dir)
+    table, end = struct.unpack_from("<II", entry, 4)
+    count, = struct.unpack_from("<I", entry, 0x34)
+    sizes = (16, 12)
+    at = table + STRIDE * count
+    for size in sizes:
+        if at + 4 > len(entry):
+            return {}
+        n, = struct.unpack_from("<I", entry, at)
+        at += 4 + size * n
+    if at + 30 * count != end or end > len(entry):
+        return {}
+    names = {}
+    for i in range(count):
+        identity, = struct.unpack_from("<I", entry, table + STRIDE * i + 0x18)
+        field = entry[at + 30 * i:at + 30 * i + 24].partition(b"\0")[0]
+        label = field.decode("cp437").removeprefix(f"{i + 1}-").strip()
+        if label and label.isprintable():
+            names[identity] = label
+    return names
 
 
 def item_definitions(dat_dir):

@@ -1999,6 +1999,7 @@
         "tools/edition.py",
         "tools/example_images.py",
         "tools/full_report.py",
+        "tools/game_names.py",
         "tools/history/draracle/catalogue_cave_entities.py",
         "tools/history/draracle/catalogue_cave_objects.py",
         "tools/history/draracle/extract_block_sprite_frames.py",
