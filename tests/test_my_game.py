@@ -79,11 +79,13 @@ class MyGame(unittest.TestCase):
             make_my_game_fixture(game)
             slot = synthetic_slot()
             source = root / "test.000"
-            source.write_bytes(write_slot(replace(slot, state=(*slot.state[:-5], 1, 0, 0, 0x4000, 0))))
+            source.write_bytes(write_slot(replace(slot, state=(*slot.state[:-5], 1, 81553, 147990, 0x4000, 0))))
             page = app.read_saved(source, game)
             self.assertIn("You are here", page)
             self.assertEqual(page.count("data:image/png;base64,"), 1)
             self.assertIn("<td>Level</td><td>Test Cavern (1)</td>", page)
+            self.assertIn("<td>X</td><td>1.24</td>", page)
+            self.assertIn("<td>Y</td><td>2.26</td>", page)
             self.assertIn("<td>Facing (game units)</td><td>16384</td>", page)
             self.assertIn("Walk across the exit area.", page)
 
