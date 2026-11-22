@@ -60,6 +60,8 @@ The global dispatch table is at `LOLG.DAT+0x11F64C`.
 See [save section descriptors](lol2-save-sections.md) for all 11 global
 and 68 level selector arms.
 
+**CONFIRMED.** The native bearing calculation at `0x111C69–0x111C9F` takes the negated horizontal deltas. Helper `0x15D301` swaps the x87 inputs before `fpatan`, and the caller adds pi and scales to a 16-bit turn. Heading zero points along +Y and a quarter turn points along +X. The saved-game schematic uses the same axes for its arrow.
+
 ## Level blocks
 
 **CONFIRMED.** The native per-level writer `0xE7F68` appends `.img`

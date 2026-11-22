@@ -1,4 +1,5 @@
 """Use invented names and records to exercise the LoL2 guide."""
+from dataclasses import replace
 from importlib.util import find_spec
 from pathlib import Path
 import struct
@@ -9,6 +10,7 @@ from tests.kit_fixture import geometry, make_fixture
 from lol2_entity_field_analyzer import BODY_SIZE, RECORD_SIZE
 from lol2_item_labels import ITEMS_KEY, OBJ5, STRIDE
 from lol2_mix_writer import write_mix
+from lol2_save_writer import synthetic_slot, write_slot
 from lol2_text_writer import write_trr
 from lol2_westwood_hash import ww_hash_v1
 from my_game import app
@@ -69,6 +71,22 @@ def check_page(page):
 
 
 class MyGame(unittest.TestCase):
+    @unittest.skipUnless(find_spec("PIL"), "Pillow not installed")
+    def test_save_renders_one_plan_and_its_exits(self):
+        with TemporaryDirectory() as temp:
+            root = Path(temp)
+            game = root / "game"
+            make_my_game_fixture(game)
+            slot = synthetic_slot()
+            source = root / "test.000"
+            source.write_bytes(write_slot(replace(slot, state=(*slot.state[:-5], 1, 0, 0, 0x4000, 0))))
+            page = app.read_saved(source, game)
+            self.assertIn("You are here", page)
+            self.assertEqual(page.count("data:image/png;base64,"), 1)
+            self.assertIn("<td>Level</td><td>Test Cavern (1)</td>", page)
+            self.assertIn("<td>Facing (game units)</td><td>16384</td>", page)
+            self.assertIn("Walk across the exit area.", page)
+
     @unittest.skipUnless(find_spec("PIL"), "Pillow not installed")
     def test_page_shows_named_original_records(self):
         with TemporaryDirectory() as temp:

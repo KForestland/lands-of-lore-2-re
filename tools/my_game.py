@@ -7,7 +7,8 @@ from lol2_item_labels import display_names
 from lol2_level_report import level_files
 from lol2_level_schematic import draw, load
 from lol2_progression import collect, selectors
-from my_game_ui import MyGame, catalogue, edition_label, png_bytes, report
+from lol2_save_writer import parse_slot
+from my_game_ui import DATA_ERRORS, MyGame, catalogue, edition_label, png_bytes, report
 
 
 TITLE = "Lands of Lore II · My Game"
@@ -30,10 +31,12 @@ EXIT_CONDITIONS = {
 }
 
 
-def exit_rows(data, names):
+def exit_rows(data, names, level=None):
     rows, _ = collect(data)
     arrivals, _ = selectors(rows)
     for index, (source, target, entry, _, _, _, guard, owner, event_id) in enumerate(rows):
+        if level is not None and source != level:
+            continue
         action = EXIT_ACTIONS.get((source, owner))
         if action is None:
             action = ("Walk across the exit area." if event_id in (2, 4)
@@ -82,7 +85,37 @@ def game_page(folder):
     return report(TITLE, edition, maps, tables, extras=(("exits", heading, exits),))
 
 
-app = MyGame("LoL2 My Game", TITLE, "Lands of Lore II", "DAT", game_page)
+def saved_page(source, folder):
+    try:
+        slot = parse_slot(source.read_bytes())
+        level, x, y, heading, _ = slot.state[-5:]
+    except DATA_ERRORS as error:
+        raise ValueError("Choose an original Lands of Lore II DOS 1.30 saved game.") from error
+
+    try:
+        data = find_data(folder, "DAT", "L1_DC.MIX")
+        stem = next(stem for stem in level_files(data) if stem.split("_", 1)[0] == f"L{level}")
+        names = level_names(data)
+        name = names.get(stem, stem)
+        geometry = load(data, stem)
+        exits = list(exit_rows(data, names, stem))
+    except (*DATA_ERRORS, StopIteration) as error:
+        raise ValueError("Choose the Lands of Lore II folder containing the level in this saved game.") from error
+
+    plan, _, _ = draw(name, *geometry, None, None, 900, player=(x, y, heading))
+    image = (stem, name, png_bytes(plan), "png")
+    heading &= 0xFFFF
+    facts = catalogue("save", "Save summary for a bug report", ("Field", "Value"),
+                      (("Level", f"{name} ({level})"), ("X", x / 65536), ("Y", y / 65536),
+                       ("Facing (game units)", heading)),
+                      "Copy these values into the issue if you report a fault. The page omits unconfirmed save fields.")
+    routes = catalogue("exits", "Exits from this level", ("From", "To", "Arrival", "What to do", "When it works", "File record"),
+                       exits, "The plan uses the saved position and facing. Exit conditions describe the game scripts.")
+    return report(f"{TITLE} · You are here", "DOS 1.30 saved game", (image,), (),
+                  extras=(("save", "Save summary", facts), ("exits", "Exits from this level", routes)))
+
+
+app = MyGame("LoL2 My Game", TITLE, "Lands of Lore II", "DAT", game_page, read_saved=saved_page)
 
 
 if __name__ == "__main__":

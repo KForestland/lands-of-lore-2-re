@@ -11,6 +11,7 @@ with labels drawn by Pillow. Use --focus to inspect a dense area.
 from cli_errors import run_cli, game_path
 from level_html import find_data, new_picture
 from dataclasses import dataclass
+from math import cos, sin, tau
 from pathlib import Path
 from struct import iter_unpack
 
@@ -95,7 +96,7 @@ def overlapped(rect, others):
     return any(x0 < r and x1 > l and y0 < b and y1 > t for l, t, r, b in others)
 
 
-def draw(stem, verts, regs, placements, focus, radius, size):
+def draw(stem, verts, regs, placements, focus, radius, size, *, player=None):
     from PIL import Image, ImageDraw, ImageFont
 
     x0, y0, x1, y1 = bounds(verts, regs, focus, radius)
@@ -159,6 +160,18 @@ def draw(stem, verts, regs, placements, focus, radius, size):
         else:
             hidden += 1
 
+    if player is not None:
+        x, y, heading = player
+        if not (x0 <= x <= x1 and y0 <= y <= y1):
+            raise ValueError("The saved position falls outside this level plan.")
+        px, py = point(x, y)
+        # The native bearing helper (0x111C34) measures from +Y toward +X.
+        angle = (heading & 0xFFFF) * tau / 65536
+        dx, dy = sin(angle), -cos(angle)
+        tip = (px + 18 * dx, py + 18 * dy)
+        sides = [(px - 8 * dx - wing * dy, py - 8 * dy + wing * dx) for wing in (8, -8)]
+        plot.polygon([tip, *sides], fill="#aa2043", outline="#ffffff", width=2)
+
     image = Image.new("RGB", (width, height + 172), BACKGROUND)
     image.paste(canvas, (0, 67))
     page = ImageDraw.Draw(image)
@@ -180,6 +193,9 @@ def draw(stem, verts, regs, placements, focus, radius, size):
     if focus is not None:
         page.rectangle((374, footer+32, 389, footer+42), outline=FOCUS, width=2)
         page.text((396, footer+27), "Selected region", fill=INK, font=caption_font)
+    if player is not None:
+        page.polygon([(374, footer+42), (382, footer+29), (390, footer+42)], fill="#aa2043")
+        page.text((396, footer+27), "Saved position and facing", fill=INK, font=caption_font)
     page.text((20, footer+50), "Lighter floors are higher. Storeys can overlap.", fill=MUTED, font=caption_font)
     hint = (f"{hidden} crowded labels omitted. Use --focus and --radius to zoom."
             if hidden else "IDs are zero-based rows in the original placement tables.")
