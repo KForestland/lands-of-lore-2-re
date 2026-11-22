@@ -90,7 +90,8 @@ What you can look at with your own copy of the game. Run from the clone with `ex
 
 | Tool | Command | Example result |
 |---|---|---|
-| Job menu | `python tools/lol.py --help` | level, text, translate, music, movie, sound, save, patch, mod |
+| Job menu | `python tools/lol.py --help` | names, level, text, translate, music, movie, sound, save, patch, mod |
+| Game names | `python tools/lol.py names --data "$LOL2_DAT"` | Reads the stored names and creature tags from your copy |
 | Interactive map | `python tools/level_viewer.py --data "$LOL2_DAT" --check` | L1_DC page with 3,860 entries |
 | Level copy editor | `python tools/level_edit.py --data "$LOL2_DAT" --check` | 15 original archives copied byte-identically and 2 placement kinds verified |
 | Translation tables | `python tools/translate.py --data "$LOL2_DAT" --check` | 8 tables, 988 rows, 6 indexed fonts |

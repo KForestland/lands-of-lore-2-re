@@ -29,7 +29,8 @@ Run these from the repository folder. Set the data variable as shown under Setup
 
 | Tool | Example | Output |
 |---|---|---|
-| Job menu | `python tools/lol.py --help` | level, text, translate, music, movie, sound, save, patch, mod |
+| Job menu | `python tools/lol.py --help` | names, level, text, translate, music, movie, sound, save, patch, mod |
+| Game names | `python tools/lol.py names --data "$LOL2_DAT"` | Map titles, item and spell names and creature labels read from your files |
 | Interactive map | `python3 tools/lol.py level --data "$LOL2_DAT" --level L1_DC --out "../LoL2 plans"` | `L1_DC.html` with 3,860 entries |
 | Level copy editor | `python tools/level_edit.py --data "$LOL2_DAT" --check` | 15 original archives copied byte-identically and 2 placement kinds verified |
 | Translation tables | `python tools/translate.py --data "$LOL2_DAT" --check` | 8 tables, 988 rows, 6 indexed fonts |
