@@ -22,7 +22,9 @@ python3 tools/lol2_event_browser.py L1_DC --stream 0 --group 0x4AA
 python3 tools/lol2_progression.py --out ../lol2-tour/progression.md
 ```
 
-**CONFIRMED.** For stream-0 group `0x4AA`, the trigger at `L1_DC.MIX+0x6FDC4B` is region 1190 receiving event 2. Its predicate 179 at `+0x70653C` has bytes `00 03 02 00 05` and tests local slot 2 for value 5. When that row runs, the command at `+0x6FD59F` requests L3_DH, arrival 1. The other eight region rows for this destination test the same slot. **UNCONFIRMED.** The separate prop row at group 4030 names an exit with an upstream trigger. Trace the callers of the kind-8 matcher at `0xAE510` and its arguments to find the sender. [L1_DC exit rows](PROGRESSION.md#level-l1_dc) · [Event and predicate readers](lol2-script-events.md)
+**CONFIRMED.** For stream-0 group `0x4AA`, the trigger at `L1_DC.MIX+0x6FDC4B` is region 1190 receiving event 2. Its predicate 179 at `+0x70653C` has bytes `00 03 02 00 05` and tests local slot 2 for value 5. When that row runs, the command at `+0x6FD59F` requests L3_DH, arrival 1. The other eight direct region exit rows use the same test. [L1_DC exit rows](PROGRESSION.md#level-l1_dc) · [Event and predicate readers](lol2-script-events.md)
+
+**CONFIRMED.** Region 1190 also has an event-2 record for local slot 2 = 0. Its group requests cue 973 on prop 447 at `+0x6FD5B1`. The voice cleanup path can pass that object and cue to the kind-8 matcher. The matching prop record at `+0x6EA117` runs stream-1 group 4030. Its command at `+0x6E6D43` requests the same arrival. [Upstream sends](PROGRESSION.md#what-a-row-does-not-show) · [Sound cues](lol2-sound-cues.md)
 
 ## Read the creature numbers
 

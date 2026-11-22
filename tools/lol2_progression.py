@@ -242,21 +242,54 @@ def page(rows, names, writes):
         "",
         "## What a row does not show",
         "",
-        f"**UNCONFIRMED.** {len(objects)} rows hang on an object record, not on a region record. "
-        "Such a record runs only when another command or the engine sends that event to that object or "
-        "starts that timer, so `none` on those rows does not mean the exit is open. The senders are not traced "
-        "here. To settle it, list for each of those objects the stored commands that send to it (opcode 9 "
-        "property 21 sends 20 at `0xB5448`, opcode 18 sends 6 at `0xB5A0E`, opcode 14 starts a kind-2 timer "
-        "through `0xB47B4`) and the callers of the kind-5 matcher `0xAD8E0` and the kind-8 matcher `0xAE510` "
-        "([record kinds](lol2-script-events.md#event-records)).",
+        f"{len(objects)} exits run from an object's event list. A row with `none` for slots still needs "
+        "its event or timer to fire. The following upstream commands are from the original DOS 1.30 files. "
+        "Archive offsets are file offsets and executable addresses are in the analysis convention. "
+        "[Record kinds](lol2-script-events.md#event-records) · [Executable addresses](lol2-executable-tables.md)",
+        "",
+        "| Exit owner | What sends or arms the exit |",
+        "|---|---|",
+        "| L1_DC prop 447 | **CONFIRMED.** With local 2 = 0, entering any of regions 1190 or 1217–1224 requests "
+        "cue 973 on prop 447. The first request is `L1_DC.MIX+0x6FD5B1`. Opcode 20 passes the object and cue "
+        "through `0xB5C0D`. A voice slot keeps both, and the cleanup path at `0xE3824–0xE3841` can forward "
+        "them to the kind-8 matcher. Its record at `+0x6EA117` runs group 4030. "
+        "[Cue path](lol2-sound-cues.md) |",
+        "| L3_DH control 82 | **CONFIRMED.** Region 1419 event 4 sets state 1 at `L3_DH.MIX+0x59C864`. "
+        "On kind-6 value 1, the earlier record at `+0x5947E0` tests for 1 and sets 3 at `+0x5922F4`. "
+        "The later record at `+0x5947F6` sees 3 and requests L4_HJ. The resource callback at `0x9EC60` "
+        "sends this event value to its owner. **UNCONFIRMED.** Which resource instance supplies control 82 "
+        "to that callback. Read the callback context +0x14 and resource +0x30 when entering region 1419. "
+        "[Callback](lol2-event-producers.md#confirmed-event-sources) |",
+        "| L8_SJ prop 1198 | **CONFIRMED.** Entry into regions 1514, 1515, 1519, 1523, 1527 or 1530 "
+        "sends kind-6 value 20 through opcode 9 property 21 (`L8_SJ.MIX+0xCEC80D` through `+0xCEC8FD`, "
+        "stride `0x30`). The record at `+0xCD7C4A` tests local 13 = 1. "
+        "[Property 21](lol2-event-producers.md#confirmed-event-sources) |",
+        "| L9_DR prop 104 | **CONFIRMED.** Control 82 kind-5 event 4 with state 2 starts timer 0 at "
+        "`L9_DR.MIX+0x1628758`. Group 2140 starts timer 1 at `+0x16258D8`. Timer 1 runs group 2168 and "
+        "requests L8_SJ. **UNCONFIRMED.** The sender of control 82's event 4. "
+        "[Timer actions](lol2-script-events.md#object-timers) |",
+        "| L14_HT prop 170 | **CONFIRMED.** Controls 78 and 79 have empty-hand records guarded by state 1. "
+        "Both send kind-6 value 20 to prop 170 at `L14_HT.MIX+0xB2FD28` and `+0xB2FD3A`. "
+        "The record at `+0xB322F0` tests local 22 = 1. [Held-item test](lol2-script-events.md#event-records) |",
+        "| L17_HC movable 50 | **CONFIRMED.** Hit records on props 307–310 each send kind-6 value 20 "
+        "to movable 50 (`L17_HC.MIX+0x490384`, `+0x4903A8`, `+0x4903CC`, `+0x4903F0`). "
+        "With local 0 = 10, group 3878 sets its state to 1 at `+0x49053A`. The later kind-5 event 4 exit "
+        "requires state 1. **UNCONFIRMED.** The sender of that event 4. |",
+        "",
+        "**UNCONFIRMED.** The kind-5 event 4 sends that trigger the L12_CM and L16_CA control 74 exits "
+        "and advance the L9_DR and L17_HC chains are still open. At the kind-5 entry `0xAD8E0`, filter "
+        "on event 4 and compare the incoming list pointer with the listed owner. The call return address "
+        "will identify where that known owner gets its event.",
         "",
     ]
     if event4:
         lines += [
-            f"**UNCONFIRMED.** {len(event4)} region {'row uses' if len(event4) == 1 else 'rows use'} region event 4 ("
+            f"**CONFIRMED.** {len(event4)} region {'exit uses' if len(event4) == 1 else 'exits use'} region event 4 ("
             + ", ".join(f"{row[0]} {row[7]}" for row in event4)
-            + "). The player's region path sends events 2 and 3; the sender of event 4 is not traced. "
-            "To settle it, list the callers of the region walker `0xF2D2C` and the event byte each passes "
+            + "). The player region update tests region +0x28 bit 1 (mask 2), sets it on first contact and "
+            "passes event 4 at `0xD394A` before event 2 at `0xD39BB`. The alternate-region path sends event 4 "
+            "at `0xD38D1` and sets the same bit. The L4_HJ exit record uses argument byte 0, so "
+            "the matcher accepts either value of the incoming height comparison. No predicate follows it "
             "([region event arms](lol2-script-events.md#region-event-arms)).",
             "",
         ]
