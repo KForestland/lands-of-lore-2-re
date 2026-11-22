@@ -218,7 +218,7 @@ The [README](../README.md#change-a-number-in-your-own-copy) walks through the wh
 ## Change a saved game (a copy)
 
 ```bash
-python3 tools/save_edit.py set '/path/to/LoL2/SAVEGAME/$MUSEUM_.000' heading 0x4000 --out "my edited save.000"
+python3 tools/save_edit.py set '/path/to/LoL2/SAVEGAME/$YOUR_SAVE.000' heading 0x4000 --out "my edited save.000"
 python3 tools/lol2_save_inspect.py "my edited save.000"
 ```
 

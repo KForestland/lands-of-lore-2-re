@@ -1,4 +1,4 @@
-# Running the DOS 1.30 game on a current machine
+# DOS 1.30 setup files and tested settings
 
 Read this against your own copy. **Tried here** identifies a recorded run. **From files** identifies a setting read from the installed files. **Reported elsewhere** identifies a setting described in the supplied notes or by another player.
 
@@ -50,7 +50,7 @@ The 1.30 notes also describe a Windows Direct3D build. The playable program in t
 | `Video_Texture_Resolution` | `0x1C2851` | High or low. Low leaves movies, monsters and items alone and uses coarser floor, wall and tree textures. |
 | `Video_Texture_Cache` | `0x1C287A` | Large when the machine has more than 16 MB; small, with low texture resolution, at 16 MB or below. |
 | `Video_Gamma_Correction` | `0x1C289A` | Brightness. |
-| `Video_Variable_Frame_Rate` | `0x1C28BA` | On keeps the rate variable. Off holds it steadier. One report used Off when a statue stuck. |
+| `Video_Variable_Frame_Rate` | `0x1C28BA` | The installed file uses No for the fixed-rate option. One report used Off when a statue stuck. |
 
 Each offset is the first byte of that name in this `LOLG.DAT`. The bytes just before several of the video names are the stored default word (`High`, `Large`, `Small`), not part of the key.
 
@@ -75,7 +75,7 @@ The setting names begin at `Key_Move_Forward_1`, file `+0x1C3465`. This `options
 | `Key_Move_Left_1` | `0x1C34B3` | `*LEFT` |
 | `Key_Move_Right_1` | `0x1C34D3` | `*RIGHT` |
 
-`Key_Move_Left_2` and `Key_Move_Right_2` are blank here. The letters `W`, `A`, `S` and `D` are other actions. Their first values in the same section are `Key_Use_Mouse_Item_1=W` (name at `+0x1C3C1D`), `Key_Pitch_Reset_1=A` (`+0x1C3577`), `Key_Cast_Spell_1=S` (`+0x1C364F`) and `Key_Jump_1=D` (`+0x1C35FD`). Later lines in that section repeat some keys and leave many blank, including an empty `Key_Use_Mouse_Item_1`. They do not assign forward, backward or turn again, so those stay on the arrow-key names, with the keypad names as the second binding.
+`Key_Move_Left_2` and `Key_Move_Right_2` are blank here. The letters `W`, `A`, `S` and `D` are other actions. Their first values in the same section are `Key_Use_Mouse_Item_1=W` (name at `+0x1C3C1D`), `Key_Pitch_Reset_1=A` (`+0x1C3577`), `Key_Cast_Spell_1=S` (`+0x1C364F`) and `Key_Jump_1=D` (`+0x1C35FD`). Later lines in that section repeat some keys and leave many blank, including an empty `Key_Use_Mouse_Item_1`. They do not assign forward, backward or turn again, so both bindings remain in effect. The keypad Down key is the first Backward binding. The arrow Down key is the second.
 
 ## Cache and install
 

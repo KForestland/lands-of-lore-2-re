@@ -1,5 +1,8 @@
 # Evidence
 
+> History: these working inventories record an earlier research snapshot. See the current [status](../docs/STATUS.md) for supported results.
+
+
 This folder is for evidence indexes and artifact references.
 
 Current contents:

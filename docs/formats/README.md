@@ -20,4 +20,4 @@ Each page: what the file is, its layout, a worked example with real bytes from t
 | [loose.md](loose.md) | `AUTOPLAY.WAV`, `SETUP.EXE` | `lol2_loose.py` | both files walked to the last byte; what opens them is open |
 | [patch.md](patch.md) | patch files you make (`*.json`); not a game file | `patch.py` | this project's format; tested on synthetic files and on a copy of the 1.30 game |
 
-Script streams and opcodes: [opcode reference](../lol2-script-opcodes.md). Movies by scene id, sound cues, music selection and the 46 room archives: [movie scenes](../lol2-movie-scenes.md), [sound cues](../lol2-sound-cues.md), [music selection](../lol2-music-selection.md), [room archives](../lol2-room-archives.md). Still to write: sprites.
+Script streams and opcodes: [opcode reference](../lol2-script-opcodes.md). Movies by scene id, sound cues, music selection and the 47 room archives (46 named plus ARENA): [movie scenes](../lol2-movie-scenes.md), [sound cues](../lol2-sound-cues.md), [music selection](../lol2-music-selection.md), [room archives](../lol2-room-archives.md). Still to write: sprites.

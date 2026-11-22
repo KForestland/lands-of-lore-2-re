@@ -113,7 +113,7 @@ def main():
 def run():
     parser = ReaderArgumentParser(
         description=__doc__,
-        epilog="Example: save_edit.py set '/path/to/SAVEGAME/$MUSEUM_.000' heading 0x4000 --out 'my edited save.000' (save names begin with $; on Linux and macOS use single quotes).")
+        epilog="Example: save_edit.py set '/path/to/SAVEGAME/$YOUR_SAVE.000' heading 0x4000 --out 'my edited save.000' (save names begin with $; on Linux and macOS use single quotes).")
     commands = parser.add_subparsers(dest="command", metavar="{page,set}")
     commands.required = True
     setter = commands.add_parser("set", help="write a copy of the save with one field changed",

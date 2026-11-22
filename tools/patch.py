@@ -108,6 +108,8 @@ def protected(root, base):
 
 def new_output(path, root, base, *inputs):
     """A path that does not exist yet, in an existing folder outside the game and inputs."""
+    if Path(path).exists() or Path(path).is_symlink():
+        raise ValueError(f"The output already exists: {path}. Choose a different path.")
     target = core.output_path(path, base, *inputs, *protected(root, base))
     if not target.parent.is_dir():
         raise ValueError(f"the folder {target.parent} does not exist; create it first or choose another place")
@@ -481,7 +483,7 @@ def prepare(root, patch):
         original = read_source(base, name)
         if kind == "program" and digest(original) != patch["sha256"][named]:
             raise ValueError(f"{name} is not the program this patch was made for (its SHA-256 "
-                             "differs); a program patch fits only the same edition and version")
+                             "differs). It may already be patched. Check the undo.json from the earlier patch.")
         changed, undo = edit_file(kind, name, original, entries)
         programs[name] = digest(changed)
         undo_groups = check_document(document(kind, "Undo", "Undo", undo, {name: programs[name]}, version=UNDO_FORMAT))
