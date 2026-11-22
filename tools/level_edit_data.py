@@ -3,7 +3,7 @@ from cli_errors import game_path
 from functools import lru_cache
 from struct import unpack_from
 
-from lol2_item_labels import OBJ5, PAIRS, TABLE, item_definitions, native_hash
+from lol2_item_labels import OBJ5, PAIRS, TABLE, display_names, item_definitions, native_hash
 from lol2_export_scripts import PLACED_ITEMS, TABLES, section
 from lol2_level_report import level_files as levels
 from lol2_level_schematic import parse_geometry
@@ -49,6 +49,7 @@ def item_names(data):
             key = native_hash(label)
             if key in identities and label and label.isascii():
                 identities[key] = label.decode("ascii")
+    identities.update(display_names(data))
     return identities
 
 
