@@ -1,5 +1,7 @@
 # LOCAL.MIX Entry 1 Record 0 Runtime Buffer Check
 
+> History: this page records an earlier research snapshot. See the current [status](../../docs/STATUS.md) for supported results.
+
 Date: 2026-04-02
 
 This note records one narrow follow-up to the Entry 1 verdict:

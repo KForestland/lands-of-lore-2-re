@@ -12,7 +12,7 @@ It contains documentation, tools and small tables of numbers. It contains no gam
 
 - **Almost done, with open questions.** Tools read the layout of [83 of 83 files in the English DOS 1.30 DAT folder](#rating).
 - The running game and before-and-after saves show how two [item pickups](docs/NEEDS_A_RUNNING_GAME.md#q11-which-saved-rows-change-on-a-known-pickup) update the item rows: one dropped in play and one placed in the opening cave.
-- The triggers of [four exits](docs/PROGRESSION.md#what-a-row-does-not-show) are still open. [Memory watches](docs/NEEDS_A_RUNNING_GAME.md#21-november-slot-and-watch-status) are waiting for a verified code base. One [cemetery fix](patches/README.md#retail-script-checks) is waiting for a before-and-after game test.
+- The triggers of [four exits](docs/PROGRESSION.md#what-a-row-does-not-show) are still open. [Memory watches](docs/NEEDS_A_RUNNING_GAME.md#21-november-slot-and-watch-status) need the address where the game loads its code, which no run has read yet. One [cemetery fix](patches/README.md#retail-script-checks) is waiting for a before-and-after game test.
 - The [rating](docs/HOW_WE_RATE.md) keeps separate counts for files, rules and tests in play. An overall percentage would combine measures of different things.
 
 Status of the other games: [Lands of Lore I](https://github.com/KForestland/lands-of-lore-1-re#where-this-stands) · [Lands of Lore III](https://github.com/KForestland/Lands-of-lore-3-re#where-this-stands).
