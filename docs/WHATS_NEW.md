@@ -2,6 +2,10 @@
 
 Newest first. One line per question worked on, new tool or visible change; each question bullet gives its state. Details are on the linked pages; the counts are in the [rating](../README.md#rating).
 
+## 22 November 2026
+
+- **Cemetery priest fix.** A player who gave away the Bracers of the Dead can now get the priest's urn and ashes scene. [cemetery-priest.json](../patches/cemetery-priest.json) changes 19 bytes in the Dracoid Cemetery's condition table. A player played it on 22 November: the priest took the ashes and gave the ankh, and the way out opened with the blue orb. The Silverleaf, later in the game, follows from the script and was not reached ([patches](../patches/README.md#cemetery-priest-after-giving-away-the-bracers)).
+
 ## 21 November 2026
 
 - **Finding your game folder, maps and media.** The [first ten minutes](FIRST_TEN_MINUTES.md) page now says which folder to give, and walks through opening an interactive level plan and converting a movie or sound.
