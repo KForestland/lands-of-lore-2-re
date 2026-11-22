@@ -2060,6 +2060,8 @@
         "tools/media_convert.py",
         "tools/modkit.py",
         "tools/modkit_core.py",
+        "tools/my_game.py",
+        "tools/my_game_ui.py",
         "tools/page_facts.py",
         "tools/page_facts_auto.py",
         "tools/page_facts_native.py",

@@ -46,11 +46,17 @@ These are counts of work done, not a percentage of how complete the project is. 
 - **Page facts:** 25/8,576 candidate literals registered with byte witnesses. The rest are inventoried so changes can be reviewed.
 <!-- rating:end -->
 
+## My Game
+
+Sign in to GitHub and open the [Windows build](https://github.com/KForestland/lands-of-lore-2-re/actions/workflows/windows-mygame.yml). Download and unzip **LoL2-MyGame-Windows**, then double-click **LoL2-MyGame.exe**. Choose your Lands of Lore II installation or its DAT folder. The offline page shows the edition, level plans and tables of items, spells and creatures from your game. **Why can’t I leave?** lists the exit conditions and flags open trigger questions.
+
+The app saves **LoL2 My Game.html** in Documents and shows its full path. With Python with Tk and Pillow, you can also run `python tools/lol.py mygame`.
+
 ## Quick start with git (for people who use git)
 
 <!-- suite-counts:begin -->
 - **Original game files.** 52 checks with the required files and dependencies. Quick mode selects 48.
-- **Synthetic data.** 122 unit tests.
+- **Synthetic data.** 124 unit tests.
 - **Historical cave geometry.** 50 additional unit tests.
 <!-- suite-counts:end -->
 
