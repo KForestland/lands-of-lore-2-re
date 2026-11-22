@@ -12,12 +12,12 @@ How to start the game on a current machine is [Running](RUNNING.md).
 
 | Report | What to try | Evidence |
 |---|---|---|
-| Cantina crash while Baccata speaks | Temporarily add `-LOWMEM` to the DOSBox start command. Save after the scene and remove the switch. [GOG Support](https://support.gog.com/hc/en-us/articles/214068365-Lands-Of-Lore-Guardians-of-Destiny) | On 20 November the unmodified game played the scene in DOSBox with `memsize=30`. |
-| Cemetery barrel stays upright | In human form, empty the hand, click the top from inside the tomb and clear its path. Reload before the attempt if it stalls. | The script has separate pick, fall and roll events. [Reported faults](https://lands-of-lore.fandom.com/wiki/Bugs) |
-| Temple offering bowls and caretaker | Bring Aloe and Poison Paint to their matching bowls. | DOS 1.30 changes the predicate to admit two or more offerings on load. This was traced in the program. |
-| Daniel’s knife and the settlement gate | Recover Daniel’s knife after the encounter, visit the Temple and offer the recovered knife. | The guard requires the recovered knife’s identity and the story flags. |
-| Silverleaf after giving away the bracers | Keep the bracers until the priest and Silverleaf events, or reload before giving them away. | The cemetery predicate and a small candidate edit have been identified. The priest response and Silverleaf outcome need a before-and-after save test. |
-| Belial’s statue sticks | Try `Video_Variable_Frame_Rate=No` in `options.ini`. | The measured installation already uses No. The workaround was reported for a copy where the option was enabled. |
+| Cantina crash while Baccata speaks<br>[You can help: open your save in the program and send us the report](https://github.com/KForestland/Lands-of-lore-2-re/issues/new?template=bug_report.md). | Temporarily add `-LOWMEM` to the DOSBox start command. Save after the scene and remove the switch. [GOG Support](https://support.gog.com/hc/en-us/articles/214068365-Lands-Of-Lore-Guardians-of-Destiny) | On 20 November the unmodified game played the scene in DOSBox with `memsize=30`. |
+| Cemetery barrel stays upright<br>[You can help: open your save in the program and send us the report](https://github.com/KForestland/Lands-of-lore-2-re/issues/new?template=bug_report.md). | In human form, empty the hand, click the top from inside the tomb and clear its path. Reload before the attempt if it stalls. | The script has separate pick, fall and roll events. [Reported faults](https://lands-of-lore.fandom.com/wiki/Bugs) |
+| Temple offering bowls and caretaker<br>[You can help: open your save in the program and send us the report](https://github.com/KForestland/Lands-of-lore-2-re/issues/new?template=bug_report.md). | Bring Aloe and Poison Paint to their matching bowls. | DOS 1.30 changes the predicate to admit two or more offerings on load. This was traced in the program. |
+| Daniel’s knife and the settlement gate<br>[You can help: open your save in the program and send us the report](https://github.com/KForestland/Lands-of-lore-2-re/issues/new?template=bug_report.md). | Recover Daniel’s knife after the encounter, visit the Temple and offer the recovered knife. | The guard requires the recovered knife’s identity and the story flags. |
+| Silverleaf after giving away the bracers<br>[You can help: open your save in the program and send us the report](https://github.com/KForestland/Lands-of-lore-2-re/issues/new?template=bug_report.md). | Keep the bracers until the priest and Silverleaf events, or reload before giving them away. | The cemetery predicate and a small candidate edit have been identified. The priest response and Silverleaf outcome need a before-and-after save test. |
+| Belial’s statue sticks<br>[You can help: open your save in the program and send us the report](https://github.com/KForestland/Lands-of-lore-2-re/issues/new?template=bug_report.md). | Try `Video_Variable_Frame_Rate=No` in `options.ini`. | The measured installation already uses No. The workaround was reported for a copy where the option was enabled. |
 
 ## Already claimed by the 1.30 notes
 
@@ -67,7 +67,7 @@ Optional changes of this program. They are not mixed with the tavern note, and t
 
 ### Intro movies
 
-Startup plays the opening Westwood card, the title clip and, when enabled, the opening movie. The patch [intro-skip.json](intro-skip.json) makes two jumps. It was tested with `Run_Intro` set to `On` and to `Off`. Code reading also shows that the second jump bypasses the movie requested by the `-INTRO` switch. The switch still needs a launch test.
+Startup plays the opening Westwood card, the title clip and, when enabled, the opening movie. The patch [intro-skip.json](intro-skip.json) makes two jumps. It was tested with `Run_Intro` set to `On` and to `Off`. On 22 November 2026 in DOSBox 0.74-3, with `Run_Intro=Off` and the `-INTRO` switch, the unpatched copy played the title and opening movie. The patched copy went to the main menu.
 
 The title clip is `OUTTAKES\TITLE_E.VQA` at file `+0x1C5499`. Analysis `0x14F014` tests that name, and `0x14F02C` calls the opener `0xCF3C0`. The command `-MIJAS` at file `+0x1C5492` is tested at `0x14F003`. A hit jumps to `0x14F034` and the title is not opened. The patch takes that same jump.
 

@@ -40,10 +40,10 @@ These are counts of work done, not a percentage of how complete the project is. 
 
 <!-- rating:begin -->
 - **Files read:** 83 of 83 files in `DAT` (1,915.6 of 1,915.6 MiB) have their whole layout read by a tool here: every byte belongs to a known header, directory, entry, chunk, segment or resource, or to zero padding between them; the DOS part of `SETUP.EXE` is counted by its length (what is inside an entry may still be only partly understood).
-- **Rules traced:** the pages mark 788 statements CONFIRMED (labelled as proved with a cited address or offset) and 184 UNCONFIRMED (a reading still open), on 130 current pages; old notes kept as history are not counted.
+- **Rules traced:** the pages mark 789 statements CONFIRMED (labelled as proved with a cited address or offset) and 184 UNCONFIRMED (a reading still open), on 130 current pages; old notes kept as history are not counted.
 - **Seen in the running game:** 4 of 9 probes that need the original game running are answered (a question can have more than one probe); 0 of them rest on edited saves only.
 - **Open questions:** 20 numbered questions: 5 answered, 14 mostly answered, 1 partly answered.
-- **Page facts:** 25/8,576 candidate literals registered with byte witnesses. The rest are inventoried so changes can be reviewed.
+- **Page facts:** 25/8,580 candidate literals registered with byte witnesses. The rest are inventoried so changes can be reviewed.
 <!-- rating:end -->
 
 ## My Game
@@ -52,11 +52,13 @@ Sign in to GitHub and open the [Windows build](https://github.com/KForestland/la
 
 The app saves **LoL2 My Game.html** in Documents and shows its full path. With Python with Tk and Pillow, you can also run `python tools/lol.py mygame`.
 
+Choose **Open a saved game**, select a DOS 1.30 save and point to your installation. **You are here** marks the saved position and facing on the current level plan and lists that level's exits. The save summary can be copied into a bug report.
+
 ## Quick start with git (for people who use git)
 
 <!-- suite-counts:begin -->
 - **Original game files.** 52 checks with the required files and dependencies. Quick mode selects 48.
-- **Synthetic data.** 124 unit tests.
+- **Synthetic data.** 125 unit tests.
 - **Historical cave geometry.** 50 additional unit tests.
 <!-- suite-counts:end -->
 

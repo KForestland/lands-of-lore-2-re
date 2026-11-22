@@ -9,7 +9,7 @@
 
 <!-- suite-counts:begin -->
 - **Original game files.** 52 checks with the required files and dependencies. Quick mode selects 48.
-- **Synthetic data.** 124 unit tests.
+- **Synthetic data.** 125 unit tests.
 - **Historical cave geometry.** 50 additional unit tests.
 <!-- suite-counts:end -->
 
@@ -25,10 +25,10 @@ Run the checks: `python3 tools/check_all.py` with `$LOL2_DAT` set. All checks pa
 
 <!-- rating:begin -->
 - **Files read:** 83 of 83 files in `DAT` (1,915.6 of 1,915.6 MiB) have their whole layout read by a tool here: every byte belongs to a known header, directory, entry, chunk, segment or resource, or to zero padding between them; the DOS part of `SETUP.EXE` is counted by its length (what is inside an entry may still be only partly understood).
-- **Rules traced:** the pages mark 788 statements CONFIRMED (labelled as proved with a cited address or offset) and 184 UNCONFIRMED (a reading still open), on 130 current pages; old notes kept as history are not counted.
+- **Rules traced:** the pages mark 789 statements CONFIRMED (labelled as proved with a cited address or offset) and 184 UNCONFIRMED (a reading still open), on 130 current pages; old notes kept as history are not counted.
 - **Seen in the running game:** 4 of 9 probes that need the original game running are answered (a question can have more than one probe); 0 of them rest on edited saves only.
 - **Open questions:** 20 numbered questions: 5 answered, 14 mostly answered, 1 partly answered.
-- **Page facts:** 25/8,576 candidate literals registered with byte witnesses. The rest are inventoried so changes can be reviewed.
+- **Page facts:** 25/8,580 candidate literals registered with byte witnesses. The rest are inventoried so changes can be reviewed.
 <!-- rating:end -->
 
 **Columns**: *Pages*: where it is described. *Tool check*: what `--check` measures on the game files. *Open*: numbered in [OPEN_QUESTIONS.md](OPEN_QUESTIONS.md).

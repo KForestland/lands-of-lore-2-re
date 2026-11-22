@@ -2,7 +2,7 @@
 
 <!-- suite-counts:begin -->
 - **Original game files.** 52 checks with the required files and dependencies. Quick mode selects 48.
-- **Synthetic data.** 124 unit tests.
+- **Synthetic data.** 125 unit tests.
 - **Historical cave geometry.** 50 additional unit tests.
 <!-- suite-counts:end -->
 
