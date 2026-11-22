@@ -78,7 +78,10 @@ def display_names(dat_dir):
     for i in range(count):
         identity, = struct.unpack_from("<I", entry, table + STRIDE * i + 0x18)
         field = entry[at + 30 * i:at + 30 * i + 24].partition(b"\0")[0]
-        label = field.decode("cp437").removeprefix(f"{i + 1}-").strip()
+        label = field.decode("cp437").strip()
+        prefix, separator, name = label.partition("-")
+        if separator and prefix.strip().isdecimal():
+            label = name.lstrip()
         if label and label.isprintable():
             names[identity] = label
     return names

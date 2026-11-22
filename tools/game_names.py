@@ -1,6 +1,7 @@
 """Read the names stored with LoL2's maps, items, spell schools and creatures."""
 from functools import lru_cache
 from pathlib import Path
+import re
 from struct import unpack_from
 
 from cli_errors import ReaderArgumentParser, game_path, run_cli
@@ -15,19 +16,61 @@ from lol2_westwood_hash import ww_hash_v1
 
 
 @lru_cache(maxsize=1)
-def level_names(data):
+def language_mix(data):
     path = game_path(data.parent, "LOCALLNG.MIX")
-    if not path.is_file():
-        return {}
-    mix = path.read_bytes()
-    key = ww_hash_v1("automap.trr")
+    return path.read_bytes() if path.is_file() else b""
+
+
+def language_table(data, name):
+    mix = language_mix(data)
+    if not mix:
+        return []
+    key = ww_hash_v1(name)
     match = next((row for row in parse_mix(mix) if row["key"] == key), None)
     if match is None:
-        return {}
+        return []
     start = match["offset"]
-    names = dict(read_trr(mix[start:start + match["size"]]))
+    return read_trr(mix[start:start + match["size"]])
+
+
+def level_names(data):
+    names = dict(language_table(data, "automap.trr"))
     return {stem: names[index].decode("cp437") for stem in level_files(data)
             if (index := int(stem.split("_", 1)[0][1:])) in names and names[index]}
+
+
+def creature_roles(data):
+    """Read role labels from the dramatic cast pages of the installed credits."""
+    loose = game_path(data.parent, "CREDITS.TRR")
+    try:
+        rows = read_trr(loose.read_bytes()) if loose.is_file() else language_table(data, "credits.trr")
+    except (OSError, ValueError):
+        return {}
+    roles = {}
+    for index, payload in rows:
+        if 17 <= index <= 35:
+            for line in payload.decode("cp437").split("\r"):
+                if line.startswith("^%") and ":" not in line:
+                    name = line[2:].strip()
+                    if name and name.isprintable():
+                        roles[name.casefold().removeprefix("the ")] = name
+    return roles
+
+
+def creature_label(tag, roles):
+    key = tag.casefold()
+    if key in roles:
+        return roles[key]
+    # These level-suffixed resource families reuse the same cast role.
+    variant = re.fullmatch(r"(bac|dawn)l[0-9]+", key)
+    if variant:
+        matches = [name for role, name in roles.items() if role.startswith(variant[1])]
+        if len(matches) == 1:
+            return matches[0]
+    words = tag.split()
+    if words and all(word.isalpha() for word in words):
+        return " ".join(word.capitalize() if word.isupper() or word.islower() else word for word in words)
+    return "—"
 
 
 def spell_names(data):
