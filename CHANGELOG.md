@@ -29,7 +29,7 @@ See [What’s new](docs/WHATS_NEW.md) for later changes.
 - **column renderer traced**: reads texture columns from atlas, applies distance shade table (indices 77-93 map to attenuation levels 1-5), writes to VGA Mode X framebuffer at 0x1017B710
 - Entry 2 reclassified: level geometry/art metadata (8-byte mapping records, mipmap chain pointers), NOT pixel data
 - **texture pipeline model updated**: LOCAL.MIX Entry 1 atlas (candidate) -> column renderer -> distance shading -> VGA planar write. This is a strong current model based on 1 extracted texture visual match; runtime confirmation is still pending.
-- RE status raised to effectively complete: all major systems decoded (entity pipeline, texture pipeline, audio, entity fields)
+- March 2026 status claim ~~effectively complete~~. Withdrawn on 18 November 2026. See [current status](docs/STATUS.md#where-this-stands).
 - all docs updated: removed stale "blob-to-surface decode" open-problem language from runtime-to-renderer-bridge, final-closure-memo, current-status, closure-summary, README
 - remaining minor items: 39 mipmap sub-textures (format=0x80), HMI-MIDI converter, sound effects container
 
@@ -52,7 +52,7 @@ See [What’s new](docs/WHATS_NEW.md) for later changes.
 - blob-to-surface decode documented as explicit open problem in runtime-to-renderer-bridge.md
 - entity-object-map: added unmapped fields section documenting 14 inferred fields
 - audio-inventory: added open items section, softened unverified compression type claims
-- markdown consistency: summary sentences, cross-references, percentage standardization to ~99%
+- March 2026 edits aligned summaries and cross-references. The resulting ~~overall estimate of about 99%~~ was withdrawn on 18 November 2026. See [current status](docs/STATUS.md#where-this-stands).
 - all status docs aligned on remaining items list
 
 ## 2026-03-23 (update 7 — contradiction fix + audio inventory)
@@ -72,10 +72,10 @@ See [What’s new](docs/WHATS_NEW.md) for later changes.
 - all 130+ exotic format attempts (NCC, 7bpp, 16bpp) confirmed wrong
 - remaining gap: blob-to-surface decode during level loading
 
-## 2026-03-23 (update 5 — closure)
+## 2026-03-23 (update 5)
 
 - updated final-closure-memo with complete session results
-- status raised to ~99%: entity pipeline fully decoded, wall texture format is last significant open item
+- March 2026 claim ~~status raised to about 99%~~. Withdrawn on 18 November 2026. See [current status](docs/STATUS.md#where-this-stands) for the remaining work.
 - documented wall texture as independent of entity pipeline (separate level-rendering code path)
 
 ## 2026-03-23 (update 4 — full pipeline)

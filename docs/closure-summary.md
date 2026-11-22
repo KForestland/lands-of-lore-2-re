@@ -1,4 +1,4 @@
-# LoL2 Closure Summary
+# LoL2 March 2026 Research Summary
 
 > **History.** A note from an earlier pass, kept as a record. Current pages: [STATUS.md](STATUS.md) and [formats/](formats/README.md); where they differ, the current pages are right.
 
@@ -8,13 +8,13 @@ Date: 2026-03-24
 
 ## Status
 
-This historical runtime checkpoint is not a claim of overall RE closure. See `final-closure-memo.md` for the latest state including disassembly results, wall texture format proof, and the remaining provenance/confirmation gaps.
+The March 2026 overall estimate was withdrawn on 18 November 2026. See [current status](STATUS.md#where-this-stands) and the [longer March record](final-closure-memo.md).
 
 Wall texture format is proven 8bpp palette-indexed by renderer disassembly. The remaining wall-side gap is not generic format identification; it is exact source/provenance closure: runtime confirmation of the source-buffer/build path, palette/source linkage, and final atlas/source identification. Audio decode is sample-verified: 1 music track and 1 dialogue clip were decoded successfully, and a bulk extraction tool exists but has not been run and verified end-to-end. All 24 entity descriptor fields are classified by cross-level statistical analysis, with proof levels varying per field (see `lol2-entity-object-map.md`). Remaining work is now mostly provenance/tooling/confirmation work.
 
 ## Main Result
 
-The strongest current LoL2 result is the compact `L1` control path:
+The March trace followed this compact `L1` control path:
 
 - `0E6C -> 0D53 -> 1A44 -> 5570 / 9BFC -> 9C76 -> 9C89 / 91D0 / A00F`
 

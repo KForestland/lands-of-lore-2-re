@@ -8,6 +8,15 @@
 
 It contains documentation, tools and small tables of numbers. It contains no game files and no extracted game pictures, sounds, movies or text dumps.
 
+## Where this stands
+
+- **Almost done, with open questions.** Tools read the layout of [83 of 83 files in the English DOS 1.30 DAT folder](#rating).
+- The running game and before-and-after saves show how two [item pickups](docs/NEEDS_A_RUNNING_GAME.md#q11-which-saved-rows-change-on-a-known-pickup) update the item rows: one dropped in play and one placed in the opening cave.
+- The triggers of [four exits](docs/PROGRESSION.md#what-a-row-does-not-show) are still open. [Memory watches](docs/NEEDS_A_RUNNING_GAME.md#21-november-slot-and-watch-status) are waiting for a verified code base. One [cemetery fix](patches/README.md#retail-script-checks) is waiting for a before-and-after game test.
+- The [rating](docs/HOW_WE_RATE.md) keeps separate counts for files, rules and tests in play. An overall percentage would combine measures of different things.
+
+Status of the other games: [Lands of Lore I](https://github.com/KForestland/lands-of-lore-1-re#where-this-stands) · [Lands of Lore III](https://github.com/KForestland/Lands-of-lore-3-re#where-this-stands).
+
 ## At a glance
 
 - **What this is:** documentation of the original 1997 DOS game's data files and engine (archives, levels, scripts, items, spells, creatures, sound, movies, saves), checked against the game files and the original program.
@@ -19,7 +28,7 @@ It contains documentation, tools and small tables of numbers. It contains no gam
 - **Numbers at a glance:** [item combat inputs, effect costs, creature definitions and form requests](docs/NUMBERS.md), tables generated from the original files by `tools/lol2_numbers.py`.
 - **What is still unknown:** the [open questions](docs/OPEN_QUESTIONS.md), counted in the [rating](#rating); most open points are the meaning of specific fields and effects. Some can only be settled by watching the original game run. Answered probes are counted in the rating; which ones and how: [NEEDS_A_RUNNING_GAME](docs/NEEDS_A_RUNNING_GAME.md#answered-probes). Some probes were also tried on [edited saves](docs/EDITED_SAVES.md), copies of a game-written save with a few bytes changed.
 - **What changed lately:** [what's new](docs/WHATS_NEW.md), newest first. What the pages got wrong, how it was caught and the commit that fixed it: [corrections](docs/CORRECTIONS.md).
-- **The three games:** [LoL1](https://github.com/KForestland/lands-of-lore-1-re) · [LoL2](https://github.com/KForestland/lands-of-lore-2-re) · [LoL3](https://github.com/KForestland/Lands-of-lore-3-re) ([what they share](docs/series-formats.md), [how the engine changed](docs/engine-evolution.md), [how they gate progress and scale numbers](docs/series-progress-and-numbers.md)).
+- **Across the series:** [shared formats](docs/series-formats.md) · [engine changes](docs/engine-evolution.md) · [progression and numbers](docs/series-progress-and-numbers.md).
 
 ![The first level, L1_DC, drawn from its region table by tools/lol2_level_map.py](docs/images/l1_dc_regions.png)
 
