@@ -6,7 +6,7 @@ Made by `tools/lol2_progression.py` from the level-transition commands in the 15
 
 Locked doors are not on this page. It lists level-transition commands only.
 
-**CONFIRMED.** Four exit handlers run all matching records in list order: the region walker `0xF2D2C` and the kind 5, 6 and 8 matchers `0xAD8E0`, `0xADDE0` and `0xAE510` advance to the next record after each run (back edges `0xF2FAD`, `0xAD9EF`, `0xADF26`, `0xAE5FA`). Each guard is checked after earlier matching groups in the same walk have run, and when two exits fire the later one wins, because the exit arm only stores the pending level (`0xD87AE`, `mov [0x223C8],eax`). For the kind-2 timer exit, the countdown service queues its timer group when it expires.
+**CONFIRMED.** Four exit handlers run all matching records in list order: the region walker `0xF2D2C` and the kind 5, 6 and 8 matchers `0xAD8E0`, `0xADDE0` and `0xAE510` advance to the next record after each run (back edges `0xF2FAD`, `0xAD9EF`, `0xADF26`, `0xAE5FA`). Each guard is checked after earlier matching groups in the same walk have run, and when two exits fire the later one wins, because the exit arm only stores the pending level (`0xD87AE`, `mov [0x223C8],eax`). For the kind-2 timer exit, the countdown service at `0xB8C25–0xB8CE6` queues its timer group when it expires and its conditions pass.
 
 ## What a row does not show
 

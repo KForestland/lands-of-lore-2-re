@@ -17,7 +17,7 @@ How to start the game on a current machine is [Running](RUNNING.md).
 | Temple offering bowls and caretaker | Bring Aloe and Poison Paint to their matching bowls. | DOS 1.30 changes the predicate to admit two or more offerings on load. This was traced in the program. |
 | Daniel’s knife and the settlement gate | Recover Daniel’s knife after the encounter, visit the Temple and offer the recovered knife. | The guard requires the recovered knife’s identity and the story flags. |
 | Silverleaf after giving away the bracers | Keep the bracers until the priest and Silverleaf events, or reload before giving them away. | The cemetery predicate and a small candidate edit have been identified. The priest response and Silverleaf outcome need a before-and-after save test. |
-| Belial’s statue sticks | Try `Video_Variable_Frame_Rate=No` in `options.ini`. | This is a reported workaround and a recognized setting. |
+| Belial’s statue sticks | Try `Video_Variable_Frame_Rate=No` in `options.ini`. | The measured installation already uses No. The workaround was reported for a copy where the option was enabled. |
 
 ## Already claimed by the 1.30 notes
 

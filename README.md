@@ -34,7 +34,7 @@ These are counts of work done, not a percentage of how complete the project is. 
 - **Rules traced:** the pages mark 788 statements CONFIRMED (labelled as proved with a cited address or offset) and 184 UNCONFIRMED (a reading still open), on 130 current pages; old notes kept as history are not counted.
 - **Seen in the running game:** 4 of 9 probes that need the original game running are answered (a question can have more than one probe); 0 of them rest on edited saves only.
 - **Open questions:** 20 numbered questions: 5 answered, 14 mostly answered, 1 partly answered.
-- **Page facts:** 25/8,575 candidate literals registered with byte witnesses. The rest are inventoried so changes can be reviewed.
+- **Page facts:** 25/8,576 candidate literals registered with byte witnesses. The rest are inventoried so changes can be reviewed.
 <!-- rating:end -->
 
 ## Quick start with git (for people who use git)

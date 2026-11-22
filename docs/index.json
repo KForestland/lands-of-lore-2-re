@@ -2052,6 +2052,7 @@
         "tools/repo_guard.py",
         "tools/save_edit.py",
         "tools/save_page.py",
+        "tools/suite_counts.py",
         "tools/translate.py",
         "tools/translate_data.py",
         "tools/translate_fonts.py"
