@@ -24,11 +24,13 @@ def make_my_game_fixture(game):
     struct.pack_into("<II", items, 4, start, len(items))
     struct.pack_into("<I", items, 0x34, 1)
     struct.pack_into("<I", items, start + 0x18, 123)
-    name = b"1-Test Compass"
+    name = b"100-Test Compass"
     items[names_at:names_at + len(name)] = name
     (data / "GLOBAL.MIX").write_bytes(write_mix([(ITEMS_KEY, 0, items)], len(items)))
     titles = write_trr([(1, b"Test Cavern")])
-    (game / "LOCALLNG.MIX").write_bytes(write_mix([(ww_hash_v1("automap.trr"), 0, titles)], len(titles)))
+    credits = write_trr([(17, b"^%Example cast:\r\r^%Test Drake\r^Test Actor")])
+    language = [(ww_hash_v1("automap.trr"), 0, titles), (ww_hash_v1("credits.trr"), len(titles), credits)]
+    (game / "LOCALLNG.MIX").write_bytes(write_mix(language, len(titles) + len(credits)))
 
     image = bytearray(0x1CFC08)
     image[:2] = b"MZ"
@@ -46,19 +48,23 @@ def make_my_game_fixture(game):
     struct.pack_into("<I", level, 0x38, len(level))
     struct.pack_into("<I", level, 0x80, 10)
     level.extend(bytes((8, 12, 0, 0, 0, 0, 2, 0, 0, 0)))
-    odf = bytearray(0x204 + RECORD_SIZE)
+    tags = (b"TEST DRAKE", b"APE", b"UNKNOWN12")
+    odf = bytearray(0x204 + len(tags) * RECORD_SIZE)
     struct.pack_into("<I", odf, 0, 18)
     struct.pack_into("<I", odf, 0x10, 0x204)
-    struct.pack_into("<I", odf, 0x48, 1)
-    at = 0x204 + BODY_SIZE
-    odf[at:at + 10] = b"Test Drake"
+    struct.pack_into("<I", odf, 0x48, len(tags))
+    for number, tag in enumerate(tags):
+        at = 0x204 + number * RECORD_SIZE + BODY_SIZE
+        odf[at:at + len(tag)] = tag
     key = ww_hash_v1("SPHERE1\\L1_DC\\L1_DC.ODF")
     (data / "L1_DC.MIX").write_bytes(write_mix([(1, 0, level), (key, len(level), odf)], len(level) + len(odf)))
 
 
 def check_page(page):
     assert page.count("data:image/png;base64,") == 1
-    for label in ("Test Cavern", "Test Compass", "Test Flash", "Test Drake", "Enter region 0."):
+    for label in ("<td>Test Compass</td>", "Test Flash", "<td>Test Drake</td><td>Test Cavern</td><td>TEST DRAKE</td>",
+                  "<td>Ape</td><td>Test Cavern</td><td>APE</td>", "<td>—</td><td>Test Cavern</td><td>UNKNOWN12</td>",
+                  "<td>Walk across the exit area.</td><td>No extra condition.</td><td>region 0</td>"):
         assert label in page, label
 
 
